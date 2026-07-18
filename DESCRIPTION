@@ -11,5 +11,5 @@ RoxygenNote: 8.0.0
 Suggests: 
     spelling
 Language: en-US
-URL: https://github.com/BjarkeHautop/testpkg
+URL: https://github.com/BjarkeHautop/testpkg, https://bjarkehautop.github.io/testpkg/
 BugReports: https://github.com/BjarkeHautop/testpkg/issues

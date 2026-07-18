@@ -4,3 +4,11 @@
 ^\.vscode$
 ^panache\.toml$
 ^jarl\.toml$
+^LICENSE\.md$
+^README\.Rmd$
+^codecov\.yml$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.pre-commit-config\.yaml$
