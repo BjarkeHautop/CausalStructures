@@ -1,0 +1,6 @@
+^testpkg\.Rproj$
+^\.Rproj\.user$
+^[.]?air[.]toml$
+^\.vscode$
+^panache\.toml$
+^jarl\.toml$
