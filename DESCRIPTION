@@ -8,8 +8,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
-Suggests: 
-    spelling
+Imports:
+    JuliaConnectoR
+Suggests:
+    spelling,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
+SystemRequirements: Julia (>= 1.10)
 Language: en-US
 URL: https://github.com/BjarkeHautop/testpkg, https://bjarkehautop.github.io/testpkg/
 BugReports: https://github.com/BjarkeHautop/testpkg/issues

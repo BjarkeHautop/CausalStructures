@@ -12,3 +12,8 @@
 ^docs$
 ^pkgdown$
 ^\.pre-commit-config\.yaml$
+^\.claude$
+^benchmark\.R$
+^CLAUDE\.md$
+^CausalStructures\.jl
+^JuliaConnectoR
