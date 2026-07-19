@@ -59,7 +59,9 @@
   "remove_edges",
   "add_nodes",
   "remove_nodes",
-  "reclass"
+  "reclass",
+  "layout",
+  "edge_marks"
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
@@ -155,6 +157,7 @@ cs_setup <- function() {
     '
     import CausalStructures
     const _testpkg_CS = CausalStructures
+    import NetworkLayout
     # A length-1 R character vector arrives in Julia as a scalar String
     _testpkg_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)
     _testpkg_join(names) = join(names, \'\\x1f\')
@@ -199,6 +202,7 @@ cs_setup <- function() {
         _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y)))
     _testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))
     _testpkg_edges(g) = join((_testpkg_join([String(e.src), String(e.dst)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
+    _testpkg_edge_marks(g) = join((_testpkg_join([String(e.src), String(e.dst), string(e.src_end), string(e.dst_end)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
     _testpkg_is_valid_adjustment(g, x, y, z) =
         _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))
     _testpkg_all_adjustment_sets(g, x, y) =
@@ -238,6 +242,10 @@ cs_setup <- function() {
         T = getfield(_testpkg_CS, Symbol(class))
         T === _testpkg_CS.UNKNOWN ? _testpkg_CS.reclass(g, T; simple = simple) :
         _testpkg_CS.reclass(g, T)
+    end
+    function _testpkg_layout(g, method)
+        pts = _testpkg_CS.layout(g, Symbol(method))
+        join((_testpkg_join([string(p[1]), string(p[2])]) for p in pts), \'\\x1e\')
     end
     nothing
   '
