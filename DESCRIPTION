@@ -22,6 +22,7 @@ Collate:
     'causal-structures-queries.R'
     'causal-structures-transform.R'
     'causal-structures-layout.R'
+    'causal-structures-plot-routing.R'
     'causal-structures-plot.R'
 Imports:
     grid,

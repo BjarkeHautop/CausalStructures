@@ -36,7 +36,9 @@ cs_plot(
 
 \item{edge_style}{List of edge styling parameters: \code{col}, \code{lwd},
 \code{arrow_size} (mm, default 3), \code{circle_size} (mm, default 1.5, for
-\verb{o->}/\verb{o--}/\code{o-o} endpoints), and \code{by_edge} (named list of per-edge or
+\verb{o->}/\verb{o--}/\code{o-o} endpoints), \code{route} (logical, default \code{TRUE}; when
+\code{TRUE}, an edge that would otherwise cross a non-incident node bends
+around it as a Bezier curve), and \code{by_edge} (named list of per-edge or
 per-node overrides, keyed by node name(s)).}
 
 \item{label_style}{List of label styling parameters: \code{col}, \code{fontsize},
