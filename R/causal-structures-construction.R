@@ -90,7 +90,6 @@ cs_edges <- function(graph) {
   if (identical(res, "")) {
     return(matrix(character(), nrow = 0, ncol = 2))
   }
-  edges_list <- strsplit(res, "\x1e", fixed = TRUE)[[1]]
-  pairs <- lapply(edges_list, function(e) cs_split(e))
-  do.call(rbind, pairs)
+  tokens <- strsplit(chartr("\x1f", "\x1e", res), "\x1e", fixed = TRUE)[[1]]
+  matrix(tokens, ncol = 2, byrow = TRUE)
 }
