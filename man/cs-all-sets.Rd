@@ -19,6 +19,13 @@ cs_all_frontdoor_sets(graph, x, y)
 List of character vectors (empty list if none exist).
 }
 \description{
-\code{cs_all_backdoor_sets()} lists all minimal backdoor adjustment sets;
-\code{cs_all_frontdoor_sets()} lists all frontdoor sets.
+\code{cs_all_backdoor_sets()} lists all minimal backdoor adjustment sets (up to
+size 3, checked with \code{\link[=cs_is_valid_backdoor]{cs_is_valid_backdoor()}}); \code{cs_all_frontdoor_sets()}
+lists all frontdoor sets (checked with \code{\link[=cs_is_valid_frontdoor]{cs_is_valid_frontdoor()}}).
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
+  cs_all_backdoor_sets(dag, "X", "Y")
+}
 }

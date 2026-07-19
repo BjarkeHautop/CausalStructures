@@ -5,13 +5,11 @@
 # CausalStructures.jl's string DSL (`"A --> X + Y, X --> M --> Y"`), which is
 # what actually crosses the R-Julia boundary. The operators below are never
 # evaluated: `...` is captured unevaluated via `substitute()`, so `%-->%` and
-# friends only need to exist so R's parser accepts the infix syntax and
-# `?"%-->%"`-style lookups resolve; they are not exported.
+# friends only need to exist so R's parser accepts the infix syntax;
+# they are not exported.
 #
 # `%any%` custom operators bind tighter than `+`, so `A %-->% B + C` actually
-# parses as `(A %-->% B) + C` and `X + Y %-->% B` as `X + (Y %-->% B)`. This
-# mirrors how caugi's DSL parser (R/DSL-parser.R in the caugi package) walks
-# the same shape of expression tree.
+# parses as `(A %-->% B) + C` and `X + Y %-->% B` as `X + (Y %-->% B)`.
 
 .cs_edge_glyphs <- c(
   `%-->%` = "-->",

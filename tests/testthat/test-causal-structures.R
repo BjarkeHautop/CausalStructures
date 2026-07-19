@@ -224,9 +224,10 @@ test_that("data simulation works", {
   skip_if_no_julia()
   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
   data <- cs_simulate_data(dag, n = 100, seed = 1405)
-  expect_s3_class(data, "JuliaProxy")
-  # Julia Dict contains the simulated data (node -> vector)
-  # With seed, same data should be produced
+  expect_s3_class(data, "data.frame")
+  expect_equal(dim(data), c(100, 4))
+  expect_equal(names(data), cs_nodes(dag))
+  # With seed, the same data should be produced
   data2 <- cs_simulate_data(dag, n = 100, seed = 1405)
-  expect_s3_class(data2, "JuliaProxy")
+  expect_equal(data, data2)
 })

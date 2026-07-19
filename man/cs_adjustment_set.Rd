@@ -4,17 +4,51 @@
 \alias{cs_adjustment_set}
 \title{Find a backdoor adjustment set}
 \usage{
-cs_adjustment_set(graph, x, y)
+cs_adjustment_set(graph, x, y, type = c("optimal", "parents", "backdoor"))
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
+
+\item{type}{Adjustment set type: \code{"optimal"} (default), \code{"parents"}, or
+\code{"backdoor"}.}
 }
 \value{
 Character vector with a valid adjustment set, or \code{NULL} if none
 exists.
 }
 \description{
-Find a backdoor adjustment set
+Computes an adjustment set for the total causal effect of \code{x} on \code{y} on a
+DAG or PDAG-family graph (\code{type} is ignored for MAGs,
+which always return the smallest valid set). Three types are supported:
+\describe{
+\item{\code{"parents"}}{The parents of \code{x}, excluding \code{x} and \code{y}.}
+\item{\code{"backdoor"}}{The Pearl backdoor formula (parents of \code{x}).}
+\item{\code{"optimal"}}{The O-set: parents of the causal nodes between \code{x}
+and \code{y} (nodes on a possibly-causal path), excluding \code{x} and those
+causal nodes themselves.}
+}
+Validate a candidate set directly with \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
+}
+\details{
+For MAGs it searches for the smallest valid adjustment set by
+trying sizes 0, 1, 2, ... in order and stopping at the first valid set.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
+  cs_adjustment_set(dag, "X", "Y")
+  cs_adjustment_set(dag, "X", "Y", type = "parents")
+  cs_adjustment_set(dag, "X", "Y", type = "backdoor")
+}
+}
+\references{
+Henckel, Y., Perković, E., & Maathuis, M. H. (2022). Graphical Criteria for
+Efficient Total Effect Estimation Via Adjustment in Causal Linear Models.
+\emph{Journal of the Royal Statistical Society: Series B}, 84:579-599.
+(\code{"optimal"})
+
+Pearl, J. (2009). \emph{Causality: Models, Reasoning and Inference} (2nd ed.).
+Cambridge University Press. (\code{"parents"} and \code{"backdoor"})
 }

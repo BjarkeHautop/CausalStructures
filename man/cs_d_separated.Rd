@@ -17,5 +17,19 @@ cs_d_separated(graph, x, y, given = character())
 \code{TRUE} if \code{x} and \code{y} are d-separated given \code{given}.
 }
 \description{
-Test d-separation
+Two nodes are d-separated given a conditioning set \code{given} if every path
+between them is blocked: a path is blocked if it contains either a
+non-collider node in \code{given}, or a collider node (and all its descendants)
+not in \code{given}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  chain <- cs_cgraph(A \%-->\% B, B \%-->\% C)
+  cs_d_separated(chain, "A", "C") # chain A --> B --> C is open
+  cs_d_separated(chain, "A", "C", "B") # conditioning on B blocks it
+
+  collider <- cs_cgraph(A \%-->\% C, B \%-->\% C)
+  cs_d_separated(collider, "A", "B") # collider A --> C <-- B: blocked
+  cs_d_separated(collider, "A", "B", "C") # conditioning on C opens it
+}
 }

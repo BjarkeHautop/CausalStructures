@@ -4,7 +4,14 @@
 \alias{cs_simulate_data}
 \title{Simulate data from a DAG}
 \usage{
-cs_simulate_data(graph, n, seed = NULL)
+cs_simulate_data(
+  graph,
+  n,
+  seed = NULL,
+  standardize = TRUE,
+  coef_range = c(-1, 1),
+  error_sd = 1
+)
 }
 \arguments{
 \item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
@@ -12,11 +19,40 @@ cs_simulate_data(graph, n, seed = NULL)
 \item{n}{Number of samples to generate.}
 
 \item{seed}{Optional integer seed for reproducibility.}
+
+\item{standardize}{If \code{TRUE} (default), standardize each variable to zero
+mean and unit variance.}
+
+\item{coef_range}{Length-2 numeric vector giving the range edge
+coefficients are drawn uniformly from.}
+
+\item{error_sd}{Standard deviation of each node's Gaussian noise term.}
 }
 \value{
-A data frame with \code{n} rows (samples) and one column per node.
+A data frame with \code{n} rows (samples) and one column per node,
+named and ordered as in \code{\link[=cs_nodes]{cs_nodes()}}.
 }
 \description{
-Generates random data conforming to the causal structure of a DAG.
-Edges receive random coefficients, and nodes receive random noise.
+Simulates observational data from a linear Gaussian structural causal
+model over \code{graph}: each node is a linear function of its parents plus
+independent Gaussian noise with standard deviation \code{error_sd}, with edge
+coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE}
+(default), each variable is standardized to zero mean and unit variance.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
+  data <- cs_simulate_data(dag, n = 100, seed = 42)
+  head(data)
+
+  data2 <- cs_simulate_data(
+    dag,
+    n = 100,
+    seed = 42,
+    standardize = FALSE,
+    coef_range = c(0.5, 2),
+    error_sd = 0.1
+  )
+  head(data2)
+}
 }

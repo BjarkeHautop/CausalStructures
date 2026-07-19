@@ -153,6 +153,12 @@ cs_setup <- function() {
   Pkg$activate(path)
   Pkg$instantiate()
   .cs$module <- JuliaConnectoR::juliaImport("CausalStructures")
+  # All wrapper helpers are defined here in a single juliaEval call, rather
+  # than one juliaEval per helper, so their definitions cost one round trip
+  # in total instead of one per helper. Each helper then does its Symbol
+  # conversion and string-joining Julia-side, so its own per-call round trip
+  # carries plain Strings rather than paying R's ~15us-per-element cost
+  # to deserialize character vectors.
   JuliaConnectoR::juliaEval(
     '
     import CausalStructures
@@ -190,8 +196,15 @@ cs_setup <- function() {
     end
     _testpkg_minimal_separator(g, x, y) =
         _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y)))
-    _testpkg_adjustment_set(g, x, y) =
-        _testpkg_opt(_testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y)))
+    function _testpkg_adjustment_set(g, x, y, type)
+        result = if g isa Union{_testpkg_CS.DAG,_testpkg_CS.AbstractPDAG}
+            _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
+        else
+            # AbstractAG (MAG, AG) has no `type` kwarg: always the smallest valid set.
+            _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y))
+        end
+        _testpkg_opt(result)
+    end
     _testpkg_frontdoor_set(g, x, y) =
         _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y)))
     _testpkg_is_valid_backdoor(g, x, y, z) =
@@ -209,12 +222,17 @@ cs_setup <- function() {
         _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y)))
     _testpkg_is_valid_frontdoor(g, x, y, z) =
         _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_simulate_data(g, n, seed)
-        if seed === nothing
-            return _testpkg_CS.simulate_data(g; samples = Int(n))
-        else
-            return _testpkg_CS.simulate_data(g; samples = Int(n), seed = Int(seed))
-        end
+    function _testpkg_simulate_data(g, n, seed, standardize, coef_range, error_sd)
+        kwargs = (
+            samples = Int(n),
+            standardize = standardize,
+            coef_range = (Float64(coef_range[1]), Float64(coef_range[2])),
+            error_sd = Float64(error_sd),
+        )
+        d = seed === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
+            _testpkg_CS.simulate_data(g; kwargs..., seed = Int(seed))
+        names = sort!(collect(keys(d)))
+        hcat((d[nm] for nm in names)...)
     end
     _testpkg_enumerate_dags(g) = _testpkg_CS.enumerate_dags(g)
     _testpkg_markov_equivalent(g1, g2) = _testpkg_CS.markov_equivalent(g1, g2)

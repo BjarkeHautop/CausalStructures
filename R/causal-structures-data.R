@@ -2,14 +2,56 @@
 
 #' Simulate data from a DAG
 #'
-#' Generates random data conforming to the causal structure of a DAG.
-#' Edges receive random coefficients, and nodes receive random noise.
+#' Simulates observational data from a linear Gaussian structural causal
+#' model over `graph`: each node is a linear function of its parents plus
+#' independent Gaussian noise with standard deviation `error_sd`, with edge
+#' coefficients drawn uniformly from `coef_range`. If `standardize = TRUE`
+#' (default), each variable is standardized to zero mean and unit variance.
 #'
 #' @param graph A DAG created with [cs_cgraph()].
 #' @param n Number of samples to generate.
 #' @param seed Optional integer seed for reproducibility.
-#' @return A data frame with `n` rows (samples) and one column per node.
+#' @param standardize If `TRUE` (default), standardize each variable to zero
+#'   mean and unit variance.
+#' @param coef_range Length-2 numeric vector giving the range edge
+#'   coefficients are drawn uniformly from.
+#' @param error_sd Standard deviation of each node's Gaussian noise term.
+#' @return A data frame with `n` rows (samples) and one column per node,
+#'   named and ordered as in [cs_nodes()].
 #' @export
-cs_simulate_data <- function(graph, n, seed = NULL) {
-  cs_fn("simulate_data")(graph, n, seed)
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
+#'   data <- cs_simulate_data(dag, n = 100, seed = 42)
+#'   head(data)
+#'
+#'   data2 <- cs_simulate_data(
+#'     dag,
+#'     n = 100,
+#'     seed = 42,
+#'     standardize = FALSE,
+#'     coef_range = c(0.5, 2),
+#'     error_sd = 0.1
+#'   )
+#'   head(data2)
+#' }
+cs_simulate_data <- function(
+  graph,
+  n,
+  seed = NULL,
+  standardize = TRUE,
+  coef_range = c(-1, 1),
+  error_sd = 1
+) {
+  mat <- cs_fn("simulate_data")(
+    graph,
+    n,
+    seed,
+    standardize,
+    coef_range,
+    error_sd
+  )
+  df <- as.data.frame(mat)
+  names(df) <- cs_nodes(graph)
+  df
 }

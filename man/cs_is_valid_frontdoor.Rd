@@ -17,5 +17,17 @@ cs_is_valid_frontdoor(graph, x, y, given = character())
 \code{TRUE} if the configuration satisfies the frontdoor criterion.
 }
 \description{
-Validate a frontdoor criterion set
+\code{given} is a valid front-door set if (1) it intercepts every directed path
+from \code{x} to \code{y}, (2) there is no unblocked backdoor path from \code{x} to any
+node in \code{given}, and (3) for every node in \code{given}, all backdoor paths to
+\code{y} are blocked by \code{x} together with the rest of \code{given}. When these hold,
+the effect is identified via the front-door formula even with unmeasured
+confounders between \code{x} and \code{y}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(U \%-->\% X, X \%-->\% M, M \%-->\% Y, U \%-->\% Y)
+  cs_is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
+  cs_is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open
+}
 }

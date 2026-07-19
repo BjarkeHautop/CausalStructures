@@ -16,5 +16,16 @@ Character vector with a minimal separating set, or \code{NULL} if none
 exists.
 }
 \description{
-Find a minimal separator
+Finds a minimal d-separator (DAG, PDAG classes) or m-separator
+(ADMG, ancestral-graph classes) between \code{x} and \code{y}: no proper subset
+of the returned set still separates them.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
+  cs_minimal_separator(dag, "X", "Y") # both A and M are needed
+
+  edge <- cs_cgraph(A \%-->\% B)
+  cs_minimal_separator(edge, "A", "B") # direct edge: no separator exists
+}
 }

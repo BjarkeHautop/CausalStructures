@@ -21,9 +21,9 @@ Character vector of node names.
 }
 \description{
 \code{cs_nodes()} returns all node names in alphabetical order.
-\code{cs_topological_sort()} returns the nodes of a \code{"DAG"} in topological
+\code{cs_topological_sort()} returns the nodes of a DAG in topological
 order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
-\code{cs_exogenous_nodes()} returns the nodes with no parents (for a \code{"UG"},
+\code{cs_exogenous_nodes()} returns the nodes with no parents (for a UG,
 the isolated nodes).
 }
 \examples{

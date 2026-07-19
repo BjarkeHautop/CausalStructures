@@ -18,5 +18,22 @@ cs_is_valid_adjustment(graph, x, y, given = character())
 identifying the causal effect of \code{x} on \code{y}.
 }
 \description{
-Validate an adjustment set
+Tests the Generalized Adjustment Criterion, which covers ADMGs,
+PDAG-family graphs, and MAG-family graphs alike: \code{given} must contain no
+forbidden node (a descendant of a proper causal node between \code{x} and \code{y},
+or \code{x} itself), and must m-separate \code{x} from \code{y} in the proper backdoor
+graph.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  admg <- cs_cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
+  cs_is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
+  cs_is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it
+}
+}
+\references{
+Perković, E., Textor, J., Kalisch, M., & Maathuis, M. H. (2018). Complete
+Graphical Characterization and Construction of Adjustment Sets in Markov
+Equivalence Classes of Ancestral Graphs. \emph{Journal of Machine Learning
+Research}, 18:1-62.
 }

@@ -20,5 +20,13 @@ List of character vectors (empty list if none exist).
 }
 \description{
 Finds all minimal (or all) sets of valid instruments for identifying
-the causal effect of \code{x} on \code{y}.
+the causal effect of \code{x} on \code{y}; see \code{\link[=cs_is_valid_iv]{cs_is_valid_iv()}}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(
+    Z1 \%-->\% X, Z2 \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y
+  )
+  cs_all_iv_sets(dag, "X", "Y")
+}
 }

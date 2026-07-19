@@ -25,5 +25,18 @@ a list of DAG proxies. For \code{cs_markov_equivalent()}, a logical scalar.
 \description{
 \code{cs_count_dags()} returns the count of distinct DAGs in a Markov equivalence
 class represented by a CPDAG. \code{cs_enumerate_dags()} returns all DAGs in the
-class. \code{cs_markov_equivalent()} tests whether two graphs are Markov equivalent.
+class. \code{cs_markov_equivalent()} tests whether two graphs are Markov
+equivalent: they share the same skeleton and the same set of v-structures
+(unshielded colliders \verb{a --> b <-- c} with \code{a}, \code{c} non-adjacent).
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  cpdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
+  cs_count_dags(cpdag)
+  length(cs_enumerate_dags(cpdag))
+
+  g1 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
+  g2 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
+  cs_markov_equivalent(g1, g2)
+}
 }

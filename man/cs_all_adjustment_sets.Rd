@@ -15,5 +15,12 @@ cs_all_adjustment_sets(graph, x, y)
 List of character vectors (empty list if none exist).
 }
 \description{
-Enumerate all valid adjustment sets
+Lists all sets (up to size 3) satisfying the Generalized Adjustment
+Criterion; see \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  admg <- cs_cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
+  cs_all_adjustment_sets(admg, "X", "Y")
+}
 }

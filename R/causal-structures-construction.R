@@ -83,9 +83,9 @@ cs_generate_graph <- function(
 #' Graph-level node queries
 #'
 #' `cs_nodes()` returns all node names in alphabetical order.
-#' `cs_topological_sort()` returns the nodes of a `"DAG"` in topological
+#' `cs_topological_sort()` returns the nodes of a DAG in topological
 #' order: for every directed edge `u --> v`, `u` appears before `v`.
-#' `cs_exogenous_nodes()` returns the nodes with no parents (for a `"UG"`,
+#' `cs_exogenous_nodes()` returns the nodes with no parents (for a UG,
 #' the isolated nodes).
 #'
 #' @param graph A graph created with [cs_cgraph()].

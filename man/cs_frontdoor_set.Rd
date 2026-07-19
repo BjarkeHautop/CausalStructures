@@ -16,5 +16,19 @@ Character vector with a valid frontdoor set, or \code{NULL} if none
 exists.
 }
 \description{
-Find a frontdoor adjustment set
+Returns a set of nodes satisfying all three front-door conditions
+(Algorithm 1 of the reference below) for the causal effect of \code{x} on \code{y},
+drawn from all nodes except \code{x} and \code{y}; validate a candidate set directly
+with \code{\link[=cs_is_valid_frontdoor]{cs_is_valid_frontdoor()}}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
+  cs_frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+}
+}
+\references{
+Jeong, S., Tian, J., & Bareinboim, E. (2022). Finding and Listing
+Front-Door Adjustment Sets. \emph{Advances in Neural Information Processing
+Systems}, 35.
 }
