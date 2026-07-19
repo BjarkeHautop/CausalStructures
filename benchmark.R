@@ -4,9 +4,11 @@
 # Not part of the built package (listed in .Rbuildignore). Run with:
 #   Rscript benchmark.R   (from the package root)
 #
-# Note: the query benchmarks use a random DAG with the same n, p, and seed on
-# both sides, but the R and Julia RNGs differ, so the two graphs are not
-# identical -- comparable in size/density only.
+# The query benchmarks run both sides on the *same* graph: a testpkg graph is
+# generated once and converted to caugi with cs_to_caugi() (R's and Julia's
+# RNGs consume randomness differently, so generating on both sides from the
+# same seed produces different graphs, not comparable instances). See
+# cs_to_caugi()/caugi_to_cs() below.
 #
 # caugi doesn't cover every testpkg operation. Where its exported name
 # differs from the Julia one, the closest equivalent is used and noted below:
@@ -25,12 +27,57 @@ library(caugi)
 n <- 1000L
 p <- 0.25
 
-# --- Graphs ------------------------------------------------------------------
+# --- Graph conversion (benchmark-only helpers) --------------------------------
+# Bridges a testpkg (Julia) graph proxy and a caugi graph so both sides of a
+# benchmark can run on the identical graph. Not part of the package API: these
+# add a couple of introspection-only Julia helpers scoped to this script.
 cs_setup()
-jdag <- cs_generate_graph(n, p = p, seed = 1405L)
+JuliaConnectoR::juliaEval(
+  "
+  _testpkg_bench_class(g) = string(nameof(typeof(g)))
+  _testpkg_bench_edges_typed(g) =
+      join((_testpkg_join([String(e.src), _testpkg_CS._edge_display(e), String(e.dst)])
+            for e in _testpkg_CS.edges(g)), \"\\x1e\")
+"
+)
+.bench_class <- JuliaConnectoR::juliaFun("_testpkg_bench_class")
+.bench_edges_typed <- JuliaConnectoR::juliaFun("_testpkg_bench_edges_typed")
 
-cg <- generate_graph(n = n, p = p, class = "DAG", seed = 1405)
-cg <- build(cg)
+cs_to_caugi <- function(graph) {
+  cls <- .bench_class(graph)
+  ns <- cs_nodes(graph)
+  raw <- .bench_edges_typed(graph)
+  if (identical(raw, "")) {
+    return(build(caugi::caugi(nodes = ns, class = cls)))
+  }
+  tokens <- strsplit(chartr("\x1f", "\x1e", raw), "\x1e", fixed = TRUE)[[1]]
+  m <- matrix(tokens, ncol = 3, byrow = TRUE)
+  build(caugi::caugi(
+    from = m[, 1],
+    edge = m[, 2],
+    to = m[, 3],
+    nodes = ns,
+    class = cls
+  ))
+}
+
+caugi_to_cs <- function(cg) {
+  cls <- cg@graph_class
+  ns <- caugi::nodes(cg)$name
+  ed <- caugi::edges(cg)
+  if (nrow(ed) == 0) {
+    spec <- paste(ns, collapse = ", ")
+  } else {
+    edge_terms <- paste(ed$from, ed$edge, ed$to)
+    iso <- setdiff(ns, union(ed$from, ed$to))
+    spec <- paste(c(edge_terms, iso), collapse = ", ")
+  }
+  cs_cgraph(spec, class = cls)
+}
+
+# --- Graphs ------------------------------------------------------------------
+jdag <- cs_generate_graph(n, p = p, seed = 1405L)
+cg <- cs_to_caugi(jdag)
 
 node <- "V45"
 x <- "V50"
