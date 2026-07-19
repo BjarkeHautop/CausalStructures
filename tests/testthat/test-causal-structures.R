@@ -136,10 +136,7 @@ test_that("instrumental variables work", {
   dag <- cs_cgraph("A --> X --> Y")
   expect_true(cs_is_valid_iv(dag, "X", "Y", "A"))
 
-  # TODO:
-  # Error in `charToRaw()`:
-  # argument must be a character vector of length 1
-  # expect_false(cs_is_valid_iv(dag, "X", "Y", character()))
+  expect_false(cs_is_valid_iv(dag, "X", "Y", character()))
 
   sets <- cs_all_iv_sets(dag, "X", "Y", minimal = TRUE, max_size = 3)
   expect_type(sets, "list")
@@ -162,16 +159,10 @@ test_that("equivalence class analysis works", {
 
 test_that("MAG enumeration works", {
   skip_if_no_julia()
-  # TODO
 
-  skip()
-
-  # BROKEN? Is partial edges implemented?
-  cs_cgraph("A --o B, B --o C", class = "PAG")
-  pag <- cs_cgraph("A --o B, B --o C", class = "PAG")
+  pag <- cs_cgraph("A o-> B, C o-> B", class = "PAG")
   mags <- cs_enumerate_mags(pag)
   expect_s3_class(mags, "JuliaProxy")
-  # Returns a Julia vector of MAGs
 })
 
 test_that("data simulation works", {
