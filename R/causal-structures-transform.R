@@ -193,10 +193,28 @@ cs_remove_nodes <- function(graph, nodes) {
 #' `class`.
 #'
 #' @param graph A graph created with [cs_cgraph()].
-#' @param class Target graph class, e.g. `"DAG"`, `"PDAG"`, `"UNKNOWN"`.
+#' @param class Target graph class: `"DAG"`, `"UG"`, `"PDAG"`, `"CPDAG"`,
+#'   `"MPDAG"`, `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no
+#'   structural constraints; accepts all edge types).
 #' @param simple Only used when `class` is `"UNKNOWN"`; see [cs_cgraph()].
 #' @return A Julia proxy object representing the reclassified graph.
 #' @export
-cs_reclass <- function(graph, class, simple = TRUE) {
+cs_reclass <- function(
+  graph,
+  class = c(
+    "DAG",
+    "UG",
+    "PDAG",
+    "CPDAG",
+    "MPDAG",
+    "ADMG",
+    "AG",
+    "MAG",
+    "PAG",
+    "UNKNOWN"
+  ),
+  simple = TRUE
+) {
+  class <- match.arg(class)
   cs_fn("reclass")(graph, class, simple)
 }

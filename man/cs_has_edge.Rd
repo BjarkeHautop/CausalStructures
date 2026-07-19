@@ -16,5 +16,14 @@ cs_has_edge(graph, x, y)
 regardless of direction.
 }
 \description{
-Test whether two nodes are adjacent
+Tests adjacency, not directed reachability: \code{cs_has_edge(g, x, y)} and
+\code{cs_has_edge(g, y, x)} always agree, even for a directed edge \verb{x --> y}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, C)
+  cs_has_edge(dag, "A", "B")
+  cs_has_edge(dag, "B", "A")
+  cs_has_edge(dag, "A", "C")
+}
 }

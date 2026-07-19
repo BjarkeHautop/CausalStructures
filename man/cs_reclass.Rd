@@ -4,12 +4,18 @@
 \alias{cs_reclass}
 \title{Reclassify a graph}
 \usage{
-cs_reclass(graph, class, simple = TRUE)
+cs_reclass(
+  graph,
+  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN"),
+  simple = TRUE
+)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
-\item{class}{Target graph class, e.g. \code{"DAG"}, \code{"PDAG"}, \code{"UNKNOWN"}.}
+\item{class}{Target graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"},
+\code{"MPDAG"}, \code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no
+structural constraints; accepts all edge types).}
 
 \item{simple}{Only used when \code{class} is \code{"UNKNOWN"}; see \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 }

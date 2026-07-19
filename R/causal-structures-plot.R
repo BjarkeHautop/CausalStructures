@@ -518,10 +518,10 @@ makeContent.cs_edge_grob <- function(x) {
 #' @returns A `cs_plot` object, drawn automatically when printed.
 #'
 #' @examples
-#' \dontrun{
-#' dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
-#' cs_plot(dag)
-#' cs_plot(dag, layout = "circle", main = "Quick guide DAG")
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
+#'   cs_plot(dag)
+#'   cs_plot(dag, layout = "circle", main = "Quick guide DAG")
 #' }
 #'
 #' @family plotting

@@ -15,19 +15,45 @@
 #'   declarations. Mutually exclusive with `spec`.
 #' @param spec Graph specification string, for programmatic construction.
 #'   Mutually exclusive with `...`.
-#' @param class Graph class, e.g. `"DAG"`, `"PDAG"`, `"CPDAG"`, `"ADMG"`,
-#'   `"MAG"`, `"UG"`.
+#' @param class Graph class: `"DAG"`, `"UG"`, `"PDAG"`, `"CPDAG"`, `"MPDAG"`,
+#'   `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no structural
+#'   constraints; accepts all edge types).
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' \dontrun{
-#' dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
+#'   cpdag <- cs_cgraph(A %---% B %---% C, class = "CPDAG")
 #' }
-cs_cgraph <- function(..., spec = NULL, class = "DAG") {
+cs_cgraph <- function(
+  ...,
+  spec = NULL,
+  class = c(
+    "DAG",
+    "UG",
+    "PDAG",
+    "CPDAG",
+    "MPDAG",
+    "ADMG",
+    "AG",
+    "MAG",
+    "PAG",
+    "UNKNOWN"
+  )
+) {
+  class <- match.arg(class)
   cs_fn("cgraph")(.cs_dots_or_spec(substitute(list(...)), spec), class)
 }
 
 #' Generate a random graph
+#'
+#' Generates a random graph on `n` nodes named `V1, ..., Vn`. Edges are
+#' sampled uniformly at random over all `n * (n - 1) / 2` possible pairs and
+#' oriented by a random topological ordering, which guarantees acyclicity.
+#'
+#' Exactly one of `m` (exact edge count) or `p` (edge probability) must be
+#' given. For `class = "CPDAG"`, the sampled DAG is converted with
+#' [cs_dag_to_cpdag()].
 #'
 #' @param n Number of nodes.
 #' @param m Number of edges (supply exactly one of `m` and `p`).
@@ -36,13 +62,19 @@ cs_cgraph <- function(..., spec = NULL, class = "DAG") {
 #' @param seed Optional integer seed for reproducibility.
 #' @return A Julia proxy object representing the graph.
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   cg <- cs_generate_graph(4, m = 3, seed = 1)
+#'   cs_edges(cg)
+#' }
 cs_generate_graph <- function(
   n,
   m = NULL,
   p = NULL,
-  class = "DAG",
+  class = c("DAG", "CPDAG"),
   seed = NULL
 ) {
+  class <- match.arg(class)
   cs_fn("generate_graph")(as.integer(n), m, p, class, seed)
 }
 
@@ -50,13 +82,22 @@ cs_generate_graph <- function(
 
 #' Graph-level node queries
 #'
-#' `cs_nodes()` returns all node names (in graph order),
-#' `cs_topological_sort()` a topological ordering, and
-#' `cs_exogenous_nodes()` the nodes without parents.
+#' `cs_nodes()` returns all node names in alphabetical order.
+#' `cs_topological_sort()` returns the nodes of a `"DAG"` in topological
+#' order: for every directed edge `u --> v`, `u` appears before `v`.
+#' `cs_exogenous_nodes()` returns the nodes with no parents (for a `"UG"`,
+#' the isolated nodes).
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @return Character vector of node names.
 #' @name cs-graph-queries
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(B %-->% A, A %-->% C)
+#'   cs_nodes(dag)
+#'   cs_topological_sort(dag)
+#'   cs_exogenous_nodes(dag)
+#' }
 NULL
 
 #' @rdname cs-graph-queries
@@ -79,11 +120,21 @@ cs_exogenous_nodes <- function(graph) {
 
 #' Test whether two nodes are adjacent
 #'
+#' Tests adjacency, not directed reachability: `cs_has_edge(g, x, y)` and
+#' `cs_has_edge(g, y, x)` always agree, even for a directed edge `x --> y`.
+#'
 #' @param graph A graph created with [cs_cgraph()].
 #' @param x,y Node names.
 #' @return `TRUE` if the graph has any edge between `x` and `y`,
 #'   regardless of direction.
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% B, C)
+#'   cs_has_edge(dag, "A", "B")
+#'   cs_has_edge(dag, "B", "A")
+#'   cs_has_edge(dag, "A", "C")
+#' }
 cs_has_edge <- function(graph, x, y) {
   cs_fn("has_edge")(graph, x, y)
 }
@@ -94,6 +145,11 @@ cs_has_edge <- function(graph, x, y) {
 #' @return A matrix with 2 columns (source, target) and one row per edge,
 #'   or an empty matrix if the graph has no edges.
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
+#'   cs_edges(dag)
+#' }
 cs_edges <- function(graph) {
   res <- cs_fn("edges")(graph)
   if (identical(res, "")) {

@@ -4,7 +4,11 @@
 \alias{cs_cgraph}
 \title{Create a causal graph}
 \usage{
-cs_cgraph(..., spec = NULL, class = "DAG")
+cs_cgraph(
+  ...,
+  spec = NULL,
+  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN")
+)
 }
 \arguments{
 \item{...}{Edge expressions (see \link{cs-edge-operators}) and/or bare node
@@ -13,8 +17,9 @@ declarations. Mutually exclusive with \code{spec}.}
 \item{spec}{Graph specification string, for programmatic construction.
 Mutually exclusive with \code{...}.}
 
-\item{class}{Graph class, e.g. \code{"DAG"}, \code{"PDAG"}, \code{"CPDAG"}, \code{"ADMG"},
-\code{"MAG"}, \code{"UG"}.}
+\item{class}{Graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"}, \code{"MPDAG"},
+\code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no structural
+constraints; accepts all edge types).}
 }
 \value{
 A Julia proxy object representing the graph.
@@ -31,7 +36,8 @@ the same syntax as the operators expand to (e.g.
 \code{"A --> X + Y, X --> M --> Y"}).
 }
 \examples{
-\dontrun{
-dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
+  cpdag <- cs_cgraph(A \%---\% B \%---\% C, class = "CPDAG")
 }
 }

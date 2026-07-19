@@ -4,7 +4,13 @@
 \alias{cs_generate_graph}
 \title{Generate a random graph}
 \usage{
-cs_generate_graph(n, m = NULL, p = NULL, class = "DAG", seed = NULL)
+cs_generate_graph(
+  n,
+  m = NULL,
+  p = NULL,
+  class = c("DAG", "CPDAG"),
+  seed = NULL
+)
 }
 \arguments{
 \item{n}{Number of nodes.}
@@ -21,5 +27,18 @@ cs_generate_graph(n, m = NULL, p = NULL, class = "DAG", seed = NULL)
 A Julia proxy object representing the graph.
 }
 \description{
-Generate a random graph
+Generates a random graph on \code{n} nodes named \verb{V1, ..., Vn}. Edges are
+sampled uniformly at random over all \code{n * (n - 1) / 2} possible pairs and
+oriented by a random topological ordering, which guarantees acyclicity.
+}
+\details{
+Exactly one of \code{m} (exact edge count) or \code{p} (edge probability) must be
+given. For \code{class = "CPDAG"}, the sampled DAG is converted with
+\code{\link[=cs_dag_to_cpdag]{cs_dag_to_cpdag()}}.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  cg <- cs_generate_graph(4, m = 3, seed = 1)
+  cs_edges(cg)
+}
 }

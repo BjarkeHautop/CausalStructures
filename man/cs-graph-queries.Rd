@@ -20,7 +20,17 @@ cs_exogenous_nodes(graph)
 Character vector of node names.
 }
 \description{
-\code{cs_nodes()} returns all node names (in graph order),
-\code{cs_topological_sort()} a topological ordering, and
-\code{cs_exogenous_nodes()} the nodes without parents.
+\code{cs_nodes()} returns all node names in alphabetical order.
+\code{cs_topological_sort()} returns the nodes of a \code{"DAG"} in topological
+order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
+\code{cs_exogenous_nodes()} returns the nodes with no parents (for a \code{"UG"},
+the isolated nodes).
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(B \%-->\% A, A \%-->\% C)
+  cs_nodes(dag)
+  cs_topological_sort(dag)
+  cs_exogenous_nodes(dag)
+}
 }
