@@ -124,7 +124,6 @@ test_that("identification works", {
 
 test_that("adjustment criterion works", {
   skip_if_no_julia()
-  # is_valid_adjustment only works for PDAG and ADMG classes, not DAG
   pdag <- cs_cgraph("A --> X + Y, X --> M --> Y", class = "PDAG")
   expect_true(cs_is_valid_adjustment(pdag, "X", "Y", "A"))
   expect_false(cs_is_valid_adjustment(pdag, "X", "Y"))
