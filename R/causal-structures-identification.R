@@ -48,10 +48,15 @@ cs_m_separated <- function(graph, x, y, given = character()) {
 #'
 #' Finds a minimal d-separator (DAG, PDAG classes) or m-separator
 #' (ADMG, ancestral-graph classes) between `x` and `y`: no proper subset
-#' of the returned set still separates them.
+#' (excluding forced `include` nodes) of the returned set still separates
+#' them.
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @param x,y Node names.
+#' @param include Character vector of nodes forced into the separator (must
+#'   be a subset of `restrict`, if given).
+#' @param restrict Character vector of candidate nodes the separator is
+#'   drawn from. `NULL` (default) allows every node except `x` and `y`.
 #' @return Character vector with a minimal separating set, or `NULL` if none
 #'   exists.
 #' @export
@@ -62,9 +67,25 @@ cs_m_separated <- function(graph, x, y, given = character()) {
 #'
 #'   edge <- cs_cgraph(A %-->% B)
 #'   cs_minimal_separator(edge, "A", "B") # direct edge: no separator exists
+#'
+#'   cs_minimal_separator(dag, "X", "Y", include = "M") # force M in
+#'   cs_minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
 #' }
-cs_minimal_separator <- function(graph, x, y) {
-  res <- cs_fn("minimal_separator")(graph, x, y)
+cs_minimal_separator <- function(
+  graph,
+  x,
+  y,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  res <- cs_fn("minimal_separator")(
+    graph,
+    x,
+    y,
+    as.character(include),
+    restrict_arg
+  )
   if (is.null(res)) NULL else cs_split(res)
 }
 
@@ -124,13 +145,16 @@ cs_adjustment_set <- function(
 
 #' Find a frontdoor adjustment set
 #'
-#' Returns a set of nodes satisfying all three front-door conditions
-#' (Algorithm 1 of the reference below) for the causal effect of `x` on `y`,
-#' drawn from all nodes except `x` and `y`; validate a candidate set directly
-#' with [cs_is_valid_frontdoor()].
+#' Returns a set `Z` with `include ⊆ Z ⊆ restrict` satisfying all three
+#' front-door conditions (Algorithm 1 of the reference below) for the causal
+#' effect of `x` on `y`; validate a candidate set directly with
+#' [cs_is_valid_frontdoor()].
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
+#' @param include Character vector of nodes forced into the set.
+#' @param restrict Character vector of candidate nodes the set is drawn
+#'   from. `NULL` (default) allows every node except `x` and `y`.
 #' @return Character vector with a valid frontdoor set, or `NULL` if none
 #'   exists.
 #' @references
@@ -142,9 +166,23 @@ cs_adjustment_set <- function(
 #' if (JuliaConnectoR::juliaSetupOk()) {
 #'   dag <- cs_cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
 #'   cs_frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+#'   cs_frontdoor_set(dag, "X", "Y", restrict = "Z")
 #' }
-cs_frontdoor_set <- function(graph, x, y) {
-  res <- cs_fn("frontdoor_set")(graph, x, y)
+cs_frontdoor_set <- function(
+  graph,
+  x,
+  y,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  res <- cs_fn("frontdoor_set")(
+    graph,
+    x,
+    y,
+    as.character(include),
+    restrict_arg
+  )
   if (is.null(res)) NULL else cs_split(res)
 }
 
@@ -169,33 +207,62 @@ cs_is_valid_backdoor <- function(graph, x, y, given = character()) {
   cs_fn("is_valid_backdoor")(graph, x, y, as.character(given))
 }
 
-#' Enumerate adjustment sets
+#' Enumerate backdoor adjustment sets
 #'
-#' `cs_all_backdoor_sets()` lists all minimal backdoor adjustment sets (up to
-#' size 3, checked with [cs_is_valid_backdoor()]); `cs_all_frontdoor_sets()`
-#' lists all frontdoor sets (checked with [cs_is_valid_frontdoor()]).
+#' Lists all sets (up to size `max_size`) satisfying the backdoor criterion;
+#' see [cs_is_valid_backdoor()]. When `minimal = TRUE` (default), only
+#' inclusion-minimal sets are returned.
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
+#' @param minimal If `TRUE` (default), return only minimal sets.
+#' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
-#' @name cs-all-sets
+#' @export
 #' @examples
 #' if (JuliaConnectoR::juliaSetupOk()) {
 #'   dag <- cs_cgraph(A %-->% X, X %-->% Y, A %-->% Y)
 #'   cs_all_backdoor_sets(dag, "X", "Y")
 #' }
-NULL
-
-#' @rdname cs-all-sets
-#' @export
-cs_all_backdoor_sets <- function(graph, x, y) {
-  cs_split_sets(cs_fn("all_backdoor_sets")(graph, x, y))
+cs_all_backdoor_sets <- function(graph, x, y, minimal = TRUE, max_size = 3) {
+  cs_split_sets(cs_fn("all_backdoor_sets")(graph, x, y, minimal, max_size))
 }
 
-#' @rdname cs-all-sets
+#' Enumerate frontdoor adjustment sets
+#'
+#' Lists all sets `Z` with `include ⊆ Z ⊆ restrict` satisfying the
+#' front-door criterion; see [cs_frontdoor_set()] and
+#' [cs_is_valid_frontdoor()].
+#'
+#' @param graph A graph created with [cs_cgraph()].
+#' @param x,y Exposure and outcome node names.
+#' @param include Character vector of nodes forced into every set.
+#' @param restrict Character vector of candidate nodes sets are drawn from.
+#'   `NULL` (default) allows every node except `x` and `y`.
+#' @return List of character vectors (empty list if none exist).
 #' @export
-cs_all_frontdoor_sets <- function(graph, x, y) {
-  cs_split_sets(cs_fn("all_frontdoor_sets")(graph, x, y))
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
+#'   cs_all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
+#' }
+cs_all_frontdoor_sets <- function(
+  graph,
+  x,
+  y,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  cs_split_sets(
+    cs_fn("all_frontdoor_sets")(
+      graph,
+      x,
+      y,
+      as.character(include),
+      restrict_arg
+    )
+  )
 }
 
 #' Validate an adjustment set
@@ -229,11 +296,14 @@ cs_is_valid_adjustment <- function(graph, x, y, given = character()) {
 
 #' Enumerate all valid adjustment sets
 #'
-#' Lists all sets (up to size 3) satisfying the Generalized Adjustment
-#' Criterion; see [cs_is_valid_adjustment()].
+#' Lists all sets (up to size `max_size`) satisfying the Generalized
+#' Adjustment Criterion; see [cs_is_valid_adjustment()]. When
+#' `minimal = TRUE` (default), only inclusion-minimal sets are returned.
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
+#' @param minimal If `TRUE` (default), return only minimal sets.
+#' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
@@ -241,8 +311,8 @@ cs_is_valid_adjustment <- function(graph, x, y, given = character()) {
 #'   admg <- cs_cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
 #'   cs_all_adjustment_sets(admg, "X", "Y")
 #' }
-cs_all_adjustment_sets <- function(graph, x, y) {
-  cs_split_sets(cs_fn("all_adjustment_sets")(graph, x, y))
+cs_all_adjustment_sets <- function(graph, x, y, minimal = TRUE, max_size = 3) {
+  cs_split_sets(cs_fn("all_adjustment_sets")(graph, x, y, minimal, max_size))
 }
 
 #' Validate a frontdoor criterion set

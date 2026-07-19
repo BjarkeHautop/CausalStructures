@@ -18,12 +18,22 @@
 #' @param class Graph class: `"DAG"`, `"UG"`, `"PDAG"`, `"CPDAG"`, `"MPDAG"`,
 #'   `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no structural
 #'   constraints; accepts all edge types).
+#' @param simple Only used when `class` is `"UNKNOWN"`. If `TRUE` (default),
+#'   only one edge is allowed between any pair of nodes; if `FALSE`, multiple
+#'   edges between the same pair are allowed.
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
 #' if (JuliaConnectoR::juliaSetupOk()) {
 #'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
 #'   cpdag <- cs_cgraph(A %---% B %---% C, class = "CPDAG")
+#'
+#'   multi <- cs_cgraph(
+#'     A %-->% B, A %<->% B,
+#'     class = "UNKNOWN",
+#'     simple = FALSE
+#'   )
+#'   nrow(cs_edges(multi))
 #' }
 cs_cgraph <- function(
   ...,
@@ -39,10 +49,11 @@ cs_cgraph <- function(
     "MAG",
     "PAG",
     "UNKNOWN"
-  )
+  ),
+  simple = TRUE
 ) {
   class <- match.arg(class)
-  cs_fn("cgraph")(.cs_dots_or_spec(substitute(list(...)), spec), class)
+  cs_fn("cgraph")(.cs_dots_or_spec(substitute(list(...)), spec), class, simple)
 }
 
 #' Generate a random graph
@@ -97,6 +108,10 @@ cs_generate_graph <- function(
 #'   cs_nodes(dag)
 #'   cs_topological_sort(dag)
 #'   cs_exogenous_nodes(dag)
+#'
+#'   pdag <- cs_cgraph(A %-->% B, B %---% C, class = "PDAG")
+#'   cs_exogenous_nodes(pdag)
+#'   cs_exogenous_nodes(pdag, undirected_as_parents = TRUE)
 #' }
 NULL
 
@@ -113,9 +128,11 @@ cs_topological_sort <- function(graph) {
 }
 
 #' @rdname cs-graph-queries
+#' @param undirected_as_parents Only used for PDAG-family graphs. If `TRUE`,
+#'   a node incident to any undirected edge is not considered exogenous.
 #' @export
-cs_exogenous_nodes <- function(graph) {
-  cs_split(cs_fn("exogenous_nodes")(graph))
+cs_exogenous_nodes <- function(graph, undirected_as_parents = FALSE) {
+  cs_split(cs_fn("exogenous_nodes")(graph, undirected_as_parents))
 }
 
 #' Test whether two nodes are adjacent

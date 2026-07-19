@@ -13,6 +13,13 @@ test_that("construction works", {
   expect_length(cs_nodes(g), 50)
   g2 <- cs_generate_graph(50, m = 100, seed = 42)
   expect_true(cs_is_dag(g2))
+
+  # simple = FALSE allows multiple edges between the same pair of nodes
+  multi <- cs_cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)
+  expect_equal(nrow(cs_edges(multi)), 2)
+  expect_error(
+    cs_cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = TRUE)
+  )
 })
 
 test_that("invalid graphs error on construction", {
@@ -29,6 +36,10 @@ test_that("graph-level queries work", {
   expect_true(cs_has_edge(dag, "A", "X"))
   expect_true(cs_has_edge(dag, "X", "A")) # adjacency, not direction
   expect_false(cs_has_edge(dag, "A", "M"))
+
+  pdag <- cs_cgraph(A %-->% B, B %---% C, class = "PDAG")
+  expect_setequal(cs_exogenous_nodes(pdag), c("A", "C"))
+  expect_identical(cs_exogenous_nodes(pdag, undirected_as_parents = TRUE), "A")
 })
 
 test_that("edge queries work", {
@@ -49,6 +60,8 @@ test_that("node-set queries work", {
   expect_identical(cs_ancestors(dag, "Y"), c("A", "M", "X"))
   expect_identical(cs_descendants(dag, "A"), c("M", "X", "Y"))
   expect_identical(cs_neighbors(dag, "M"), c("X", "Y"))
+  expect_identical(cs_neighbors(dag, "M", mode = "in"), "X")
+  expect_identical(cs_neighbors(dag, "M", mode = "out"), "Y")
   expect_identical(cs_markov_blanket(dag, "X"), c("A", "M"))
   # possible_* are only defined for partially directed classes
   cp <- cs_dag_to_cpdag(dag)
@@ -56,6 +69,14 @@ test_that("node-set queries work", {
   expect_true(all(c("X", "Y") %in% cs_possible_descendants(cp, "A")))
   expect_identical(cs_anteriors(dag, "M"), c("A", "X"))
   expect_identical(cs_posteriors(dag, "X"), c("M", "Y"))
+
+  # open = FALSE includes the query node itself in the result
+  fully_undirected <- cs_cgraph(A %---% B, B %---% C, class = "CPDAG")
+  expect_identical(cs_possible_ancestors(fully_undirected, "C"), c("A", "B"))
+  expect_identical(
+    cs_possible_ancestors(fully_undirected, "C", open = FALSE),
+    c("A", "B", "C")
+  )
 
   admg <- cs_cgraph(A %<->% B, C %-->% B %-->% D, class = "ADMG")
   expect_identical(cs_spouses(admg, "A"), "B")
@@ -157,6 +178,11 @@ test_that("separation queries work", {
   expect_false(cs_d_separated(dag, "X", "Y", "M"))
   expect_true(cs_d_separated(dag, "X", "Y", c("A", "M")))
   expect_identical(cs_minimal_separator(dag, "A", "M"), "X")
+  expect_identical(
+    cs_minimal_separator(dag, "X", "Y", include = "M"),
+    c("A", "M")
+  )
+  expect_null(cs_minimal_separator(dag, "X", "Y", restrict = "M"))
 
   admg <- cs_cgraph(A %<->% B, C %-->% B %-->% D, class = "ADMG")
   expect_false(cs_m_separated(admg, "A", "D"))
@@ -167,11 +193,19 @@ test_that("identification works", {
   skip_if_no_julia()
   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
   expect_identical(cs_adjustment_set(dag, "X", "Y"), "A")
+  expect_identical(cs_adjustment_set(dag, "X", "Y", type = "parents"), "A")
+  expect_identical(cs_adjustment_set(dag, "X", "Y", type = "backdoor"), "A")
   expect_identical(cs_frontdoor_set(dag, "X", "Y"), "M")
+  expect_identical(cs_frontdoor_set(dag, "X", "Y", restrict = "M"), "M")
   expect_true(cs_is_valid_backdoor(dag, "X", "Y", "A"))
   expect_false(cs_is_valid_backdoor(dag, "X", "Y"))
   expect_identical(cs_all_backdoor_sets(dag, "X", "Y"), list("A"))
+  expect_identical(cs_all_backdoor_sets(dag, "X", "Y", max_size = 0), list())
   expect_identical(cs_all_frontdoor_sets(dag, "X", "Y"), list("M"))
+  expect_identical(
+    cs_all_frontdoor_sets(dag, "X", "Y", restrict = "M"),
+    list("M")
+  )
   # Test frontdoor criterion on the appropriate graph
   expect_true(cs_is_valid_frontdoor(dag, "X", "Y", "M"))
   expect_false(cs_is_valid_frontdoor(dag, "X", "Y"))
@@ -183,6 +217,10 @@ test_that("adjustment criterion works", {
   expect_true(cs_is_valid_adjustment(pdag, "X", "Y", "A"))
   expect_false(cs_is_valid_adjustment(pdag, "X", "Y"))
   expect_identical(cs_all_adjustment_sets(pdag, "X", "Y"), list("A"))
+  expect_identical(
+    cs_all_adjustment_sets(pdag, "X", "Y", max_size = 0),
+    list()
+  )
 })
 
 test_that("instrumental variables work", {

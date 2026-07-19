@@ -11,10 +11,13 @@ cs_nodes(graph)
 
 cs_topological_sort(graph)
 
-cs_exogenous_nodes(graph)
+cs_exogenous_nodes(graph, undirected_as_parents = FALSE)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+
+\item{undirected_as_parents}{Only used for PDAG-family graphs. If \code{TRUE},
+a node incident to any undirected edge is not considered exogenous.}
 }
 \value{
 Character vector of node names.
@@ -32,5 +35,9 @@ if (JuliaConnectoR::juliaSetupOk()) {
   cs_nodes(dag)
   cs_topological_sort(dag)
   cs_exogenous_nodes(dag)
+
+  pdag <- cs_cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
+  cs_exogenous_nodes(pdag)
+  cs_exogenous_nodes(pdag, undirected_as_parents = TRUE)
 }
 }

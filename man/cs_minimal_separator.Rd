@@ -4,12 +4,18 @@
 \alias{cs_minimal_separator}
 \title{Find a minimal separator}
 \usage{
-cs_minimal_separator(graph, x, y)
+cs_minimal_separator(graph, x, y, include = character(), restrict = NULL)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Node names.}
+
+\item{include}{Character vector of nodes forced into the separator (must
+be a subset of \code{restrict}, if given).}
+
+\item{restrict}{Character vector of candidate nodes the separator is
+drawn from. \code{NULL} (default) allows every node except \code{x} and \code{y}.}
 }
 \value{
 Character vector with a minimal separating set, or \code{NULL} if none
@@ -18,7 +24,8 @@ exists.
 \description{
 Finds a minimal d-separator (DAG, PDAG classes) or m-separator
 (ADMG, ancestral-graph classes) between \code{x} and \code{y}: no proper subset
-of the returned set still separates them.
+(excluding forced \code{include} nodes) of the returned set still separates
+them.
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {
@@ -27,5 +34,8 @@ if (JuliaConnectoR::juliaSetupOk()) {
 
   edge <- cs_cgraph(A \%-->\% B)
   cs_minimal_separator(edge, "A", "B") # direct edge: no separator exists
+
+  cs_minimal_separator(dag, "X", "Y", include = "M") # force M in
+  cs_minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
 }
 }

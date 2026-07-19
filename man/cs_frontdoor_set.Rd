@@ -4,27 +4,33 @@
 \alias{cs_frontdoor_set}
 \title{Find a frontdoor adjustment set}
 \usage{
-cs_frontdoor_set(graph, x, y)
+cs_frontdoor_set(graph, x, y, include = character(), restrict = NULL)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
+
+\item{include}{Character vector of nodes forced into the set.}
+
+\item{restrict}{Character vector of candidate nodes the set is drawn
+from. \code{NULL} (default) allows every node except \code{x} and \code{y}.}
 }
 \value{
 Character vector with a valid frontdoor set, or \code{NULL} if none
 exists.
 }
 \description{
-Returns a set of nodes satisfying all three front-door conditions
-(Algorithm 1 of the reference below) for the causal effect of \code{x} on \code{y},
-drawn from all nodes except \code{x} and \code{y}; validate a candidate set directly
-with \code{\link[=cs_is_valid_frontdoor]{cs_is_valid_frontdoor()}}.
+Returns a set \code{Z} with \verb{include ⊆ Z ⊆ restrict} satisfying all three
+front-door conditions (Algorithm 1 of the reference below) for the causal
+effect of \code{x} on \code{y}; validate a candidate set directly with
+\code{\link[=cs_is_valid_frontdoor]{cs_is_valid_frontdoor()}}.
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {
   dag <- cs_cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
   cs_frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+  cs_frontdoor_set(dag, "X", "Y", restrict = "Z")
 }
 }
 \references{

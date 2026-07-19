@@ -7,7 +7,8 @@
 cs_cgraph(
   ...,
   spec = NULL,
-  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN")
+  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN"),
+  simple = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ Mutually exclusive with \code{...}.}
 \item{class}{Graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"}, \code{"MPDAG"},
 \code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no structural
 constraints; accepts all edge types).}
+
+\item{simple}{Only used when \code{class} is \code{"UNKNOWN"}. If \code{TRUE} (default),
+only one edge is allowed between any pair of nodes; if \code{FALSE}, multiple
+edges between the same pair are allowed.}
 }
 \value{
 A Julia proxy object representing the graph.
@@ -39,5 +44,12 @@ the same syntax as the operators expand to (e.g.
 if (JuliaConnectoR::juliaSetupOk()) {
   dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
   cpdag <- cs_cgraph(A \%---\% B \%---\% C, class = "CPDAG")
+
+  multi <- cs_cgraph(
+    A \%-->\% B, A \%<->\% B,
+    class = "UNKNOWN",
+    simple = FALSE
+  )
+  nrow(cs_edges(multi))
 }
 }

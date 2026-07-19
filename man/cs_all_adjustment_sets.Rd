@@ -4,19 +4,24 @@
 \alias{cs_all_adjustment_sets}
 \title{Enumerate all valid adjustment sets}
 \usage{
-cs_all_adjustment_sets(graph, x, y)
+cs_all_adjustment_sets(graph, x, y, minimal = TRUE, max_size = 3)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
+
+\item{minimal}{If \code{TRUE} (default), return only minimal sets.}
+
+\item{max_size}{Maximum adjustment set size to consider.}
 }
 \value{
 List of character vectors (empty list if none exist).
 }
 \description{
-Lists all sets (up to size 3) satisfying the Generalized Adjustment
-Criterion; see \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
+Lists all sets (up to size \code{max_size}) satisfying the Generalized
+Adjustment Criterion; see \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}. When
+\code{minimal = TRUE} (default), only inclusion-minimal sets are returned.
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {

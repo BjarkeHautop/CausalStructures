@@ -172,8 +172,8 @@ cs_setup <- function() {
     _testpkg_sets(sets) =
         isempty(sets) ? nothing : join((_testpkg_names(s) for s in sets), \'\\x1e\')
 
-    _testpkg_cgraph(spec, class) =
-        _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)))
+    _testpkg_cgraph(spec, class, simple) =
+        _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)), simple = simple)
     function _testpkg_generate_graph(n, m, p, class, seed)
         _testpkg_CS.generate_graph(Int(n);
             m = m === nothing ? nothing : Int(m), p = p,
@@ -182,20 +182,32 @@ cs_setup <- function() {
     end
     _testpkg_topological_sort(g) = _testpkg_join(String.(_testpkg_CS.topological_sort(g)))
     _testpkg_nodes(g) = _testpkg_join(String.(_testpkg_CS.nodes(g)))
-    _testpkg_exogenous_nodes(g) = _testpkg_names(_testpkg_CS.exogenous_nodes(g))
-    for f in (:parents, :children, :ancestors, :descendants, :spouses,
-              :neighbors, :markov_blanket, :possible_ancestors,
-              :possible_descendants, :anteriors, :posteriors)
+    function _testpkg_exogenous_nodes(g, undirected_as_parents)
+        result = g isa _testpkg_CS.AbstractPDAG ?
+            _testpkg_CS.exogenous_nodes(g; undirected_as_parents = undirected_as_parents) :
+            _testpkg_CS.exogenous_nodes(g)
+        _testpkg_names(result)
+    end
+    for f in (:parents, :children, :ancestors, :descendants, :spouses, :markov_blanket)
         @eval $(Symbol(:_testpkg_, f))(g, node) =
             _testpkg_names(_testpkg_CS.$f(g, Symbol(node)))
+    end
+    _testpkg_neighbors(g, node, mode) =
+        _testpkg_names(_testpkg_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))
+    for f in (:possible_ancestors, :possible_descendants, :anteriors, :posteriors)
+        @eval $(Symbol(:_testpkg_, f))(g, node, open) =
+            _testpkg_names(_testpkg_CS.$f(g, Symbol(node); open = open))
     end
     _testpkg_has_edge(g, x, y) = _testpkg_CS.has_edge(g, Symbol(x), Symbol(y))
     for f in (:d_separated, :m_separated)
         @eval $(Symbol(:_testpkg_, f))(g, x, y, given) =
             _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
     end
-    _testpkg_minimal_separator(g, x, y) =
-        _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y)))
+    function _testpkg_minimal_separator(g, x, y, include, restrict)
+        _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y);
+            include = _testpkg_syms(include),
+            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+    end
     function _testpkg_adjustment_set(g, x, y, type)
         result = if g isa Union{_testpkg_CS.DAG,_testpkg_CS.AbstractPDAG}
             _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
@@ -205,21 +217,31 @@ cs_setup <- function() {
         end
         _testpkg_opt(result)
     end
-    _testpkg_frontdoor_set(g, x, y) =
-        _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y)))
+    function _testpkg_frontdoor_set(g, x, y, include, restrict)
+        _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y);
+            include = _testpkg_syms(include),
+            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+    end
     _testpkg_is_valid_backdoor(g, x, y, z) =
         _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    _testpkg_all_backdoor_sets(g, x, y) =
-        _testpkg_sets(_testpkg_CS.all_backdoor_sets(g, Symbol(x), Symbol(y)))
-    _testpkg_all_frontdoor_sets(g, x, y) =
-        _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y)))
+    function _testpkg_all_backdoor_sets(g, x, y, minimal, max_size)
+        _testpkg_sets(_testpkg_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
+            minimal = minimal, max_size = Int(max_size)))
+    end
+    function _testpkg_all_frontdoor_sets(g, x, y, include, restrict)
+        _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
+            include = _testpkg_syms(include),
+            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+    end
     _testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))
     _testpkg_edges(g) = join((_testpkg_join([String(e.src), String(e.dst)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
     _testpkg_edge_marks(g) = join((_testpkg_join([String(e.src), String(e.dst), string(e.src_end), string(e.dst_end)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
     _testpkg_is_valid_adjustment(g, x, y, z) =
         _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    _testpkg_all_adjustment_sets(g, x, y) =
-        _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y)))
+    function _testpkg_all_adjustment_sets(g, x, y, minimal, max_size)
+        _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
+            minimal = minimal, max_size = Int(max_size)))
+    end
     _testpkg_is_valid_frontdoor(g, x, y, z) =
         _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
     function _testpkg_simulate_data(g, n, seed, standardize, coef_range, error_sd)
