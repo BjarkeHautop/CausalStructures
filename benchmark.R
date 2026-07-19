@@ -72,7 +72,7 @@ caugi_to_cs <- function(cg) {
     iso <- setdiff(ns, union(ed$from, ed$to))
     spec <- paste(c(edge_terms, iso), collapse = ", ")
   }
-  cs_cgraph(spec, class = cls)
+  cs_cgraph(spec = spec, class = cls)
 }
 
 # --- Graphs ------------------------------------------------------------------
@@ -85,17 +85,17 @@ y <- "V70"
 z <- cs_adjustment_set(jdag, x, y)
 
 spec_small <- "A --> X + Y, X --> M --> Y"
-jdag_small <- cs_cgraph(spec_small)
+jdag_small <- cs_cgraph(spec = spec_small)
 cdag_small <- build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "DAG"))
 
 jadmg_small <- cs_reclass(jdag_small, "ADMG")
 cadmg_small <- build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "ADMG"))
 
-jpdag_small <- cs_cgraph("A --- X, X --> Y", class = "PDAG")
+jpdag_small <- cs_cgraph(A %---% X, X %-->% Y, class = "PDAG")
 cpdag_small <- build(caugi(A %---% X, X %-->% Y, class = "PDAG"))
 
 # Warm-up
-invisible(cs_cgraph(spec_small))
+invisible(cs_cgraph(spec = spec_small))
 invisible(cs_parents(jdag, node))
 invisible(cs_topological_sort(jdag))
 invisible(cs_d_separated(jdag, x, y, z))
@@ -117,7 +117,7 @@ results <- rbind(
   # --- Construction ------------------------------------------------------
   run(
     "cgraph (4-node DSL graph)",
-    function() cs_cgraph(spec_small),
+    function() cs_cgraph(spec = spec_small),
     function() build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "DAG"))
   ),
   run(
@@ -301,12 +301,12 @@ results <- rbind(
   # --- Mutation ------------------------------------------------------------
   run(
     "add_edges (4-node graph)",
-    function() cs_add_edges(jdag_small, "A --> M"),
+    function() cs_add_edges(jdag_small, A %-->% M),
     function() add_edges(cdag_small, from = "A", edge = "-->", to = "M")
   ),
   run(
     "remove_edges (4-node graph)",
-    function() cs_remove_edges(jdag_small, "X --> M"),
+    function() cs_remove_edges(jdag_small, X %-->% M),
     function() remove_edges(cdag_small, from = "X", edge = "-->", to = "M")
   ),
   run(

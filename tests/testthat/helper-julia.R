@@ -18,7 +18,7 @@ test_dag <- local({
   g <- NULL
   function() {
     if (is.null(g)) {
-      g <<- cs_cgraph("A --> X + Y, X --> M --> Y")
+      g <<- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
     }
     g
   }

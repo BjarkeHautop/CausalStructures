@@ -2,20 +2,29 @@
 
 #' Create a causal graph
 #'
-#' Builds a graph from CausalStructures.jl's string DSL, e.g.
-#' `"A --> X + Y, X --> M --> Y"`.
+#' Builds a graph from edge expressions using the operators documented at
+#' [cs-edge-operators], e.g. `A %-->% X + Y, X %-->% M %-->% Y`. A bare node
+#' name (or `+`-combination of names) declares isolated node(s).
 #'
-#' @param spec Graph specification string.
+#' For programmatic construction (e.g. from an edge list assembled at
+#' runtime), pass a spec string directly via `spec` instead of `...`, using
+#' the same syntax as the operators expand to (e.g.
+#' `"A --> X + Y, X --> M --> Y"`).
+#'
+#' @param ... Edge expressions (see [cs-edge-operators]) and/or bare node
+#'   declarations. Mutually exclusive with `spec`.
+#' @param spec Graph specification string, for programmatic construction.
+#'   Mutually exclusive with `...`.
 #' @param class Graph class, e.g. `"DAG"`, `"PDAG"`, `"CPDAG"`, `"ADMG"`,
 #'   `"MAG"`, `"UG"`.
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
 #' \dontrun{
-#' dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
+#' dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #' }
-cs_cgraph <- function(spec, class = "DAG") {
-  cs_fn("cgraph")(spec, class)
+cs_cgraph <- function(..., spec = NULL, class = "DAG") {
+  cs_fn("cgraph")(.cs_dots_or_spec(substitute(list(...)), spec), class)
 }
 
 #' Generate a random graph

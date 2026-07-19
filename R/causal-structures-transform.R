@@ -134,27 +134,31 @@ cs_condition_marginalize <- function(
 #' Add or remove edges
 #'
 #' `cs_add_edges()` and `cs_remove_edges()` return a new graph of the same
-#' class with the edges described by `spec` added or removed. `spec` uses
-#' the same string DSL as [cs_cgraph()] (e.g. `"B --> C, C --> D"`); any
-#' isolated-node statements in `spec` are ignored. `cs_remove_edges()`
-#' errors if an edge in `spec` is not present in `graph`.
+#' class with the edges described by `...` added or removed, using the
+#' operators documented at [cs-edge-operators] (e.g. `B %-->% C, C %-->% D`);
+#' any isolated-node declarations in `...` are ignored. `cs_remove_edges()`
+#' errors if an edge in `...` is not present in `graph`. For programmatic use,
+#' pass a spec string via `spec` instead of `...`.
 #'
 #' @param graph A graph created with [cs_cgraph()].
-#' @param spec Edge specification string using the [cs_cgraph()] DSL.
+#' @param ... Edge expressions; see [cs-edge-operators]. Mutually exclusive
+#'   with `spec`.
+#' @param spec Edge specification string, for programmatic use. Mutually
+#'   exclusive with `...`.
 #' @return A Julia proxy object representing the resulting graph.
 #' @name cs-edge-mutation
 NULL
 
 #' @rdname cs-edge-mutation
 #' @export
-cs_add_edges <- function(graph, spec) {
-  cs_fn("add_edges")(graph, spec)
+cs_add_edges <- function(graph, ..., spec = NULL) {
+  cs_fn("add_edges")(graph, .cs_dots_or_spec(substitute(list(...)), spec))
 }
 
 #' @rdname cs-edge-mutation
 #' @export
-cs_remove_edges <- function(graph, spec) {
-  cs_fn("remove_edges")(graph, spec)
+cs_remove_edges <- function(graph, ..., spec = NULL) {
+  cs_fn("remove_edges")(graph, .cs_dots_or_spec(substitute(list(...)), spec))
 }
 
 #' Add or remove isolated nodes

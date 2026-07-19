@@ -10,6 +10,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
 Collate:
     'causal-structures-session.R'
+    'causal-structures-dsl.R'
     'causal-structures-construction.R'
     'causal-structures-data.R'
     'causal-structures-identification.R'

@@ -4,10 +4,14 @@
 \alias{cs_cgraph}
 \title{Create a causal graph}
 \usage{
-cs_cgraph(spec, class = "DAG")
+cs_cgraph(..., spec = NULL, class = "DAG")
 }
 \arguments{
-\item{spec}{Graph specification string.}
+\item{...}{Edge expressions (see \link{cs-edge-operators}) and/or bare node
+declarations. Mutually exclusive with \code{spec}.}
+
+\item{spec}{Graph specification string, for programmatic construction.
+Mutually exclusive with \code{...}.}
 
 \item{class}{Graph class, e.g. \code{"DAG"}, \code{"PDAG"}, \code{"CPDAG"}, \code{"ADMG"},
 \code{"MAG"}, \code{"UG"}.}
@@ -16,11 +20,18 @@ cs_cgraph(spec, class = "DAG")
 A Julia proxy object representing the graph.
 }
 \description{
-Builds a graph from CausalStructures.jl's string DSL, e.g.
-\code{"A --> X + Y, X --> M --> Y"}.
+Builds a graph from edge expressions using the operators documented at
+\link{cs-edge-operators}, e.g. \verb{A \%-->\% X + Y, X \%-->\% M \%-->\% Y}. A bare node
+name (or \code{+}-combination of names) declares isolated node(s).
+}
+\details{
+For programmatic construction (e.g. from an edge list assembled at
+runtime), pass a spec string directly via \code{spec} instead of \code{...}, using
+the same syntax as the operators expand to (e.g.
+\code{"A --> X + Y, X --> M --> Y"}).
 }
 \examples{
 \dontrun{
-dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
+dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
 }
 }
