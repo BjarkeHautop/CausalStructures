@@ -54,7 +54,12 @@
   "latent_project",
   "exogenize",
   "normalize_latent_structure",
-  "condition_marginalize"
+  "condition_marginalize",
+  "add_edges",
+  "remove_edges",
+  "add_nodes",
+  "remove_nodes",
+  "reclass"
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
@@ -223,6 +228,17 @@ cs_setup <- function() {
     _testpkg_condition_marginalize(g, cond_vars, marg_vars) =
         _testpkg_CS.condition_marginalize(g;
             cond_vars = _testpkg_syms(cond_vars), marg_vars = _testpkg_syms(marg_vars))
+    _testpkg_spec_edges(spec) =
+        filter(x -> x isa _testpkg_CS.CausalEdge, _testpkg_CS._parse_graph_string(spec))
+    _testpkg_add_edges(g, spec) = _testpkg_CS.add_edges(g, _testpkg_spec_edges(spec)...)
+    _testpkg_remove_edges(g, spec) = _testpkg_CS.remove_edges(g, _testpkg_spec_edges(spec)...)
+    _testpkg_add_nodes(g, nodes) = _testpkg_CS.add_nodes(g, _testpkg_syms(nodes)...)
+    _testpkg_remove_nodes(g, nodes) = _testpkg_CS.remove_nodes(g, _testpkg_syms(nodes)...)
+    function _testpkg_reclass(g, class, simple)
+        T = getfield(_testpkg_CS, Symbol(class))
+        T === _testpkg_CS.UNKNOWN ? _testpkg_CS.reclass(g, T; simple = simple) :
+        _testpkg_CS.reclass(g, T)
+    end
     nothing
   '
   )
@@ -617,6 +633,74 @@ cs_condition_marginalize <- function(
     as.character(cond_vars),
     as.character(marg_vars)
   )
+}
+
+# --- Mutation ----------------------------------------------------------------
+
+#' Add or remove edges
+#'
+#' `cs_add_edges()` and `cs_remove_edges()` return a new graph of the same
+#' class with the edges described by `spec` added or removed. `spec` uses
+#' the same string DSL as [cs_cgraph()] (e.g. `"B --> C, C --> D"`); any
+#' isolated-node statements in `spec` are ignored. `cs_remove_edges()`
+#' errors if an edge in `spec` is not present in `graph`.
+#'
+#' @param graph A graph created with [cs_cgraph()].
+#' @param spec Edge specification string using the [cs_cgraph()] DSL.
+#' @return A Julia proxy object representing the resulting graph.
+#' @name cs-edge-mutation
+NULL
+
+#' @rdname cs-edge-mutation
+#' @export
+cs_add_edges <- function(graph, spec) {
+  cs_fn("add_edges")(graph, spec)
+}
+
+#' @rdname cs-edge-mutation
+#' @export
+cs_remove_edges <- function(graph, spec) {
+  cs_fn("remove_edges")(graph, spec)
+}
+
+#' Add or remove isolated nodes
+#'
+#' `cs_add_nodes()` returns a new graph of the same class with `nodes`
+#' added as isolated nodes (nodes already present are ignored).
+#' `cs_remove_nodes()` returns a new graph with `nodes` and all their
+#' incident edges removed, and errors if a node is not present.
+#'
+#' @param graph A graph created with [cs_cgraph()].
+#' @param nodes Character vector of node names.
+#' @return A Julia proxy object representing the resulting graph.
+#' @name cs-node-mutation
+NULL
+
+#' @rdname cs-node-mutation
+#' @export
+cs_add_nodes <- function(graph, nodes) {
+  cs_fn("add_nodes")(graph, as.character(nodes))
+}
+
+#' @rdname cs-node-mutation
+#' @export
+cs_remove_nodes <- function(graph, nodes) {
+  cs_fn("remove_nodes")(graph, as.character(nodes))
+}
+
+#' Reclassify a graph
+#'
+#' Returns a new graph of class `class` with the same nodes and edges as
+#' `graph`. Errors if the edges violate the structural constraints of
+#' `class`.
+#'
+#' @param graph A graph created with [cs_cgraph()].
+#' @param class Target graph class, e.g. `"DAG"`, `"PDAG"`, `"UNKNOWN"`.
+#' @param simple Only used when `class` is `"UNKNOWN"`; see [cs_cgraph()].
+#' @return A Julia proxy object representing the reclassified graph.
+#' @export
+cs_reclass <- function(graph, class, simple = TRUE) {
+  cs_fn("reclass")(graph, class, simple)
 }
 
 # --- Separation --------------------------------------------------------------

@@ -126,6 +126,30 @@ test_that("latent variable transforms work", {
   expect_setequal(cs_nodes(ag), c("X", "Y"))
 })
 
+test_that("mutation works", {
+  skip_if_no_julia()
+  dag <- cs_cgraph("A --> B")
+  dag2 <- cs_add_edges(dag, "B --> C, C --> D")
+  expect_setequal(cs_nodes(dag2), c("A", "B", "C", "D"))
+  expect_true(cs_has_edge(dag2, "C", "D"))
+
+  dag3 <- cs_remove_edges(dag2, "C --> D")
+  expect_false(cs_has_edge(dag3, "C", "D"))
+  expect_true(cs_has_edge(dag3, "B", "C"))
+  expect_error(cs_remove_edges(dag3, "C --> D"))
+
+  dag4 <- cs_add_nodes(dag, c("C", "D"))
+  expect_setequal(cs_nodes(dag4), c("A", "B", "C", "D"))
+  expect_identical(cs_parents(dag4, "C"), character(0))
+
+  dag5 <- cs_remove_nodes(dag2, "C")
+  expect_setequal(cs_nodes(dag5), c("A", "B", "D"))
+  expect_error(cs_remove_nodes(dag5, "C"))
+
+  pdag <- cs_reclass(dag, "PDAG")
+  expect_true(cs_is_pdag(pdag))
+})
+
 test_that("separation queries work", {
   skip_if_no_julia()
   dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
