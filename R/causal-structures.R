@@ -94,18 +94,41 @@ cs_pkg_path <- function() {
   normalizePath(path, mustWork = TRUE)
 }
 
+# Current JuliaConnectoR socket connection, or NULL if Julia is not running.
+# The connection object changes identity every time Julia is (re)started, so
+# comparing it to the one saved at setup time detects a restart without an
+# extra round trip.
+cs_julia_con <- function() {
+  tryCatch(
+    get("pkgLocal", envir = asNamespace("JuliaConnectoR"))$con,
+    error = function(e) NULL
+  )
+}
+
+cs_session_ok <- function() {
+  !is.null(.cs$module) &&
+    !is.null(.cs$con) &&
+    identical(.cs$con, cs_julia_con())
+}
+
 #' Start (or reuse) the Julia session with CausalStructures loaded
 #'
 #' Activates the local CausalStructures.jl project, instantiates its
 #' dependencies, and imports the module. Called automatically by the
 #' wrapper functions; call it yourself to pay the startup cost up front.
 #'
+#' If the Julia process died since setup (e.g. JuliaConnectoR kills it when
+#' an R interrupt arrives mid-call), the session is set up again from
+#' scratch. Graph proxies created before the restart are lost and must be
+#' recreated.
+#'
 #' @return The imported Julia module (invisibly).
 #' @export
 cs_setup <- function() {
-  if (!is.null(.cs$module)) {
+  if (cs_session_ok()) {
     return(invisible(.cs$module))
   }
+  .cs$module <- NULL
   if (!JuliaConnectoR::juliaSetupOk()) {
     stop(
       "Julia is not available. Install Julia and make sure it is on the PATH."
@@ -147,11 +170,8 @@ cs_setup <- function() {
     end
     _testpkg_has_edge(g, x, y) = _testpkg_CS.has_edge(g, Symbol(x), Symbol(y))
     for f in (:d_separated, :m_separated)
-        @eval begin
-            $(Symbol(:_testpkg_, f))(g, x, y) = _testpkg_CS.$f(g, Symbol(x), Symbol(y))
-            $(Symbol(:_testpkg_, f))(g, x, y, given) =
-                _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
-        end
+        @eval $(Symbol(:_testpkg_, f))(g, x, y, given) =
+            _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
     end
     _testpkg_minimal_separator(g, x, y) =
         _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y)))
@@ -159,8 +179,6 @@ cs_setup <- function() {
         _testpkg_opt(_testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y)))
     _testpkg_frontdoor_set(g, x, y) =
         _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y)))
-    _testpkg_is_valid_backdoor(g, x, y) =
-        _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), Symbol[])
     _testpkg_is_valid_backdoor(g, x, y, z) =
         _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
     _testpkg_all_backdoor_sets(g, x, y) =
@@ -169,14 +187,10 @@ cs_setup <- function() {
         _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y)))
     _testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))
     _testpkg_edges(g) = join((_testpkg_join([String(e.src), String(e.dst)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
-    _testpkg_is_valid_adjustment(g, x, y) =
-        _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), Symbol[])
     _testpkg_is_valid_adjustment(g, x, y, z) =
         _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))
     _testpkg_all_adjustment_sets(g, x, y) =
         _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y)))
-    _testpkg_is_valid_frontdoor(g, x, y) =
-        _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), Symbol[])
     _testpkg_is_valid_frontdoor(g, x, y, z) =
         _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
     function _testpkg_simulate_data(g, n, seed)
@@ -204,6 +218,7 @@ cs_setup <- function() {
   for (f in .cs_passthrough) {
     .cs[[f]] <- JuliaConnectoR::juliaFun(paste0("CausalStructures.", f))
   }
+  .cs$con <- cs_julia_con()
   invisible(.cs$module)
 }
 
@@ -517,12 +532,7 @@ cs_subgraph <- function(graph, nodes) {
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
 #' @export
 cs_d_separated <- function(graph, x, y, given = character()) {
-  f <- cs_fn("d_separated")
-  if (length(given) == 0) {
-    f(graph, x, y)
-  } else {
-    f(graph, x, y, as.character(given))
-  }
+  cs_fn("d_separated")(graph, x, y, as.character(given))
 }
 
 #' Test m-separation
@@ -531,12 +541,7 @@ cs_d_separated <- function(graph, x, y, given = character()) {
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
 cs_m_separated <- function(graph, x, y, given = character()) {
-  f <- cs_fn("m_separated")
-  if (length(given) == 0) {
-    f(graph, x, y)
-  } else {
-    f(graph, x, y, as.character(given))
-  }
+  cs_fn("m_separated")(graph, x, y, as.character(given))
 }
 
 #' Find a minimal separator
@@ -584,13 +589,7 @@ cs_frontdoor_set <- function(graph, x, y) {
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
 #' @export
 cs_is_valid_backdoor <- function(graph, x, y, given = character()) {
-  f <- cs_fn("is_valid_backdoor")
-  # JuliaConnectoR cannot serialize zero-length character vectors
-  if (length(given) == 0) {
-    f(graph, x, y)
-  } else {
-    f(graph, x, y, as.character(given))
-  }
+  cs_fn("is_valid_backdoor")(graph, x, y, as.character(given))
 }
 
 #' Enumerate adjustment sets
@@ -625,12 +624,7 @@ cs_all_frontdoor_sets <- function(graph, x, y) {
 #'   identifying the causal effect of `x` on `y`.
 #' @export
 cs_is_valid_adjustment <- function(graph, x, y, given = character()) {
-  f <- cs_fn("is_valid_adjustment")
-  if (length(given) == 0) {
-    f(graph, x, y)
-  } else {
-    f(graph, x, y, as.character(given))
-  }
+  cs_fn("is_valid_adjustment")(graph, x, y, as.character(given))
 }
 
 #' Enumerate all valid adjustment sets
@@ -651,12 +645,7 @@ cs_all_adjustment_sets <- function(graph, x, y) {
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
 #' @export
 cs_is_valid_frontdoor <- function(graph, x, y, given = character()) {
-  f <- cs_fn("is_valid_frontdoor")
-  if (length(given) == 0) {
-    f(graph, x, y)
-  } else {
-    f(graph, x, y, as.character(given))
-  }
+  cs_fn("is_valid_frontdoor")(graph, x, y, as.character(given))
 }
 
 #' Validate instrumental variables
@@ -669,7 +658,7 @@ cs_is_valid_frontdoor <- function(graph, x, y, given = character()) {
 #' @param z Character vector of instrument node names.
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
-cs_is_valid_iv <- function(graph, x, y, z) {
+cs_is_valid_iv <- function(graph, x, y, z = character()) {
   cs_fn("is_valid_iv")(graph, x, y, as.character(z))
 }
 
@@ -755,6 +744,7 @@ cs_simulate_data <- function(graph, n, seed = NULL) {
 #' @export
 cs_stop <- function() {
   .cs$module <- NULL
+  .cs$con <- NULL
   JuliaConnectoR::stopJulia()
   invisible(NULL)
 }
