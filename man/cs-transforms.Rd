@@ -8,6 +8,9 @@
 \alias{cs_dag_from_pdag}
 \alias{cs_meek_closure}
 \alias{cs_dag_to_mpdag}
+\alias{cs_ag_to_mag}
+\alias{cs_mag_to_pag}
+\alias{cs_mag_from_pag}
 \title{Graph transformations}
 \usage{
 cs_skeleton(graph)
@@ -21,6 +24,12 @@ cs_dag_from_pdag(graph)
 cs_meek_closure(graph)
 
 cs_dag_to_mpdag(graph)
+
+cs_ag_to_mag(graph)
+
+cs_mag_to_pag(graph)
+
+cs_mag_from_pag(graph)
 }
 \arguments{
 \item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
@@ -31,6 +40,9 @@ A Julia proxy object representing the transformed graph.
 \description{
 \code{cs_skeleton()} drops edge marks, \code{cs_moralize()} moralizes a DAG,
 \code{cs_dag_to_cpdag()} and \code{cs_dag_from_pdag()} convert between equivalence
-classes, and \code{cs_meek_closure()} applies Meek's rules. All return a new
-graph proxy; the input graph is unchanged.
+classes, \code{cs_meek_closure()} applies Meek's rules, \code{cs_ag_to_mag()}
+converts an AG to a Markov equivalent MAG, \code{cs_mag_to_pag()} maps a MAG to
+its PAG equivalence class representative, and \code{cs_mag_from_pag()} resolves
+a PAG back to a representative MAG. All return a new graph proxy; the
+input graph is unchanged.
 }

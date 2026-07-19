@@ -93,6 +93,37 @@ test_that("transformations work", {
   expect_true(cs_is_mpdag(mp))
   sub <- cs_subgraph(dag, c("X", "M", "Y"))
   expect_setequal(cs_nodes(sub), c("X", "M", "Y"))
+
+  ag <- cs_cgraph("A --> B --> C", class = "AG")
+  mag <- cs_ag_to_mag(ag)
+  expect_true(cs_is_mag(mag))
+  pag <- cs_mag_to_pag(mag)
+  expect_true(cs_is_pag(pag))
+  mag2 <- cs_mag_from_pag(pag)
+  expect_true(cs_is_mag(mag2))
+})
+
+test_that("latent variable transforms work", {
+  skip_if_no_julia()
+  dag <- cs_cgraph("U --> X, U --> Y, X --> Y")
+  admg <- cs_latent_project(dag, "U")
+  expect_setequal(cs_nodes(admg), c("X", "Y"))
+  expect_true(cs_has_edge(admg, "X", "Y"))
+
+  dag2 <- cs_cgraph("A --> B, B --> C")
+  dag3 <- cs_exogenize(dag2, "B")
+  expect_setequal(cs_nodes(dag3), c("A", "B", "C"))
+  expect_true(cs_has_edge(dag3, "A", "C"))
+  expect_identical(cs_parents(dag3, "B"), character(0))
+
+  dag4 <- cs_cgraph("A --> U, U --> X, U --> Y")
+  result <- cs_normalize_latent_structure(dag4, "U")
+  expect_setequal(cs_nodes(result), c("A", "U", "X", "Y"))
+  expect_true(cs_has_edge(result, "A", "X"))
+  expect_true(cs_has_edge(result, "A", "Y"))
+
+  ag <- cs_condition_marginalize(dag, cond_vars = "U")
+  expect_setequal(cs_nodes(ag), c("X", "Y"))
 })
 
 test_that("separation queries work", {

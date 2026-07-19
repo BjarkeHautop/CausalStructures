@@ -50,7 +50,11 @@
   "markov_equivalent",
   "is_valid_iv",
   "all_iv_sets",
-  "enumerate_mags"
+  "enumerate_mags",
+  "latent_project",
+  "exogenize",
+  "normalize_latent_structure",
+  "condition_marginalize"
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
@@ -72,7 +76,10 @@
   "dag_from_pdag",
   "meek_closure",
   "dag_to_mpdag",
-  "count_dags"
+  "count_dags",
+  "ag_to_mag",
+  "mag_to_pag",
+  "mag_from_pag"
 )
 
 #' Path to the local CausalStructures.jl checkout
@@ -209,6 +216,13 @@ cs_setup <- function() {
             minimal = minimal, max_size = Int(max_size)))
     end
     _testpkg_enumerate_mags(g) = _testpkg_CS.enumerate_mags(g)
+    _testpkg_latent_project(g, latents) = _testpkg_CS.latent_project(g, _testpkg_syms(latents))
+    _testpkg_exogenize(g, nodes) = _testpkg_CS.exogenize(g, _testpkg_syms(nodes))
+    _testpkg_normalize_latent_structure(g, latents) =
+        _testpkg_CS.normalize_latent_structure(g, _testpkg_syms(latents))
+    _testpkg_condition_marginalize(g, cond_vars, marg_vars) =
+        _testpkg_CS.condition_marginalize(g;
+            cond_vars = _testpkg_syms(cond_vars), marg_vars = _testpkg_syms(marg_vars))
     nothing
   '
   )
@@ -480,8 +494,11 @@ cs_is_acyclic <- cs_graph_fn("is_acyclic")
 #'
 #' `cs_skeleton()` drops edge marks, `cs_moralize()` moralizes a DAG,
 #' `cs_dag_to_cpdag()` and `cs_dag_from_pdag()` convert between equivalence
-#' classes, and `cs_meek_closure()` applies Meek's rules. All return a new
-#' graph proxy; the input graph is unchanged.
+#' classes, `cs_meek_closure()` applies Meek's rules, `cs_ag_to_mag()`
+#' converts an AG to a Markov equivalent MAG, `cs_mag_to_pag()` maps a MAG to
+#' its PAG equivalence class representative, and `cs_mag_from_pag()` resolves
+#' a PAG back to a representative MAG. All return a new graph proxy; the
+#' input graph is unchanged.
 #'
 #' @param graph A graph created with [cs_cgraph()].
 #' @return A Julia proxy object representing the transformed graph.
@@ -512,6 +529,18 @@ cs_meek_closure <- cs_graph_fn("meek_closure")
 #' @export
 cs_dag_to_mpdag <- cs_graph_fn("dag_to_mpdag")
 
+#' @rdname cs-transforms
+#' @export
+cs_ag_to_mag <- cs_graph_fn("ag_to_mag")
+
+#' @rdname cs-transforms
+#' @export
+cs_mag_to_pag <- cs_graph_fn("mag_to_pag")
+
+#' @rdname cs-transforms
+#' @export
+cs_mag_from_pag <- cs_graph_fn("mag_from_pag")
+
 #' Induced subgraph
 #'
 #' @param graph A graph created with [cs_cgraph()].
@@ -520,6 +549,74 @@ cs_dag_to_mpdag <- cs_graph_fn("dag_to_mpdag")
 #' @export
 cs_subgraph <- function(graph, nodes) {
   cs_fn("subgraph")(graph, as.character(nodes))
+}
+
+#' Project out latent variables
+#'
+#' Eliminates each node in `latents` by vertex substitution, producing an
+#' ADMG over the remaining (observed) variables that preserves the
+#' conditional independence structure among them.
+#'
+#' @param graph A DAG created with [cs_cgraph()].
+#' @param latents Character vector of latent (unobserved) node names.
+#' @return A Julia proxy object representing the resulting ADMG.
+#' @export
+cs_latent_project <- function(graph, latents) {
+  cs_fn("latent_project")(graph, as.character(latents))
+}
+
+#' Make nodes exogenous
+#'
+#' Returns a copy of `graph` with each node in `nodes` made exogenous: its
+#' incoming edges are removed, and its parents are connected directly to its
+#' children to preserve reachability.
+#'
+#' @param graph A DAG created with [cs_cgraph()].
+#' @param nodes Character vector of node names to exogenize.
+#' @return A Julia proxy object representing the resulting DAG.
+#' @export
+cs_exogenize <- function(graph, nodes) {
+  cs_fn("exogenize")(graph, as.character(nodes))
+}
+
+#' Normalize latent structure
+#'
+#' Simplifies the latent nodes of `graph` while preserving the induced
+#' marginal model over the observed variables (Evans 2016, Lemmas 1-3):
+#' exogenizes each latent node, then drops latent nodes with at most one
+#' active child or whose child set is a strict subset of another latent
+#' node's child set.
+#'
+#' @param graph A DAG created with [cs_cgraph()].
+#' @param latents Character vector of latent (unobserved) node names.
+#' @return A Julia proxy object representing the resulting DAG.
+#' @export
+cs_normalize_latent_structure <- function(graph, latents) {
+  cs_fn("normalize_latent_structure")(graph, as.character(latents))
+}
+
+#' Condition and marginalize a graph
+#'
+#' Removes `cond_vars` and `marg_vars` from `graph`, returning the AG over
+#' the remaining nodes that represents the graphical effect of conditioning
+#' on `cond_vars` and marginalizing out `marg_vars`. At least one of the two
+#' must be non-empty, and they must be disjoint.
+#'
+#' @param graph A DAG or AG created with [cs_cgraph()].
+#' @param cond_vars Character vector of node names to condition on.
+#' @param marg_vars Character vector of node names to marginalize out.
+#' @return A Julia proxy object representing the resulting AG.
+#' @export
+cs_condition_marginalize <- function(
+  graph,
+  cond_vars = character(),
+  marg_vars = character()
+) {
+  cs_fn("condition_marginalize")(
+    graph,
+    as.character(cond_vars),
+    as.character(marg_vars)
+  )
 }
 
 # --- Separation --------------------------------------------------------------
