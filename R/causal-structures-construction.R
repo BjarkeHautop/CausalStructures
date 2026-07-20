@@ -75,7 +75,7 @@ cs_cgraph <- function(
 #' @export
 #' @examples
 #' if (JuliaConnectoR::juliaSetupOk()) {
-#'   cg <- cs_generate_graph(4, m = 3, seed = 1)
+#'   cg <- cs_generate_graph(4, m = 3, seed = 1405)
 #'   cs_edges(cg)
 #' }
 cs_generate_graph <- function(
@@ -86,7 +86,7 @@ cs_generate_graph <- function(
   seed = NULL
 ) {
   class <- match.arg(class)
-  cs_fn("generate_graph")(as.integer(n), m, p, class, seed)
+  cs_fn("generate_graph")(as.integer(n), m, p, class, cs_make_rng(seed))
 }
 
 # --- Graph-level queries -----------------------------------------------------

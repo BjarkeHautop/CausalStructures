@@ -153,6 +153,7 @@ cs_setup <- function() {
   Pkg$activate(path)
   Pkg$instantiate()
   .cs$module <- JuliaConnectoR::juliaImport("CausalStructures")
+  .cs$Random <- JuliaConnectoR::juliaImport("Random")
   # All wrapper helpers are defined here in a single juliaEval call, rather
   # than one juliaEval per helper, so their definitions cost one round trip
   # in total instead of one per helper. Each helper then does its Symbol
@@ -174,11 +175,13 @@ cs_setup <- function() {
 
     _testpkg_cgraph(spec, class, simple) =
         _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)), simple = simple)
-    function _testpkg_generate_graph(n, m, p, class, seed)
-        _testpkg_CS.generate_graph(Int(n);
+    function _testpkg_generate_graph(n, m, p, class, rng)
+        kwargs = (
             m = m === nothing ? nothing : Int(m), p = p,
             class = getfield(_testpkg_CS, Symbol(class)),
-            seed = seed === nothing ? nothing : Int(seed))
+        )
+        rng === nothing ? _testpkg_CS.generate_graph(Int(n); kwargs...) :
+        _testpkg_CS.generate_graph(rng, Int(n); kwargs...)
     end
     _testpkg_topological_sort(g) = _testpkg_join(String.(_testpkg_CS.topological_sort(g)))
     _testpkg_nodes(g) = _testpkg_join(String.(_testpkg_CS.nodes(g)))
@@ -244,15 +247,15 @@ cs_setup <- function() {
     end
     _testpkg_is_valid_frontdoor(g, x, y, z) =
         _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_simulate_data(g, n, seed, standardize, coef_range, error_sd)
+    function _testpkg_simulate_data(g, n, rng, standardize, coef_range, error_sd)
         kwargs = (
             samples = Int(n),
             standardize = standardize,
             coef_range = (Float64(coef_range[1]), Float64(coef_range[2])),
             error_sd = Float64(error_sd),
         )
-        d = seed === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
-            _testpkg_CS.simulate_data(g; kwargs..., seed = Int(seed))
+        d = rng === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
+            _testpkg_CS.simulate_data(rng, g; kwargs...)
         names = sort!(collect(keys(d)))
         hcat((d[nm] for nm in names)...)
     end
@@ -303,6 +306,17 @@ cs_setup <- function() {
 cs_fn <- function(name) {
   cs_setup()
   .cs[[name]]
+}
+
+# Builds a Julia RNG proxy from an integer seed, or NULL if seed is NULL.
+# Currently uses base Random.jl (Random.Xoshiro); see .github/TODO.md for the
+# planned switch to StableRNGs.jl for cross-Julia-version reproducibility.
+cs_make_rng <- function(seed) {
+  if (is.null(seed)) {
+    return(NULL)
+  }
+  cs_setup()
+  .cs$Random$Xoshiro(as.integer(seed))
 }
 
 cs_split <- function(x) {

@@ -10,43 +10,43 @@
 #'
 #' @param graph A DAG created with [cs_cgraph()].
 #' @param n Number of samples to generate.
-#' @param seed Optional integer seed for reproducibility.
 #' @param standardize If `TRUE` (default), standardize each variable to zero
 #'   mean and unit variance.
 #' @param coef_range Length-2 numeric vector giving the range edge
 #'   coefficients are drawn uniformly from.
 #' @param error_sd Standard deviation of each node's Gaussian noise term.
+#' @param seed Optional integer seed for reproducibility.
 #' @return A data frame with `n` rows (samples) and one column per node,
 #'   named and ordered as in [cs_nodes()].
 #' @export
 #' @examples
 #' if (JuliaConnectoR::juliaSetupOk()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
-#'   data <- cs_simulate_data(dag, n = 100, seed = 42)
+#'   data <- cs_simulate_data(dag, n = 100, seed = 1405)
 #'   head(data)
 #'
 #'   data2 <- cs_simulate_data(
 #'     dag,
 #'     n = 100,
-#'     seed = 42,
 #'     standardize = FALSE,
 #'     coef_range = c(0.5, 2),
-#'     error_sd = 0.1
+#'     error_sd = 0.1,
+#'     seed = 1405
 #'   )
 #'   head(data2)
 #' }
 cs_simulate_data <- function(
   graph,
   n,
-  seed = NULL,
   standardize = TRUE,
   coef_range = c(-1, 1),
-  error_sd = 1
+  error_sd = 1,
+  seed = NULL
 ) {
   mat <- cs_fn("simulate_data")(
     graph,
     n,
-    seed,
+    cs_make_rng(seed),
     standardize,
     coef_range,
     error_sd

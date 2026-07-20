@@ -7,18 +7,16 @@
 cs_simulate_data(
   graph,
   n,
-  seed = NULL,
   standardize = TRUE,
   coef_range = c(-1, 1),
-  error_sd = 1
+  error_sd = 1,
+  seed = NULL
 )
 }
 \arguments{
 \item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{n}{Number of samples to generate.}
-
-\item{seed}{Optional integer seed for reproducibility.}
 
 \item{standardize}{If \code{TRUE} (default), standardize each variable to zero
 mean and unit variance.}
@@ -27,6 +25,8 @@ mean and unit variance.}
 coefficients are drawn uniformly from.}
 
 \item{error_sd}{Standard deviation of each node's Gaussian noise term.}
+
+\item{seed}{Optional integer seed for reproducibility.}
 }
 \value{
 A data frame with \code{n} rows (samples) and one column per node,
@@ -42,16 +42,16 @@ coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {
   dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
-  data <- cs_simulate_data(dag, n = 100, seed = 42)
+  data <- cs_simulate_data(dag, n = 100, seed = 1405)
   head(data)
 
   data2 <- cs_simulate_data(
     dag,
     n = 100,
-    seed = 42,
     standardize = FALSE,
     coef_range = c(0.5, 2),
-    error_sd = 0.1
+    error_sd = 0.1,
+    seed = 1405
   )
   head(data2)
 }

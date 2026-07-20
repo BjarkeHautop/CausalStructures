@@ -9,9 +9,9 @@ test_that("construction works", {
   mag <- cs_cgraph(A %<->% B, C %-->% B %-->% D, class = "MAG")
   expect_true(cs_is_mag(mag))
 
-  g <- cs_generate_graph(50, p = 0.1, seed = 42)
+  g <- cs_generate_graph(50, p = 0.1, seed = 1405)
   expect_length(cs_nodes(g), 50)
-  g2 <- cs_generate_graph(50, m = 100, seed = 42)
+  g2 <- cs_generate_graph(50, m = 100, seed = 1405)
   expect_true(cs_is_dag(g2))
 
   # simple = FALSE allows multiple edges between the same pair of nodes
