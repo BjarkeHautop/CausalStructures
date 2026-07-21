@@ -4,10 +4,10 @@
 \alias{cs_is_valid_frontdoor}
 \title{Validate a frontdoor criterion set}
 \usage{
-cs_is_valid_frontdoor(graph, x, y, given = character())
+cs_is_valid_frontdoor(cg, x, y, given = character())
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

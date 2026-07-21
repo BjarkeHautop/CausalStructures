@@ -4,10 +4,10 @@
 \alias{cs_is_valid_iv}
 \title{Validate instrumental variables}
 \usage{
-cs_is_valid_iv(graph, x, y, z = character())
+cs_is_valid_iv(cg, x, y, z = character())
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

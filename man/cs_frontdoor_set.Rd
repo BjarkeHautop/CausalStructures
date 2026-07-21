@@ -4,10 +4,10 @@
 \alias{cs_frontdoor_set}
 \title{Find a frontdoor adjustment set}
 \usage{
-cs_frontdoor_set(graph, x, y, include = character(), restrict = NULL)
+cs_frontdoor_set(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 
@@ -34,7 +34,5 @@ if (JuliaConnectoR::juliaSetupOk()) {
 }
 }
 \references{
-Jeong, S., Tian, J., & Bareinboim, E. (2022). Finding and Listing
-Front-Door Adjustment Sets. \emph{Advances in Neural Information Processing
-Systems}, 35.
+\insertRef{jeong2022finding}{testpkg}
 }

@@ -2,53 +2,69 @@
 % Please edit documentation in R/causal-structures-identification.R
 \name{cs_adjustment_set}
 \alias{cs_adjustment_set}
-\title{Find a backdoor adjustment set}
+\title{Find an adjustment set}
 \usage{
-cs_adjustment_set(graph, x, y, type = c("optimal", "parents", "backdoor"))
+cs_adjustment_set(cg, x, y, type = c("optimal", "parents", "backdoor"))
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 
 \item{type}{Adjustment set type: \code{"optimal"} (default), \code{"parents"}, or
-\code{"backdoor"}.}
+\code{"backdoor"}. Ignored for MAG-family graphs; \code{"backdoor"} is not
+supported for PDAG-family graphs.}
 }
 \value{
 Character vector with a valid adjustment set, or \code{NULL} if none
 exists.
 }
 \description{
-Computes an adjustment set for the total causal effect of \code{x} on \code{y} on a
-DAG or PDAG-family graph (\code{type} is ignored for MAGs,
-which always return the smallest valid set). Three types are supported:
-\describe{
-\item{\code{"parents"}}{The parents of \code{x}, excluding \code{x} and \code{y}.}
-\item{\code{"backdoor"}}{The Pearl backdoor formula (parents of \code{x}).}
-\item{\code{"optimal"}}{The O-set: parents of the causal nodes between \code{x}
-and \code{y} (nodes on a possibly-causal path), excluding \code{x} and those
-causal nodes themselves.}
-}
-Validate a candidate set directly with \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
+Computes a valid adjustment set for the total causal effect of \code{x} on \code{y}.
 }
 \details{
-For MAGs it searches for the smallest valid adjustment set by
-trying sizes 0, 1, 2, ... in order and stopping at the first valid set.
+The supported adjustment set types depend on the graph class:
+\describe{
+\item{DAG}{All three types are supported.}
+\item{PDAG-family (PDAG, CPDAG, MPDAG)}{Only \code{"parents"} and
+\code{"optimal"} are supported; \code{"backdoor"} raises an error.}
+\item{MAG-family (AG, MAG)}{\code{type} is ignored. The smallest valid
+adjustment set is returned by searching sets of increasing size.}
+}
+
+The available adjustment set types are:
+\describe{
+\item{\code{"parents"}}{The parents of \code{x}, excluding \code{x} and \code{y}.}
+\item{\code{"backdoor"}}{The adjustment set implied by Pearl's backdoor
+criterion (the parents of \code{x}).}
+\item{\code{"optimal"}}{The O-set: the parents of causal nodes on a
+possibly causal path from \code{x} to \code{y}, excluding \code{x} and those
+causal nodes themselves.}
+}
+
+Candidate adjustment sets can be validated with
+\code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {
-  dag <- cs_cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
-  cs_adjustment_set(dag, "X", "Y")
-  cs_adjustment_set(dag, "X", "Y", type = "parents")
-  cs_adjustment_set(dag, "X", "Y", type = "backdoor")
+  dag <- cs_cgraph(
+    C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
+    D \%-->\% Y + G, Y \%-->\% H
+  )
+  sort(cs_adjustment_set(dag, "X", "Y", type = "parents")) # A, C
+  cs_adjustment_set(dag, "X", "Y", type = "backdoor") # A
+  cs_adjustment_set(dag, "X", "Y", type = "optimal") # K (default)
+
+  pdag <- cs_cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y, class = "PDAG")
+  cs_adjustment_set(pdag, "X", "Y") # A
+  cs_is_valid_adjustment(pdag, "X", "Y", "A")
+
+  mag <- cs_cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
+  cs_adjustment_set(mag, "X", "Y") # A; type is ignored
 }
 }
 \references{
-Henckel, Y., Perković, E., & Maathuis, M. H. (2022). Graphical Criteria for
-Efficient Total Effect Estimation Via Adjustment in Causal Linear Models.
-\emph{Journal of the Royal Statistical Society: Series B}, 84:579-599.
-(\code{"optimal"})
+\insertRef{henckel2022graphical}{testpkg} (\code{"optimal"})
 
-Pearl, J. (2009). \emph{Causality: Models, Reasoning and Inference} (2nd ed.).
-Cambridge University Press. (\code{"parents"} and \code{"backdoor"})
+\insertRef{pearl2009causality}{testpkg} (\code{"parents"} and \code{"backdoor"})
 }

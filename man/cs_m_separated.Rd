@@ -4,10 +4,10 @@
 \alias{cs_m_separated}
 \title{Test m-separation}
 \usage{
-cs_m_separated(graph, x, y, given = character())
+cs_m_separated(cg, x, y, given = character())
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Node names.}
 

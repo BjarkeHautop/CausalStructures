@@ -44,8 +44,5 @@ if (JuliaConnectoR::juliaSetupOk()) {
 }
 }
 \references{
-Perković, E., Textor, J., Kalisch, M., & Maathuis, M. H. (2018). Complete
-Graphical Characterization and Construction of Adjustment Sets in Markov
-Equivalence Classes of Ancestral Graphs. \emph{Journal of Machine Learning
-Research}, 18:1-62.
+\insertRef{perkovic2018complete}{testpkg}
 }

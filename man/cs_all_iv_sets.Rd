@@ -4,10 +4,10 @@
 \alias{cs_all_iv_sets}
 \title{Enumerate all valid instrumental variable sets}
 \usage{
-cs_all_iv_sets(graph, x, y, minimal = TRUE, max_size = 3)
+cs_all_iv_sets(cg, x, y, minimal = TRUE, max_size = 3)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

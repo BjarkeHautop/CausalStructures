@@ -35,9 +35,7 @@ if (JuliaConnectoR::juliaSetupOk()) {
 }
 }
 \references{
-Verma, T. & Pearl, J. (1990). Equivalence and synthesis of causal models.
-\emph{Proceedings of UAI 1990}.
+\insertRef{vermapearl1990equivalence}{testpkg}
 
-Ali, R. A., Richardson, T. S., & Spirtes, P. (2009). Markov equivalence for
-ancestral graphs. \emph{Annals of Statistics}, 37(5B):2808-2837.
+\insertRef{ali2009markov}{testpkg}
 }

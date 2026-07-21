@@ -4,10 +4,10 @@
 \alias{cs_enumerate_mags}
 \title{Enumerate MAGs in a PAG equivalence class}
 \usage{
-cs_enumerate_mags(graph)
+cs_enumerate_mags(cg)
 }
 \arguments{
-\item{graph}{A PAG (partially ancestral graph) created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A PAG (partially ancestral graph) created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 }
 \value{
 A Julia proxy list of MAGs in the equivalence class.

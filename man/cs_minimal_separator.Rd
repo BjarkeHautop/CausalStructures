@@ -4,10 +4,10 @@
 \alias{cs_minimal_separator}
 \title{Find a minimal separator}
 \usage{
-cs_minimal_separator(graph, x, y, include = character(), restrict = NULL)
+cs_minimal_separator(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Node names.}
 

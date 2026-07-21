@@ -28,12 +28,14 @@ Collate:
 Imports:
     grid,
     JuliaConnectoR,
+    Rdpack,
     utils
 Suggests:
     spelling,
     testthat (>= 3.0.0),
     withr
 Config/testthat/edition: 3
+RdMacros: Rdpack
 SystemRequirements: Julia (>= 1.10)
 Language: en-US
 URL: https://github.com/BjarkeHautop/testpkg, https://bjarkehautop.github.io/testpkg/

@@ -4,10 +4,10 @@
 \alias{cs_is_valid_backdoor}
 \title{Validate a backdoor adjustment set}
 \usage{
-cs_is_valid_backdoor(graph, x, y, given = character())
+cs_is_valid_backdoor(cg, x, y, given = character())
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 
