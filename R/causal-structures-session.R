@@ -136,6 +136,10 @@ cs_session_ok <- function() {
 #' scratch. Graph proxies created before the restart are lost and must be
 #' recreated.
 #'
+#' Errors raised inside Julia are reported with just the underlying Julia
+#' error message; set `options(testpkg.verbose_errors = TRUE)` to see the
+#' full Julia stacktrace instead.
+#'
 #' @return The imported Julia module (invisibly).
 #' @export
 #' @examples
@@ -298,18 +302,50 @@ cs_setup <- function() {
   '
   )
   for (f in .cs_helpers) {
-    .cs[[f]] <- JuliaConnectoR::juliaFun(paste0("_testpkg_", f))
+    .cs[[f]] <- cs_wrap_errors(JuliaConnectoR::juliaFun(paste0("_testpkg_", f)))
   }
   for (f in .cs_passthrough) {
-    .cs[[f]] <- JuliaConnectoR::juliaFun(paste0("CausalStructures.", f))
+    .cs[[f]] <- cs_wrap_errors(JuliaConnectoR::juliaFun(paste0(
+      "CausalStructures.",
+      f
+    )))
   }
   .cs$con <- cs_julia_con()
   invisible(.cs$module)
 }
 
+# Wraps a juliaFun proxy once at setup time (rather than on every call) so
+# Julia errors surface a clean message instead of the raw stacktrace; see
+# cs_clean_error().
+cs_wrap_errors <- function(fn) {
+  force(fn)
+  function(...) {
+    tryCatch(fn(...), error = function(e) {
+      stop(cs_clean_error(conditionMessage(e)), call. = FALSE)
+    })
+  }
+}
+
 cs_fn <- function(name) {
   cs_setup()
   .cs[[name]]
+}
+
+# JuliaConnectoR's error messages embed the full Julia stacktrace, which is
+# noise for most R users.
+cs_clean_error <- function(msg) {
+  if (isTRUE(getOption("testpkg.verbose_errors", FALSE))) {
+    return(msg)
+  }
+  m <- regmatches(
+    msg,
+    regexpr(
+      "(?s)(?<=Original Julia error message:\n).*?(?=\nStacktrace:|$)",
+      msg,
+      perl = TRUE
+    )
+  )
+  if (length(m) == 1 && nzchar(m)) m else msg
 }
 
 # Builds a Julia RNG proxy from an integer seed, or NULL if seed is NULL.

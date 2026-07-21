@@ -1,7 +1,7 @@
 # TODO
 
 - Improve docs
-- Capture errors to avoid long stacktrace.
+- Capture errors to avoid long stacktrace. Fixed
   - Should this be done in JuliaconnectoR?
 - Register Julia Pkg
 - Ship Project.toml

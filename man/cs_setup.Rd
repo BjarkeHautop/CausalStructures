@@ -19,6 +19,10 @@ If the Julia process died since setup (e.g. \pkg{JuliaConnectoR} kills it when
 an R interrupt arrives mid-call), the session is set up again from
 scratch. Graph proxies created before the restart are lost and must be
 recreated.
+
+Errors raised inside Julia are reported with just the underlying Julia
+error message; set \code{options(testpkg.verbose_errors = TRUE)} to see the
+full Julia stacktrace instead.
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {

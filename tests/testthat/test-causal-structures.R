@@ -27,6 +27,22 @@ test_that("invalid graphs error on construction", {
   expect_error(cs_cgraph(A %-->% B %-->% C %-->% A), "cycle")
 })
 
+test_that("Julia errors are cleaned unless testpkg.verbose_errors is set", {
+  skip_if_no_julia()
+  dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+
+  withr::local_options(testpkg.verbose_errors = FALSE)
+  err <- tryCatch(cs_ancestors(dag, "NOT_A_NODE"), error = function(e) e)
+  expect_match(conditionMessage(err), "Unknown node: NOT_A_NODE", fixed = TRUE)
+  expect_false(grepl("Stacktrace", conditionMessage(err), fixed = TRUE))
+
+  withr::local_options(testpkg.verbose_errors = TRUE)
+  err_verbose <- tryCatch(cs_ancestors(dag, "NOT_A_NODE"), error = function(e) {
+    e
+  })
+  expect_match(conditionMessage(err_verbose), "Stacktrace", fixed = TRUE)
+})
+
 test_that("graph-level queries work", {
   skip_if_no_julia()
   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
