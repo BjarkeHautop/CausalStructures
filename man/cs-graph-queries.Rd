@@ -7,14 +7,16 @@
 \alias{cs_exogenous_nodes}
 \title{Graph-level node queries}
 \usage{
-cs_nodes(graph)
+cs_nodes(cg)
 
-cs_topological_sort(graph)
+cs_topological_sort(cg)
 
-cs_exogenous_nodes(graph, undirected_as_parents = FALSE)
+cs_exogenous_nodes(cg, undirected_as_parents = FALSE)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. \code{cs_nodes()} accepts any
+class; \code{cs_topological_sort()} requires a DAG; \code{cs_exogenous_nodes()}
+accepts any class except PAG.}
 
 \item{undirected_as_parents}{Only used for PDAG-family graphs. If \code{TRUE},
 a node incident to any undirected edge is not considered exogenous.}

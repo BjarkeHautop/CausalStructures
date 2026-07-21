@@ -1,7 +1,8 @@
 # TODO
 
 - Improve docs
-- Use Rdpack to have a .bib file?
+- Capture errors to avoid long stacktrace.
+  - Should this be done in JuliaconnectoR?
 - Register Julia Pkg
 - Ship Project.toml
 

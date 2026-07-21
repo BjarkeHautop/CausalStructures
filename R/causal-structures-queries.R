@@ -7,7 +7,11 @@
 #' [cs_neighbors()] and [cs-possible-queries] for the remaining node-set
 #' queries, which take extra arguments.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()]. Supported classes vary by
+#'   function: `cs_parents()` and `cs_children()` accept any class except
+#'   UG; `cs_ancestors()`, `cs_descendants()`, and `cs_markov_blanket()`
+#'   accept DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family (AG,
+#'   MAG); `cs_spouses()` accepts ADMG, AG-family, or PAG.
 #' @param node Node name.
 #' @return Sorted character vector of node names.
 #' @name cs-node-queries
@@ -55,7 +59,7 @@ cs_markov_blanket <- cs_node_query("markov_blanket")
 #' edges; neighbors joined by a circle mark (`o->`, `o--`, `o-o`) are
 #' reported by `"all"` only.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param node Node name.
 #' @param mode Which edge types to include: `"all"` (default), `"in"`,
 #'   `"out"`, `"undirected"`, or `"bidirected"`.
@@ -69,12 +73,12 @@ cs_markov_blanket <- cs_node_query("markov_blanket")
 #'   cs_neighbors(dag, "A", mode = "out")
 #' }
 cs_neighbors <- function(
-  graph,
+  cg,
   node,
   mode = c("all", "in", "out", "undirected", "bidirected")
 ) {
   mode <- match.arg(mode)
-  cs_split(cs_fn("neighbors")(graph, node, mode))
+  cs_split(cs_fn("neighbors")(cg, node, mode))
 }
 
 #' Possible-ancestor/descendant node-set queries
@@ -87,7 +91,10 @@ cs_neighbors <- function(
 #' classes (traversing undirected edges too). When `open = TRUE` (default),
 #' `node` itself is excluded from the result; when `FALSE`, it is included.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()]. `cs_possible_ancestors()`
+#'   and `cs_possible_descendants()` accept PDAG-family (PDAG, CPDAG, MPDAG)
+#'   or PAG graphs; `cs_anteriors()` and `cs_posteriors()` accept PDAG-family
+#'   or AG-family (AG, MAG) graphs.
 #' @param node Node name.
 #' @param open If `TRUE` (default), exclude `node` itself from the result.
 #' @return Sorted character vector of node names.
@@ -105,26 +112,26 @@ NULL
 
 #' @rdname cs-possible-queries
 #' @export
-cs_possible_ancestors <- function(graph, node, open = TRUE) {
-  cs_split(cs_fn("possible_ancestors")(graph, node, open))
+cs_possible_ancestors <- function(cg, node, open = TRUE) {
+  cs_split(cs_fn("possible_ancestors")(cg, node, open))
 }
 
 #' @rdname cs-possible-queries
 #' @export
-cs_possible_descendants <- function(graph, node, open = TRUE) {
-  cs_split(cs_fn("possible_descendants")(graph, node, open))
+cs_possible_descendants <- function(cg, node, open = TRUE) {
+  cs_split(cs_fn("possible_descendants")(cg, node, open))
 }
 
 #' @rdname cs-possible-queries
 #' @export
-cs_anteriors <- function(graph, node, open = TRUE) {
-  cs_split(cs_fn("anteriors")(graph, node, open))
+cs_anteriors <- function(cg, node, open = TRUE) {
+  cs_split(cs_fn("anteriors")(cg, node, open))
 }
 
 #' @rdname cs-possible-queries
 #' @export
-cs_posteriors <- function(graph, node, open = TRUE) {
-  cs_split(cs_fn("posteriors")(graph, node, open))
+cs_posteriors <- function(cg, node, open = TRUE) {
+  cs_split(cs_fn("posteriors")(cg, node, open))
 }
 
 
@@ -137,10 +144,10 @@ cs_posteriors <- function(graph, node, open = TRUE) {
 #' `cs_is_ag()`, `cs_is_mag()`, `cs_is_pag()`) or structural properties
 #' (`cs_is_simple()`, `cs_is_acyclic()`).
 #'
-#' These test the actual edge structure of `graph`, independent of the
+#' These test the actual edge structure of `cg`, independent of the
 #' `class` it has.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @return A logical scalar.
 #' @name cs-predicates
 #' @examples

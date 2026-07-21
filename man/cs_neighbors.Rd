@@ -5,13 +5,13 @@
 \title{Neighbors of a node}
 \usage{
 cs_neighbors(
-  graph,
+  cg,
   node,
   mode = c("all", "in", "out", "undirected", "bidirected")
 )
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{node}{Node name.}
 

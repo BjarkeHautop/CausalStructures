@@ -6,12 +6,12 @@
 \alias{cs_remove_nodes}
 \title{Add or remove isolated nodes}
 \usage{
-cs_add_nodes(graph, nodes)
+cs_add_nodes(cg, nodes)
 
-cs_remove_nodes(graph, nodes)
+cs_remove_nodes(cg, nodes)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{nodes}{Character vector of node names.}
 }

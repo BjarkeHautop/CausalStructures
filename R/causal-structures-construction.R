@@ -101,7 +101,9 @@ cs_generate_graph <- function(
 #' `cs_exogenous_nodes()` returns the nodes with no parents (for a UG,
 #' the isolated nodes).
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()]. `cs_nodes()` accepts any
+#'   class; `cs_topological_sort()` requires a DAG; `cs_exogenous_nodes()`
+#'   accepts any class except PAG.
 #' @return Character vector of node names.
 #' @name cs-graph-queries
 #' @examples
@@ -119,22 +121,22 @@ NULL
 
 #' @rdname cs-graph-queries
 #' @export
-cs_nodes <- function(graph) {
-  cs_split(cs_fn("nodes")(graph))
+cs_nodes <- function(cg) {
+  cs_split(cs_fn("nodes")(cg))
 }
 
 #' @rdname cs-graph-queries
 #' @export
-cs_topological_sort <- function(graph) {
-  cs_split(cs_fn("topological_sort")(graph))
+cs_topological_sort <- function(cg) {
+  cs_split(cs_fn("topological_sort")(cg))
 }
 
 #' @rdname cs-graph-queries
 #' @param undirected_as_parents Only used for PDAG-family graphs. If `TRUE`,
 #'   a node incident to any undirected edge is not considered exogenous.
 #' @export
-cs_exogenous_nodes <- function(graph, undirected_as_parents = FALSE) {
-  cs_split(cs_fn("exogenous_nodes")(graph, undirected_as_parents))
+cs_exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
+  cs_split(cs_fn("exogenous_nodes")(cg, undirected_as_parents))
 }
 
 #' Test whether two nodes are adjacent
@@ -142,7 +144,7 @@ cs_exogenous_nodes <- function(graph, undirected_as_parents = FALSE) {
 #' Tests adjacency, not directed reachability: `cs_has_edge(g, x, y)` and
 #' `cs_has_edge(g, y, x)` always agree, even for a directed edge `x --> y`.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param x,y Node names.
 #' @return `TRUE` if the graph has any edge between `x` and `y`,
 #'   regardless of direction.
@@ -154,13 +156,13 @@ cs_exogenous_nodes <- function(graph, undirected_as_parents = FALSE) {
 #'   cs_has_edge(dag, "B", "A")
 #'   cs_has_edge(dag, "A", "C")
 #' }
-cs_has_edge <- function(graph, x, y) {
-  cs_fn("has_edge")(graph, x, y)
+cs_has_edge <- function(cg, x, y) {
+  cs_fn("has_edge")(cg, x, y)
 }
 
 #' Get all edges in a graph
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @return A matrix with 2 columns (source, target) and one row per edge,
 #'   or an empty matrix if the graph has no edges.
 #' @export
@@ -169,8 +171,8 @@ cs_has_edge <- function(graph, x, y) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_edges(dag)
 #' }
-cs_edges <- function(graph) {
-  res <- cs_fn("edges")(graph)
+cs_edges <- function(cg) {
+  res <- cs_fn("edges")(cg)
   if (identical(res, "")) {
     return(matrix(character(), nrow = 0, ncol = 2))
   }

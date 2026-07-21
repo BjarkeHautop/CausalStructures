@@ -13,26 +13,31 @@
 \alias{cs_mag_from_pag}
 \title{Graph transformations}
 \usage{
-cs_skeleton(graph)
+cs_skeleton(cg)
 
-cs_moralize(graph)
+cs_moralize(cg)
 
-cs_dag_to_cpdag(graph)
+cs_dag_to_cpdag(cg)
 
-cs_dag_from_pdag(graph)
+cs_dag_from_pdag(cg)
 
-cs_meek_closure(graph)
+cs_meek_closure(cg)
 
-cs_dag_to_mpdag(graph)
+cs_dag_to_mpdag(cg)
 
-cs_ag_to_mag(graph)
+cs_ag_to_mag(cg)
 
-cs_mag_to_pag(graph)
+cs_mag_to_pag(cg)
 
-cs_mag_from_pag(graph)
+cs_mag_from_pag(cg)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. Required class depends on
+the function: \code{cs_skeleton()} and \code{cs_moralize()} take a DAG or
+PDAG-family (PDAG, CPDAG, MPDAG) graph; \code{cs_dag_to_cpdag()} and
+\code{cs_dag_to_mpdag()} take a DAG; \code{cs_dag_from_pdag()} and
+\code{cs_meek_closure()} take a PDAG-family graph; \code{cs_ag_to_mag()} takes an
+AG; \code{cs_mag_to_pag()} takes a MAG; \code{cs_mag_from_pag()} takes a PAG.}
 }
 \value{
 A Julia proxy object representing the transformed graph.

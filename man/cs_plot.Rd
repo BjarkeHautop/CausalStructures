@@ -5,7 +5,7 @@
 \title{Plot a causal graph}
 \usage{
 cs_plot(
-  graph,
+  cg,
   layout = "stress",
   node_style = list(),
   edge_style = list(),
@@ -19,14 +19,14 @@ cs_plot(
 )
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{layout}{Specifies the layout. Can be:
 \itemize{
 \item A character string passed to \code{\link[=cs_layout]{cs_layout()}} as \code{method}
 (\code{"circle"}, \code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
 \code{"shell"}, \code{"squaregrid"}).
-\item A layout function, called with \code{graph} and any \code{...}.
+\item A layout function, called with \code{cg} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
 }}
 

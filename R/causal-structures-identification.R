@@ -7,7 +7,8 @@
 #' non-collider node in `given`, or a collider node (and all its descendants)
 #' not in `given`.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cs_cgraph()].
 #' @param x,y Node names.
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
@@ -32,6 +33,8 @@ cs_d_separated <- function(cg, x, y, given = character()) {
 #' for a DAG, m-separation is equivalent to [cs_d_separated()].
 #'
 #' @inheritParams cs_d_separated
+#' @param cg A DAG, ADMG, or AG-family (AG, MAG) graph created with
+#'   [cs_cgraph()].
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
 #' @examples
@@ -51,7 +54,8 @@ cs_m_separated <- function(cg, x, y, given = character()) {
 #' (excluding forced `include` nodes) of the returned set still separates
 #' them.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG, ADMG, AG-family (AG, MAG), or PDAG-family (PDAG, CPDAG,
+#'   MPDAG) graph created with [cs_cgraph()].
 #' @param x,y Node names.
 #' @param include Character vector of nodes forced into the separator (must
 #'   be a subset of `restrict`, if given).
@@ -118,7 +122,8 @@ cs_minimal_separator <- function(
 #' Candidate adjustment sets can be validated with
 #' [cs_is_valid_adjustment()].
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG, MAG)
+#'   graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param type Adjustment set type: `"optimal"` (default), `"parents"`, or
 #'   `"backdoor"`. Ignored for MAG-family graphs; `"backdoor"` is not
@@ -165,7 +170,7 @@ cs_adjustment_set <- function(
 #' effect of `x` on `y`; validate a candidate set directly with
 #' [cs_is_valid_frontdoor()].
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into the set.
 #' @param restrict Character vector of candidate nodes the set is drawn
@@ -205,7 +210,7 @@ cs_frontdoor_set <- function(
 #' of `x`, and (2) `given` blocks every backdoor path from `x` to `y` (every
 #' parent of `x` is d-separated from `y` given `given` together with `x`).
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
@@ -226,7 +231,7 @@ cs_is_valid_backdoor <- function(cg, x, y, given = character()) {
 #' see [cs_is_valid_backdoor()]. When `minimal = TRUE` (default), only
 #' inclusion-minimal sets are returned.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
@@ -247,7 +252,7 @@ cs_all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' front-door criterion; see [cs_frontdoor_set()] and
 #' [cs_is_valid_frontdoor()].
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into every set.
 #' @param restrict Character vector of candidate nodes sets are drawn from.
@@ -286,7 +291,8 @@ cs_all_frontdoor_sets <- function(
 #' or `x` itself), and must m-separate `x` from `y` in the proper backdoor
 #' graph.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
+#'   MAG) graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the adjustment criterion for
@@ -310,7 +316,8 @@ cs_is_valid_adjustment <- function(cg, x, y, given = character()) {
 #' Adjustment Criterion; see [cs_is_valid_adjustment()]. When
 #' `minimal = TRUE` (default), only inclusion-minimal sets are returned.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
+#'   MAG) graph created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
@@ -334,7 +341,7 @@ cs_all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' the effect is identified via the front-door formula even with unmeasured
 #' confounders between `x` and `y`.
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
@@ -357,7 +364,7 @@ cs_is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' `x`'s incoming edges (exclusion restriction), and at least one node in
 #' `z` must be d-/m-connected to `x` (relevance).
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param z Character vector of instrument node names.
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
@@ -378,7 +385,7 @@ cs_is_valid_iv <- function(cg, x, y, z = character()) {
 #' Finds all minimal (or all) sets of valid instruments for identifying
 #' the causal effect of `x` on `y`; see [cs_is_valid_iv()].
 #'
-#' @param cg A graph created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cs_cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum number of instruments to consider.

@@ -10,7 +10,12 @@
 #' a PAG back to a representative MAG. All return a new graph proxy; the
 #' input graph is unchanged.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()]. Required class depends on
+#'   the function: `cs_skeleton()` and `cs_moralize()` take a DAG or
+#'   PDAG-family (PDAG, CPDAG, MPDAG) graph; `cs_dag_to_cpdag()` and
+#'   `cs_dag_to_mpdag()` take a DAG; `cs_dag_from_pdag()` and
+#'   `cs_meek_closure()` take a PDAG-family graph; `cs_ag_to_mag()` takes an
+#'   AG; `cs_mag_to_pag()` takes a MAG; `cs_mag_from_pag()` takes a PAG.
 #' @return A Julia proxy object representing the transformed graph.
 #' @name cs-transforms
 #' @examples
@@ -60,7 +65,7 @@ cs_mag_from_pag <- cs_graph_fn("mag_from_pag")
 
 #' Induced subgraph
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param nodes Character vector of node names to keep.
 #' @return A Julia proxy object representing the subgraph.
 #' @export
@@ -69,8 +74,8 @@ cs_mag_from_pag <- cs_graph_fn("mag_from_pag")
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_nodes(cs_subgraph(dag, c("A", "B")))
 #' }
-cs_subgraph <- function(graph, nodes) {
-  cs_fn("subgraph")(graph, as.character(nodes))
+cs_subgraph <- function(cg, nodes) {
+  cs_fn("subgraph")(cg, as.character(nodes))
 }
 
 #' Project out latent variables
@@ -79,7 +84,7 @@ cs_subgraph <- function(graph, nodes) {
 #' ADMG over the remaining (observed) variables that preserves the
 #' conditional independence structure among them.
 #'
-#' @param graph A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
 #' @return A Julia proxy object representing the resulting ADMG.
 #' @export
@@ -88,17 +93,17 @@ cs_subgraph <- function(graph, nodes) {
 #'   dag <- cs_cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   cs_edges(cs_latent_project(dag, "U"))
 #' }
-cs_latent_project <- function(graph, latents) {
-  cs_fn("latent_project")(graph, as.character(latents))
+cs_latent_project <- function(cg, latents) {
+  cs_fn("latent_project")(cg, as.character(latents))
 }
 
 #' Make nodes exogenous
 #'
-#' Returns a copy of `graph` with each node in `nodes` made exogenous: its
+#' Returns a copy of `cg` with each node in `nodes` made exogenous: its
 #' incoming edges are removed, and its parents are connected directly to its
 #' children to preserve reachability.
 #'
-#' @param graph A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param nodes Character vector of node names to exogenize.
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
@@ -107,19 +112,19 @@ cs_latent_project <- function(graph, latents) {
 #'   dag <- cs_cgraph(A %-->% M, M %-->% Y)
 #'   cs_edges(cs_exogenize(dag, "M"))
 #' }
-cs_exogenize <- function(graph, nodes) {
-  cs_fn("exogenize")(graph, as.character(nodes))
+cs_exogenize <- function(cg, nodes) {
+  cs_fn("exogenize")(cg, as.character(nodes))
 }
 
 #' Normalize latent structure
 #'
-#' Simplifies the latent nodes of `graph` while preserving the induced
+#' Simplifies the latent nodes of `cg` while preserving the induced
 #' marginal model over the observed variables (Evans 2016, Lemmas 1-3):
 #' exogenizes each latent node, then drops latent nodes with at most one
 #' active child or whose child set is a strict subset of another latent
 #' node's child set.
 #'
-#' @param graph A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
@@ -128,18 +133,18 @@ cs_exogenize <- function(graph, nodes) {
 #'   dag <- cs_cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   cs_edges(cs_normalize_latent_structure(dag, "U"))
 #' }
-cs_normalize_latent_structure <- function(graph, latents) {
-  cs_fn("normalize_latent_structure")(graph, as.character(latents))
+cs_normalize_latent_structure <- function(cg, latents) {
+  cs_fn("normalize_latent_structure")(cg, as.character(latents))
 }
 
 #' Condition and marginalize a graph
 #'
-#' Removes `cond_vars` and `marg_vars` from `graph`, returning the AG over
+#' Removes `cond_vars` and `marg_vars` from `cg`, returning the AG over
 #' the remaining nodes that represents the graphical effect of conditioning
 #' on `cond_vars` and marginalizing out `marg_vars`. At least one of the two
 #' must be non-empty, and they must be disjoint.
 #'
-#' @param graph A DAG or AG created with [cs_cgraph()].
+#' @param cg A DAG or AG-family (AG, MAG) graph created with [cs_cgraph()].
 #' @param cond_vars Character vector of node names to condition on.
 #' @param marg_vars Character vector of node names to marginalize out.
 #' @return A Julia proxy object representing the resulting AG.
@@ -150,12 +155,12 @@ cs_normalize_latent_structure <- function(graph, latents) {
 #'   cs_edges(cs_condition_marginalize(dag, marg_vars = "U"))
 #' }
 cs_condition_marginalize <- function(
-  graph,
+  cg,
   cond_vars = character(),
   marg_vars = character()
 ) {
   cs_fn("condition_marginalize")(
-    graph,
+    cg,
     as.character(cond_vars),
     as.character(marg_vars)
   )
@@ -169,10 +174,10 @@ cs_condition_marginalize <- function(
 #' class with the edges described by `...` added or removed, using the
 #' operators documented at [cs-edge-operators] (e.g. `B %-->% C, C %-->% D`);
 #' any isolated-node declarations in `...` are ignored. `cs_remove_edges()`
-#' errors if an edge in `...` is not present in `graph`. For programmatic use,
+#' errors if an edge in `...` is not present in `cg`. For programmatic use,
 #' pass a spec string via `spec` instead of `...`.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param ... Edge expressions; see [cs-edge-operators]. Mutually exclusive
 #'   with `spec`.
 #' @param spec Edge specification string, for programmatic use. Mutually
@@ -189,14 +194,14 @@ NULL
 
 #' @rdname cs-edge-mutation
 #' @export
-cs_add_edges <- function(graph, ..., spec = NULL) {
-  cs_fn("add_edges")(graph, .cs_dots_or_spec(substitute(list(...)), spec))
+cs_add_edges <- function(cg, ..., spec = NULL) {
+  cs_fn("add_edges")(cg, .cs_dots_or_spec(substitute(list(...)), spec))
 }
 
 #' @rdname cs-edge-mutation
 #' @export
-cs_remove_edges <- function(graph, ..., spec = NULL) {
-  cs_fn("remove_edges")(graph, .cs_dots_or_spec(substitute(list(...)), spec))
+cs_remove_edges <- function(cg, ..., spec = NULL) {
+  cs_fn("remove_edges")(cg, .cs_dots_or_spec(substitute(list(...)), spec))
 }
 
 #' Add or remove isolated nodes
@@ -206,7 +211,7 @@ cs_remove_edges <- function(graph, ..., spec = NULL) {
 #' `cs_remove_nodes()` returns a new graph with `nodes` and all their
 #' incident edges removed, and errors if a node is not present.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param nodes Character vector of node names.
 #' @return A Julia proxy object representing the resulting graph.
 #' @name cs-node-mutation
@@ -220,23 +225,23 @@ NULL
 
 #' @rdname cs-node-mutation
 #' @export
-cs_add_nodes <- function(graph, nodes) {
-  cs_fn("add_nodes")(graph, as.character(nodes))
+cs_add_nodes <- function(cg, nodes) {
+  cs_fn("add_nodes")(cg, as.character(nodes))
 }
 
 #' @rdname cs-node-mutation
 #' @export
-cs_remove_nodes <- function(graph, nodes) {
-  cs_fn("remove_nodes")(graph, as.character(nodes))
+cs_remove_nodes <- function(cg, nodes) {
+  cs_fn("remove_nodes")(cg, as.character(nodes))
 }
 
 #' Reclassify a graph
 #'
 #' Returns a new graph of class `class` with the same nodes and edges as
-#' `graph`. Errors if the edges violate the structural constraints of
+#' `cg`. Errors if the edges violate the structural constraints of
 #' `class`.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param class Target graph class: `"DAG"`, `"UG"`, `"PDAG"`, `"CPDAG"`,
 #'   `"MPDAG"`, `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no
 #'   structural constraints; accepts all edge types).
@@ -250,7 +255,7 @@ cs_remove_nodes <- function(graph, nodes) {
 #'   cs_is_dag(reclassed)
 #' }
 cs_reclass <- function(
-  graph,
+  cg,
   class = c(
     "DAG",
     "UG",
@@ -266,5 +271,5 @@ cs_reclass <- function(
   simple = TRUE
 ) {
   class <- match.arg(class)
-  cs_fn("reclass")(graph, class, simple)
+  cs_fn("reclass")(cg, class, simple)
 }

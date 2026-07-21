@@ -5,7 +5,7 @@
 \title{Simulate data from a DAG}
 \usage{
 cs_simulate_data(
-  graph,
+  cg,
   n,
   standardize = TRUE,
   coef_range = c(-1, 1),
@@ -14,7 +14,7 @@ cs_simulate_data(
 )
 }
 \arguments{
-\item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{n}{Number of samples to generate.}
 
@@ -34,7 +34,7 @@ named and ordered as in \code{\link[=cs_nodes]{cs_nodes()}}.
 }
 \description{
 Simulates observational data from a linear Gaussian structural causal
-model over \code{graph}: each node is a linear function of its parents plus
+model over \code{cg}: each node is a linear function of its parents plus
 independent Gaussian noise with standard deviation \code{error_sd}, with edge
 coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE}
 (default), each variable is standardized to zero mean and unit variance.

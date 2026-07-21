@@ -7,7 +7,7 @@
 cs_all_iv_sets(cg, x, y, minimal = TRUE, max_size = 3)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG or ADMG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

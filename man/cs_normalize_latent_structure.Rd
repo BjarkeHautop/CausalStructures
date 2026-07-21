@@ -4,10 +4,10 @@
 \alias{cs_normalize_latent_structure}
 \title{Normalize latent structure}
 \usage{
-cs_normalize_latent_structure(graph, latents)
+cs_normalize_latent_structure(cg, latents)
 }
 \arguments{
-\item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{latents}{Character vector of latent (unobserved) node names.}
 }
@@ -15,7 +15,7 @@ cs_normalize_latent_structure(graph, latents)
 A Julia proxy object representing the resulting DAG.
 }
 \description{
-Simplifies the latent nodes of \code{graph} while preserving the induced
+Simplifies the latent nodes of \code{cg} while preserving the induced
 marginal model over the observed variables (Evans 2016, Lemmas 1-3):
 exogenizes each latent node, then drops latent nodes with at most one
 active child or whose child set is a strict subset of another latent

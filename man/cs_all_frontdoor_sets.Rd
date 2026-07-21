@@ -7,7 +7,7 @@
 cs_all_frontdoor_sets(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

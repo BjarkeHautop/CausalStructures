@@ -14,8 +14,8 @@
 
 # Edges with their per-endpoint Tail/Arrow/Circle marks, for drawing (as
 # opposed to cs_edges(), which only returns the (from, to) pairs).
-.plot_edges <- function(graph) {
-  res <- cs_fn("edge_marks")(graph)
+.plot_edges <- function(cg) {
+  res <- cs_fn("edge_marks")(cg)
   if (identical(res, "")) {
     return(data.frame(
       from = character(),
@@ -486,12 +486,12 @@ makeContent.cs_edge_grob <- function(x) {
 #' small open circle respectively, so `-->`, `---`, `<->`, `o->`, `o--`, and
 #' `o-o` edges all render correctly.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
 #'   * A character string passed to [cs_layout()] as `method`
 #'     (`"circle"`, `"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
 #'     `"shell"`, `"squaregrid"`).
-#'   * A layout function, called with `graph` and any `...`.
+#'   * A layout function, called with `cg` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
 #' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
 #'   `padding` (mm, default 2), `size` (multiplier, default 1), and `by_node`
@@ -527,7 +527,7 @@ makeContent.cs_edge_grob <- function(x) {
 #' @family plotting
 #' @export
 cs_plot <- function(
-  graph,
+  cg,
   layout = "stress",
   node_style = list(),
   edge_style = list(),
@@ -546,9 +546,9 @@ cs_plot <- function(
   )
 
   if (is.character(layout)) {
-    coords <- cs_layout(graph, method = layout, ...)
+    coords <- cs_layout(cg, method = layout, ...)
   } else if (is.function(layout)) {
-    coords <- layout(graph, ...)
+    coords <- layout(cg, ...)
   } else if (is.data.frame(layout)) {
     required_cols <- c("name", "x", "y")
     missing_cols <- setdiff(required_cols, names(layout))
@@ -559,7 +559,7 @@ cs_plot <- function(
         call. = FALSE
       )
     }
-    graph_nodes <- cs_nodes(graph)
+    graph_nodes <- cs_nodes(cg)
     if (nrow(layout) != length(graph_nodes)) {
       stop(
         "Layout has ",
@@ -593,7 +593,7 @@ cs_plot <- function(
   styles <- .plot_make_styles(node_style, edge_style, label_style, title_style)
 
   labels <- coords$name
-  edges <- .plot_edges(graph)
+  edges <- .plot_edges(cg)
 
   x_range <- range(coords$x)
   y_range <- range(coords$y)

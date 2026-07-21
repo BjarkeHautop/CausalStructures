@@ -4,10 +4,10 @@
 \alias{cs_exogenize}
 \title{Make nodes exogenous}
 \usage{
-cs_exogenize(graph, nodes)
+cs_exogenize(cg, nodes)
 }
 \arguments{
-\item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{nodes}{Character vector of node names to exogenize.}
 }
@@ -15,7 +15,7 @@ cs_exogenize(graph, nodes)
 A Julia proxy object representing the resulting DAG.
 }
 \description{
-Returns a copy of \code{graph} with each node in \code{nodes} made exogenous: its
+Returns a copy of \code{cg} with each node in \code{nodes} made exogenous: its
 incoming edges are removed, and its parents are connected directly to its
 children to preserve reachability.
 }

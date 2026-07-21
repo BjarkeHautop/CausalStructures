@@ -15,7 +15,7 @@
 #' Computes node coordinates for [cs_plot()]. If the graph has not been built
 #' yet, it will be built automatically before computing the layout.
 #'
-#' @param graph A graph created with [cs_cgraph()].
+#' @param cg A graph created with [cs_cgraph()], of any class.
 #' @param method Character string specifying the layout method:
 #'   * `"stress"` (default): stress majorization. A good general-purpose
 #'     choice - well-spaced and deterministic for a given graph.
@@ -26,9 +26,8 @@
 #'   * `"squaregrid"`: square grid.
 #'   * `"circle"`: nodes evenly spaced on a circle, ignoring edge structure.
 #'
-#'   All methods are provided by the NetworkLayout.jl package (a hard
-#'   dependency of this binding's `CausalStructures.jl` project; see
-#'   [cs_setup()]).
+#'   All methods are provided by the
+#'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) package.
 #'
 #' @returns A `data.frame` with columns `name`, `x`, and `y`.
 #'
@@ -41,7 +40,7 @@
 #'   cs_layout(dag, method = "circle")
 #' }
 cs_layout <- function(
-  graph,
+  cg,
   method = c(
     "stress",
     "spring",
@@ -54,13 +53,13 @@ cs_layout <- function(
 ) {
   method <- match.arg(method)
 
-  nm <- cs_nodes(graph)
+  nm <- cs_nodes(cg)
   n <- length(nm)
   if (n == 0) {
     return(data.frame(name = character(), x = numeric(), y = numeric()))
   }
 
-  res <- cs_fn("layout")(graph, method)
+  res <- cs_fn("layout")(cg, method)
   tokens <- as.numeric(strsplit(
     chartr("\x1f", "\x1e", res),
     "\x1e",

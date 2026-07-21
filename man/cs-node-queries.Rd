@@ -10,20 +10,24 @@
 \alias{cs_markov_blanket}
 \title{Node-set queries}
 \usage{
-cs_parents(graph, node)
+cs_parents(cg, node)
 
-cs_children(graph, node)
+cs_children(cg, node)
 
-cs_ancestors(graph, node)
+cs_ancestors(cg, node)
 
-cs_descendants(graph, node)
+cs_descendants(cg, node)
 
-cs_spouses(graph, node)
+cs_spouses(cg, node)
 
-cs_markov_blanket(graph, node)
+cs_markov_blanket(cg, node)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. Supported classes vary by
+function: \code{cs_parents()} and \code{cs_children()} accept any class except
+UG; \code{cs_ancestors()}, \code{cs_descendants()}, and \code{cs_markov_blanket()}
+accept DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family (AG,
+MAG); \code{cs_spouses()} accepts ADMG, AG-family, or PAG.}
 
 \item{node}{Node name.}
 }

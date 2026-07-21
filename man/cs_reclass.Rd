@@ -5,13 +5,13 @@
 \title{Reclassify a graph}
 \usage{
 cs_reclass(
-  graph,
+  cg,
   class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN"),
   simple = TRUE
 )
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{class}{Target graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"},
 \code{"MPDAG"}, \code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no
@@ -24,7 +24,7 @@ A Julia proxy object representing the reclassified graph.
 }
 \description{
 Returns a new graph of class \code{class} with the same nodes and edges as
-\code{graph}. Errors if the edges violate the structural constraints of
+\code{cg}. Errors if the edges violate the structural constraints of
 \code{class}.
 }
 \examples{

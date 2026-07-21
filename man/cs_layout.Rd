@@ -5,12 +5,12 @@
 \title{Compute a graph layout for plotting}
 \usage{
 cs_layout(
-  graph,
+  cg,
   method = c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "circle")
 )
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{method}{Character string specifying the layout method:
 \itemize{
@@ -24,9 +24,8 @@ choice - well-spaced and deterministic for a given graph.
 \item \code{"circle"}: nodes evenly spaced on a circle, ignoring edge structure.
 }
 
-All methods are provided by the NetworkLayout.jl package (a hard
-dependency of this binding's \code{CausalStructures.jl} project; see
-\code{\link[=cs_setup]{cs_setup()}}).}
+All methods are provided by the
+\href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} package.}
 }
 \value{
 A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.

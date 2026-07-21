@@ -342,12 +342,12 @@ cs_split_sets <- function(x) {
 # Wrapper factories
 cs_node_query <- function(name) {
   force(name)
-  function(graph, node) cs_split(cs_fn(name)(graph, node))
+  function(cg, node) cs_split(cs_fn(name)(cg, node))
 }
 
 cs_graph_fn <- function(name) {
   force(name)
-  function(graph) cs_fn(name)(graph)
+  function(cg) cs_fn(name)(cg)
 }
 
 #' Shut down the Julia session

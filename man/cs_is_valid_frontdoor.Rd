@@ -7,7 +7,7 @@
 cs_is_valid_frontdoor(cg, x, y, given = character())
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG or ADMG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

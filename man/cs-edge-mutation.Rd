@@ -6,12 +6,12 @@
 \alias{cs_remove_edges}
 \title{Add or remove edges}
 \usage{
-cs_add_edges(graph, ..., spec = NULL)
+cs_add_edges(cg, ..., spec = NULL)
 
-cs_remove_edges(graph, ..., spec = NULL)
+cs_remove_edges(cg, ..., spec = NULL)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{...}{Edge expressions; see \link{cs-edge-operators}. Mutually exclusive
 with \code{spec}.}
@@ -27,7 +27,7 @@ A Julia proxy object representing the resulting graph.
 class with the edges described by \code{...} added or removed, using the
 operators documented at \link{cs-edge-operators} (e.g. \verb{B \%-->\% C, C \%-->\% D});
 any isolated-node declarations in \code{...} are ignored. \code{cs_remove_edges()}
-errors if an edge in \code{...} is not present in \code{graph}. For programmatic use,
+errors if an edge in \code{...} is not present in \code{cg}. For programmatic use,
 pass a spec string via \code{spec} instead of \code{...}.
 }
 \examples{

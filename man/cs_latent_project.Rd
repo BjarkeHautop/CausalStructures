@@ -4,10 +4,10 @@
 \alias{cs_latent_project}
 \title{Project out latent variables}
 \usage{
-cs_latent_project(graph, latents)
+cs_latent_project(cg, latents)
 }
 \arguments{
-\item{graph}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{latents}{Character vector of latent (unobserved) node names.}
 }

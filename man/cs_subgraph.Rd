@@ -4,10 +4,10 @@
 \alias{cs_subgraph}
 \title{Induced subgraph}
 \usage{
-cs_subgraph(graph, nodes)
+cs_subgraph(cg, nodes)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{nodes}{Character vector of node names to keep.}
 }

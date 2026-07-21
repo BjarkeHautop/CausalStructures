@@ -4,14 +4,10 @@
 \alias{cs_condition_marginalize}
 \title{Condition and marginalize a graph}
 \usage{
-cs_condition_marginalize(
-  graph,
-  cond_vars = character(),
-  marg_vars = character()
-)
+cs_condition_marginalize(cg, cond_vars = character(), marg_vars = character())
 }
 \arguments{
-\item{graph}{A DAG or AG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG or AG-family (AG, MAG) graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{cond_vars}{Character vector of node names to condition on.}
 
@@ -21,7 +17,7 @@ cs_condition_marginalize(
 A Julia proxy object representing the resulting AG.
 }
 \description{
-Removes \code{cond_vars} and \code{marg_vars} from \code{graph}, returning the AG over
+Removes \code{cond_vars} and \code{marg_vars} from \code{cg}, returning the AG over
 the remaining nodes that represents the graphical effect of conditioning
 on \code{cond_vars} and marginalizing out \code{marg_vars}. At least one of the two
 must be non-empty, and they must be disjoint.

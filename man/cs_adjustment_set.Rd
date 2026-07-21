@@ -7,7 +7,8 @@
 cs_adjustment_set(cg, x, y, type = c("optimal", "parents", "backdoor"))
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG, MAG)
+graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

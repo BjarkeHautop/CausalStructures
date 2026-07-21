@@ -8,16 +8,19 @@
 \alias{cs_posteriors}
 \title{Possible-ancestor/descendant node-set queries}
 \usage{
-cs_possible_ancestors(graph, node, open = TRUE)
+cs_possible_ancestors(cg, node, open = TRUE)
 
-cs_possible_descendants(graph, node, open = TRUE)
+cs_possible_descendants(cg, node, open = TRUE)
 
-cs_anteriors(graph, node, open = TRUE)
+cs_anteriors(cg, node, open = TRUE)
 
-cs_posteriors(graph, node, open = TRUE)
+cs_posteriors(cg, node, open = TRUE)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. \code{cs_possible_ancestors()}
+and \code{cs_possible_descendants()} accept PDAG-family (PDAG, CPDAG, MPDAG)
+or PAG graphs; \code{cs_anteriors()} and \code{cs_posteriors()} accept PDAG-family
+or AG-family (AG, MAG) graphs.}
 
 \item{node}{Node name.}
 

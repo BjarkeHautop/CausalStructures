@@ -6,7 +6,7 @@
 \alias{cs_enumerate_dags}
 \title{Count and enumerate DAGs in a Markov equivalence class}
 \usage{
-cs_count_dags(graph)
+cs_count_dags(cg)
 
 cs_enumerate_dags(cg)
 }

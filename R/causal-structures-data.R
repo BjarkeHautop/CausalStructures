@@ -3,12 +3,12 @@
 #' Simulate data from a DAG
 #'
 #' Simulates observational data from a linear Gaussian structural causal
-#' model over `graph`: each node is a linear function of its parents plus
+#' model over `cg`: each node is a linear function of its parents plus
 #' independent Gaussian noise with standard deviation `error_sd`, with edge
 #' coefficients drawn uniformly from `coef_range`. If `standardize = TRUE`
 #' (default), each variable is standardized to zero mean and unit variance.
 #'
-#' @param graph A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cs_cgraph()].
 #' @param n Number of samples to generate.
 #' @param standardize If `TRUE` (default), standardize each variable to zero
 #'   mean and unit variance.
@@ -36,7 +36,7 @@
 #'   head(data2)
 #' }
 cs_simulate_data <- function(
-  graph,
+  cg,
   n,
   standardize = TRUE,
   coef_range = c(-1, 1),
@@ -44,7 +44,7 @@ cs_simulate_data <- function(
   seed = NULL
 ) {
   mat <- cs_fn("simulate_data")(
-    graph,
+    cg,
     n,
     cs_make_rng(seed),
     standardize,
@@ -52,6 +52,6 @@ cs_simulate_data <- function(
     error_sd
   )
   df <- as.data.frame(mat)
-  names(df) <- cs_nodes(graph)
+  names(df) <- cs_nodes(cg)
   df
 }

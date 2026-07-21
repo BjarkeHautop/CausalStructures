@@ -4,10 +4,10 @@
 \alias{cs_edges}
 \title{Get all edges in a graph}
 \usage{
-cs_edges(graph)
+cs_edges(cg)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 }
 \value{
 A matrix with 2 columns (source, target) and one row per edge,

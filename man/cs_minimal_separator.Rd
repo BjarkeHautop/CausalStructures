@@ -7,7 +7,8 @@
 cs_minimal_separator(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A DAG, ADMG, AG-family (AG, MAG), or PDAG-family (PDAG, CPDAG,
+MPDAG) graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 
 \item{x, y}{Node names.}
 

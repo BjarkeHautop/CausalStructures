@@ -4,10 +4,10 @@
 \alias{cs_has_edge}
 \title{Test whether two nodes are adjacent}
 \usage{
-cs_has_edge(graph, x, y)
+cs_has_edge(cg, x, y)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 
 \item{x, y}{Node names.}
 }

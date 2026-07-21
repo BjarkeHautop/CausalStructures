@@ -15,30 +15,30 @@
 \alias{cs_is_acyclic}
 \title{Graph class predicates}
 \usage{
-cs_is_dag(graph)
+cs_is_dag(cg)
 
-cs_is_pdag(graph)
+cs_is_pdag(cg)
 
-cs_is_cpdag(graph)
+cs_is_cpdag(cg)
 
-cs_is_mpdag(graph)
+cs_is_mpdag(cg)
 
-cs_is_ug(graph)
+cs_is_ug(cg)
 
-cs_is_admg(graph)
+cs_is_admg(cg)
 
-cs_is_ag(graph)
+cs_is_ag(cg)
 
-cs_is_mag(graph)
+cs_is_mag(cg)
 
-cs_is_pag(graph)
+cs_is_pag(cg)
 
-cs_is_simple(graph)
+cs_is_simple(cg)
 
-cs_is_acyclic(graph)
+cs_is_acyclic(cg)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
 }
 \value{
 A logical scalar.
@@ -50,7 +50,7 @@ Test which class a graph belongs to (\code{cs_is_dag()}, \code{cs_is_pdag()},
 (\code{cs_is_simple()}, \code{cs_is_acyclic()}).
 }
 \details{
-These test the actual edge structure of \code{graph}, independent of the
+These test the actual edge structure of \code{cg}, independent of the
 \code{class} it has.
 }
 \examples{
