@@ -45,11 +45,13 @@ if (JuliaConnectoR::juliaSetupOk()) {
   dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
   cpdag <- cs_cgraph(A \%---\% B \%---\% C, class = "CPDAG")
 
-  multi <- cs_cgraph(
+  # equivalent to the dag above, built from a spec string
+  dag2 <- cs_cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
+
+  cs_cgraph(
     A \%-->\% B, A \%<->\% B,
     class = "UNKNOWN",
     simple = FALSE
   )
-  nrow(cs_edges(multi))
 }
 }

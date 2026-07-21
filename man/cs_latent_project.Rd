@@ -19,3 +19,9 @@ Eliminates each node in \code{latents} by vertex substitution, producing an
 ADMG over the remaining (observed) variables that preserves the
 conditional independence structure among them.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
+  cs_edges(cs_latent_project(dag, "U"))
+}
+}

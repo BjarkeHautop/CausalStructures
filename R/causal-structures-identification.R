@@ -387,28 +387,32 @@ cs_all_iv_sets <- function(graph, x, y, minimal = TRUE, max_size = 3) {
 
 # --- Equivalence classes and counts ------------------------------------------
 
-#' Equivalence class analysis
+#' Count and enumerate DAGs in a Markov equivalence class
 #'
-#' `cs_count_dags()` returns the count of distinct DAGs in a Markov equivalence
-#' class represented by a CPDAG. `cs_enumerate_dags()` returns all DAGs in the
-#' class. `cs_markov_equivalent()` tests whether two graphs are Markov
-#' equivalent: they share the same skeleton and the same set of v-structures
-#' (unshielded colliders `a --> b <-- c` with `a`, `c` non-adjacent).
+#' `graph` (a PDAG, CPDAG, or MPDAG) represents a Markov equivalence class
+#' (MEC) of DAGs. `cs_enumerate_dags()` lists every DAG in that class;
+#' `cs_count_dags()` counts them without materializing them, which is much
+#' cheaper and useful for sizing the problem before calling
+#' `cs_enumerate_dags()`, since a MEC can be very large.
 #'
-#' @param graph A graph created with [cs_cgraph()], typically a CPDAG.
-#' @param g1,g2 Graphs to compare.
+#' Both apply Meek closure to `graph` first to normalize it, then branch on
+#' each undirected edge in lexicographic order, rejecting orientations that
+#' would introduce a new v-structure or a directed cycle, and propagating
+#' forced orientations via Meek's rules at each step (Chickering's (2002)
+#' recursive listing algorithm).
+#'
+#' @param graph A PDAG, CPDAG, or MPDAG created with [cs_cgraph()].
 #' @return For `cs_count_dags()`, an integer count. For `cs_enumerate_dags()`,
-#'   a list of DAG proxies. For `cs_markov_equivalent()`, a logical scalar.
+#'   a list of DAG proxies.
+#' @references
+#' Chickering, D. M. (2002). Learning equivalence classes of Bayesian-network
+#' structures. *Journal of Machine Learning Research*, 2:445-498.
 #' @name cs-equivalence
 #' @examples
 #' if (JuliaConnectoR::juliaSetupOk()) {
-#'   cpdag <- cs_cgraph(A %---% B, B %---% C, class = "CPDAG")
-#'   cs_count_dags(cpdag)
-#'   length(cs_enumerate_dags(cpdag))
-#'
-#'   g1 <- cs_cgraph(A %-->% B, C %-->% B)
-#'   g2 <- cs_cgraph(A %-->% B, C %-->% B)
-#'   cs_markov_equivalent(g1, g2)
+#'   pdag <- cs_cgraph(A %---% B, B %---% C, class = "PDAG")
+#'   cs_count_dags(pdag)
+#'   cs_enumerate_dags(pdag)
 #' }
 NULL
 
@@ -422,8 +426,36 @@ cs_enumerate_dags <- function(graph) {
   cs_fn("enumerate_dags")(graph)
 }
 
-#' @rdname cs-equivalence
+#' Test whether two graphs are Markov equivalent
+#'
+#' Returns `TRUE` if `g1` and `g2` (both DAGs, or both MAGs) belong to the
+#' same Markov equivalence class, i.e. they impose the same
+#' (conditional-)independence constraints.
+#'
+#' For DAGs, this holds iff they share the same skeleton and the same set of
+#' v-structures (unshielded colliders `a --> b <-- c` with `a`, `c`
+#' non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
+#' they map to the same PAG.
+#'
+#' @param g1,g2 Graphs to compare, created with [cs_cgraph()]. Both must be
+#'   DAGs, or both must be MAGs.
+#' @return A logical scalar.
+#' @references
+#' Verma, T. & Pearl, J. (1990). Equivalence and synthesis of causal models.
+#' *Proceedings of UAI 1990*.
+#'
+#' Ali, R. A., Richardson, T. S., & Spirtes, P. (2009). Markov equivalence for
+#' ancestral graphs. *Annals of Statistics*, 37(5B):2808-2837.
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   g1 <- cs_cgraph(A %-->% B, C %-->% B)
+#'   g2 <- cs_cgraph(A %-->% B, C %-->% B)
+#'   cs_markov_equivalent(g1, g2)
+#'
+#'   g3 <- cs_cgraph(A %-->% B, B %-->% C)
+#'   cs_markov_equivalent(g1, g3)
+#' }
 cs_markov_equivalent <- function(g1, g2) {
   cs_fn("markov_equivalent")(g1, g2)
 }

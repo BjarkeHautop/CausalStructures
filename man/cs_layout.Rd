@@ -35,6 +35,13 @@ A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
 Computes node coordinates for \code{\link[=cs_plot]{cs_plot()}}. If the graph has not been built
 yet, it will be built automatically before computing the layout.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
+  cs_layout(dag)
+  cs_layout(dag, method = "circle")
+}
+}
 \seealso{
 Other plotting:
 \code{\link[=cs_plot]{cs_plot()}}

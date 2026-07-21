@@ -21,3 +21,9 @@ exogenizes each latent node, then drops latent nodes with at most one
 active child or whose child set is a strict subset of another latent
 node's child set.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
+  cs_edges(cs_normalize_latent_structure(dag, "U"))
+}
+}

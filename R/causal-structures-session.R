@@ -131,13 +131,17 @@ cs_session_ok <- function() {
 #' dependencies, and imports the module. Called automatically by the
 #' wrapper functions; call it yourself to pay the startup cost up front.
 #'
-#' If the Julia process died since setup (e.g. JuliaConnectoR kills it when
+#' If the Julia process died since setup (e.g. \pkg{JuliaConnectoR} kills it when
 #' an R interrupt arrives mid-call), the session is set up again from
 #' scratch. Graph proxies created before the restart are lost and must be
 #' recreated.
 #'
 #' @return The imported Julia module (invisibly).
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   cs_setup()
+#' }
 cs_setup <- function() {
   if (cs_session_ok()) {
     return(invisible(.cs$module))
@@ -350,6 +354,11 @@ cs_graph_fn <- function(name) {
 #'
 #' @return Called for its side effect; returns `NULL` invisibly.
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   cs_setup()
+#'   cs_stop()
+#' }
 cs_stop <- function() {
   .cs$module <- NULL
   .cs$con <- NULL

@@ -15,8 +15,13 @@ dependencies, and imports the module. Called automatically by the
 wrapper functions; call it yourself to pay the startup cost up front.
 }
 \details{
-If the Julia process died since setup (e.g. JuliaConnectoR kills it when
+If the Julia process died since setup (e.g. \pkg{JuliaConnectoR} kills it when
 an R interrupt arrives mid-call), the session is set up again from
 scratch. Graph proxies created before the restart are lost and must be
 recreated.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  cs_setup()
+}
 }

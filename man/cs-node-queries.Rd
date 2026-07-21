@@ -36,3 +36,12 @@ Relatives of a node: \code{cs_parents()}, \code{cs_children()}, \code{cs_ancesto
 \code{\link[=cs_neighbors]{cs_neighbors()}} and \link{cs-possible-queries} for the remaining node-set
 queries, which take extra arguments.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+  cs_parents(dag, "M")
+  cs_children(dag, "X")
+  cs_ancestors(dag, "Y")
+  cs_descendants(dag, "X")
+}
+}

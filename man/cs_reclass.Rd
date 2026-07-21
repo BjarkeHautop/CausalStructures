@@ -27,3 +27,10 @@ Returns a new graph of class \code{class} with the same nodes and edges as
 \code{graph}. Errors if the edges violate the structural constraints of
 \code{class}.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, class = "UNKNOWN")
+  reclassed <- cs_reclass(dag, class = "DAG")
+  cs_is_dag(reclassed)
+}
+}

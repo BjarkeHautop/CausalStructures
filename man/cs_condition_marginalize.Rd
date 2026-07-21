@@ -26,3 +26,9 @@ the remaining nodes that represents the graphical effect of conditioning
 on \code{cond_vars} and marginalizing out \code{marg_vars}. At least one of the two
 must be non-empty, and they must be disjoint.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% M, M \%-->\% Y, U \%-->\% A, U \%-->\% Y)
+  cs_edges(cs_condition_marginalize(dag, marg_vars = "U"))
+}
+}

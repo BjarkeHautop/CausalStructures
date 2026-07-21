@@ -4,39 +4,41 @@
 \alias{cs-equivalence}
 \alias{cs_count_dags}
 \alias{cs_enumerate_dags}
-\alias{cs_markov_equivalent}
-\title{Equivalence class analysis}
+\title{Count and enumerate DAGs in a Markov equivalence class}
 \usage{
 cs_count_dags(graph)
 
 cs_enumerate_dags(graph)
-
-cs_markov_equivalent(g1, g2)
 }
 \arguments{
-\item{graph}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, typically a CPDAG.}
-
-\item{g1, g2}{Graphs to compare.}
+\item{graph}{A PDAG, CPDAG, or MPDAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
 }
 \value{
 For \code{cs_count_dags()}, an integer count. For \code{cs_enumerate_dags()},
-a list of DAG proxies. For \code{cs_markov_equivalent()}, a logical scalar.
+a list of DAG proxies.
 }
 \description{
-\code{cs_count_dags()} returns the count of distinct DAGs in a Markov equivalence
-class represented by a CPDAG. \code{cs_enumerate_dags()} returns all DAGs in the
-class. \code{cs_markov_equivalent()} tests whether two graphs are Markov
-equivalent: they share the same skeleton and the same set of v-structures
-(unshielded colliders \verb{a --> b <-- c} with \code{a}, \code{c} non-adjacent).
+\code{graph} (a PDAG, CPDAG, or MPDAG) represents a Markov equivalence class
+(MEC) of DAGs. \code{cs_enumerate_dags()} lists every DAG in that class;
+\code{cs_count_dags()} counts them without materializing them, which is much
+cheaper and useful for sizing the problem before calling
+\code{cs_enumerate_dags()}, since a MEC can be very large.
+}
+\details{
+Both apply Meek closure to \code{graph} first to normalize it, then branch on
+each undirected edge in lexicographic order, rejecting orientations that
+would introduce a new v-structure or a directed cycle, and propagating
+forced orientations via Meek's rules at each step (Chickering's (2002)
+recursive listing algorithm).
 }
 \examples{
 if (JuliaConnectoR::juliaSetupOk()) {
-  cpdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
-  cs_count_dags(cpdag)
-  length(cs_enumerate_dags(cpdag))
-
-  g1 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
-  g2 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
-  cs_markov_equivalent(g1, g2)
+  pdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
+  cs_count_dags(pdag)
+  cs_enumerate_dags(pdag)
 }
+}
+\references{
+Chickering, D. M. (2002). Learning equivalence classes of Bayesian-network
+structures. \emph{Journal of Machine Learning Research}, 2:445-498.
 }

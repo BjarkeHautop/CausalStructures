@@ -19,3 +19,9 @@ Returns a copy of \code{graph} with each node in \code{nodes} made exogenous: it
 incoming edges are removed, and its parents are connected directly to its
 children to preserve reachability.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% M, M \%-->\% Y)
+  cs_edges(cs_exogenize(dag, "M"))
+}
+}

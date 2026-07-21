@@ -12,3 +12,9 @@ Called for its side effect; returns \code{NULL} invisibly.
 \description{
 Shut down the Julia session
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  cs_setup()
+  cs_stop()
+}
+}

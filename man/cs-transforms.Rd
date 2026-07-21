@@ -46,3 +46,11 @@ its PAG equivalence class representative, and \code{cs_mag_from_pag()} resolves
 a PAG back to a representative MAG. All return a new graph proxy; the
 input graph is unchanged.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
+  cs_skeleton(dag)
+  cpdag <- cs_dag_to_cpdag(dag)
+  cs_dag_from_pdag(cpdag)
+}
+}

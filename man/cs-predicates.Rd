@@ -49,3 +49,15 @@ Test which class a graph belongs to (\code{cs_is_dag()}, \code{cs_is_pdag()},
 \code{cs_is_ag()}, \code{cs_is_mag()}, \code{cs_is_pag()}) or structural properties
 (\code{cs_is_simple()}, \code{cs_is_acyclic()}).
 }
+\details{
+These test the actual edge structure of \code{graph}, independent of the
+\code{class} it has.
+}
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B, class = "UNKNOWN")
+  cs_is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
+  cs_is_ug(dag)
+  cs_is_acyclic(dag)
+}
+}

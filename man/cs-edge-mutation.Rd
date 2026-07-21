@@ -30,3 +30,10 @@ any isolated-node declarations in \code{...} are ignored. \code{cs_remove_edges(
 errors if an edge in \code{...} is not present in \code{graph}. For programmatic use,
 pass a spec string via \code{spec} instead of \code{...}.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B)
+  cs_edges(cs_add_edges(dag, B \%-->\% C))
+  cs_edges(cs_remove_edges(dag, A \%-->\% B))
+}
+}

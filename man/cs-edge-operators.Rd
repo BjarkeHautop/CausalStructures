@@ -63,4 +63,10 @@ These operators only make sense inside the \code{...} of \code{cs_cgraph()},
 unevaluated; they are not exported and are not meant to be called
 directly.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+  cs_edges(dag)
+}
+}
 \keyword{internal}

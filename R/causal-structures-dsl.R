@@ -290,6 +290,11 @@
 #' @return Not meaningful on its own; see the Description.
 #' @name cs-edge-operators
 #' @keywords internal
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+#'   cs_edges(dag)
+#' }
 NULL
 
 #' @rdname cs-edge-operators

@@ -34,6 +34,12 @@
 #'
 #' @family plotting
 #' @export
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
+#'   cs_layout(dag)
+#'   cs_layout(dag, method = "circle")
+#' }
 cs_layout <- function(
   graph,
   method = c(

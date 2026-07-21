@@ -11,6 +11,14 @@
 #' @param node Node name.
 #' @return Sorted character vector of node names.
 #' @name cs-node-queries
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+#'   cs_parents(dag, "M")
+#'   cs_children(dag, "X")
+#'   cs_ancestors(dag, "Y")
+#'   cs_descendants(dag, "X")
+#' }
 NULL
 
 #' @rdname cs-node-queries
@@ -132,9 +140,19 @@ cs_posteriors <- function(graph, node, open = TRUE) {
 #' `cs_is_ag()`, `cs_is_mag()`, `cs_is_pag()`) or structural properties
 #' (`cs_is_simple()`, `cs_is_acyclic()`).
 #'
+#' These test the actual edge structure of `graph`, independent of the
+#' `class` it has.
+#'
 #' @param graph A graph created with [cs_cgraph()].
 #' @return A logical scalar.
 #' @name cs-predicates
+#' @examples
+#' if (JuliaConnectoR::juliaSetupOk()) {
+#'   dag <- cs_cgraph(A %-->% B, class = "UNKNOWN")
+#'   cs_is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
+#'   cs_is_ug(dag)
+#'   cs_is_acyclic(dag)
+#' }
 NULL
 
 #' @rdname cs-predicates

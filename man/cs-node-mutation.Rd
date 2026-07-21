@@ -24,3 +24,10 @@ added as isolated nodes (nodes already present are ignored).
 \code{cs_remove_nodes()} returns a new graph with \code{nodes} and all their
 incident edges removed, and errors if a node is not present.
 }
+\examples{
+if (JuliaConnectoR::juliaSetupOk()) {
+  dag <- cs_cgraph(A \%-->\% B)
+  cs_nodes(cs_add_nodes(dag, "C"))
+  cs_nodes(cs_remove_nodes(dag, "B"))
+}
+}
