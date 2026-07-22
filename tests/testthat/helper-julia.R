@@ -1,11 +1,11 @@
 skip_if_no_julia <- function() {
   testthat::skip_if_not(
-    cs_julia_available(),
+    julia_available(),
     "Julia is not available"
   )
   has_pkg <- tryCatch(
     {
-      cs_pkg_path()
+      pkg_path()
       TRUE
     },
     error = function(e) FALSE
@@ -18,7 +18,7 @@ test_dag <- local({
   g <- NULL
   function() {
     if (is.null(g)) {
-      g <<- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+      g <<- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
     }
     g
   }

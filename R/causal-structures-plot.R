@@ -13,9 +13,9 @@
 # and "Tail" draws nothing (a plain line end).
 
 # Edges with their per-endpoint Tail/Arrow/Circle marks, for drawing (as
-# opposed to cs_edges(), which only returns the (from, to) pairs).
+# opposed to edges(), which only returns the (from, to) pairs).
 .plot_edges <- function(cg) {
-  mat <- cs_fn("edge_marks")(cg)
+  mat <- fn("edge_marks")(cg)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],
@@ -465,13 +465,13 @@ makeContent.cs_edge_grob <- function(x) {
 #' Plot a causal graph
 #'
 #' Creates a grid graphics object representing a graph created with
-#' [cs_cgraph()]. All edge types are supported (directed, undirected,
+#' [cgraph()]. All edge types are supported (directed, undirected,
 #' bidirected, and partially-marked PAG-style edges): each endpoint's
 #' Tail/Arrow/Circle mark is drawn as a plain line end, an arrowhead, or a
 #' small open circle respectively, so `-->`, `---`, `<->`, `o->`, `o--`, and
 #' `o-o` edges all render correctly.
 #'
-#' @param cg A graph created with [cs_cgraph()], of any class.
+#' @param cg A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
 #'   * A character string passed to [cs_layout()] as `method`
 #'     (`"circle"`, `"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
@@ -503,8 +503,8 @@ makeContent.cs_edge_grob <- function(x) {
 #' @returns A `cs_plot` object, drawn automatically when printed.
 #'
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
+#' if (julia_available()) {
+#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   cs_plot(dag)
 #'   cs_plot(dag, layout = "circle", main = "Quick guide DAG")
 #' }
@@ -544,7 +544,7 @@ cs_plot <- function(
         call. = FALSE
       )
     }
-    graph_nodes <- cs_nodes(cg)
+    graph_nodes <- nodes(cg)
     if (nrow(layout) != length(graph_nodes)) {
       stop(
         "Layout has ",

@@ -2,27 +2,27 @@
 % Please edit documentation in R/causal-structures-identification.R
 \name{cs-equivalence}
 \alias{cs-equivalence}
-\alias{cs_count_dags}
-\alias{cs_enumerate_dags}
+\alias{count_dags}
+\alias{enumerate_dags}
 \title{Count and enumerate DAGs in a Markov equivalence class}
 \usage{
-cs_count_dags(cg)
+count_dags(cg)
 
-cs_enumerate_dags(cg)
+enumerate_dags(cg)
 }
 \arguments{
-\item{cg}{A PDAG, CPDAG, or MPDAG created with \code{\link[=cs_cgraph]{cs_cgraph()}}.}
+\item{cg}{A PDAG, CPDAG, or MPDAG created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-For \code{cs_count_dags()}, an integer count. For \code{cs_enumerate_dags()},
+For \code{count_dags()}, an integer count. For \code{enumerate_dags()},
 a list of DAG proxies.
 }
 \description{
 \code{cg} (a PDAG, CPDAG, or MPDAG) represents a Markov equivalence class
-(MEC) of DAGs. \code{cs_enumerate_dags()} lists every DAG in that class;
-\code{cs_count_dags()} counts them without materializing them, which is much
+(MEC) of DAGs. \code{enumerate_dags()} lists every DAG in that class;
+\code{count_dags()} counts them without materializing them, which is much
 cheaper and useful for sizing the problem before calling
-\code{cs_enumerate_dags()}, since a MEC can be very large.
+\code{enumerate_dags()}, since a MEC can be very large.
 }
 \details{
 Both apply Meek closure to \code{cg} first to normalize it, then branch on
@@ -32,10 +32,10 @@ forced orientations via Meek's rules at each step (Chickering's (2002)
 recursive listing algorithm).
 }
 \examples{
-if (cs_julia_available()) {
-  pdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
-  cs_count_dags(pdag)
-  cs_enumerate_dags(pdag)
+if (julia_available()) {
+  pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
+  count_dags(pdag)
+  enumerate_dags(pdag)
 }
 }
 \references{

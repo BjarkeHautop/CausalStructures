@@ -10,7 +10,7 @@ cs_layout(
 )
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{method}{Character string specifying the layout method:
 \itemize{
@@ -35,8 +35,8 @@ Computes node coordinates for \code{\link[=cs_plot]{cs_plot()}}. If the graph ha
 yet, it will be built automatically before computing the layout.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B, B \%-->\% C)
   cs_layout(dag)
   cs_layout(dag, method = "circle")
 }

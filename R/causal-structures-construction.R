@@ -24,20 +24,20 @@
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
-#'   cpdag <- cs_cgraph(A %---% B %---% C, class = "CPDAG")
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
+#'   cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
 #'
 #'   # equivalent to the dag above, built from a spec string
-#'   dag2 <- cs_cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
+#'   dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
 #'
-#'   cs_cgraph(
+#'   cgraph(
 #'     A %-->% B, A %<->% B,
 #'     class = "UNKNOWN",
 #'     simple = FALSE
 #'   )
 #' }
-cs_cgraph <- function(
+cgraph <- function(
   ...,
   spec = NULL,
   class = c(
@@ -55,7 +55,7 @@ cs_cgraph <- function(
   simple = TRUE
 ) {
   class <- match.arg(class)
-  cs_fn("cgraph")(.cs_dots_or_spec(substitute(list(...)), spec), class, simple)
+  fn("cgraph")(.dots_or_spec(substitute(list(...)), spec), class, simple)
 }
 
 #' Generate a random graph
@@ -66,7 +66,7 @@ cs_cgraph <- function(
 #'
 #' Exactly one of `m` (exact edge count) or `p` (edge probability) must be
 #' given. For `class = "CPDAG"`, the sampled DAG is converted with
-#' [cs_dag_to_cpdag()].
+#' [dag_to_cpdag()].
 #'
 #' @param n Number of nodes.
 #' @param m Number of edges (supply exactly one of `m` and `p`).
@@ -76,11 +76,11 @@ cs_cgraph <- function(
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   cg <- cs_generate_graph(4, m = 3, seed = 1405)
-#'   cs_edges(cg)
+#' if (julia_available()) {
+#'   cg <- generate_graph(4, m = 3, seed = 1405)
+#'   edges(cg)
 #' }
-cs_generate_graph <- function(
+generate_graph <- function(
   n,
   m = NULL,
   p = NULL,
@@ -88,89 +88,89 @@ cs_generate_graph <- function(
   seed = NULL
 ) {
   class <- match.arg(class)
-  cs_fn("generate_graph")(as.integer(n), m, p, class, cs_make_rng(seed))
+  fn("generate_graph")(as.integer(n), m, p, class, make_rng(seed))
 }
 
 # --- Graph-level queries -----------------------------------------------------
 
 #' Graph-level node queries
 #'
-#' `cs_nodes()` returns all node names in alphabetical order.
-#' `cs_topological_sort()` returns the nodes of a DAG in topological
+#' `nodes()` returns all node names in alphabetical order.
+#' `topological_sort()` returns the nodes of a DAG in topological
 #' order: for every directed edge `u --> v`, `u` appears before `v`.
-#' `cs_exogenous_nodes()` returns the nodes with no parents (for a UG,
+#' `exogenous_nodes()` returns the nodes with no parents (for a UG,
 #' the isolated nodes).
 #'
-#' @param cg A graph created with [cs_cgraph()]. `cs_nodes()` accepts any
-#'   class; `cs_topological_sort()` requires a DAG; `cs_exogenous_nodes()`
+#' @param cg A graph created with [cgraph()]. `nodes()` accepts any
+#'   class; `topological_sort()` requires a DAG; `exogenous_nodes()`
 #'   accepts any class except PAG.
 #' @return Character vector of node names.
 #' @name cs-graph-queries
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(B %-->% A, A %-->% C)
-#'   cs_nodes(dag)
-#'   cs_topological_sort(dag)
-#'   cs_exogenous_nodes(dag)
+#' if (julia_available()) {
+#'   dag <- cgraph(B %-->% A, A %-->% C)
+#'   nodes(dag)
+#'   topological_sort(dag)
+#'   exogenous_nodes(dag)
 #'
-#'   pdag <- cs_cgraph(A %-->% B, B %---% C, class = "PDAG")
-#'   cs_exogenous_nodes(pdag)
-#'   cs_exogenous_nodes(pdag, undirected_as_parents = TRUE)
+#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#'   exogenous_nodes(pdag)
+#'   exogenous_nodes(pdag, undirected_as_parents = TRUE)
 #' }
 NULL
 
 #' @rdname cs-graph-queries
 #' @export
-cs_nodes <- function(cg) {
-  cs_fn("nodes")(cg)
+nodes <- function(cg) {
+  fn("nodes")(cg)
 }
 
 #' @rdname cs-graph-queries
 #' @export
-cs_topological_sort <- function(cg) {
-  cs_fn("topological_sort")(cg)
+topological_sort <- function(cg) {
+  fn("topological_sort")(cg)
 }
 
 #' @rdname cs-graph-queries
 #' @param undirected_as_parents Only used for PDAG-family graphs. If `TRUE`,
 #'   a node incident to any undirected edge is not considered exogenous.
 #' @export
-cs_exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
-  cs_fn("exogenous_nodes")(cg, undirected_as_parents)
+exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
+  fn("exogenous_nodes")(cg, undirected_as_parents)
 }
 
 #' Test whether two nodes are adjacent
 #'
-#' Tests adjacency, not directed reachability: `cs_has_edge(g, x, y)` and
-#' `cs_has_edge(g, y, x)` always agree, even for a directed edge `x --> y`.
+#' Tests adjacency, not directed reachability: `has_edge(g, x, y)` and
+#' `has_edge(g, y, x)` always agree, even for a directed edge `x --> y`.
 #'
-#' @param cg A graph created with [cs_cgraph()], of any class.
+#' @param cg A graph created with [cgraph()], of any class.
 #' @param x,y Node names.
 #' @return `TRUE` if the graph has any edge between `x` and `y`,
 #'   regardless of direction.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% B, C)
-#'   cs_has_edge(dag, "A", "B")
-#'   cs_has_edge(dag, "B", "A")
-#'   cs_has_edge(dag, "A", "C")
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, C)
+#'   has_edge(dag, "A", "B")
+#'   has_edge(dag, "B", "A")
+#'   has_edge(dag, "A", "C")
 #' }
-cs_has_edge <- function(cg, x, y) {
-  cs_fn("has_edge")(cg, x, y)
+has_edge <- function(cg, x, y) {
+  fn("has_edge")(cg, x, y)
 }
 
 #' Get all edges in a graph
 #'
-#' @param cg A graph created with [cs_cgraph()], of any class.
+#' @param cg A graph created with [cgraph()], of any class.
 #' @return A matrix with 2 columns (source, target) and one row per edge,
 #'   or an empty matrix if the graph has no edges.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
-#'   cs_edges(dag)
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
+#'   edges(dag)
 #' }
-cs_edges <- function(cg) {
-  cs_fn("edges")(cg)
+edges <- function(cg) {
+  fn("edges")(cg)
 }

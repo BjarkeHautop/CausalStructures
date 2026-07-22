@@ -8,7 +8,7 @@
 #' coefficients drawn uniformly from `coef_range`. If `standardize = TRUE`
 #' (default), each variable is standardized to zero mean and unit variance.
 #'
-#' @param cg A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cgraph()].
 #' @param n Number of samples to generate.
 #' @param standardize If `TRUE` (default), standardize each variable to zero
 #'   mean and unit variance.
@@ -17,15 +17,15 @@
 #' @param error_sd Standard deviation of each node's Gaussian noise term.
 #' @param seed Optional integer seed for reproducibility.
 #' @return A data frame with `n` rows (samples) and one column per node,
-#'   named and ordered as in [cs_nodes()].
+#'   named and ordered as in [nodes()].
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
-#'   data <- cs_simulate_data(dag, n = 100, seed = 1405)
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
+#'   data <- simulate_data(dag, n = 100, seed = 1405)
 #'   head(data)
 #'
-#'   data2 <- cs_simulate_data(
+#'   data2 <- simulate_data(
 #'     dag,
 #'     n = 100,
 #'     standardize = FALSE,
@@ -35,7 +35,7 @@
 #'   )
 #'   head(data2)
 #' }
-cs_simulate_data <- function(
+simulate_data <- function(
   cg,
   n,
   standardize = TRUE,
@@ -43,15 +43,15 @@ cs_simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  mat <- cs_fn("simulate_data")(
+  mat <- fn("simulate_data")(
     cg,
     n,
-    cs_make_rng(seed),
+    make_rng(seed),
     standardize,
     coef_range,
     error_sd
   )
   df <- as.data.frame(mat)
-  names(df) <- cs_nodes(cg)
+  names(df) <- nodes(cg)
   df
 }

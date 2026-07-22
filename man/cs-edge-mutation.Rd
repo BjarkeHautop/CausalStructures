@@ -2,16 +2,16 @@
 % Please edit documentation in R/causal-structures-transform.R
 \name{cs-edge-mutation}
 \alias{cs-edge-mutation}
-\alias{cs_add_edges}
-\alias{cs_remove_edges}
+\alias{add_edges}
+\alias{remove_edges}
 \title{Add or remove edges}
 \usage{
-cs_add_edges(cg, ..., spec = NULL)
+add_edges(cg, ..., spec = NULL)
 
-cs_remove_edges(cg, ..., spec = NULL)
+remove_edges(cg, ..., spec = NULL)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{...}{Edge expressions; see \link{cs-edge-operators}. Mutually exclusive
 with \code{spec}.}
@@ -23,17 +23,17 @@ exclusive with \code{...}.}
 A Julia proxy object representing the resulting graph.
 }
 \description{
-\code{cs_add_edges()} and \code{cs_remove_edges()} return a new graph of the same
+\code{add_edges()} and \code{remove_edges()} return a new graph of the same
 class with the edges described by \code{...} added or removed, using the
 operators documented at \link{cs-edge-operators} (e.g. \verb{B \%-->\% C, C \%-->\% D});
-any isolated-node declarations in \code{...} are ignored. \code{cs_remove_edges()}
+any isolated-node declarations in \code{...} are ignored. \code{remove_edges()}
 errors if an edge in \code{...} is not present in \code{cg}. For programmatic use,
 pass a spec string via \code{spec} instead of \code{...}.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% B)
-  cs_edges(cs_add_edges(dag, B \%-->\% C))
-  cs_edges(cs_remove_edges(dag, A \%-->\% B))
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B)
+  edges(add_edges(dag, B \%-->\% C))
+  edges(remove_edges(dag, A \%-->\% B))
 }
 }

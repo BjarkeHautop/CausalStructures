@@ -2,32 +2,32 @@
 % Please edit documentation in R/causal-structures-queries.R
 \name{cs-node-queries}
 \alias{cs-node-queries}
-\alias{cs_parents}
-\alias{cs_children}
-\alias{cs_ancestors}
-\alias{cs_descendants}
-\alias{cs_spouses}
-\alias{cs_markov_blanket}
+\alias{parents}
+\alias{children}
+\alias{ancestors}
+\alias{descendants}
+\alias{spouses}
+\alias{markov_blanket}
 \title{Node-set queries}
 \usage{
-cs_parents(cg, node)
+parents(cg, node)
 
-cs_children(cg, node)
+children(cg, node)
 
-cs_ancestors(cg, node)
+ancestors(cg, node)
 
-cs_descendants(cg, node)
+descendants(cg, node)
 
-cs_spouses(cg, node)
+spouses(cg, node)
 
-cs_markov_blanket(cg, node)
+markov_blanket(cg, node)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. Supported classes vary by
-function: \code{cs_parents()} and \code{cs_children()} accept any class except
-UG; \code{cs_ancestors()}, \code{cs_descendants()}, and \code{cs_markov_blanket()}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. Supported classes vary by
+function: \code{parents()} and \code{children()} accept any class except
+UG; \code{ancestors()}, \code{descendants()}, and \code{markov_blanket()}
 accept DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family (AG,
-MAG); \code{cs_spouses()} accepts ADMG, AG-family, or PAG.}
+MAG); \code{spouses()} accepts ADMG, AG-family, or PAG.}
 
 \item{node}{Node name.}
 }
@@ -35,17 +35,17 @@ MAG); \code{cs_spouses()} accepts ADMG, AG-family, or PAG.}
 Sorted character vector of node names.
 }
 \description{
-Relatives of a node: \code{cs_parents()}, \code{cs_children()}, \code{cs_ancestors()},
-\code{cs_descendants()}, \code{cs_spouses()}, and \code{cs_markov_blanket()}. See
-\code{\link[=cs_neighbors]{cs_neighbors()}} and \link{cs-possible-queries} for the remaining node-set
+Relatives of a node: \code{parents()}, \code{children()}, \code{ancestors()},
+\code{descendants()}, \code{spouses()}, and \code{markov_blanket()}. See
+\code{\link[=neighbors]{neighbors()}} and \link{cs-possible-queries} for the remaining node-set
 queries, which take extra arguments.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
-  cs_parents(dag, "M")
-  cs_children(dag, "X")
-  cs_ancestors(dag, "Y")
-  cs_descendants(dag, "X")
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+  parents(dag, "M")
+  children(dag, "X")
+  ancestors(dag, "Y")
+  descendants(dag, "X")
 }
 }

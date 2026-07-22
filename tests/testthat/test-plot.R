@@ -90,7 +90,7 @@ test_that("cs_plot renders every edge type without error", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  g <- cs_cgraph(
+  g <- cgraph(
     "A --> B, C --- D, E <-> F, G o-> H, I o-- J, K o-o L",
     class = "UNKNOWN"
   )
@@ -99,7 +99,7 @@ test_that("cs_plot renders every edge type without error", {
 
 test_that("cs_plot errors on an empty graph", {
   skip_if_no_julia()
-  g <- cs_cgraph("", class = "DAG")
+  g <- cgraph("", class = "DAG")
   expect_error(cs_plot(g), "empty graph")
 })
 

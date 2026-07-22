@@ -2,24 +2,24 @@
 % Please edit documentation in R/causal-structures-queries.R
 \name{cs-possible-queries}
 \alias{cs-possible-queries}
-\alias{cs_possible_ancestors}
-\alias{cs_possible_descendants}
-\alias{cs_anteriors}
-\alias{cs_posteriors}
+\alias{possible_ancestors}
+\alias{possible_descendants}
+\alias{anteriors}
+\alias{posteriors}
 \title{Possible-ancestor/descendant node-set queries}
 \usage{
-cs_possible_ancestors(cg, node, open = TRUE)
+possible_ancestors(cg, node, open = TRUE)
 
-cs_possible_descendants(cg, node, open = TRUE)
+possible_descendants(cg, node, open = TRUE)
 
-cs_anteriors(cg, node, open = TRUE)
+anteriors(cg, node, open = TRUE)
 
-cs_posteriors(cg, node, open = TRUE)
+posteriors(cg, node, open = TRUE)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. \code{cs_possible_ancestors()}
-and \code{cs_possible_descendants()} accept PDAG-family (PDAG, CPDAG, MPDAG)
-or PAG graphs; \code{cs_anteriors()} and \code{cs_posteriors()} accept PDAG-family
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. \code{possible_ancestors()}
+and \code{possible_descendants()} accept PDAG-family (PDAG, CPDAG, MPDAG)
+or PAG graphs; \code{anteriors()} and \code{posteriors()} accept PDAG-family
 or AG-family (AG, MAG) graphs.}
 
 \item{node}{Node name.}
@@ -30,20 +30,20 @@ or AG-family (AG, MAG) graphs.}
 Sorted character vector of node names.
 }
 \description{
-\code{cs_possible_ancestors()} and \code{cs_possible_descendants()} find nodes
+\code{possible_ancestors()} and \code{possible_descendants()} find nodes
 reachable from \code{node} by a \emph{possibly directed} path: one on which no edge
 is compelled in the direction away from \code{node}, traversing an undirected
-edge or a directed edge pointing the right way. \code{cs_anteriors()} and
-\code{cs_posteriors()} are the corresponding notions for ancestral-graph
+edge or a directed edge pointing the right way. \code{anteriors()} and
+\code{posteriors()} are the corresponding notions for ancestral-graph
 classes (traversing undirected edges too). When \code{open = TRUE} (default),
 \code{node} itself is excluded from the result; when \code{FALSE}, it is included.
 }
 \examples{
-if (cs_julia_available()) {
-  cpdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
-  cs_ancestors(cpdag, "C") # compelled ancestors: none
-  cs_possible_ancestors(cpdag, "C")
-  cs_possible_ancestors(cpdag, "C", open = FALSE) # C included too
+if (julia_available()) {
+  cpdag <- cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
+  ancestors(cpdag, "C") # compelled ancestors: none
+  possible_ancestors(cpdag, "C")
+  possible_ancestors(cpdag, "C", open = FALSE) # C included too
 }
 }
 \references{

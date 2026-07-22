@@ -19,7 +19,7 @@ cs_plot(
 )
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{layout}{Specifies the layout. Can be:
 \itemize{
@@ -65,15 +65,15 @@ A \code{cs_plot} object, drawn automatically when printed.
 }
 \description{
 Creates a grid graphics object representing a graph created with
-\code{\link[=cs_cgraph]{cs_cgraph()}}. All edge types are supported (directed, undirected,
+\code{\link[=cgraph]{cgraph()}}. All edge types are supported (directed, undirected,
 bidirected, and partially-marked PAG-style edges): each endpoint's
 Tail/Arrow/Circle mark is drawn as a plain line end, an arrowhead, or a
 small open circle respectively, so \verb{-->}, \verb{---}, \verb{<->}, \verb{o->}, \verb{o--}, and
 \code{o-o} edges all render correctly.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
+if (julia_available()) {
+  dag <- cgraph("A --> X + Y, X --> M --> Y")
   cs_plot(dag)
   cs_plot(dag, layout = "circle", main = "Quick guide DAG")
 }

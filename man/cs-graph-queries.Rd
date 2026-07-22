@@ -2,20 +2,20 @@
 % Please edit documentation in R/causal-structures-construction.R
 \name{cs-graph-queries}
 \alias{cs-graph-queries}
-\alias{cs_nodes}
-\alias{cs_topological_sort}
-\alias{cs_exogenous_nodes}
+\alias{nodes}
+\alias{topological_sort}
+\alias{exogenous_nodes}
 \title{Graph-level node queries}
 \usage{
-cs_nodes(cg)
+nodes(cg)
 
-cs_topological_sort(cg)
+topological_sort(cg)
 
-cs_exogenous_nodes(cg, undirected_as_parents = FALSE)
+exogenous_nodes(cg, undirected_as_parents = FALSE)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. \code{cs_nodes()} accepts any
-class; \code{cs_topological_sort()} requires a DAG; \code{cs_exogenous_nodes()}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. \code{nodes()} accepts any
+class; \code{topological_sort()} requires a DAG; \code{exogenous_nodes()}
 accepts any class except PAG.}
 
 \item{undirected_as_parents}{Only used for PDAG-family graphs. If \code{TRUE},
@@ -25,21 +25,21 @@ a node incident to any undirected edge is not considered exogenous.}
 Character vector of node names.
 }
 \description{
-\code{cs_nodes()} returns all node names in alphabetical order.
-\code{cs_topological_sort()} returns the nodes of a DAG in topological
+\code{nodes()} returns all node names in alphabetical order.
+\code{topological_sort()} returns the nodes of a DAG in topological
 order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
-\code{cs_exogenous_nodes()} returns the nodes with no parents (for a UG,
+\code{exogenous_nodes()} returns the nodes with no parents (for a UG,
 the isolated nodes).
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(B \%-->\% A, A \%-->\% C)
-  cs_nodes(dag)
-  cs_topological_sort(dag)
-  cs_exogenous_nodes(dag)
+if (julia_available()) {
+  dag <- cgraph(B \%-->\% A, A \%-->\% C)
+  nodes(dag)
+  topological_sort(dag)
+  exogenous_nodes(dag)
 
-  pdag <- cs_cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
-  cs_exogenous_nodes(pdag)
-  cs_exogenous_nodes(pdag, undirected_as_parents = TRUE)
+  pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
+  exogenous_nodes(pdag)
+  exogenous_nodes(pdag, undirected_as_parents = TRUE)
 }
 }

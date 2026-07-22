@@ -39,8 +39,8 @@ or \code{c()} of either.}
 Not meaningful on its own; see the Description.
 }
 \description{
-Infix operators used inside \code{\link[=cs_cgraph]{cs_cgraph()}}, \code{\link[=cs_add_edges]{cs_add_edges()}}, and
-\code{\link[=cs_remove_edges]{cs_remove_edges()}} to specify edges, e.g. \code{A \%-->\% X + Y}. Multiple edges
+Infix operators used inside \code{\link[=cgraph]{cgraph()}}, \code{\link[=add_edges]{add_edges()}}, and
+\code{\link[=remove_edges]{remove_edges()}} to specify edges, e.g. \code{A \%-->\% X + Y}. Multiple edges
 fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} means \verb{A --> X} and \verb{A --> Y}; chaining connects consecutive nodes pairwise, so \code{X \%-->\% M \%-->\% Y} means \verb{X --> M} and \verb{M --> Y}.
 }
 \details{
@@ -58,15 +58,15 @@ fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} mea
 }
 
 
-These operators only make sense inside the \code{...} of \code{cs_cgraph()},
-\code{cs_add_edges()}, or \code{cs_remove_edges()}, which capture their arguments
+These operators only make sense inside the \code{...} of \code{cgraph()},
+\code{add_edges()}, or \code{remove_edges()}, which capture their arguments
 unevaluated; they are not exported and are not meant to be called
 directly.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
-  cs_edges(dag)
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+  edges(dag)
 }
 }
 \keyword{internal}

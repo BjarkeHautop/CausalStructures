@@ -8,43 +8,43 @@
 #' not in `given`.
 #'
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
-#'   [cs_cgraph()].
+#'   [cgraph()].
 #' @param x,y Node names.
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   chain <- cs_cgraph(A %-->% B, B %-->% C)
-#'   cs_d_separated(chain, "A", "C") # chain A --> B --> C is open
-#'   cs_d_separated(chain, "A", "C", "B") # conditioning on B blocks it
+#' if (julia_available()) {
+#'   chain <- cgraph(A %-->% B, B %-->% C)
+#'   d_separated(chain, "A", "C") # chain A --> B --> C is open
+#'   d_separated(chain, "A", "C", "B") # conditioning on B blocks it
 #'
-#'   collider <- cs_cgraph(A %-->% C, B %-->% C)
-#'   cs_d_separated(collider, "A", "B") # collider A --> C <-- B: blocked
-#'   cs_d_separated(collider, "A", "B", "C") # conditioning on C opens it
+#'   collider <- cgraph(A %-->% C, B %-->% C)
+#'   d_separated(collider, "A", "B") # collider A --> C <-- B: blocked
+#'   d_separated(collider, "A", "B", "C") # conditioning on C opens it
 #' }
-cs_d_separated <- function(cg, x, y, given = character()) {
-  cs_fn("d_separated")(cg, x, y, as.character(given))
+d_separated <- function(cg, x, y, given = character()) {
+  fn("d_separated")(cg, x, y, as.character(given))
 }
 
 #' Test m-separation
 #'
 #' Generalizes d-separation to graphs with bidirected and undirected edges;
-#' for a DAG, m-separation is equivalent to [cs_d_separated()].
+#' for a DAG, m-separation is equivalent to [d_separated()].
 #'
-#' @inheritParams cs_d_separated
+#' @inheritParams d_separated
 #' @param cg A DAG, ADMG, or AG-family (AG, MAG) graph created with
-#'   [cs_cgraph()].
+#'   [cgraph()].
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   admg <- cs_cgraph(A %-->% B, A %<->% C, class = "ADMG")
-#'   cs_m_separated(admg, "B", "C") # connected via the bidirected edge at A
-#'   cs_m_separated(admg, "B", "C", "A") # conditioning on A blocks the path
+#' if (julia_available()) {
+#'   admg <- cgraph(A %-->% B, A %<->% C, class = "ADMG")
+#'   m_separated(admg, "B", "C") # connected via the bidirected edge at A
+#'   m_separated(admg, "B", "C", "A") # conditioning on A blocks the path
 #' }
-cs_m_separated <- function(cg, x, y, given = character()) {
-  cs_fn("m_separated")(cg, x, y, as.character(given))
+m_separated <- function(cg, x, y, given = character()) {
+  fn("m_separated")(cg, x, y, as.character(given))
 }
 
 #' Find a minimal separator
@@ -55,7 +55,7 @@ cs_m_separated <- function(cg, x, y, given = character()) {
 #' them.
 #'
 #' @param cg A DAG, ADMG, AG-family (AG, MAG), or PDAG-family (PDAG, CPDAG,
-#'   MPDAG) graph created with [cs_cgraph()].
+#'   MPDAG) graph created with [cgraph()].
 #' @param x,y Node names.
 #' @param include Character vector of nodes forced into the separator (must
 #'   be a subset of `restrict`, if given).
@@ -65,17 +65,17 @@ cs_m_separated <- function(cg, x, y, given = character()) {
 #'   exists.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
-#'   cs_minimal_separator(dag, "X", "Y") # both A and M are needed
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
+#'   minimal_separator(dag, "X", "Y") # both A and M are needed
 #'
-#'   edge <- cs_cgraph(A %-->% B)
-#'   cs_minimal_separator(edge, "A", "B") # direct edge: no separator exists
+#'   edge <- cgraph(A %-->% B)
+#'   minimal_separator(edge, "A", "B") # direct edge: no separator exists
 #'
-#'   cs_minimal_separator(dag, "X", "Y", include = "M") # force M in
-#'   cs_minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
+#'   minimal_separator(dag, "X", "Y", include = "M") # force M in
+#'   minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
 #' }
-cs_minimal_separator <- function(
+minimal_separator <- function(
   cg,
   x,
   y,
@@ -83,7 +83,7 @@ cs_minimal_separator <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  cs_fn("minimal_separator")(
+  fn("minimal_separator")(
     cg,
     x,
     y,
@@ -119,10 +119,10 @@ cs_minimal_separator <- function(
 #' }
 #'
 #' Candidate adjustment sets can be validated with
-#' [cs_is_valid_adjustment()].
+#' [is_valid_adjustment()].
 #'
 #' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG, MAG)
-#'   graph created with [cs_cgraph()].
+#'   graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param type Adjustment set type: `"optimal"` (default), `"parents"`, or
 #'   `"backdoor"`. Ignored for MAG-family graphs; `"backdoor"` is not
@@ -135,30 +135,30 @@ cs_minimal_separator <- function(
 #' \insertRef{pearl2009causality}{testpkg} (`"parents"` and `"backdoor"`)
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(
+#' if (julia_available()) {
+#'   dag <- cgraph(
 #'     C %-->% X, X %-->% F + D, A %-->% X + K, K %-->% Y,
 #'     D %-->% Y + G, Y %-->% H
 #'   )
-#'   sort(cs_adjustment_set(dag, "X", "Y", type = "parents")) # A, C
-#'   cs_adjustment_set(dag, "X", "Y", type = "backdoor") # A
-#'   cs_adjustment_set(dag, "X", "Y", type = "optimal") # K (default)
+#'   sort(adjustment_set(dag, "X", "Y", type = "parents")) # A, C
+#'   adjustment_set(dag, "X", "Y", type = "backdoor") # A
+#'   adjustment_set(dag, "X", "Y", type = "optimal") # K (default)
 #'
-#'   pdag <- cs_cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
-#'   cs_adjustment_set(pdag, "X", "Y") # A
-#'   cs_is_valid_adjustment(pdag, "X", "Y", "A")
+#'   pdag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
+#'   adjustment_set(pdag, "X", "Y") # A
+#'   is_valid_adjustment(pdag, "X", "Y", "A")
 #'
-#'   mag <- cs_cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
-#'   cs_adjustment_set(mag, "X", "Y") # A; type is ignored
+#'   mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+#'   adjustment_set(mag, "X", "Y") # A; type is ignored
 #' }
-cs_adjustment_set <- function(
+adjustment_set <- function(
   cg,
   x,
   y,
   type = c("optimal", "parents", "backdoor")
 ) {
   type <- match.arg(type)
-  cs_fn("adjustment_set")(cg, x, y, type)
+  fn("adjustment_set")(cg, x, y, type)
 }
 
 #' Find a frontdoor adjustment set
@@ -166,9 +166,9 @@ cs_adjustment_set <- function(
 #' Returns a set `Z` with `include ⊆ Z ⊆ restrict` satisfying all three
 #' front-door conditions (Algorithm 1 of the reference below) for the causal
 #' effect of `x` on `y`; validate a candidate set directly with
-#' [cs_is_valid_frontdoor()].
+#' [is_valid_frontdoor()].
 #'
-#' @param cg A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into the set.
 #' @param restrict Character vector of candidate nodes the set is drawn
@@ -179,12 +179,12 @@ cs_adjustment_set <- function(
 #' \insertRef{jeong2022finding}{testpkg}
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
-#'   cs_frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
-#'   cs_frontdoor_set(dag, "X", "Y", restrict = "Z")
+#' if (julia_available()) {
+#'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
+#'   frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+#'   frontdoor_set(dag, "X", "Y", restrict = "Z")
 #' }
-cs_frontdoor_set <- function(
+frontdoor_set <- function(
   cg,
   x,
   y,
@@ -192,7 +192,7 @@ cs_frontdoor_set <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  cs_fn("frontdoor_set")(
+  fn("frontdoor_set")(
     cg,
     x,
     y,
@@ -207,49 +207,49 @@ cs_frontdoor_set <- function(
 #' of `x`, and (2) `given` blocks every backdoor path from `x` to `y` (every
 #' parent of `x` is d-separated from `y` given `given` together with `x`).
 #'
-#' @param cg A DAG or ADMG created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% X, X %-->% Y, A %-->% Y)
-#'   cs_is_valid_backdoor(dag, "X", "Y") # empty set leaves A --> Y open
-#'   cs_is_valid_backdoor(dag, "X", "Y", "A") # conditioning on A blocks it
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
+#'   is_valid_backdoor(dag, "X", "Y") # empty set leaves A --> Y open
+#'   is_valid_backdoor(dag, "X", "Y", "A") # conditioning on A blocks it
 #' }
-cs_is_valid_backdoor <- function(cg, x, y, given = character()) {
-  cs_fn("is_valid_backdoor")(cg, x, y, as.character(given))
+is_valid_backdoor <- function(cg, x, y, given = character()) {
+  fn("is_valid_backdoor")(cg, x, y, as.character(given))
 }
 
 #' Enumerate backdoor adjustment sets
 #'
 #' Lists all sets (up to size `max_size`) satisfying the backdoor criterion;
-#' see [cs_is_valid_backdoor()]. When `minimal = TRUE` (default), only
+#' see [is_valid_backdoor()]. When `minimal = TRUE` (default), only
 #' inclusion-minimal sets are returned.
 #'
-#' @param cg A DAG or ADMG created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% X, X %-->% Y, A %-->% Y)
-#'   cs_all_backdoor_sets(dag, "X", "Y")
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
+#'   all_backdoor_sets(dag, "X", "Y")
 #' }
-cs_all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  cs_split_sets(cs_fn("all_backdoor_sets")(cg, x, y, minimal, max_size))
+all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
+  split_sets(fn("all_backdoor_sets")(cg, x, y, minimal, max_size))
 }
 
 #' Enumerate frontdoor adjustment sets
 #'
 #' Lists all sets `Z` with `include ⊆ Z ⊆ restrict` satisfying the
-#' front-door criterion; see [cs_frontdoor_set()] and
-#' [cs_is_valid_frontdoor()].
+#' front-door criterion; see [frontdoor_set()] and
+#' [is_valid_frontdoor()].
 #'
-#' @param cg A DAG created with [cs_cgraph()].
+#' @param cg A DAG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into every set.
 #' @param restrict Character vector of candidate nodes sets are drawn from.
@@ -257,11 +257,11 @@ cs_all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
-#'   cs_all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
+#' if (julia_available()) {
+#'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
+#'   all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
 #' }
-cs_all_frontdoor_sets <- function(
+all_frontdoor_sets <- function(
   cg,
   x,
   y,
@@ -269,8 +269,8 @@ cs_all_frontdoor_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  cs_split_sets(
-    cs_fn("all_frontdoor_sets")(
+  split_sets(
+    fn("all_frontdoor_sets")(
       cg,
       x,
       y,
@@ -289,7 +289,7 @@ cs_all_frontdoor_sets <- function(
 #' graph.
 #'
 #' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-#'   MAG) graph created with [cs_cgraph()].
+#'   MAG) graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the adjustment criterion for
@@ -298,35 +298,35 @@ cs_all_frontdoor_sets <- function(
 #' \insertRef{perkovic2018complete}{testpkg}
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   admg <- cs_cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
-#'   cs_is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
-#'   cs_is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it
+#' if (julia_available()) {
+#'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
+#'   is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
+#'   is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it
 #' }
-cs_is_valid_adjustment <- function(cg, x, y, given = character()) {
-  cs_fn("is_valid_adjustment")(cg, x, y, as.character(given))
+is_valid_adjustment <- function(cg, x, y, given = character()) {
+  fn("is_valid_adjustment")(cg, x, y, as.character(given))
 }
 
 #' Enumerate all valid adjustment sets
 #'
 #' Lists all sets (up to size `max_size`) satisfying the Generalized
-#' Adjustment Criterion; see [cs_is_valid_adjustment()]. When
+#' Adjustment Criterion; see [is_valid_adjustment()]. When
 #' `minimal = TRUE` (default), only inclusion-minimal sets are returned.
 #'
 #' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-#'   MAG) graph created with [cs_cgraph()].
+#'   MAG) graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   admg <- cs_cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
-#'   cs_all_adjustment_sets(admg, "X", "Y")
+#' if (julia_available()) {
+#'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
+#'   all_adjustment_sets(admg, "X", "Y")
 #' }
-cs_all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  cs_split_sets(cs_fn("all_adjustment_sets")(cg, x, y, minimal, max_size))
+all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
+  split_sets(fn("all_adjustment_sets")(cg, x, y, minimal, max_size))
 }
 
 #' Validate a frontdoor criterion set
@@ -338,19 +338,19 @@ cs_all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' the effect is identified via the front-door formula even with unmeasured
 #' confounders between `x` and `y`.
 #'
-#' @param cg A DAG or ADMG created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
-#'   cs_is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
-#'   cs_is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open
+#' if (julia_available()) {
+#'   dag <- cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
+#'   is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
+#'   is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open
 #' }
-cs_is_valid_frontdoor <- function(cg, x, y, given = character()) {
-  cs_fn("is_valid_frontdoor")(cg, x, y, as.character(given))
+is_valid_frontdoor <- function(cg, x, y, given = character()) {
+  fn("is_valid_frontdoor")(cg, x, y, as.character(given))
 }
 
 #' Validate instrumental variables
@@ -361,42 +361,42 @@ cs_is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' `x`'s incoming edges (exclusion restriction), and at least one node in
 #' `z` must be d-/m-connected to `x` (relevance).
 #'
-#' @param cg A DAG or ADMG created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param z Character vector of instrument node names.
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
+#' if (julia_available()) {
 #'   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
-#'   dag <- cs_cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
-#'   cs_is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument
-#'   cs_is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
+#'   dag <- cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
+#'   is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument
+#'   is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
 #' }
-cs_is_valid_iv <- function(cg, x, y, z = character()) {
-  cs_fn("is_valid_iv")(cg, x, y, as.character(z))
+is_valid_iv <- function(cg, x, y, z = character()) {
+  fn("is_valid_iv")(cg, x, y, as.character(z))
 }
 
 #' Enumerate all valid instrumental variable sets
 #'
 #' Finds all minimal (or all) sets of valid instruments for identifying
-#' the causal effect of `x` on `y`; see [cs_is_valid_iv()].
+#' the causal effect of `x` on `y`; see [is_valid_iv()].
 #'
-#' @param cg A DAG or ADMG created with [cs_cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum number of instruments to consider.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(
+#' if (julia_available()) {
+#'   dag <- cgraph(
 #'     Z1 %-->% X, Z2 %-->% X, X %-->% Y, U %-->% X, U %-->% Y
 #'   )
-#'   cs_all_iv_sets(dag, "X", "Y")
+#'   all_iv_sets(dag, "X", "Y")
 #' }
-cs_all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  cs_split_sets(cs_fn("all_iv_sets")(cg, x, y, minimal, max_size))
+all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
+  split_sets(fn("all_iv_sets")(cg, x, y, minimal, max_size))
 }
 
 # --- Equivalence classes and counts ------------------------------------------
@@ -404,10 +404,10 @@ cs_all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' Count and enumerate DAGs in a Markov equivalence class
 #'
 #' `cg` (a PDAG, CPDAG, or MPDAG) represents a Markov equivalence class
-#' (MEC) of DAGs. `cs_enumerate_dags()` lists every DAG in that class;
-#' `cs_count_dags()` counts them without materializing them, which is much
+#' (MEC) of DAGs. `enumerate_dags()` lists every DAG in that class;
+#' `count_dags()` counts them without materializing them, which is much
 #' cheaper and useful for sizing the problem before calling
-#' `cs_enumerate_dags()`, since a MEC can be very large.
+#' `enumerate_dags()`, since a MEC can be very large.
 #'
 #' Both apply Meek closure to `cg` first to normalize it, then branch on
 #' each undirected edge in lexicographic order, rejecting orientations that
@@ -415,28 +415,28 @@ cs_all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' forced orientations via Meek's rules at each step (Chickering's (2002)
 #' recursive listing algorithm).
 #'
-#' @param cg A PDAG, CPDAG, or MPDAG created with [cs_cgraph()].
-#' @return For `cs_count_dags()`, an integer count. For `cs_enumerate_dags()`,
+#' @param cg A PDAG, CPDAG, or MPDAG created with [cgraph()].
+#' @return For `count_dags()`, an integer count. For `enumerate_dags()`,
 #'   a list of DAG proxies.
 #' @references
 #' \insertRef{chickering2002learning}{testpkg}
 #' @name cs-equivalence
 #' @examples
-#' if (cs_julia_available()) {
-#'   pdag <- cs_cgraph(A %---% B, B %---% C, class = "PDAG")
-#'   cs_count_dags(pdag)
-#'   cs_enumerate_dags(pdag)
+#' if (julia_available()) {
+#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
+#'   count_dags(pdag)
+#'   enumerate_dags(pdag)
 #' }
 NULL
 
 #' @rdname cs-equivalence
 #' @export
-cs_count_dags <- cs_graph_fn("count_dags")
+count_dags <- graph_fn("count_dags")
 
 #' @rdname cs-equivalence
 #' @export
-cs_enumerate_dags <- function(cg) {
-  cs_fn("enumerate_dags")(cg)
+enumerate_dags <- function(cg) {
+  fn("enumerate_dags")(cg)
 }
 
 #' Test whether two graphs are Markov equivalent
@@ -450,7 +450,7 @@ cs_enumerate_dags <- function(cg) {
 #' non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
 #' they map to the same PAG.
 #'
-#' @param g1,g2 Graphs to compare, created with [cs_cgraph()]. Both must be
+#' @param g1,g2 Graphs to compare, created with [cgraph()]. Both must be
 #'   DAGs, or both must be MAGs.
 #' @return A logical scalar.
 #' @references
@@ -459,16 +459,16 @@ cs_enumerate_dags <- function(cg) {
 #' \insertRef{ali2009markov}{testpkg}
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   g1 <- cs_cgraph(A %-->% B, C %-->% B)
-#'   g2 <- cs_cgraph(A %-->% B, C %-->% B)
-#'   cs_markov_equivalent(g1, g2)
+#' if (julia_available()) {
+#'   g1 <- cgraph(A %-->% B, C %-->% B)
+#'   g2 <- cgraph(A %-->% B, C %-->% B)
+#'   markov_equivalent(g1, g2)
 #'
-#'   g3 <- cs_cgraph(A %-->% B, B %-->% C)
-#'   cs_markov_equivalent(g1, g3)
+#'   g3 <- cgraph(A %-->% B, B %-->% C)
+#'   markov_equivalent(g1, g3)
 #' }
-cs_markov_equivalent <- function(g1, g2) {
-  cs_fn("markov_equivalent")(g1, g2)
+markov_equivalent <- function(g1, g2) {
+  fn("markov_equivalent")(g1, g2)
 }
 
 #' Enumerate MAGs in a PAG equivalence class
@@ -477,17 +477,17 @@ cs_markov_equivalent <- function(g1, g2) {
 #' represented by a PAG (Partial Ancestral Graph): each circle endpoint of
 #' the PAG is independently resolved to a tail or an arrowhead, keeping only
 #' assignments that validate as a MAG and map back to the same PAG under
-#' [cs_mag_to_pag()]. For a single representative instead of the whole
-#' class, use [cs_mag_from_pag()].
+#' [mag_to_pag()]. For a single representative instead of the whole
+#' class, use [mag_from_pag()].
 #'
-#' @param cg A PAG (partially ancestral graph) created with [cs_cgraph()].
+#' @param cg A PAG (partially ancestral graph) created with [cgraph()].
 #' @return A Julia proxy list of MAGs in the equivalence class.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   pag <- cs_cgraph(A %o-o% B, B %o-o% C, class = "PAG")
-#'   length(cs_enumerate_mags(pag))
+#' if (julia_available()) {
+#'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
+#'   length(enumerate_mags(pag))
 #' }
-cs_enumerate_mags <- function(cg) {
-  cs_fn("enumerate_mags")(cg)
+enumerate_mags <- function(cg) {
+  fn("enumerate_mags")(cg)
 }

@@ -8,7 +8,7 @@
 # CRAN's JuliaCall (<= 0.17.6) segfaults R on any Julia exception, on Ubuntu
 # + Julia 1.12: a libunwind version conflict, fixed upstream (JuliaCall
 # PR #265/#282, libunwind/libunwind#637) but not yet released to CRAN.
-# cs_preload_julia_libunwind() applies the same fix until it is.
+# preload_julia_libunwind() applies the same fix until it is.
 #
 # Design notes:
 # - One Julia helper per function, defined at setup time in a single
@@ -24,16 +24,16 @@
 #   Matrix directly, for the same reason.
 # - Nested "list of sets" results (`all_backdoor_sets` and friends) still
 #   need a joined-string convention, since `Vector{Vector{String}}` doesn't
-#   auto-convert; see cs_split_sets().
+#   auto-convert; see split_sets().
 # - No session-restart detection: no separate process to reconnect to - if
-#   the embedded Julia dies, so does R. cs_setup() is a plain do-once guard.
-# - cs_stop() is a no-op: JuliaCall exposes no way to tear down and restart
-#   the embedded runtime within a session.
+#   the embedded Julia dies, so does R. setup() is a plain do-once guard.
+# - JuliaCall exposes no way to tear down and restart the embedded runtime
+#   within a session, so there is no stop()/teardown function.
 
 .cs <- new.env(parent = emptyenv())
 
-# Helpers with a _testpkg_<name> Julia wrapper defined in cs_setup()
-.cs_helpers <- c(
+# Helpers with a _testpkg_<name> Julia wrapper defined in setup()
+.helpers <- c(
   "cgraph",
   "generate_graph",
   "topological_sort",
@@ -84,7 +84,7 @@
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
-.cs_passthrough <- c(
+.passthrough <- c(
   "is_dag",
   "is_pdag",
   "is_cpdag",
@@ -108,7 +108,7 @@
   "mag_from_pag"
 )
 
-.cs_helper_defs <- c(
+.helper_defs <- c(
   # A length-1 R character vector arrives in Julia as a scalar String, not
   # a 1-element vector; branch on both.
   '_testpkg_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)',
@@ -300,7 +300,7 @@
 #'
 #' @return Absolute path to the Julia package directory.
 #' @keywords internal
-cs_pkg_path <- function() {
+pkg_path <- function() {
   path <- getOption(
     "testpkg.causalstructures_path",
     file.path(
@@ -311,25 +311,25 @@ cs_pkg_path <- function() {
   normalizePath(path, mustWork = TRUE)
 }
 
-#' Is Julia available for [cs_setup()]?
+#' Is Julia available for [setup()]?
 #'
 #' A quick, side-effect-free check for use in `@examples`; unlike
-#' [cs_setup()] it does not start Julia.
+#' [setup()] it does not start Julia.
 #'
 #' @return A logical scalar.
 #' @keywords internal
-cs_julia_available <- function() {
+julia_available <- function() {
   nzchar(Sys.which("julia"))
 }
 
-.cs_make_caller <- function(fname) {
+.make_caller <- function(fname) {
   force(fname)
-  cs_wrap_errors(function(...) JuliaCall::julia_call(fname, ...))
+  wrap_errors(function(...) JuliaCall::julia_call(fname, ...))
 }
 
 # Fixed upstream in JuliaCall PR #265 (merged 2025-10-27, not yet on CRAN);
 # only apply our own copy of the workaround below that version.
-cs_needs_libunwind_workaround <- function() {
+needs_libunwind_workaround <- function() {
   tryCatch(
     utils::packageVersion("JuliaCall") <= "0.17.6",
     error = function(e) FALSE
@@ -342,8 +342,8 @@ cs_needs_libunwind_workaround <- function() {
 # silently skipped if `julia` isn't on PATH or ships no libunwind.so.8 (e.g.
 # non-Linux, or the conflict doesn't apply), since a missed mitigation
 # should surface as the original segfault, not a confusing setup-time error.
-cs_preload_julia_libunwind <- function() {
-  if (!cs_needs_libunwind_workaround()) {
+preload_julia_libunwind <- function() {
+  if (!needs_libunwind_workaround()) {
     return(invisible(NULL))
   }
   tryCatch(
@@ -382,14 +382,14 @@ cs_preload_julia_libunwind <- function() {
 #' @return `NULL`, invisibly.
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   cs_setup()
+#' if (julia_available()) {
+#'   setup()
 #' }
-cs_setup <- function() {
+setup <- function() {
   if (isTRUE(.cs$ready)) {
     return(invisible(NULL))
   }
-  cs_preload_julia_libunwind()
+  preload_julia_libunwind()
   tryCatch(
     JuliaCall::julia_setup(installJulia = FALSE),
     error = function(e) {
@@ -401,7 +401,7 @@ cs_setup <- function() {
       )
     }
   )
-  path <- cs_pkg_path()
+  path <- pkg_path()
   JuliaCall::julia_command(sprintf(
     'import Pkg; Pkg.activate("%s"); Pkg.instantiate()',
     path
@@ -414,14 +414,14 @@ cs_setup <- function() {
   # JuliaCall's eval_string() parses (and rejects, as multiple expressions)
   # a bare sequence of separate definitions.
   JuliaCall::julia_command(paste(
-    c("begin", .cs_helper_defs, "end"),
+    c("begin", .helper_defs, "end"),
     collapse = "\n"
   ))
-  for (f in .cs_helpers) {
-    .cs[[f]] <- .cs_make_caller(paste0("_testpkg_", f))
+  for (f in .helpers) {
+    .cs[[f]] <- .make_caller(paste0("_testpkg_", f))
   }
-  for (f in .cs_passthrough) {
-    .cs[[f]] <- .cs_make_caller(paste0("CausalStructures.", f))
+  for (f in .passthrough) {
+    .cs[[f]] <- .make_caller(paste0("CausalStructures.", f))
   }
   .cs$ready <- TRUE
   invisible(NULL)
@@ -429,19 +429,19 @@ cs_setup <- function() {
 
 # Wraps a julia_call()-backed closure once at setup time (rather than on
 # every call) so Julia errors surface a clean message instead of the raw
-# stacktrace; see cs_clean_error().
-cs_wrap_errors <- function(fn) {
+# stacktrace; see clean_error().
+wrap_errors <- function(fn) {
   force(fn)
   function(...) {
     tryCatch(fn(...), error = function(e) {
-      stop(cs_clean_error(conditionMessage(e)), call. = FALSE)
+      stop(clean_error(conditionMessage(e)), call. = FALSE)
     })
   }
 }
 
 # JuliaCall's error messages are "Error happens in Julia.\n<message>\n
 # Stacktrace:\n...", which is noise for most R users.
-cs_clean_error <- function(msg) {
+clean_error <- function(msg) {
   if (isTRUE(getOption("testpkg.verbose_errors", FALSE))) {
     return(msg)
   }
@@ -456,25 +456,25 @@ cs_clean_error <- function(msg) {
   if (length(m) == 1 && nzchar(m)) m else msg
 }
 
-cs_fn <- function(name) {
-  cs_setup()
+fn <- function(name) {
+  setup()
   .cs[[name]]
 }
 
 # Builds a Julia RNG proxy from an integer seed, or NULL if seed is NULL.
 # Currently uses base Random.jl (Random.Xoshiro); see .github/TODO.md for the
 # planned switch to StableRNGs.jl for cross-Julia-version reproducibility.
-cs_make_rng <- function(seed) {
+make_rng <- function(seed) {
   if (is.null(seed)) {
     return(NULL)
   }
-  cs_setup()
+  setup()
   JuliaCall::julia_call("Random.Xoshiro", as.integer(seed))
 }
 
-# Only used by cs_split_sets() now (nested "list of sets" results); flat
+# Only used by split_sets() now (nested "list of sets" results); flat
 # results return a plain Vector{String}, which JuliaCall auto-converts.
-cs_split <- function(x) {
+split <- function(x) {
   x <- as.character(x)
   if (identical(x, "")) {
     character(0)
@@ -483,7 +483,7 @@ cs_split <- function(x) {
   }
 }
 
-cs_split_sets <- function(x) {
+split_sets <- function(x) {
   if (is.null(x)) {
     return(list())
   }
@@ -491,38 +491,16 @@ cs_split_sets <- function(x) {
   if (identical(x, "")) {
     return(list(character(0)))
   }
-  lapply(strsplit(x, "\x1e", fixed = TRUE, useBytes = TRUE)[[1]], cs_split)
+  lapply(strsplit(x, "\x1e", fixed = TRUE, useBytes = TRUE)[[1]], split)
 }
 
 # Wrapper factories
-cs_node_query <- function(name) {
+node_query <- function(name) {
   force(name)
-  function(cg, node) cs_fn(name)(cg, node)
+  function(cg, node) fn(name)(cg, node)
 }
 
-cs_graph_fn <- function(name) {
+graph_fn <- function(name) {
   force(name)
-  function(cg) cs_fn(name)(cg)
-}
-
-#' Shut down the Julia session
-#'
-#' JuliaCall embeds Julia in the R process (dlopen on libjulia) and exposes
-#' no function to tear the embedded runtime down and restart it within a
-#' session, so this is a no-op.
-#'
-#' @return `NULL`, invisibly.
-#' @export
-#' @examples
-#' if (cs_julia_available()) {
-#'   cs_setup()
-#'   cs_stop()
-#' }
-cs_stop <- function() {
-  warning(
-    "JuliaCall embeds Julia in the R process; there is no supported way to ",
-    "shut it down and restart it within a session. This call is a no-op.",
-    call. = FALSE
-  )
-  invisible(NULL)
+  function(cg) fn(name)(cg)
 }

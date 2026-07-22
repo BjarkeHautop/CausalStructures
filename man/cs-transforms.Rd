@@ -2,60 +2,60 @@
 % Please edit documentation in R/causal-structures-transform.R
 \name{cs-transforms}
 \alias{cs-transforms}
-\alias{cs_skeleton}
-\alias{cs_moralize}
-\alias{cs_dag_to_cpdag}
-\alias{cs_dag_from_pdag}
-\alias{cs_meek_closure}
-\alias{cs_dag_to_mpdag}
-\alias{cs_ag_to_mag}
-\alias{cs_mag_to_pag}
-\alias{cs_mag_from_pag}
+\alias{skeleton}
+\alias{moralize}
+\alias{dag_to_cpdag}
+\alias{dag_from_pdag}
+\alias{meek_closure}
+\alias{dag_to_mpdag}
+\alias{ag_to_mag}
+\alias{mag_to_pag}
+\alias{mag_from_pag}
 \title{Graph transformations}
 \usage{
-cs_skeleton(cg)
+skeleton(cg)
 
-cs_moralize(cg)
+moralize(cg)
 
-cs_dag_to_cpdag(cg)
+dag_to_cpdag(cg)
 
-cs_dag_from_pdag(cg)
+dag_from_pdag(cg)
 
-cs_meek_closure(cg)
+meek_closure(cg)
 
-cs_dag_to_mpdag(cg)
+dag_to_mpdag(cg)
 
-cs_ag_to_mag(cg)
+ag_to_mag(cg)
 
-cs_mag_to_pag(cg)
+mag_to_pag(cg)
 
-cs_mag_from_pag(cg)
+mag_from_pag(cg)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}. Required class depends on
-the function: \code{cs_skeleton()} and \code{cs_moralize()} take a DAG or
-PDAG-family (PDAG, CPDAG, MPDAG) graph; \code{cs_dag_to_cpdag()} and
-\code{cs_dag_to_mpdag()} take a DAG; \code{cs_dag_from_pdag()} and
-\code{cs_meek_closure()} take a PDAG-family graph; \code{cs_ag_to_mag()} takes an
-AG; \code{cs_mag_to_pag()} takes a MAG; \code{cs_mag_from_pag()} takes a PAG.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. Required class depends on
+the function: \code{skeleton()} and \code{moralize()} take a DAG or
+PDAG-family (PDAG, CPDAG, MPDAG) graph; \code{dag_to_cpdag()} and
+\code{dag_to_mpdag()} take a DAG; \code{dag_from_pdag()} and
+\code{meek_closure()} take a PDAG-family graph; \code{ag_to_mag()} takes an
+AG; \code{mag_to_pag()} takes a MAG; \code{mag_from_pag()} takes a PAG.}
 }
 \value{
 A Julia proxy object representing the transformed graph.
 }
 \description{
-\code{cs_skeleton()} drops edge marks, \code{cs_moralize()} moralizes a DAG,
-\code{cs_dag_to_cpdag()} and \code{cs_dag_from_pdag()} convert between equivalence
-classes, \code{cs_meek_closure()} applies Meek's rules, \code{cs_ag_to_mag()}
-converts an AG to a Markov equivalent MAG, \code{cs_mag_to_pag()} maps a MAG to
-its PAG equivalence class representative, and \code{cs_mag_from_pag()} resolves
+\code{skeleton()} drops edge marks, \code{moralize()} moralizes a DAG,
+\code{dag_to_cpdag()} and \code{dag_from_pdag()} convert between equivalence
+classes, \code{meek_closure()} applies Meek's rules, \code{ag_to_mag()}
+converts an AG to a Markov equivalent MAG, \code{mag_to_pag()} maps a MAG to
+its PAG equivalence class representative, and \code{mag_from_pag()} resolves
 a PAG back to a representative MAG. All return a new graph proxy; the
 input graph is unchanged.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
-  cs_skeleton(dag)
-  cpdag <- cs_dag_to_cpdag(dag)
-  cs_dag_from_pdag(cpdag)
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B, B \%-->\% C)
+  skeleton(dag)
+  cpdag <- dag_to_cpdag(dag)
+  dag_from_pdag(cpdag)
 }
 }

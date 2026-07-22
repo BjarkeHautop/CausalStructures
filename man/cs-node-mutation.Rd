@@ -2,16 +2,16 @@
 % Please edit documentation in R/causal-structures-transform.R
 \name{cs-node-mutation}
 \alias{cs-node-mutation}
-\alias{cs_add_nodes}
-\alias{cs_remove_nodes}
+\alias{add_nodes}
+\alias{remove_nodes}
 \title{Add or remove isolated nodes}
 \usage{
-cs_add_nodes(cg, nodes)
+add_nodes(cg, nodes)
 
-cs_remove_nodes(cg, nodes)
+remove_nodes(cg, nodes)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{nodes}{Character vector of node names.}
 }
@@ -19,15 +19,15 @@ cs_remove_nodes(cg, nodes)
 A Julia proxy object representing the resulting graph.
 }
 \description{
-\code{cs_add_nodes()} returns a new graph of the same class with \code{nodes}
+\code{add_nodes()} returns a new graph of the same class with \code{nodes}
 added as isolated nodes (nodes already present are ignored).
-\code{cs_remove_nodes()} returns a new graph with \code{nodes} and all their
+\code{remove_nodes()} returns a new graph with \code{nodes} and all their
 incident edges removed, and errors if a node is not present.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% B)
-  cs_nodes(cs_add_nodes(dag, "C"))
-  cs_nodes(cs_remove_nodes(dag, "B"))
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B)
+  nodes(add_nodes(dag, "C"))
+  nodes(remove_nodes(dag, "B"))
 }
 }

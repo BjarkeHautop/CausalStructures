@@ -15,7 +15,7 @@
 #' Computes node coordinates for [cs_plot()]. If the graph has not been built
 #' yet, it will be built automatically before computing the layout.
 #'
-#' @param cg A graph created with [cs_cgraph()], of any class.
+#' @param cg A graph created with [cgraph()], of any class.
 #' @param method Character string specifying the layout method:
 #'   * `"stress"` (default): stress majorization. A good general-purpose
 #'     choice - well-spaced and deterministic for a given graph.
@@ -34,8 +34,8 @@
 #' @family plotting
 #' @export
 #' @examples
-#' if (cs_julia_available()) {
-#'   dag <- cs_cgraph(A %-->% B, B %-->% C)
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cs_layout(dag)
 #'   cs_layout(dag, method = "circle")
 #' }
@@ -53,13 +53,13 @@ cs_layout <- function(
 ) {
   method <- match.arg(method)
 
-  nm <- cs_nodes(cg)
+  nm <- nodes(cg)
   n <- length(nm)
   if (n == 0) {
     return(data.frame(name = character(), x = numeric(), y = numeric()))
   }
 
-  coords <- cs_fn("layout")(cg, method)
+  coords <- fn("layout")(cg, method)
 
   data.frame(
     name = nm,

@@ -2,62 +2,62 @@
 % Please edit documentation in R/causal-structures-queries.R
 \name{cs-predicates}
 \alias{cs-predicates}
-\alias{cs_is_dag}
-\alias{cs_is_pdag}
-\alias{cs_is_cpdag}
-\alias{cs_is_mpdag}
-\alias{cs_is_ug}
-\alias{cs_is_admg}
-\alias{cs_is_ag}
-\alias{cs_is_mag}
-\alias{cs_is_pag}
-\alias{cs_is_simple}
-\alias{cs_is_acyclic}
+\alias{is_dag}
+\alias{is_pdag}
+\alias{is_cpdag}
+\alias{is_mpdag}
+\alias{is_ug}
+\alias{is_admg}
+\alias{is_ag}
+\alias{is_mag}
+\alias{is_pag}
+\alias{is_simple}
+\alias{is_acyclic}
 \title{Graph class predicates}
 \usage{
-cs_is_dag(cg)
+is_dag(cg)
 
-cs_is_pdag(cg)
+is_pdag(cg)
 
-cs_is_cpdag(cg)
+is_cpdag(cg)
 
-cs_is_mpdag(cg)
+is_mpdag(cg)
 
-cs_is_ug(cg)
+is_ug(cg)
 
-cs_is_admg(cg)
+is_admg(cg)
 
-cs_is_ag(cg)
+is_ag(cg)
 
-cs_is_mag(cg)
+is_mag(cg)
 
-cs_is_pag(cg)
+is_pag(cg)
 
-cs_is_simple(cg)
+is_simple(cg)
 
-cs_is_acyclic(cg)
+is_acyclic(cg)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cs_cgraph]{cs_cgraph()}}, of any class.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 }
 \value{
 A logical scalar.
 }
 \description{
-Test which class a graph belongs to (\code{cs_is_dag()}, \code{cs_is_pdag()},
-\code{cs_is_cpdag()}, \code{cs_is_mpdag()}, \code{cs_is_ug()}, \code{cs_is_admg()},
-\code{cs_is_ag()}, \code{cs_is_mag()}, \code{cs_is_pag()}) or structural properties
-(\code{cs_is_simple()}, \code{cs_is_acyclic()}).
+Test which class a graph belongs to (\code{is_dag()}, \code{is_pdag()},
+\code{is_cpdag()}, \code{is_mpdag()}, \code{is_ug()}, \code{is_admg()},
+\code{is_ag()}, \code{is_mag()}, \code{is_pag()}) or structural properties
+(\code{is_simple()}, \code{is_acyclic()}).
 }
 \details{
 These test the actual edge structure of \code{cg}, independent of the
 \code{class} it has.
 }
 \examples{
-if (cs_julia_available()) {
-  dag <- cs_cgraph(A \%-->\% B, class = "UNKNOWN")
-  cs_is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
-  cs_is_ug(dag)
-  cs_is_acyclic(dag)
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B, class = "UNKNOWN")
+  is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
+  is_ug(dag)
+  is_acyclic(dag)
 }
 }
