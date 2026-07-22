@@ -24,7 +24,7 @@ non-collider node in \code{given}, or a collider node (and all its descendants)
 not in \code{given}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   chain <- cs_cgraph(A \%-->\% B, B \%-->\% C)
   cs_d_separated(chain, "A", "C") # chain A --> B --> C is open
   cs_d_separated(chain, "A", "C", "B") # conditioning on B blocks it

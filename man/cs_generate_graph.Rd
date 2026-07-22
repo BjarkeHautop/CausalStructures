@@ -37,7 +37,7 @@ given. For \code{class = "CPDAG"}, the sampled DAG is converted with
 \code{\link[=cs_dag_to_cpdag]{cs_dag_to_cpdag()}}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   cg <- cs_generate_graph(4, m = 3, seed = 1405)
   cs_edges(cg)
 }

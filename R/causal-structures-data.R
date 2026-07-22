@@ -20,7 +20,7 @@
 #'   named and ordered as in [cs_nodes()].
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   data <- cs_simulate_data(dag, n = 100, seed = 1405)
 #'   head(data)
@@ -43,7 +43,7 @@ cs_simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  raw <- cs_fn("simulate_data")(
+  mat <- cs_fn("simulate_data")(
     cg,
     n,
     cs_make_rng(seed),
@@ -51,9 +51,7 @@ cs_simulate_data <- function(
     coef_range,
     error_sd
   )
-  ns <- cs_nodes(cg)
-  vals <- as.numeric(strsplit(raw, "\x1f", fixed = TRUE, useBytes = TRUE)[[1]])
-  df <- as.data.frame(matrix(vals, nrow = n, ncol = length(ns)))
-  names(df) <- ns
+  df <- as.data.frame(mat)
+  names(df) <- cs_nodes(cg)
   df
 }

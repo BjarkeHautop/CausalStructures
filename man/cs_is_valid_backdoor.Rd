@@ -22,7 +22,7 @@ of \code{x}, and (2) \code{given} blocks every backdoor path from \code{x} to \c
 parent of \code{x} is d-separated from \code{y} given \code{given} together with \code{x}).
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
   cs_is_valid_backdoor(dag, "X", "Y") # empty set leaves A --> Y open
   cs_is_valid_backdoor(dag, "X", "Y", "A") # conditioning on A blocks it

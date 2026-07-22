@@ -25,7 +25,7 @@ non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
 they map to the same PAG.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   g1 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
   g2 <- cs_cgraph(A \%-->\% B, C \%-->\% B)
   cs_markov_equivalent(g1, g2)

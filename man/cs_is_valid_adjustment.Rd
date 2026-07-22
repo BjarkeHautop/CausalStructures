@@ -26,7 +26,7 @@ or \code{x} itself), and must m-separate \code{x} from \code{y} in the proper ba
 graph.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   admg <- cs_cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
   cs_is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
   cs_is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it

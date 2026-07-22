@@ -28,7 +28,7 @@ Returns a new graph of class \code{class} with the same nodes and edges as
 \code{class}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, class = "UNKNOWN")
   reclassed <- cs_reclass(dag, class = "DAG")
   cs_is_dag(reclassed)

@@ -7,13 +7,15 @@
 cs_stop()
 }
 \value{
-Called for its side effect; returns \code{NULL} invisibly.
+\code{NULL}, invisibly.
 }
 \description{
-Shut down the Julia session
+JuliaCall embeds Julia in the R process (dlopen on libjulia) and exposes
+no function to tear the embedded runtime down and restart it within a
+session, so this is a no-op.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   cs_setup()
   cs_stop()
 }

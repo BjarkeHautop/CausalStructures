@@ -41,7 +41,7 @@ Relatives of a node: \code{cs_parents()}, \code{cs_children()}, \code{cs_ancesto
 queries, which take extra arguments.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
   cs_parents(dag, "M")
   cs_children(dag, "X")

@@ -25,7 +25,7 @@ Adjustment Criterion; see \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjus
 \code{minimal = TRUE} (default), only inclusion-minimal sets are returned.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   admg <- cs_cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
   cs_all_adjustment_sets(admg, "X", "Y")
 }

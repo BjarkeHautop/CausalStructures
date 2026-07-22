@@ -18,7 +18,7 @@ A Julia proxy object representing the subgraph.
 Induced subgraph
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
   cs_nodes(cs_subgraph(dag, c("A", "B")))
 }

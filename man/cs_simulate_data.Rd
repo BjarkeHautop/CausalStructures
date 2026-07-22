@@ -40,7 +40,7 @@ coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE
 (default), each variable is standardized to zero mean and unit variance.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
   data <- cs_simulate_data(dag, n = 100, seed = 1405)
   head(data)

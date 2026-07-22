@@ -64,7 +64,7 @@ unevaluated; they are not exported and are not meant to be called
 directly.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
   cs_edges(dag)
 }

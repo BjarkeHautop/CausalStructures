@@ -25,7 +25,7 @@ front-door criterion; see \code{\link[=cs_frontdoor_set]{cs_frontdoor_set()}} an
 \code{\link[=cs_is_valid_frontdoor]{cs_is_valid_frontdoor()}}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
   cs_all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
 }

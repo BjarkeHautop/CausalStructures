@@ -7,5 +7,6 @@
 docs
 CausalStructures.jl/
 JuliaConnectoR/
+JuliaCall/
 CLAUDE.md
 .claude/

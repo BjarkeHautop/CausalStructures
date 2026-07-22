@@ -52,7 +52,7 @@ a PAG back to a representative MAG. All return a new graph proxy; the
 input graph is unchanged.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
   cs_skeleton(dag)
   cpdag <- cs_dag_to_cpdag(dag)

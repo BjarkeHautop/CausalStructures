@@ -31,7 +31,7 @@ errors if an edge in \code{...} is not present in \code{cg}. For programmatic us
 pass a spec string via \code{spec} instead of \code{...}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B)
   cs_edges(cs_add_edges(dag, B \%-->\% C))
   cs_edges(cs_remove_edges(dag, A \%-->\% B))

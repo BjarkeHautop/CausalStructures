@@ -34,7 +34,7 @@
 #' @family plotting
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_layout(dag)
 #'   cs_layout(dag, method = "circle")
@@ -59,14 +59,7 @@ cs_layout <- function(
     return(data.frame(name = character(), x = numeric(), y = numeric()))
   }
 
-  res <- cs_fn("layout")(cg, method)
-  tokens <- as.numeric(strsplit(
-    chartr("\x1f", "\x1e", res),
-    "\x1e",
-    fixed = TRUE,
-    useBytes = TRUE
-  )[[1]])
-  coords <- matrix(tokens, ncol = 2, byrow = TRUE)
+  coords <- cs_fn("layout")(cg, method)
 
   data.frame(
     name = nm,

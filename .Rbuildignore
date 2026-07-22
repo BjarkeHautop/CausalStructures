@@ -16,5 +16,4 @@
 ^benchmark\.R$
 ^CLAUDE\.md$
 ^CausalStructures\.jl
-^JuliaConnectoR
 ^JuliaCall$

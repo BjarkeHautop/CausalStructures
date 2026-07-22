@@ -47,7 +47,7 @@ Candidate adjustment sets can be validated with
 \code{\link[=cs_is_valid_adjustment]{cs_is_valid_adjustment()}}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(
     C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
     D \%-->\% Y + G, Y \%-->\% H

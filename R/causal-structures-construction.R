@@ -24,7 +24,7 @@
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
 #'   cpdag <- cs_cgraph(A %---% B %---% C, class = "CPDAG")
 #'
@@ -76,7 +76,7 @@ cs_cgraph <- function(
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   cg <- cs_generate_graph(4, m = 3, seed = 1405)
 #'   cs_edges(cg)
 #' }
@@ -107,7 +107,7 @@ cs_generate_graph <- function(
 #' @return Character vector of node names.
 #' @name cs-graph-queries
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(B %-->% A, A %-->% C)
 #'   cs_nodes(dag)
 #'   cs_topological_sort(dag)
@@ -122,13 +122,13 @@ NULL
 #' @rdname cs-graph-queries
 #' @export
 cs_nodes <- function(cg) {
-  cs_split(cs_fn("nodes")(cg))
+  cs_fn("nodes")(cg)
 }
 
 #' @rdname cs-graph-queries
 #' @export
 cs_topological_sort <- function(cg) {
-  cs_split(cs_fn("topological_sort")(cg))
+  cs_fn("topological_sort")(cg)
 }
 
 #' @rdname cs-graph-queries
@@ -136,7 +136,7 @@ cs_topological_sort <- function(cg) {
 #'   a node incident to any undirected edge is not considered exogenous.
 #' @export
 cs_exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
-  cs_split(cs_fn("exogenous_nodes")(cg, undirected_as_parents))
+  cs_fn("exogenous_nodes")(cg, undirected_as_parents)
 }
 
 #' Test whether two nodes are adjacent
@@ -150,7 +150,7 @@ cs_exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #'   regardless of direction.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, C)
 #'   cs_has_edge(dag, "A", "B")
 #'   cs_has_edge(dag, "B", "A")
@@ -167,20 +167,10 @@ cs_has_edge <- function(cg, x, y) {
 #'   or an empty matrix if the graph has no edges.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_edges(dag)
 #' }
 cs_edges <- function(cg) {
-  res <- cs_fn("edges")(cg)
-  if (identical(res, "")) {
-    return(matrix(character(), nrow = 0, ncol = 2))
-  }
-  tokens <- strsplit(
-    chartr("\x1f", "\x1e", res),
-    "\x1e",
-    fixed = TRUE,
-    useBytes = TRUE
-  )[[1]]
-  matrix(tokens, ncol = 2, byrow = TRUE)
+  cs_fn("edges")(cg)
 }

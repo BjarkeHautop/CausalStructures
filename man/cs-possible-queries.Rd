@@ -39,7 +39,7 @@ classes (traversing undirected edges too). When \code{open = TRUE} (default),
 \code{node} itself is excluded from the result; when \code{FALSE}, it is included.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   cpdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
   cs_ancestors(cpdag, "C") # compelled ancestors: none
   cs_possible_ancestors(cpdag, "C")

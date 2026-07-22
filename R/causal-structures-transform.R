@@ -19,7 +19,7 @@
 #' @return A Julia proxy object representing the transformed graph.
 #' @name cs-transforms
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_skeleton(dag)
 #'   cpdag <- cs_dag_to_cpdag(dag)
@@ -70,7 +70,7 @@ cs_mag_from_pag <- cs_graph_fn("mag_from_pag")
 #' @return A Julia proxy object representing the subgraph.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, B %-->% C)
 #'   cs_nodes(cs_subgraph(dag, c("A", "B")))
 #' }
@@ -89,7 +89,7 @@ cs_subgraph <- function(cg, nodes) {
 #' @return A Julia proxy object representing the resulting ADMG.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   cs_edges(cs_latent_project(dag, "U"))
 #' }
@@ -108,7 +108,7 @@ cs_latent_project <- function(cg, latents) {
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% M, M %-->% Y)
 #'   cs_edges(cs_exogenize(dag, "M"))
 #' }
@@ -129,7 +129,7 @@ cs_exogenize <- function(cg, nodes) {
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   cs_edges(cs_normalize_latent_structure(dag, "U"))
 #' }
@@ -150,7 +150,7 @@ cs_normalize_latent_structure <- function(cg, latents) {
 #' @return A Julia proxy object representing the resulting AG.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
 #'   cs_edges(cs_condition_marginalize(dag, marg_vars = "U"))
 #' }
@@ -185,7 +185,7 @@ cs_condition_marginalize <- function(
 #' @return A Julia proxy object representing the resulting graph.
 #' @name cs-edge-mutation
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B)
 #'   cs_edges(cs_add_edges(dag, B %-->% C))
 #'   cs_edges(cs_remove_edges(dag, A %-->% B))
@@ -216,7 +216,7 @@ cs_remove_edges <- function(cg, ..., spec = NULL) {
 #' @return A Julia proxy object representing the resulting graph.
 #' @name cs-node-mutation
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B)
 #'   cs_nodes(cs_add_nodes(dag, "C"))
 #'   cs_nodes(cs_remove_nodes(dag, "B"))
@@ -249,7 +249,7 @@ cs_remove_nodes <- function(cg, nodes) {
 #' @return A Julia proxy object representing the reclassified graph.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, class = "UNKNOWN")
 #'   reclassed <- cs_reclass(dag, class = "DAG")
 #'   cs_is_dag(reclassed)

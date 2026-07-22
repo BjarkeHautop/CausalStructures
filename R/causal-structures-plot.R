@@ -15,23 +15,7 @@
 # Edges with their per-endpoint Tail/Arrow/Circle marks, for drawing (as
 # opposed to cs_edges(), which only returns the (from, to) pairs).
 .plot_edges <- function(cg) {
-  res <- cs_fn("edge_marks")(cg)
-  if (identical(res, "")) {
-    return(data.frame(
-      from = character(),
-      to = character(),
-      src_mark = character(),
-      dst_mark = character(),
-      stringsAsFactors = FALSE
-    ))
-  }
-  tokens <- strsplit(
-    chartr("\x1f", "\x1e", res),
-    "\x1e",
-    fixed = TRUE,
-    useBytes = TRUE
-  )[[1]]
-  mat <- matrix(tokens, ncol = 4, byrow = TRUE)
+  mat <- cs_fn("edge_marks")(cg)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],
@@ -519,7 +503,7 @@ makeContent.cs_edge_grob <- function(x) {
 #' @returns A `cs_plot` object, drawn automatically when printed.
 #'
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
 #'   cs_plot(dag)
 #'   cs_plot(dag, layout = "circle", main = "Quick guide DAG")

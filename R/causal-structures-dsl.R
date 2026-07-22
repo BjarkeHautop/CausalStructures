@@ -291,7 +291,7 @@
 #' @name cs-edge-operators
 #' @keywords internal
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #'   cs_edges(dag)
 #' }

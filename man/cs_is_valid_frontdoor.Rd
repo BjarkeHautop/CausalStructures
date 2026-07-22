@@ -25,7 +25,7 @@ the effect is identified via the front-door formula even with unmeasured
 confounders between \code{x} and \code{y}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(U \%-->\% X, X \%-->\% M, M \%-->\% Y, U \%-->\% Y)
   cs_is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
   cs_is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open

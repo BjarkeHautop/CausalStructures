@@ -24,7 +24,7 @@ be d-/m-separated from \code{y} given \code{x} in the graph obtained by deleting
 \code{z} must be d-/m-connected to \code{x} (relevance).
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
   dag <- cs_cgraph(Z \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y)
   cs_is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument

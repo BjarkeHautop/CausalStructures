@@ -32,7 +32,7 @@ forced orientations via Meek's rules at each step (Chickering's (2002)
 recursive listing algorithm).
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   pdag <- cs_cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   cs_count_dags(pdag)
   cs_enumerate_dags(pdag)

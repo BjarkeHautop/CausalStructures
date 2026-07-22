@@ -20,7 +20,7 @@ incoming edges are removed, and its parents are connected directly to its
 children to preserve reachability.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% M, M \%-->\% Y)
   cs_edges(cs_exogenize(dag, "M"))
 }

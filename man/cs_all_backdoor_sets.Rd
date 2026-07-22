@@ -24,7 +24,7 @@ see \code{\link[=cs_is_valid_backdoor]{cs_is_valid_backdoor()}}. When \code{mini
 inclusion-minimal sets are returned.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
   cs_all_backdoor_sets(dag, "X", "Y")
 }

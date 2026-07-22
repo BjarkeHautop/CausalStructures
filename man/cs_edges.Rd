@@ -17,7 +17,7 @@ or an empty matrix if the graph has no edges.
 Get all edges in a graph
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, B \%-->\% C)
   cs_edges(dag)
 }

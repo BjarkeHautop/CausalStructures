@@ -20,7 +20,7 @@ ADMG over the remaining (observed) variables that preserves the
 conditional independence structure among them.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
   cs_edges(cs_latent_project(dag, "U"))
 }

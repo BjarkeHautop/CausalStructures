@@ -1,15 +1,34 @@
-# Proof-of-concept binding to the local Julia package CausalStructures.jl
-# via JuliaConnectoR. The Julia session is started lazily on first use and
+# Binding to the local Julia package CausalStructures.jl via JuliaCall,
+# which embeds Julia in the R process (dlopen on libjulia) rather than
+# talking to an external process over a socket, as the earlier
+# JuliaConnectoR-based binding did (see git history / the JuliaConnectoR and
+# benchmark branches). The Julia session is started lazily on first use and
 # reused afterwards.
 #
+# CRAN's JuliaCall (<= 0.17.6) segfaults R on any Julia exception, on Ubuntu
+# + Julia 1.12: a libunwind version conflict, fixed upstream (JuliaCall
+# PR #265/#282, libunwind/libunwind#637) but not yet released to CRAN.
+# cs_preload_julia_libunwind() applies the same fix until it is.
+#
 # Design notes:
-# - Every wrapper is a single R-to-Julia round trip: one Julia helper per
-#   function is defined at setup time, taking/returning plain Strings and
-#   doing all Symbol conversion Julia-side.
-# - Node-name vectors are returned as a single "\x1f"-joined string because
-#   JuliaConnectoR deserializes each string element individually in
-#   interpreted R (~15 us per element); one string + strsplit is ~constant.
-#   Lists of node sets additionally join sets with "\x1e".
+# - One Julia helper per function, defined at setup time in a single
+#   `begin...end` block (JuliaCall's eval_string() parses one top-level
+#   expression at a time, so a bare sequence of definitions is a
+#   ParseError). Helpers take/return plain Strings, doing Symbol conversion
+#   Julia-side.
+# - Flat name/set results (`nodes`, `parents`, `adjustment_set`, ...) return
+#   a plain `Vector{String}`/`Nothing`, which JuliaCall auto-converts - no
+#   joined-string convention needed (verified: no per-element deserialize
+#   cost like JuliaConnectoR had).
+# - `edges()`/`edge_marks()`/`layout()`/`simulate_data()` return a native
+#   Matrix directly, for the same reason.
+# - Nested "list of sets" results (`all_backdoor_sets` and friends) still
+#   need a joined-string convention, since `Vector{Vector{String}}` doesn't
+#   auto-convert; see cs_split_sets().
+# - No session-restart detection: no separate process to reconnect to - if
+#   the embedded Julia dies, so does R. cs_setup() is a plain do-once guard.
+# - cs_stop() is a no-op: JuliaCall exposes no way to tear down and restart
+#   the embedded runtime within a session.
 
 .cs <- new.env(parent = emptyenv())
 
@@ -89,6 +108,190 @@
   "mag_from_pag"
 )
 
+.cs_helper_defs <- c(
+  # A length-1 R character vector arrives in Julia as a scalar String, not
+  # a 1-element vector; branch on both.
+  '_testpkg_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)',
+  '_testpkg_sorted(x) = sort!(String.(collect(x)))',
+  '_testpkg_opt(s) = s === nothing ? nothing : _testpkg_sorted(s)',
+  '_testpkg_sets(sets) = isempty(sets) ? nothing :
+      join((join(sort!(String.(collect(s))), "\x1f") for s in sets), "\x1e")',
+
+  '_testpkg_cgraph(spec, class, simple) =
+      _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)), simple = simple)',
+
+  'function _testpkg_generate_graph(n, m, p, class, rng)
+      kwargs = (
+          m = m === nothing ? nothing : Int(m), p = p,
+          class = getfield(_testpkg_CS, Symbol(class)),
+      )
+      rng === nothing ? _testpkg_CS.generate_graph(Int(n); kwargs...) :
+      _testpkg_CS.generate_graph(rng, Int(n); kwargs...)
+  end',
+
+  '_testpkg_topological_sort(g) = String.(_testpkg_CS.topological_sort(g))',
+  '_testpkg_nodes(g) = String.(_testpkg_CS.nodes(g))',
+
+  'function _testpkg_exogenous_nodes(g, undirected_as_parents)
+      result = g isa _testpkg_CS.AbstractPDAG ?
+          _testpkg_CS.exogenous_nodes(g; undirected_as_parents = undirected_as_parents) :
+          _testpkg_CS.exogenous_nodes(g)
+      _testpkg_sorted(result)
+  end',
+
+  'for f in (:parents, :children, :ancestors, :descendants, :spouses, :markov_blanket)
+      @eval $(Symbol(:_testpkg_, f))(g, node) = _testpkg_sorted(_testpkg_CS.$f(g, Symbol(node)))
+  end',
+
+  '_testpkg_neighbors(g, node, mode) =
+      _testpkg_sorted(_testpkg_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))',
+
+  'for f in (:possible_ancestors, :possible_descendants, :anteriors, :posteriors)
+      @eval $(Symbol(:_testpkg_, f))(g, node, open) =
+          _testpkg_sorted(_testpkg_CS.$f(g, Symbol(node); open = open))
+  end',
+
+  '_testpkg_has_edge(g, x, y) = _testpkg_CS.has_edge(g, Symbol(x), Symbol(y))',
+
+  'for f in (:d_separated, :m_separated)
+      @eval $(Symbol(:_testpkg_, f))(g, x, y, given) =
+          _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
+  end',
+
+  'function _testpkg_minimal_separator(g, x, y, include, restrict)
+      _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y);
+          include = _testpkg_syms(include),
+          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  end',
+
+  'function _testpkg_adjustment_set(g, x, y, type)
+      result = if g isa Union{_testpkg_CS.DAG,_testpkg_CS.AbstractPDAG}
+          _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
+      else
+          _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y))
+      end
+      _testpkg_opt(result)
+  end',
+
+  'function _testpkg_frontdoor_set(g, x, y, include, restrict)
+      _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y);
+          include = _testpkg_syms(include),
+          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  end',
+
+  '_testpkg_is_valid_backdoor(g, x, y, z) =
+      _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+
+  'function _testpkg_all_backdoor_sets(g, x, y, minimal, max_size)
+      _testpkg_sets(_testpkg_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
+          minimal = minimal, max_size = Int(max_size)))
+  end',
+
+  'function _testpkg_all_frontdoor_sets(g, x, y, include, restrict)
+      _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
+          include = _testpkg_syms(include),
+          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  end',
+
+  '_testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))',
+
+  'function _testpkg_edges(g)
+      es = collect(_testpkg_CS.edges(g))
+      m = Matrix{String}(undef, length(es), 2)
+      for (i, e) in enumerate(es)
+          m[i, 1] = String(e.src)
+          m[i, 2] = String(e.dst)
+      end
+      m
+  end',
+
+  'function _testpkg_edge_marks(g)
+      es = collect(_testpkg_CS.edges(g))
+      m = Matrix{String}(undef, length(es), 4)
+      for (i, e) in enumerate(es)
+          m[i, 1] = String(e.src)
+          m[i, 2] = String(e.dst)
+          m[i, 3] = string(e.src_end)
+          m[i, 4] = string(e.dst_end)
+      end
+      m
+  end',
+
+  '_testpkg_is_valid_adjustment(g, x, y, z) =
+      _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+
+  'function _testpkg_all_adjustment_sets(g, x, y, minimal, max_size)
+      _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
+          minimal = minimal, max_size = Int(max_size)))
+  end',
+
+  '_testpkg_is_valid_frontdoor(g, x, y, z) =
+      _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+
+  'function _testpkg_simulate_data(g, n, rng, standardize, coef_range, error_sd)
+      kwargs = (
+          samples = Int(n),
+          standardize = standardize,
+          coef_range = (Float64(coef_range[1]), Float64(coef_range[2])),
+          error_sd = Float64(error_sd),
+      )
+      d = rng === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
+          _testpkg_CS.simulate_data(rng, g; kwargs...)
+      names = sort!(String.(collect(keys(d))))
+      out = Matrix{Float64}(undef, Int(n), length(names))
+      for (j, nm) in enumerate(names)
+          out[:, j] = d[Symbol(nm)]
+      end
+      out
+  end',
+
+  '_testpkg_enumerate_dags(g) = _testpkg_CS.enumerate_dags(g)',
+  '_testpkg_markov_equivalent(g1, g2) = _testpkg_CS.markov_equivalent(g1, g2)',
+
+  '_testpkg_is_valid_iv(g, x, y, z) =
+      _testpkg_CS.is_valid_iv(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+
+  'function _testpkg_all_iv_sets(g, x, y, minimal, max_size)
+      _testpkg_sets(_testpkg_CS.all_iv_sets(g, Symbol(x), Symbol(y);
+          minimal = minimal, max_size = Int(max_size)))
+  end',
+
+  '_testpkg_enumerate_mags(g) = _testpkg_CS.enumerate_mags(g)',
+  '_testpkg_latent_project(g, latents) = _testpkg_CS.latent_project(g, _testpkg_syms(latents))',
+  '_testpkg_exogenize(g, nodes) = _testpkg_CS.exogenize(g, _testpkg_syms(nodes))',
+
+  '_testpkg_normalize_latent_structure(g, latents) =
+      _testpkg_CS.normalize_latent_structure(g, _testpkg_syms(latents))',
+
+  '_testpkg_condition_marginalize(g, cond_vars, marg_vars) =
+      _testpkg_CS.condition_marginalize(g;
+          cond_vars = _testpkg_syms(cond_vars), marg_vars = _testpkg_syms(marg_vars))',
+
+  '_testpkg_spec_edges(spec) =
+      filter(x -> x isa _testpkg_CS.CausalEdge, _testpkg_CS._parse_graph_string(spec))',
+
+  '_testpkg_add_edges(g, spec) = _testpkg_CS.add_edges(g, _testpkg_spec_edges(spec)...)',
+  '_testpkg_remove_edges(g, spec) = _testpkg_CS.remove_edges(g, _testpkg_spec_edges(spec)...)',
+  '_testpkg_add_nodes(g, nodes) = _testpkg_CS.add_nodes(g, _testpkg_syms(nodes)...)',
+  '_testpkg_remove_nodes(g, nodes) = _testpkg_CS.remove_nodes(g, _testpkg_syms(nodes)...)',
+
+  'function _testpkg_reclass(g, class, simple)
+      T = getfield(_testpkg_CS, Symbol(class))
+      T === _testpkg_CS.UNKNOWN ? _testpkg_CS.reclass(g, T; simple = simple) :
+      _testpkg_CS.reclass(g, T)
+  end',
+
+  'function _testpkg_layout(g, method)
+      pts = _testpkg_CS.layout(g, Symbol(method))
+      m = Matrix{Float64}(undef, length(pts), 2)
+      for (i, p) in enumerate(pts)
+          m[i, 1] = p[1]
+          m[i, 2] = p[2]
+      end
+      m
+  end'
+)
+
 #' Path to the local CausalStructures.jl checkout
 #'
 #' Defaults to the `CausalStructures.jl/` directory bundled next to this
@@ -108,21 +311,62 @@ cs_pkg_path <- function() {
   normalizePath(path, mustWork = TRUE)
 }
 
-# Current JuliaConnectoR socket connection, or NULL if Julia is not running.
-# The connection object changes identity every time Julia is (re)started, so
-# comparing it to the one saved at setup time detects a restart without an
-# extra round trip.
-cs_julia_con <- function() {
+#' Is Julia available for [cs_setup()]?
+#'
+#' A quick, side-effect-free check for use in `@examples`; unlike
+#' [cs_setup()] it does not start Julia.
+#'
+#' @return A logical scalar.
+#' @keywords internal
+cs_julia_available <- function() {
+  nzchar(Sys.which("julia"))
+}
+
+.cs_make_caller <- function(fname) {
+  force(fname)
+  cs_wrap_errors(function(...) JuliaCall::julia_call(fname, ...))
+}
+
+# Fixed upstream in JuliaCall PR #265 (merged 2025-10-27, not yet on CRAN);
+# only apply our own copy of the workaround below that version.
+cs_needs_libunwind_workaround <- function() {
   tryCatch(
-    get("pkgLocal", envir = asNamespace("JuliaConnectoR"))$con,
-    error = function(e) NULL
+    utils::packageVersion("JuliaCall") <= "0.17.6",
+    error = function(e) FALSE
   )
 }
 
-cs_session_ok <- function() {
-  !is.null(.cs$module) &&
-    !is.null(.cs$con) &&
-    identical(.cs$con, cs_julia_con())
+# dyn.load()s Julia's own libunwind.so.8 before julia_setup(), so it wins
+# dynamic-linker resolution ahead of Ubuntu's incompatible system copy
+# (libunwind/libunwind#637) - same fix as JuliaCall PR #265. Best-effort:
+# silently skipped if `julia` isn't on PATH or ships no libunwind.so.8 (e.g.
+# non-Linux, or the conflict doesn't apply), since a missed mitigation
+# should surface as the original segfault, not a confusing setup-time error.
+cs_preload_julia_libunwind <- function() {
+  if (!cs_needs_libunwind_workaround()) {
+    return(invisible(NULL))
+  }
+  tryCatch(
+    {
+      julia_bin <- Sys.which("julia")
+      if (!nzchar(julia_bin)) {
+        return(invisible(NULL))
+      }
+      bindir <- system2(
+        julia_bin,
+        args = c("-e", shQuote("print(Sys.BINDIR)")),
+        stdout = TRUE,
+        stderr = FALSE
+      )
+      libunwind <- file.path(dirname(bindir), "lib", "julia", "libunwind.so.8")
+      if (file.exists(libunwind)) {
+        dyn.load(libunwind, local = FALSE, now = TRUE)
+      }
+    },
+    error = function(e) NULL,
+    warning = function(w) NULL
+  )
+  invisible(NULL)
 }
 
 #' Start (or reuse) the Julia session with CausalStructures loaded
@@ -131,197 +375,61 @@ cs_session_ok <- function() {
 #' dependencies, and imports the module. Called automatically by the
 #' wrapper functions; call it yourself to pay the startup cost up front.
 #'
-#' If the Julia process died since setup (e.g. \pkg{JuliaConnectoR} kills it when
-#' an R interrupt arrives mid-call), the session is set up again from
-#' scratch. Graph proxies created before the restart are lost and must be
-#' recreated.
-#'
 #' Errors raised inside Julia are reported with just the underlying Julia
 #' error message; set `options(testpkg.verbose_errors = TRUE)` to see the
 #' full Julia stacktrace instead.
 #'
-#' @return The imported Julia module (invisibly).
+#' @return `NULL`, invisibly.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   cs_setup()
 #' }
 cs_setup <- function() {
-  if (cs_session_ok()) {
-    return(invisible(.cs$module))
+  if (isTRUE(.cs$ready)) {
+    return(invisible(NULL))
   }
-  .cs$module <- NULL
-  if (!JuliaConnectoR::juliaSetupOk()) {
-    stop(
-      "Julia is not available. Install Julia and make sure it is on the PATH."
-    )
-  }
-  path <- cs_pkg_path()
-  Pkg <- JuliaConnectoR::juliaImport("Pkg")
-  Pkg$activate(path)
-  Pkg$instantiate()
-  .cs$module <- JuliaConnectoR::juliaImport("CausalStructures")
-  .cs$Random <- JuliaConnectoR::juliaImport("Random")
-  # All wrapper helpers are defined here in a single juliaEval call, rather
-  # than one juliaEval per helper, so their definitions cost one round trip
-  # in total instead of one per helper. Each helper then does its Symbol
-  # conversion and string-joining Julia-side, so its own per-call round trip
-  # carries plain Strings rather than paying R's ~15us-per-element cost
-  # to deserialize character vectors.
-  JuliaConnectoR::juliaEval(
-    '
-    import CausalStructures
-    const _testpkg_CS = CausalStructures
-    import NetworkLayout
-    # A length-1 R character vector arrives in Julia as a scalar String
-    _testpkg_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)
-    _testpkg_join(names) = join(names, \'\\x1f\')
-    _testpkg_names(x) = _testpkg_join(sort!(String.(collect(x))))
-    _testpkg_opt(s) = s === nothing ? nothing : _testpkg_names(s)
-    _testpkg_sets(sets) =
-        isempty(sets) ? nothing : join((_testpkg_names(s) for s in sets), \'\\x1e\')
-
-    _testpkg_cgraph(spec, class, simple) =
-        _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)), simple = simple)
-    function _testpkg_generate_graph(n, m, p, class, rng)
-        kwargs = (
-            m = m === nothing ? nothing : Int(m), p = p,
-            class = getfield(_testpkg_CS, Symbol(class)),
-        )
-        rng === nothing ? _testpkg_CS.generate_graph(Int(n); kwargs...) :
-        _testpkg_CS.generate_graph(rng, Int(n); kwargs...)
-    end
-    _testpkg_topological_sort(g) = _testpkg_join(String.(_testpkg_CS.topological_sort(g)))
-    _testpkg_nodes(g) = _testpkg_join(String.(_testpkg_CS.nodes(g)))
-    function _testpkg_exogenous_nodes(g, undirected_as_parents)
-        result = g isa _testpkg_CS.AbstractPDAG ?
-            _testpkg_CS.exogenous_nodes(g; undirected_as_parents = undirected_as_parents) :
-            _testpkg_CS.exogenous_nodes(g)
-        _testpkg_names(result)
-    end
-    for f in (:parents, :children, :ancestors, :descendants, :spouses, :markov_blanket)
-        @eval $(Symbol(:_testpkg_, f))(g, node) =
-            _testpkg_names(_testpkg_CS.$f(g, Symbol(node)))
-    end
-    _testpkg_neighbors(g, node, mode) =
-        _testpkg_names(_testpkg_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))
-    for f in (:possible_ancestors, :possible_descendants, :anteriors, :posteriors)
-        @eval $(Symbol(:_testpkg_, f))(g, node, open) =
-            _testpkg_names(_testpkg_CS.$f(g, Symbol(node); open = open))
-    end
-    _testpkg_has_edge(g, x, y) = _testpkg_CS.has_edge(g, Symbol(x), Symbol(y))
-    for f in (:d_separated, :m_separated)
-        @eval $(Symbol(:_testpkg_, f))(g, x, y, given) =
-            _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
-    end
-    function _testpkg_minimal_separator(g, x, y, include, restrict)
-        _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y);
-            include = _testpkg_syms(include),
-            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
-    end
-    function _testpkg_adjustment_set(g, x, y, type)
-        result = if g isa Union{_testpkg_CS.DAG,_testpkg_CS.AbstractPDAG}
-            _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
-        else
-            # AbstractAG (MAG, AG) has no `type` kwarg: always the smallest valid set.
-            _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y))
-        end
-        _testpkg_opt(result)
-    end
-    function _testpkg_frontdoor_set(g, x, y, include, restrict)
-        _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y);
-            include = _testpkg_syms(include),
-            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
-    end
-    _testpkg_is_valid_backdoor(g, x, y, z) =
-        _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_all_backdoor_sets(g, x, y, minimal, max_size)
-        _testpkg_sets(_testpkg_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
-            minimal = minimal, max_size = Int(max_size)))
-    end
-    function _testpkg_all_frontdoor_sets(g, x, y, include, restrict)
-        _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
-            include = _testpkg_syms(include),
-            restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
-    end
-    _testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))
-    _testpkg_edges(g) = join((_testpkg_join([String(e.src), String(e.dst)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
-    _testpkg_edge_marks(g) = join((_testpkg_join([String(e.src), String(e.dst), string(e.src_end), string(e.dst_end)]) for e in _testpkg_CS.edges(g)), \'\\x1e\')
-    _testpkg_is_valid_adjustment(g, x, y, z) =
-        _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_all_adjustment_sets(g, x, y, minimal, max_size)
-        _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
-            minimal = minimal, max_size = Int(max_size)))
-    end
-    _testpkg_is_valid_frontdoor(g, x, y, z) =
-        _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_simulate_data(g, n, rng, standardize, coef_range, error_sd)
-        kwargs = (
-            samples = Int(n),
-            standardize = standardize,
-            coef_range = (Float64(coef_range[1]), Float64(coef_range[2])),
-            error_sd = Float64(error_sd),
-        )
-        d = rng === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
-            _testpkg_CS.simulate_data(rng, g; kwargs...)
-        names = sort!(collect(keys(d)))
-        # Flat node-major "\x1f"-joined string (not a native Matrix): JuliaConnectoR
-        # deserializes a Matrix{Float64} at a per-element cost as steep as its
-        # documented per-element String cost, so a 1000-node x 100-sample matrix
-        # takes ~700ms to cross as a Matrix but ~1ms as one joined string parsed
-        # with a single vectorized as.numeric()/strsplit() on the R side.
-        join((string(v) for nm in names for v in d[nm]), \'\\x1f\')
-    end
-    _testpkg_enumerate_dags(g) = _testpkg_CS.enumerate_dags(g)
-    _testpkg_markov_equivalent(g1, g2) = _testpkg_CS.markov_equivalent(g1, g2)
-    _testpkg_is_valid_iv(g, x, y, z) =
-        _testpkg_CS.is_valid_iv(g, Symbol(x), Symbol(y), _testpkg_syms(z))
-    function _testpkg_all_iv_sets(g, x, y, minimal, max_size)
-        _testpkg_sets(_testpkg_CS.all_iv_sets(g, Symbol(x), Symbol(y);
-            minimal = minimal, max_size = Int(max_size)))
-    end
-    _testpkg_enumerate_mags(g) = _testpkg_CS.enumerate_mags(g)
-    _testpkg_latent_project(g, latents) = _testpkg_CS.latent_project(g, _testpkg_syms(latents))
-    _testpkg_exogenize(g, nodes) = _testpkg_CS.exogenize(g, _testpkg_syms(nodes))
-    _testpkg_normalize_latent_structure(g, latents) =
-        _testpkg_CS.normalize_latent_structure(g, _testpkg_syms(latents))
-    _testpkg_condition_marginalize(g, cond_vars, marg_vars) =
-        _testpkg_CS.condition_marginalize(g;
-            cond_vars = _testpkg_syms(cond_vars), marg_vars = _testpkg_syms(marg_vars))
-    _testpkg_spec_edges(spec) =
-        filter(x -> x isa _testpkg_CS.CausalEdge, _testpkg_CS._parse_graph_string(spec))
-    _testpkg_add_edges(g, spec) = _testpkg_CS.add_edges(g, _testpkg_spec_edges(spec)...)
-    _testpkg_remove_edges(g, spec) = _testpkg_CS.remove_edges(g, _testpkg_spec_edges(spec)...)
-    _testpkg_add_nodes(g, nodes) = _testpkg_CS.add_nodes(g, _testpkg_syms(nodes)...)
-    _testpkg_remove_nodes(g, nodes) = _testpkg_CS.remove_nodes(g, _testpkg_syms(nodes)...)
-    function _testpkg_reclass(g, class, simple)
-        T = getfield(_testpkg_CS, Symbol(class))
-        T === _testpkg_CS.UNKNOWN ? _testpkg_CS.reclass(g, T; simple = simple) :
-        _testpkg_CS.reclass(g, T)
-    end
-    function _testpkg_layout(g, method)
-        pts = _testpkg_CS.layout(g, Symbol(method))
-        join((_testpkg_join([string(p[1]), string(p[2])]) for p in pts), \'\\x1e\')
-    end
-    nothing
-  '
+  cs_preload_julia_libunwind()
+  tryCatch(
+    JuliaCall::julia_setup(installJulia = FALSE),
+    error = function(e) {
+      stop(
+        "Julia is not available. Install Julia and make sure it is on the ",
+        "PATH.\n",
+        conditionMessage(e),
+        call. = FALSE
+      )
+    }
   )
+  path <- cs_pkg_path()
+  JuliaCall::julia_command(sprintf(
+    'import Pkg; Pkg.activate("%s"); Pkg.instantiate()',
+    path
+  ))
+  JuliaCall::julia_command("import CausalStructures")
+  JuliaCall::julia_command("import Random")
+  JuliaCall::julia_command("import NetworkLayout")
+  JuliaCall::julia_command("const _testpkg_CS = CausalStructures")
+  # Wrapped in begin...end so the whole block is one top-level expression:
+  # JuliaCall's eval_string() parses (and rejects, as multiple expressions)
+  # a bare sequence of separate definitions.
+  JuliaCall::julia_command(paste(
+    c("begin", .cs_helper_defs, "end"),
+    collapse = "\n"
+  ))
   for (f in .cs_helpers) {
-    .cs[[f]] <- cs_wrap_errors(JuliaConnectoR::juliaFun(paste0("_testpkg_", f)))
+    .cs[[f]] <- .cs_make_caller(paste0("_testpkg_", f))
   }
   for (f in .cs_passthrough) {
-    .cs[[f]] <- cs_wrap_errors(JuliaConnectoR::juliaFun(paste0(
-      "CausalStructures.",
-      f
-    )))
+    .cs[[f]] <- .cs_make_caller(paste0("CausalStructures.", f))
   }
-  .cs$con <- cs_julia_con()
-  invisible(.cs$module)
+  .cs$ready <- TRUE
+  invisible(NULL)
 }
 
-# Wraps a juliaFun proxy once at setup time (rather than on every call) so
-# Julia errors surface a clean message instead of the raw stacktrace; see
-# cs_clean_error().
+# Wraps a julia_call()-backed closure once at setup time (rather than on
+# every call) so Julia errors surface a clean message instead of the raw
+# stacktrace; see cs_clean_error().
 cs_wrap_errors <- function(fn) {
   force(fn)
   function(...) {
@@ -331,13 +439,8 @@ cs_wrap_errors <- function(fn) {
   }
 }
 
-cs_fn <- function(name) {
-  cs_setup()
-  .cs[[name]]
-}
-
-# JuliaConnectoR's error messages embed the full Julia stacktrace, which is
-# noise for most R users.
+# JuliaCall's error messages are "Error happens in Julia.\n<message>\n
+# Stacktrace:\n...", which is noise for most R users.
 cs_clean_error <- function(msg) {
   if (isTRUE(getOption("testpkg.verbose_errors", FALSE))) {
     return(msg)
@@ -345,12 +448,17 @@ cs_clean_error <- function(msg) {
   m <- regmatches(
     msg,
     regexpr(
-      "(?s)(?<=Original Julia error message:\n).*?(?=\nStacktrace:|$)",
+      "(?s)(?<=^Error happens in Julia\\.\n).*?(?=\nStacktrace:|$)",
       msg,
       perl = TRUE
     )
   )
   if (length(m) == 1 && nzchar(m)) m else msg
+}
+
+cs_fn <- function(name) {
+  cs_setup()
+  .cs[[name]]
 }
 
 # Builds a Julia RNG proxy from an integer seed, or NULL if seed is NULL.
@@ -361,9 +469,11 @@ cs_make_rng <- function(seed) {
     return(NULL)
   }
   cs_setup()
-  .cs$Random$Xoshiro(as.integer(seed))
+  JuliaCall::julia_call("Random.Xoshiro", as.integer(seed))
 }
 
+# Only used by cs_split_sets() now (nested "list of sets" results); flat
+# results return a plain Vector{String}, which JuliaCall auto-converts.
 cs_split <- function(x) {
   x <- as.character(x)
   if (identical(x, "")) {
@@ -387,7 +497,7 @@ cs_split_sets <- function(x) {
 # Wrapper factories
 cs_node_query <- function(name) {
   force(name)
-  function(cg, node) cs_split(cs_fn(name)(cg, node))
+  function(cg, node) cs_fn(name)(cg, node)
 }
 
 cs_graph_fn <- function(name) {
@@ -397,16 +507,22 @@ cs_graph_fn <- function(name) {
 
 #' Shut down the Julia session
 #'
-#' @return Called for its side effect; returns `NULL` invisibly.
+#' JuliaCall embeds Julia in the R process (dlopen on libjulia) and exposes
+#' no function to tear the embedded runtime down and restart it within a
+#' session, so this is a no-op.
+#'
+#' @return `NULL`, invisibly.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   cs_setup()
 #'   cs_stop()
 #' }
 cs_stop <- function() {
-  .cs$module <- NULL
-  .cs$con <- NULL
-  JuliaConnectoR::stopJulia()
+  warning(
+    "JuliaCall embeds Julia in the R process; there is no supported way to ",
+    "shut it down and restart it within a session. This call is a no-op.",
+    call. = FALSE
+  )
   invisible(NULL)
 }

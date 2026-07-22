@@ -21,7 +21,7 @@ assignments that validate as a MAG and map back to the same PAG under
 class, use \code{\link[=cs_mag_from_pag]{cs_mag_from_pag()}}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   pag <- cs_cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
   length(cs_enumerate_mags(pag))
 }

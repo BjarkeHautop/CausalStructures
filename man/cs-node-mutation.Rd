@@ -25,7 +25,7 @@ added as isolated nodes (nodes already present are ignored).
 incident edges removed, and errors if a node is not present.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B)
   cs_nodes(cs_add_nodes(dag, "C"))
   cs_nodes(cs_remove_nodes(dag, "B"))

@@ -29,7 +29,7 @@ Finds a minimal d-separator (DAG, PDAG classes) or m-separator
 them.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
   cs_minimal_separator(dag, "X", "Y") # both A and M are needed
 

@@ -23,7 +23,7 @@ Finds all minimal (or all) sets of valid instruments for identifying
 the causal effect of \code{x} on \code{y}; see \code{\link[=cs_is_valid_iv]{cs_is_valid_iv()}}.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(
     Z1 \%-->\% X, Z2 \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y
   )

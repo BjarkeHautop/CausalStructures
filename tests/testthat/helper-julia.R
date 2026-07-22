@@ -1,6 +1,6 @@
 skip_if_no_julia <- function() {
   testthat::skip_if_not(
-    JuliaConnectoR::juliaSetupOk(),
+    cs_julia_available(),
     "Julia is not available"
   )
   has_pkg <- tryCatch(

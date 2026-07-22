@@ -4,7 +4,7 @@
 test_that("construction works", {
   skip_if_no_julia()
   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
-  expect_s3_class(dag, "JuliaProxy")
+  expect_s3_class(dag, "JuliaObject")
 
   mag <- cs_cgraph(A %<->% B, C %-->% B %-->% D, class = "MAG")
   expect_true(cs_is_mag(mag))
@@ -262,7 +262,7 @@ test_that("equivalence class analysis works", {
   expect_true(count > 0)
 
   dags <- cs_enumerate_dags(cp)
-  expect_s3_class(dags, "JuliaProxy")
+  expect_s3_class(dags, "JuliaObject")
   # Julia vector contains the enumerated DAGs
 })
 
@@ -271,7 +271,7 @@ test_that("MAG enumeration works", {
 
   pag <- cs_cgraph(A %o->% B, C %o->% B, class = "PAG")
   mags <- cs_enumerate_mags(pag)
-  expect_s3_class(mags, "JuliaProxy")
+  expect_s3_class(mags, "JuliaObject")
 })
 
 test_that("data simulation works", {

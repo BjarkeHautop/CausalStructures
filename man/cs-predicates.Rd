@@ -54,7 +54,7 @@ These test the actual edge structure of \code{cg}, independent of the
 \code{class} it has.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, class = "UNKNOWN")
   cs_is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
   cs_is_ug(dag)

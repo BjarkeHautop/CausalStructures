@@ -72,7 +72,7 @@ small open circle respectively, so \verb{-->}, \verb{---}, \verb{<->}, \verb{o->
 \code{o-o} edges all render correctly.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph("A --> X + Y, X --> M --> Y")
   cs_plot(dag)
   cs_plot(dag, layout = "circle", main = "Quick guide DAG")

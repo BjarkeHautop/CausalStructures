@@ -32,7 +32,7 @@ order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
 the isolated nodes).
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(B \%-->\% A, A \%-->\% C)
   cs_nodes(dag)
   cs_topological_sort(dag)

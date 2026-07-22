@@ -31,7 +31,7 @@ edges; neighbors joined by a circle mark (\verb{o->}, \verb{o--}, \code{o-o}) ar
 reported by \code{"all"} only.
 }
 \examples{
-if (JuliaConnectoR::juliaSetupOk()) {
+if (cs_julia_available()) {
   dag <- cs_cgraph(A \%-->\% B, C \%-->\% B)
   cs_neighbors(dag, "B")
   cs_neighbors(dag, "B", mode = "in")

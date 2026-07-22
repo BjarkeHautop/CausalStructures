@@ -16,7 +16,7 @@
 #' @return Sorted character vector of node names.
 #' @name cs-node-queries
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #'   cs_parents(dag, "M")
 #'   cs_children(dag, "X")
@@ -66,7 +66,7 @@ cs_markov_blanket <- cs_node_query("markov_blanket")
 #' @return Sorted character vector of node names.
 #' @export
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, C %-->% B)
 #'   cs_neighbors(dag, "B")
 #'   cs_neighbors(dag, "B", mode = "in")
@@ -78,7 +78,7 @@ cs_neighbors <- function(
   mode = c("all", "in", "out", "undirected", "bidirected")
 ) {
   mode <- match.arg(mode)
-  cs_split(cs_fn("neighbors")(cg, node, mode))
+  cs_fn("neighbors")(cg, node, mode)
 }
 
 #' Possible-ancestor/descendant node-set queries
@@ -102,7 +102,7 @@ cs_neighbors <- function(
 #' \insertRef{perkovic2018complete}{testpkg}
 #' @name cs-possible-queries
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   cpdag <- cs_cgraph(A %---% B, B %---% C, class = "CPDAG")
 #'   cs_ancestors(cpdag, "C") # compelled ancestors: none
 #'   cs_possible_ancestors(cpdag, "C")
@@ -113,25 +113,25 @@ NULL
 #' @rdname cs-possible-queries
 #' @export
 cs_possible_ancestors <- function(cg, node, open = TRUE) {
-  cs_split(cs_fn("possible_ancestors")(cg, node, open))
+  cs_fn("possible_ancestors")(cg, node, open)
 }
 
 #' @rdname cs-possible-queries
 #' @export
 cs_possible_descendants <- function(cg, node, open = TRUE) {
-  cs_split(cs_fn("possible_descendants")(cg, node, open))
+  cs_fn("possible_descendants")(cg, node, open)
 }
 
 #' @rdname cs-possible-queries
 #' @export
 cs_anteriors <- function(cg, node, open = TRUE) {
-  cs_split(cs_fn("anteriors")(cg, node, open))
+  cs_fn("anteriors")(cg, node, open)
 }
 
 #' @rdname cs-possible-queries
 #' @export
 cs_posteriors <- function(cg, node, open = TRUE) {
-  cs_split(cs_fn("posteriors")(cg, node, open))
+  cs_fn("posteriors")(cg, node, open)
 }
 
 
@@ -151,7 +151,7 @@ cs_posteriors <- function(cg, node, open = TRUE) {
 #' @return A logical scalar.
 #' @name cs-predicates
 #' @examples
-#' if (JuliaConnectoR::juliaSetupOk()) {
+#' if (cs_julia_available()) {
 #'   dag <- cs_cgraph(A %-->% B, class = "UNKNOWN")
 #'   cs_is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
 #'   cs_is_ug(dag)
