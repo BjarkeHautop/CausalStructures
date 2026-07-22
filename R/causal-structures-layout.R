@@ -63,7 +63,8 @@ cs_layout <- function(
   tokens <- as.numeric(strsplit(
     chartr("\x1f", "\x1e", res),
     "\x1e",
-    fixed = TRUE
+    fixed = TRUE,
+    useBytes = TRUE
   )[[1]])
   coords <- matrix(tokens, ncol = 2, byrow = TRUE)
 

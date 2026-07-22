@@ -25,12 +25,13 @@
       stringsAsFactors = FALSE
     ))
   }
-  rows <- strsplit(
-    strsplit(res, "\x1e", fixed = TRUE)[[1]],
-    "\x1f",
-    fixed = TRUE
-  )
-  mat <- do.call(rbind, rows)
+  tokens <- strsplit(
+    chartr("\x1f", "\x1e", res),
+    "\x1e",
+    fixed = TRUE,
+    useBytes = TRUE
+  )[[1]]
+  mat <- matrix(tokens, ncol = 4, byrow = TRUE)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],

@@ -265,7 +265,12 @@ cs_setup <- function() {
         d = rng === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
             _testpkg_CS.simulate_data(rng, g; kwargs...)
         names = sort!(collect(keys(d)))
-        hcat((d[nm] for nm in names)...)
+        # Flat node-major "\x1f"-joined string (not a native Matrix): JuliaConnectoR
+        # deserializes a Matrix{Float64} at a per-element cost as steep as its
+        # documented per-element String cost, so a 1000-node x 100-sample matrix
+        # takes ~700ms to cross as a Matrix but ~1ms as one joined string parsed
+        # with a single vectorized as.numeric()/strsplit() on the R side.
+        join((string(v) for nm in names for v in d[nm]), \'\\x1f\')
     end
     _testpkg_enumerate_dags(g) = _testpkg_CS.enumerate_dags(g)
     _testpkg_markov_equivalent(g1, g2) = _testpkg_CS.markov_equivalent(g1, g2)
@@ -361,7 +366,11 @@ cs_make_rng <- function(seed) {
 
 cs_split <- function(x) {
   x <- as.character(x)
-  if (identical(x, "")) character(0) else strsplit(x, "\x1f", fixed = TRUE)[[1]]
+  if (identical(x, "")) {
+    character(0)
+  } else {
+    strsplit(x, "\x1f", fixed = TRUE, useBytes = TRUE)[[1]]
+  }
 }
 
 cs_split_sets <- function(x) {
@@ -372,7 +381,7 @@ cs_split_sets <- function(x) {
   if (identical(x, "")) {
     return(list(character(0)))
   }
-  lapply(strsplit(x, "\x1e", fixed = TRUE)[[1]], cs_split)
+  lapply(strsplit(x, "\x1e", fixed = TRUE, useBytes = TRUE)[[1]], cs_split)
 }
 
 # Wrapper factories

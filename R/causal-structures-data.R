@@ -43,7 +43,7 @@ cs_simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  mat <- cs_fn("simulate_data")(
+  raw <- cs_fn("simulate_data")(
     cg,
     n,
     cs_make_rng(seed),
@@ -51,7 +51,9 @@ cs_simulate_data <- function(
     coef_range,
     error_sd
   )
-  df <- as.data.frame(mat)
-  names(df) <- cs_nodes(cg)
+  ns <- cs_nodes(cg)
+  vals <- as.numeric(strsplit(raw, "\x1f", fixed = TRUE, useBytes = TRUE)[[1]])
+  df <- as.data.frame(matrix(vals, nrow = n, ncol = length(ns)))
+  names(df) <- ns
   df
 }

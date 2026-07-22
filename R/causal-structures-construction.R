@@ -176,6 +176,11 @@ cs_edges <- function(cg) {
   if (identical(res, "")) {
     return(matrix(character(), nrow = 0, ncol = 2))
   }
-  tokens <- strsplit(chartr("\x1f", "\x1e", res), "\x1e", fixed = TRUE)[[1]]
+  tokens <- strsplit(
+    chartr("\x1f", "\x1e", res),
+    "\x1e",
+    fixed = TRUE,
+    useBytes = TRUE
+  )[[1]]
   matrix(tokens, ncol = 2, byrow = TRUE)
 }
