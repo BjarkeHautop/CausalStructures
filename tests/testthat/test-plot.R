@@ -1,12 +1,12 @@
-test_that("cs_plot draws with the default layout", {
+test_that("plot.cgraph draws with the default layout", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(print(cs_plot(test_dag())))
+  expect_no_error(plot(test_dag()))
 })
 
-test_that("cs_layout works for every layout method", {
+test_that("layout.cgraph works for every layout method", {
   skip_if_no_julia()
   methods <- c(
     "circle",
@@ -19,7 +19,7 @@ test_that("cs_layout works for every layout method", {
   )
 
   for (m in methods) {
-    coords <- cs_layout(test_dag(), method = m)
+    coords <- layout(test_dag(), method = m)
     expect_equal(nrow(coords), 4)
     expect_setequal(coords$name, c("A", "X", "Y", "M"))
     expect_true(is.numeric(coords$x))
@@ -27,7 +27,7 @@ test_that("cs_layout works for every layout method", {
   }
 })
 
-test_that("cs_plot draws with every layout method", {
+test_that("plot.cgraph draws with every layout method", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
@@ -42,33 +42,33 @@ test_that("cs_plot draws with every layout method", {
     "squaregrid"
   )
   for (m in methods) {
-    expect_no_error(print(cs_plot(test_dag(), layout = m)))
+    expect_no_error(plot(test_dag(), layout = m))
   }
 })
 
-test_that("cs_plot draws with a pre-computed layout data.frame", {
+test_that("plot.cgraph draws with a pre-computed layout data.frame", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  coords <- cs_layout(test_dag(), method = "circle")
-  expect_no_error(print(cs_plot(test_dag(), layout = coords)))
+  coords <- layout(test_dag(), method = "circle")
+  expect_no_error(plot(test_dag(), layout = coords))
 })
 
-test_that("cs_plot draws with a layout function", {
+test_that("plot.cgraph draws with a layout function", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(print(cs_plot(test_dag(), layout = cs_layout)))
+  expect_no_error(plot(test_dag(), layout = layout))
 })
 
-test_that("cs_plot honors styling options without error", {
+test_that("plot.cgraph honors styling options without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(print(cs_plot(
+  expect_no_error(plot(
     test_dag(),
     main = "Quick guide DAG",
     node_style = list(
@@ -82,10 +82,10 @@ test_that("cs_plot honors styling options without error", {
     label_style = list(fontsize = 8),
     title_style = list(col = "blue"),
     asp = 1
-  )))
+  ))
 })
 
-test_that("cs_plot renders every edge type without error", {
+test_that("plot.cgraph renders every edge type without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
@@ -94,20 +94,31 @@ test_that("cs_plot renders every edge type without error", {
     "A --> B, C --- D, E <-> F, G o-> H, I o-- J, K o-o L",
     class = "UNKNOWN"
   )
-  expect_no_error(print(cs_plot(g, layout = "circle")))
+  expect_no_error(plot(g, layout = "circle"))
 })
 
-test_that("cs_plot errors on an empty graph", {
+test_that("plot.cgraph errors on an empty graph", {
   skip_if_no_julia()
   g <- cgraph("", class = "DAG")
-  expect_error(cs_plot(g), "empty graph")
+  expect_error(plot(g), "empty graph")
 })
 
-test_that("cs_plot errors on a layout data.frame missing columns", {
+test_that("plot.cgraph errors on a layout data.frame missing columns", {
   skip_if_no_julia()
   bad_layout <- data.frame(name = c("A", "X", "Y", "M"), x = 1:4)
   expect_error(
-    cs_plot(test_dag(), layout = bad_layout),
+    plot(test_dag(), layout = bad_layout),
     "missing required column"
   )
+})
+
+test_that("print.cgraph_plot and plot.cgraph_plot redraw a saved plot", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  p <- plot(test_dag())
+  expect_s3_class(p, "cgraph_plot")
+  expect_no_error(print(p))
+  expect_no_error(plot(p))
 })

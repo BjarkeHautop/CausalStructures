@@ -55,7 +55,11 @@ cgraph <- function(
   simple = TRUE
 ) {
   class <- match.arg(class)
-  fn("cgraph")(.dots_or_spec(substitute(list(...)), spec), class, simple)
+  .tag_cgraph(fn("cgraph")(
+    .dots_or_spec(substitute(list(...)), spec),
+    class,
+    simple
+  ))
 }
 
 #' Generate a random graph
@@ -88,7 +92,7 @@ generate_graph <- function(
   seed = NULL
 ) {
   class <- match.arg(class)
-  fn("generate_graph")(as.integer(n), m, p, class, make_rng(seed))
+  .tag_cgraph(fn("generate_graph")(as.integer(n), m, p, class, make_rng(seed)))
 }
 
 # --- Graph-level queries -----------------------------------------------------

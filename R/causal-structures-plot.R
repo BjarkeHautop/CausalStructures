@@ -3,7 +3,7 @@
 # Grid-graphics rendering adapted from caugi's plotting code (R/plot-core.R,
 # R/plot-grobs.R by Frederik Fabricius-Bjerre and Johan Larsson), simplified
 # to a single global edge style (no per-edge-type styling, no tier boxes).
-# See inst/COPYRIGHTS for attribution and cs_layout() (causal-structures-
+# See inst/COPYRIGHTS for attribution and layout.cgraph() (causal-structures-
 # layout.R) for the layout algorithm.
 #
 # Each edge carries a Tail/Arrow/Circle mark at each endpoint (see
@@ -464,19 +464,20 @@ makeContent.cs_edge_grob <- function(x) {
 
 #' Plot a causal graph
 #'
-#' Creates a grid graphics object representing a graph created with
-#' [cgraph()]. All edge types are supported (directed, undirected,
+#' An S3 method for the base [plot()] generic. Creates a grid graphics
+#' object representing a graph created with [cgraph()] and draws it to the
+#' current device. All edge types are supported (directed, undirected,
 #' bidirected, and partially-marked PAG-style edges): each endpoint's
 #' Tail/Arrow/Circle mark is drawn as a plain line end, an arrowhead, or a
 #' small open circle respectively, so `-->`, `---`, `<->`, `o->`, `o--`, and
 #' `o-o` edges all render correctly.
 #'
-#' @param cg A graph created with [cgraph()], of any class.
+#' @param x A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
-#'   * A character string passed to [cs_layout()] as `method`
+#'   * A character string passed to [layout.cgraph()] as `method`
 #'     (`"circle"`, `"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
 #'     `"shell"`, `"squaregrid"`).
-#'   * A layout function, called with `cg` and any `...`.
+#'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
 #' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
 #'   `padding` (mm, default 2), `size` (multiplier, default 1), and `by_node`
@@ -498,21 +499,24 @@ makeContent.cs_edge_grob <- function(x) {
 #'   `grid::unit(2, "mm")`.
 #' @param title_gap Grid unit for the gap between title and graph. Default
 #'   `grid::unit(1, "lines")`.
+#' @param newpage If `TRUE` (default), call [grid::grid.newpage()] before
+#'   drawing.
 #' @param ... Passed to `layout` when it is a character string or function.
 #'
-#' @returns A `cs_plot` object, drawn automatically when printed.
+#' @returns A `cgraph_plot` object, invisibly. Drawn immediately as a side
+#'   effect; re-drawn if printed or passed to `plot()` again.
 #'
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   cs_plot(dag)
-#'   cs_plot(dag, layout = "circle", main = "Quick guide DAG")
+#'   plot(dag)
+#'   plot(dag, layout = "circle", main = "Quick guide DAG")
 #' }
 #'
 #' @family plotting
 #' @export
-cs_plot <- function(
-  cg,
+plot.cgraph <- function(
+  x,
   layout = "stress",
   node_style = list(),
   edge_style = list(),
@@ -522,6 +526,7 @@ cs_plot <- function(
   asp = NA,
   outer_margin = grid::unit(2, "mm"),
   title_gap = grid::unit(1, "lines"),
+  newpage = TRUE,
   ...
 ) {
   stopifnot(
@@ -531,9 +536,9 @@ cs_plot <- function(
   )
 
   if (is.character(layout)) {
-    coords <- cs_layout(cg, method = layout, ...)
+    coords <- layout.cgraph(x, method = layout, ...)
   } else if (is.function(layout)) {
-    coords <- layout(cg, ...)
+    coords <- layout(x, ...)
   } else if (is.data.frame(layout)) {
     required_cols <- c("name", "x", "y")
     missing_cols <- setdiff(required_cols, names(layout))
@@ -544,7 +549,7 @@ cs_plot <- function(
         call. = FALSE
       )
     }
-    graph_nodes <- nodes(cg)
+    graph_nodes <- nodes(x)
     if (nrow(layout) != length(graph_nodes)) {
       stop(
         "Layout has ",
@@ -578,7 +583,7 @@ cs_plot <- function(
   styles <- .plot_make_styles(node_style, edge_style, label_style, title_style)
 
   labels <- coords$name
-  edges <- .plot_edges(cg)
+  edges <- .plot_edges(x)
 
   x_range <- range(coords$x)
   y_range <- range(coords$y)
@@ -685,16 +690,21 @@ cs_plot <- function(
     name = "cs.titled"
   )
 
-  structure(list(grob = final_grob), class = "cs_plot")
+  result <- structure(list(grob = final_grob), class = "cgraph_plot")
+  if (newpage) {
+    grid::grid.newpage()
+  }
+  grid::grid.draw(result$grob)
+  invisible(result)
 }
 
 #' @export
-print.cs_plot <- function(x, ...) {
+print.cgraph_plot <- function(x, ...) {
   plot(x, ...)
 }
 
 #' @export
-plot.cs_plot <- function(x, newpage = TRUE, ...) {
+plot.cgraph_plot <- function(x, newpage = TRUE, ...) {
   if (newpage) {
     grid::grid.newpage()
   }

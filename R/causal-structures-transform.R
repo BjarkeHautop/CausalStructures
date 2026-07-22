@@ -29,39 +29,39 @@ NULL
 
 #' @rdname cs-transforms
 #' @export
-skeleton <- graph_fn("skeleton")
+skeleton <- cgraph_fn("skeleton")
 
 #' @rdname cs-transforms
 #' @export
-moralize <- graph_fn("moralize")
+moralize <- cgraph_fn("moralize")
 
 #' @rdname cs-transforms
 #' @export
-dag_to_cpdag <- graph_fn("dag_to_cpdag")
+dag_to_cpdag <- cgraph_fn("dag_to_cpdag")
 
 #' @rdname cs-transforms
 #' @export
-dag_from_pdag <- graph_fn("dag_from_pdag")
+dag_from_pdag <- cgraph_fn("dag_from_pdag")
 
 #' @rdname cs-transforms
 #' @export
-meek_closure <- graph_fn("meek_closure")
+meek_closure <- cgraph_fn("meek_closure")
 
 #' @rdname cs-transforms
 #' @export
-dag_to_mpdag <- graph_fn("dag_to_mpdag")
+dag_to_mpdag <- cgraph_fn("dag_to_mpdag")
 
 #' @rdname cs-transforms
 #' @export
-ag_to_mag <- graph_fn("ag_to_mag")
+ag_to_mag <- cgraph_fn("ag_to_mag")
 
 #' @rdname cs-transforms
 #' @export
-mag_to_pag <- graph_fn("mag_to_pag")
+mag_to_pag <- cgraph_fn("mag_to_pag")
 
 #' @rdname cs-transforms
 #' @export
-mag_from_pag <- graph_fn("mag_from_pag")
+mag_from_pag <- cgraph_fn("mag_from_pag")
 
 #' Induced subgraph
 #'
@@ -75,7 +75,7 @@ mag_from_pag <- graph_fn("mag_from_pag")
 #'   nodes(subgraph(dag, c("A", "B")))
 #' }
 subgraph <- function(cg, nodes) {
-  fn("subgraph")(cg, as.character(nodes))
+  .tag_cgraph(fn("subgraph")(cg, as.character(nodes)))
 }
 
 #' Project out latent variables
@@ -94,7 +94,7 @@ subgraph <- function(cg, nodes) {
 #'   edges(latent_project(dag, "U"))
 #' }
 latent_project <- function(cg, latents) {
-  fn("latent_project")(cg, as.character(latents))
+  .tag_cgraph(fn("latent_project")(cg, as.character(latents)))
 }
 
 #' Make nodes exogenous
@@ -113,7 +113,7 @@ latent_project <- function(cg, latents) {
 #'   edges(exogenize(dag, "M"))
 #' }
 exogenize <- function(cg, nodes) {
-  fn("exogenize")(cg, as.character(nodes))
+  .tag_cgraph(fn("exogenize")(cg, as.character(nodes)))
 }
 
 #' Normalize latent structure
@@ -134,7 +134,7 @@ exogenize <- function(cg, nodes) {
 #'   edges(normalize_latent_structure(dag, "U"))
 #' }
 normalize_latent_structure <- function(cg, latents) {
-  fn("normalize_latent_structure")(cg, as.character(latents))
+  .tag_cgraph(fn("normalize_latent_structure")(cg, as.character(latents)))
 }
 
 #' Condition and marginalize a graph
@@ -159,11 +159,11 @@ condition_marginalize <- function(
   cond_vars = character(),
   marg_vars = character()
 ) {
-  fn("condition_marginalize")(
+  .tag_cgraph(fn("condition_marginalize")(
     cg,
     as.character(cond_vars),
     as.character(marg_vars)
-  )
+  ))
 }
 
 # --- Mutation ----------------------------------------------------------------
@@ -195,13 +195,16 @@ NULL
 #' @rdname cs-edge-mutation
 #' @export
 add_edges <- function(cg, ..., spec = NULL) {
-  fn("add_edges")(cg, .dots_or_spec(substitute(list(...)), spec))
+  .tag_cgraph(fn("add_edges")(cg, .dots_or_spec(substitute(list(...)), spec)))
 }
 
 #' @rdname cs-edge-mutation
 #' @export
 remove_edges <- function(cg, ..., spec = NULL) {
-  fn("remove_edges")(cg, .dots_or_spec(substitute(list(...)), spec))
+  .tag_cgraph(fn("remove_edges")(
+    cg,
+    .dots_or_spec(substitute(list(...)), spec)
+  ))
 }
 
 #' Add or remove isolated nodes
@@ -226,13 +229,13 @@ NULL
 #' @rdname cs-node-mutation
 #' @export
 add_nodes <- function(cg, nodes) {
-  fn("add_nodes")(cg, as.character(nodes))
+  .tag_cgraph(fn("add_nodes")(cg, as.character(nodes)))
 }
 
 #' @rdname cs-node-mutation
 #' @export
 remove_nodes <- function(cg, nodes) {
-  fn("remove_nodes")(cg, as.character(nodes))
+  .tag_cgraph(fn("remove_nodes")(cg, as.character(nodes)))
 }
 
 #' Reclassify a graph
@@ -271,5 +274,5 @@ reclass <- function(
   simple = TRUE
 ) {
   class <- match.arg(class)
-  fn("reclass")(cg, class, simple)
+  .tag_cgraph(fn("reclass")(cg, class, simple))
 }
