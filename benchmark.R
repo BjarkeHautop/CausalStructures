@@ -22,8 +22,6 @@
 
 pkgload::load_all(".", quiet = TRUE)
 
-library(caugi)
-
 n <- 1000L
 p <- 0.25
 
@@ -52,11 +50,11 @@ to_caugi <- function(graph) {
   ns <- nodes(graph)
   raw <- .bench_edges_typed(graph)
   if (identical(raw, "")) {
-    return(build(caugi::caugi(nodes = ns, class = cls)))
+    return(caugi::build(caugi::caugi(nodes = ns, class = cls)))
   }
   tokens <- strsplit(chartr("\x1f", "\x1e", raw), "\x1e", fixed = TRUE)[[1]]
   m <- matrix(tokens, ncol = 3, byrow = TRUE)
-  build(caugi::caugi(
+  caugi::build(caugi::caugi(
     from = m[, 1],
     edge = m[, 2],
     to = m[, 3],
@@ -90,13 +88,23 @@ z <- adjustment_set(jdag, x, y)
 
 spec_small <- "A --> X + Y, X --> M --> Y"
 jdag_small <- cgraph(spec = spec_small)
-cdag_small <- build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "DAG"))
+cdag_small <- caugi::build(caugi::caugi(
+  A %-->% X + Y,
+  X %-->% M,
+  M %-->% Y,
+  class = "DAG"
+))
 
 jadmg_small <- reclass(jdag_small, "ADMG")
-cadmg_small <- build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "ADMG"))
+cadmg_small <- caugi::build(caugi::caugi(
+  A %-->% X + Y,
+  X %-->% M,
+  M %-->% Y,
+  class = "ADMG"
+))
 
 jpdag_small <- cgraph(A %---% X, X %-->% Y, class = "PDAG")
-cpdag_small <- build(caugi(A %---% X, X %-->% Y, class = "PDAG"))
+cpdag_small <- caugi::build(caugi::caugi(A %---% X, X %-->% Y, class = "PDAG"))
 
 # Warm-up
 invisible(cgraph(spec = spec_small))
@@ -122,213 +130,231 @@ results <- rbind(
   run(
     "cgraph (4-node DSL graph)",
     function() cgraph(spec = spec_small),
-    function() build(caugi(A %-->% X + Y, X %-->% M, M %-->% Y, class = "DAG"))
+    function() {
+      caugi::build(caugi::caugi(
+        A %-->% X + Y,
+        X %-->% M,
+        M %-->% Y,
+        class = "DAG"
+      ))
+    }
   ),
   run(
     "generate_graph (n=1000)",
     function() generate_graph(n, p = p, seed = 1405L),
-    function() build(generate_graph(n = n, p = p, class = "DAG", seed = 1405))
+    function() {
+      caugi::build(caugi::generate_graph(
+        n = n,
+        p = p,
+        class = "DAG",
+        seed = 1405
+      ))
+    }
   ),
 
   # --- Graph-level queries -------------------------------------------------
   run(
     "nodes",
     function() nodes(jdag),
-    function() nodes(cg)
+    function() caugi::nodes(cg)
   ),
   run(
     "edges",
     function() edges(jdag),
-    function() edges(cg)
+    function() caugi::edges(cg)
   ),
   run(
     "topological_sort",
     function() topological_sort(jdag),
-    function() topological_sort(cg)
+    function() caugi::topological_sort(cg)
   ),
   run(
     "exogenous_nodes (caugi: exogenous)",
     function() exogenous_nodes(jdag),
-    function() exogenous(cg)
+    function() caugi::exogenous(cg)
   ),
 
   # --- Node-set queries ------------------------------------------------------
   run(
     "parents",
     function() parents(jdag, node),
-    function() parents(cg, node)
+    function() caugi::parents(cg, node)
   ),
   run(
     "children",
     function() children(jdag, node),
-    function() children(cg, node)
+    function() caugi::children(cg, node)
   ),
   run(
     "ancestors",
     function() ancestors(jdag, node),
-    function() ancestors(cg, node)
+    function() caugi::ancestors(cg, node)
   ),
   run(
     "descendants",
     function() descendants(jdag, node),
-    function() descendants(cg, node)
+    function() caugi::descendants(cg, node)
   ),
   run(
     "spouses (ADMG, 4-node graph)",
     function() spouses(jadmg_small, "X"),
-    function() spouses(cadmg_small, "X")
+    function() caugi::spouses(cadmg_small, "X")
   ),
   run(
     "neighbors",
     function() neighbors(jdag, node),
-    function() neighbors(cg, node)
+    function() caugi::neighbors(cg, node)
   ),
   run(
     "markov_blanket",
     function() markov_blanket(jdag, node),
-    function() markov_blanket(cg, node)
+    function() caugi::markov_blanket(cg, node)
   ),
   run(
     "anteriors",
     function() anteriors(jdag, node),
-    function() anteriors(cg, node)
+    function() caugi::anteriors(cg, node)
   ),
   run(
     "posteriors",
     function() posteriors(jdag, node),
-    function() posteriors(cg, node)
+    function() caugi::posteriors(cg, node)
   ),
 
   # --- Predicates ------------------------------------------------------------
   run(
     "is_dag",
     function() is_dag(jdag),
-    function() is_dag(cg)
+    function() caugi::is_dag(cg)
   ),
   run(
     "is_acyclic",
     function() is_acyclic(jdag),
-    function() is_acyclic(cg)
+    function() caugi::is_acyclic(cg)
   ),
 
   # --- Transformations ---------------------------------------------------
   run(
     "skeleton (4-node graph)",
     function() skeleton(jdag_small),
-    function() skeleton(cdag_small)
+    function() caugi::skeleton(cdag_small)
   ),
   run(
     "moralize (4-node graph)",
     function() moralize(jdag_small),
-    function() moralize(cdag_small)
+    function() caugi::moralize(cdag_small)
   ),
   run(
     "meek_closure (PDAG)",
     function() meek_closure(jpdag_small),
-    function() meek_closure(cpdag_small)
+    function() caugi::meek_closure(cpdag_small)
   ),
   run(
     "dag_from_pdag (PDAG)",
     function() dag_from_pdag(jpdag_small),
-    function() dag_from_pdag(cpdag_small)
+    function() caugi::dag_from_pdag(cpdag_small)
   ),
   run(
     "subgraph (4-node graph)",
     function() subgraph(jdag_small, c("A", "X", "Y")),
-    function() subgraph(cdag_small, c("A", "X", "Y"))
+    function() caugi::subgraph(cdag_small, c("A", "X", "Y"))
   ),
   run(
     "latent_project (4-node graph)",
     function() latent_project(jdag_small, "M"),
-    function() latent_project(cdag_small, "M")
+    function() caugi::latent_project(cdag_small, "M")
   ),
   run(
     "exogenize (4-node graph)",
     function() exogenize(jdag_small, "X"),
-    function() exogenize(cdag_small, "X")
+    function() caugi::exogenize(cdag_small, "X")
   ),
   run(
     "normalize_latent_structure (4-node graph)",
     function() normalize_latent_structure(jdag_small, "M"),
-    function() normalize_latent_structure(cdag_small, "M")
+    function() caugi::normalize_latent_structure(cdag_small, "M")
   ),
   run(
     "condition_marginalize (4-node graph)",
     function() condition_marginalize(jdag_small, marg_vars = "M"),
-    function() condition_marginalize(cdag_small, marg_vars = "M")
+    function() caugi::condition_marginalize(cdag_small, marg_vars = "M")
   ),
 
   # --- Separation --------------------------------------------------------
   run(
     "d_separated",
     function() d_separated(jdag, x, y, z),
-    function() d_separated(cg, x, y, z)
+    function() caugi::d_separated(cg, x, y, z)
   ),
   run(
     "m_separated",
     function() m_separated(jdag, x, y, z),
-    function() m_separated(cg, X = x, Y = y, Z = z)
+    function() caugi::m_separated(cg, X = x, Y = y, Z = z)
   ),
   run(
     "minimal_separator",
     function() minimal_separator(jdag, x, y),
-    function() minimal_separator(cg, X = x, Y = y)
+    function() caugi::minimal_separator(cg, X = x, Y = y)
   ),
 
   # --- Identification ------------------------------------------------------
   run(
     "adjustment_set (backdoor)",
     function() adjustment_set(jdag, x, y),
-    function() adjustment_set(cg, x, y, type = "backdoor")
+    function() caugi::adjustment_set(cg, x, y, type = "backdoor")
   ),
   run(
     "is_valid_backdoor",
     function() is_valid_backdoor(jdag, x, y, z),
-    function() is_valid_backdoor(cg, X = x, Y = y, Z = z)
+    function() caugi::is_valid_backdoor(cg, X = x, Y = y, Z = z)
   ),
   run(
     "all_backdoor_sets",
     function() all_backdoor_sets(jdag_small, "X", "Y"),
-    function() all_backdoor_sets(cdag_small, X = "X", Y = "Y")
+    function() caugi::all_backdoor_sets(cdag_small, X = "X", Y = "Y")
   ),
   run(
     "is_valid_adjustment (caugi: is_valid_adjustment_admg, ADMG)",
     function() is_valid_adjustment(jadmg_small, "X", "Y", "A"),
-    function() is_valid_adjustment_admg(cadmg_small, X = "X", Y = "Y", Z = "A")
+    function() {
+      caugi::is_valid_adjustment_admg(cadmg_small, X = "X", Y = "Y", Z = "A")
+    }
   ),
   run(
     "all_adjustment_sets (caugi: all_adjustment_sets_admg, ADMG)",
     function() all_adjustment_sets(jadmg_small, "X", "Y"),
-    function() all_adjustment_sets_admg(cadmg_small, X = "X", Y = "Y")
+    function() caugi::all_adjustment_sets_admg(cadmg_small, X = "X", Y = "Y")
   ),
 
   # --- Mutation ------------------------------------------------------------
   run(
     "add_edges (4-node graph)",
     function() add_edges(jdag_small, A %-->% M),
-    function() add_edges(cdag_small, from = "A", edge = "-->", to = "M")
+    function() caugi::add_edges(cdag_small, from = "A", edge = "-->", to = "M")
   ),
   run(
     "remove_edges (4-node graph)",
     function() remove_edges(jdag_small, X %-->% M),
-    function() remove_edges(cdag_small, from = "X", edge = "-->", to = "M")
+    function() {
+      caugi::remove_edges(cdag_small, from = "X", edge = "-->", to = "M")
+    }
   ),
   run(
     "add_nodes (4-node graph)",
     function() add_nodes(jdag_small, "Z"),
-    function() add_nodes(cdag_small, name = "Z")
+    function() caugi::add_nodes(cdag_small, name = "Z")
   ),
   run(
     "remove_nodes (4-node graph)",
     function() remove_nodes(jdag_small, "A"),
-    function() remove_nodes(cdag_small, name = "A")
+    function() caugi::remove_nodes(cdag_small, name = "A")
   ),
 
   # --- Data generation ---------------------------------------------------
   run(
     "simulate_data (n=100)",
     function() simulate_data(jdag, 100, seed = 1L),
-    function() simulate_data(cg, 100, seed = 1L)
+    function() caugi::simulate_data(cg, 100, seed = 1L)
   )
 )
 
