@@ -4,7 +4,7 @@
 #'
 #' Relatives of a node: `parents()`, `children()`, `ancestors()`,
 #' `descendants()`, `spouses()`, and `markov_blanket()`. See
-#' [neighbors()] and [cs-possible-queries] for the remaining node-set
+#' [neighbors()] and [possible-queries] for the remaining node-set
 #' queries, which take extra arguments.
 #'
 #' @param cg A graph created with [cgraph()]. Supported classes vary by
@@ -14,7 +14,7 @@
 #'   MAG); `spouses()` accepts ADMG, AG-family, or PAG.
 #' @param node Node name.
 #' @return Sorted character vector of node names.
-#' @name cs-node-queries
+#' @name node-queries
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
@@ -25,27 +25,27 @@
 #' }
 NULL
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 parents <- node_query("parents")
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 children <- node_query("children")
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 ancestors <- node_query("ancestors")
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 descendants <- node_query("descendants")
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 spouses <- node_query("spouses")
 
-#' @rdname cs-node-queries
+#' @rdname node-queries
 #' @export
 markov_blanket <- node_query("markov_blanket")
 
@@ -100,7 +100,7 @@ neighbors <- function(
 #' @return Sorted character vector of node names.
 #' @references
 #' \insertRef{perkovic2018complete}{testpkg}
-#' @name cs-possible-queries
+#' @name possible-queries
 #' @examples
 #' if (julia_available()) {
 #'   cpdag <- cgraph(A %---% B, B %---% C, class = "CPDAG")
@@ -110,25 +110,25 @@ neighbors <- function(
 #' }
 NULL
 
-#' @rdname cs-possible-queries
+#' @rdname possible-queries
 #' @export
 possible_ancestors <- function(cg, node, open = TRUE) {
   fn("possible_ancestors")(cg, node, open)
 }
 
-#' @rdname cs-possible-queries
+#' @rdname possible-queries
 #' @export
 possible_descendants <- function(cg, node, open = TRUE) {
   fn("possible_descendants")(cg, node, open)
 }
 
-#' @rdname cs-possible-queries
+#' @rdname possible-queries
 #' @export
 anteriors <- function(cg, node, open = TRUE) {
   fn("anteriors")(cg, node, open)
 }
 
-#' @rdname cs-possible-queries
+#' @rdname possible-queries
 #' @export
 posteriors <- function(cg, node, open = TRUE) {
   fn("posteriors")(cg, node, open)
@@ -149,7 +149,7 @@ posteriors <- function(cg, node, open = TRUE) {
 #'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @return A logical scalar.
-#' @name cs-predicates
+#' @name predicates
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, class = "UNKNOWN")
@@ -159,46 +159,46 @@ posteriors <- function(cg, node, open = TRUE) {
 #' }
 NULL
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_dag <- graph_fn("is_dag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_pdag <- graph_fn("is_pdag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_cpdag <- graph_fn("is_cpdag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_mpdag <- graph_fn("is_mpdag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_ug <- graph_fn("is_ug")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_admg <- graph_fn("is_admg")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_ag <- graph_fn("is_ag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_mag <- graph_fn("is_mag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_pag <- graph_fn("is_pag")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_simple <- graph_fn("is_simple")
 
-#' @rdname cs-predicates
+#' @rdname predicates
 #' @export
 is_acyclic <- graph_fn("is_acyclic")

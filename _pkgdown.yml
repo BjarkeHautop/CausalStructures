@@ -6,84 +6,81 @@ reference:
   - title: "Construction"
     desc: "Build graphs from edge expressions or at random."
     contents:
-      - cs_cgraph
-      - cs-edge-operators
-      - cs_generate_graph
+      - cgraph
+      - edge-operators
+      - generate_graph
 
   - title: "Graph queries"
     desc: "Whole-graph queries: nodes, edges, and adjacency."
     contents:
-      - cs-graph-queries
-      - cs_has_edge
-      - cs_edges
+      - graph-queries
+      - has_edge
+      - edges
 
   - title: "Node-set queries"
     desc: "Relatives of a single node."
     contents:
-      - cs-node-queries
-      - cs_neighbors
-      - cs-possible-queries
+      - node-queries
+      - neighbors
+      - possible-queries
 
   - title: "Graph class predicates"
     desc: "Test structural properties of a graph."
     contents:
-      - cs-predicates
+      - predicates
 
   - title: "Transformations"
     desc: "Derive a new graph from an existing one."
     contents:
-      - cs-transforms
-      - cs_subgraph
-      - cs_latent_project
-      - cs_exogenize
-      - cs_normalize_latent_structure
-      - cs_condition_marginalize
+      - transforms
+      - subgraph
+      - latent_project
+      - exogenize
+      - normalize_latent_structure
+      - condition_marginalize
 
   - title: "Mutation and reclassification"
     desc: "Add or remove edges/nodes, or change a graph's tagged class."
     contents:
-      - cs-edge-mutation
-      - cs-node-mutation
-      - cs_reclass
+      - edge-mutation
+      - node-mutation
+      - reclass
 
   - title: "Separation and identification"
     desc: "d-/m-separation and adjustment/frontdoor/IV identification."
     contents:
-      - cs_d_separated
-      - cs_m_separated
-      - cs_minimal_separator
-      - cs_adjustment_set
-      - cs_frontdoor_set
-      - cs_is_valid_backdoor
-      - cs_all_backdoor_sets
-      - cs_all_frontdoor_sets
-      - cs_is_valid_adjustment
-      - cs_all_adjustment_sets
-      - cs_is_valid_frontdoor
-      - cs_is_valid_iv
-      - cs_all_iv_sets
+      - d_separated
+      - m_separated
+      - minimal_separator
+      - adjustment_set
+      - frontdoor_set
+      - is_valid_backdoor
+      - all_backdoor_sets
+      - all_frontdoor_sets
+      - is_valid_adjustment
+      - all_adjustment_sets
+      - is_valid_frontdoor
+      - is_valid_iv
+      - all_iv_sets
 
   - title: "Equivalence classes"
     desc: "Count and enumerate Markov equivalent graphs."
     contents:
-      - cs-equivalence
-      - cs_markov_equivalent
-      - cs_enumerate_mags
+      - equivalence
+      - markov_equivalent
+      - enumerate_mags
 
   - title: "Data generation"
     desc: "Simulate data from a graph."
     contents:
-      - cs_simulate_data
+      - simulate_data
 
   - title: "Plotting"
     desc: "Lay out and draw a graph."
     contents:
-      - cs_layout
-      - cs_plot
+      - has_concept("plotting")
 
   - title: "Session"
-    desc: "Start and stop the shared Julia session. Called automatically by
-      every other function, so most users won't need these directly."
+    desc: "Start the Julia session."
     contents:
-      - cs_setup
-      - cs_stop
+      - setup

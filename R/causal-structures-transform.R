@@ -17,7 +17,7 @@
 #'   `meek_closure()` take a PDAG-family graph; `ag_to_mag()` takes an
 #'   AG; `mag_to_pag()` takes a MAG; `mag_from_pag()` takes a PAG.
 #' @return A Julia proxy object representing the transformed graph.
-#' @name cs-transforms
+#' @name transforms
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
@@ -27,39 +27,39 @@
 #' }
 NULL
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 skeleton <- cgraph_fn("skeleton")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 moralize <- cgraph_fn("moralize")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 dag_to_cpdag <- cgraph_fn("dag_to_cpdag")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 dag_from_pdag <- cgraph_fn("dag_from_pdag")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 meek_closure <- cgraph_fn("meek_closure")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 dag_to_mpdag <- cgraph_fn("dag_to_mpdag")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 ag_to_mag <- cgraph_fn("ag_to_mag")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 mag_to_pag <- cgraph_fn("mag_to_pag")
 
-#' @rdname cs-transforms
+#' @rdname transforms
 #' @export
 mag_from_pag <- cgraph_fn("mag_from_pag")
 
@@ -172,18 +172,18 @@ condition_marginalize <- function(
 #'
 #' `add_edges()` and `remove_edges()` return a new graph of the same
 #' class with the edges described by `...` added or removed, using the
-#' operators documented at [cs-edge-operators] (e.g. `B %-->% C, C %-->% D`);
+#' operators documented at [edge-operators] (e.g. `B %-->% C, C %-->% D`);
 #' any isolated-node declarations in `...` are ignored. `remove_edges()`
 #' errors if an edge in `...` is not present in `cg`. For programmatic use,
 #' pass a spec string via `spec` instead of `...`.
 #'
 #' @param cg A graph created with [cgraph()], of any class.
-#' @param ... Edge expressions; see [cs-edge-operators]. Mutually exclusive
+#' @param ... Edge expressions; see [edge-operators]. Mutually exclusive
 #'   with `spec`.
 #' @param spec Edge specification string, for programmatic use. Mutually
 #'   exclusive with `...`.
 #' @return A Julia proxy object representing the resulting graph.
-#' @name cs-edge-mutation
+#' @name edge-mutation
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
@@ -192,13 +192,13 @@ condition_marginalize <- function(
 #' }
 NULL
 
-#' @rdname cs-edge-mutation
+#' @rdname edge-mutation
 #' @export
 add_edges <- function(cg, ..., spec = NULL) {
   .tag_cgraph(fn("add_edges")(cg, .dots_or_spec(substitute(list(...)), spec)))
 }
 
-#' @rdname cs-edge-mutation
+#' @rdname edge-mutation
 #' @export
 remove_edges <- function(cg, ..., spec = NULL) {
   .tag_cgraph(fn("remove_edges")(
@@ -217,7 +217,7 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' @param cg A graph created with [cgraph()], of any class.
 #' @param nodes Character vector of node names.
 #' @return A Julia proxy object representing the resulting graph.
-#' @name cs-node-mutation
+#' @name node-mutation
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
@@ -226,13 +226,13 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' }
 NULL
 
-#' @rdname cs-node-mutation
+#' @rdname node-mutation
 #' @export
 add_nodes <- function(cg, nodes) {
   .tag_cgraph(fn("add_nodes")(cg, as.character(nodes)))
 }
 
-#' @rdname cs-node-mutation
+#' @rdname node-mutation
 #' @export
 remove_nodes <- function(cg, nodes) {
   .tag_cgraph(fn("remove_nodes")(cg, as.character(nodes)))

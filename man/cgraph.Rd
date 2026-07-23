@@ -12,7 +12,7 @@ cgraph(
 )
 }
 \arguments{
-\item{...}{Edge expressions (see \link{cs-edge-operators}) and/or bare node
+\item{...}{Edge expressions (see \link{edge-operators}) and/or bare node
 declarations. Mutually exclusive with \code{spec}.}
 
 \item{spec}{Graph specification string, for programmatic construction.
@@ -31,7 +31,7 @@ A Julia proxy object representing the graph.
 }
 \description{
 Builds a graph from edge expressions using the operators documented at
-\link{cs-edge-operators}, e.g. \verb{A \%-->\% X + Y, X \%-->\% M \%-->\% Y}. A bare node
+\link{edge-operators}, e.g. \verb{A \%-->\% X + Y, X \%-->\% M \%-->\% Y}. A bare node
 name (or \code{+}-combination of names) declares isolated node(s).
 }
 \details{

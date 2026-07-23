@@ -420,7 +420,7 @@ all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #'   a list of DAG proxies.
 #' @references
 #' \insertRef{chickering2002learning}{testpkg}
-#' @name cs-equivalence
+#' @name equivalence
 #' @examples
 #' if (julia_available()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
@@ -429,11 +429,11 @@ all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' }
 NULL
 
-#' @rdname cs-equivalence
+#' @rdname equivalence
 #' @export
 count_dags <- graph_fn("count_dags")
 
-#' @rdname cs-equivalence
+#' @rdname equivalence
 #' @export
 enumerate_dags <- function(cg) {
   fn("enumerate_dags")(cg)

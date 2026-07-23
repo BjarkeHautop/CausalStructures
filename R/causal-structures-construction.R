@@ -3,7 +3,7 @@
 #' Create a causal graph
 #'
 #' Builds a graph from edge expressions using the operators documented at
-#' [cs-edge-operators], e.g. `A %-->% X + Y, X %-->% M %-->% Y`. A bare node
+#' [edge-operators], e.g. `A %-->% X + Y, X %-->% M %-->% Y`. A bare node
 #' name (or `+`-combination of names) declares isolated node(s).
 #'
 #' For programmatic construction (e.g. from an edge list assembled at
@@ -11,7 +11,7 @@
 #' the same syntax as the operators expand to (e.g.
 #' `"A --> X + Y, X --> M --> Y"`).
 #'
-#' @param ... Edge expressions (see [cs-edge-operators]) and/or bare node
+#' @param ... Edge expressions (see [edge-operators]) and/or bare node
 #'   declarations. Mutually exclusive with `spec`.
 #' @param spec Graph specification string, for programmatic construction.
 #'   Mutually exclusive with `...`.
@@ -109,7 +109,7 @@ generate_graph <- function(
 #'   class; `topological_sort()` requires a DAG; `exogenous_nodes()`
 #'   accepts any class except PAG.
 #' @return Character vector of node names.
-#' @name cs-graph-queries
+#' @name graph-queries
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(B %-->% A, A %-->% C)
@@ -123,19 +123,19 @@ generate_graph <- function(
 #' }
 NULL
 
-#' @rdname cs-graph-queries
+#' @rdname graph-queries
 #' @export
 nodes <- function(cg) {
   fn("nodes")(cg)
 }
 
-#' @rdname cs-graph-queries
+#' @rdname graph-queries
 #' @export
 topological_sort <- function(cg) {
   fn("topological_sort")(cg)
 }
 
-#' @rdname cs-graph-queries
+#' @rdname graph-queries
 #' @param undirected_as_parents Only used for PDAG-family graphs. If `TRUE`,
 #'   a node incident to any undirected edge is not considered exogenous.
 #' @export

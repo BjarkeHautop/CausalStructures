@@ -69,13 +69,7 @@ A \code{cgraph_plot} object, invisibly. Drawn immediately as a side
 effect; re-drawn if printed or passed to \code{plot()} again.
 }
 \description{
-An S3 method for the base \code{\link[=plot]{plot()}} generic. Creates a grid graphics
-object representing a graph created with \code{\link[=cgraph]{cgraph()}} and draws it to the
-current device. All edge types are supported (directed, undirected,
-bidirected, and partially-marked PAG-style edges): each endpoint's
-Tail/Arrow/Circle mark is drawn as a plain line end, an arrowhead, or a
-small open circle respectively, so \verb{-->}, \verb{---}, \verb{<->}, \verb{o->}, \verb{o--}, and
-\code{o-o} edges all render correctly.
+Plot method for \code{cgraph}.
 }
 \examples{
 if (julia_available()) {
@@ -83,7 +77,6 @@ if (julia_available()) {
   plot(dag)
   plot(dag, layout = "circle", main = "Quick guide DAG")
 }
-
 }
 \seealso{
 Other plotting:

@@ -464,13 +464,7 @@ makeContent.cs_edge_grob <- function(x) {
 
 #' Plot a causal graph
 #'
-#' An S3 method for the base [plot()] generic. Creates a grid graphics
-#' object representing a graph created with [cgraph()] and draws it to the
-#' current device. All edge types are supported (directed, undirected,
-#' bidirected, and partially-marked PAG-style edges): each endpoint's
-#' Tail/Arrow/Circle mark is drawn as a plain line end, an arrowhead, or a
-#' small open circle respectively, so `-->`, `---`, `<->`, `o->`, `o--`, and
-#' `o-o` edges all render correctly.
+#' Plot method for `cgraph`.
 #'
 #' @param x A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
@@ -512,7 +506,8 @@ makeContent.cs_edge_grob <- function(x) {
 #'   plot(dag)
 #'   plot(dag, layout = "circle", main = "Quick guide DAG")
 #' }
-#'
+#' @rdname plot
+#' @concept plotting
 #' @family plotting
 #' @export
 plot.cgraph <- function(

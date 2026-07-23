@@ -288,7 +288,7 @@
 #' @param lhs,rhs Node name(s): a bare symbol, a string, or a `+`-combination
 #'   or `c()` of either.
 #' @return Not meaningful on its own; see the Description.
-#' @name cs-edge-operators
+#' @name edge-operators
 #' @keywords internal
 #' @examples
 #' if (julia_available()) {
@@ -297,29 +297,29 @@
 #' }
 NULL
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%-->%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%<--%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%---%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%<->%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%o->%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%<-o%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%o--%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%--o%` <- function(lhs, rhs) .stmt_dsl(sys.call())
 
-#' @rdname cs-edge-operators
+#' @rdname edge-operators
 `%o-o%` <- function(lhs, rhs) .stmt_dsl(sys.call())
