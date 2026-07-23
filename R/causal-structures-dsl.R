@@ -2,9 +2,9 @@
 #
 # Translates the operator syntax used by cgraph()/add_edges()/
 # remove_edges() (e.g. `A %-->% X + Y, X %-->% M %-->% Y`) into
-# CausalStructures.jl's string DSL (`"A --> X + Y, X --> M --> Y"`), which is
-# what actually crosses the R-Julia boundary. The operators below are never
-# evaluated: `...` is captured unevaluated via `substitute()`, so `%-->%` and
+# CausalStructures.jl's string DSL (`"A --> X + Y, X --> M --> Y"`).
+# The operators below are never
+# evaluated: `...` is captured unevaluated, so `%-->%` and
 # friends only need to exist so R's parser accepts the infix syntax;
 # they are not exported.
 #

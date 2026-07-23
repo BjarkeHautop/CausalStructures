@@ -21,8 +21,10 @@ reference:
     desc: "Relatives of a single node."
     contents:
       - node-queries
+      - markov_blanket
       - neighbors
       - possible-queries
+      - anteriors
 
   - title: "Graph class predicates"
     desc: "Test structural properties of a graph."
@@ -32,7 +34,15 @@ reference:
   - title: "Transformations"
     desc: "Derive a new graph from an existing one."
     contents:
-      - transforms
+      - skeleton
+      - moralize
+      - dag_to_cpdag
+      - dag_from_pdag
+      - meek_closure
+      - dag_to_mpdag
+      - ag_to_mag
+      - mag_to_pag
+      - mag_from_pag
       - subgraph
       - latent_project
       - exogenize

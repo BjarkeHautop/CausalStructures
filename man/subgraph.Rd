@@ -20,6 +20,6 @@ Induced subgraph
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  nodes(subgraph(dag, c("A", "B")))
+  subgraph(dag, c("A", "B"))
 }
 }

@@ -14,9 +14,13 @@ topological_sort(cg)
 exogenous_nodes(cg, undirected_as_parents = FALSE)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. \code{nodes()} accepts any
-class; \code{topological_sort()} requires a DAG; \code{exogenous_nodes()}
-accepts any class except PAG.}
+\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. Supported classes vary by
+function:
+\itemize{
+\item \code{nodes()}: any class.
+\item \code{topological_sort()}: DAG.
+\item \code{exogenous_nodes()}: any class except PAG.
+}}
 
 \item{undirected_as_parents}{Only used for PDAG-family graphs. If \code{TRUE},
 a node incident to any undirected edge is not considered exogenous.}

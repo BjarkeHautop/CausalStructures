@@ -314,7 +314,7 @@ pkg_path <- function() {
   normalizePath(path, mustWork = TRUE)
 }
 
-#' Is Julia available for [setup()]?
+#' Is Julia available?
 #'
 #' A quick, side-effect-free check for use in `@examples`; unlike
 #' [setup()] it does not start Julia.

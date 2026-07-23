@@ -34,8 +34,8 @@ pass a spec string via \code{spec} instead of \code{...}.
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B)
   list(
-    add_edges = edges(add_edges(dag, B \%-->\% C)),
-    remove_edges = edges(remove_edges(dag, A \%-->\% B))
+    add_edges = add_edges(dag, B \%-->\% C),
+    remove_edges = remove_edges(dag, A \%-->\% B)
   )
 }
 }

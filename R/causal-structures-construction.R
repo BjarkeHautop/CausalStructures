@@ -111,9 +111,11 @@ generate_graph <- function(
 #' `exogenous_nodes()` returns the nodes with no parents (for a UG,
 #' the isolated nodes).
 #'
-#' @param cg A graph created with [cgraph()]. `nodes()` accepts any
-#'   class; `topological_sort()` requires a DAG; `exogenous_nodes()`
-#'   accepts any class except PAG.
+#' @param cg A graph created with [cgraph()]. Supported classes vary by
+#'   function:
+#'   * `nodes()`: any class.
+#'   * `topological_sort()`: DAG.
+#'   * `exogenous_nodes()`: any class except PAG.
 #' @return Character vector of node names.
 #' @name graph-queries
 #' @examples

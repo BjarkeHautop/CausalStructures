@@ -15,13 +15,12 @@ latent_project(cg, latents)
 A Julia proxy object representing the resulting ADMG.
 }
 \description{
-Eliminates each node in \code{latents} by vertex substitution, producing an
-ADMG over the remaining (observed) variables that preserves the
-conditional independence structure among them.
+Project out latent (unobserved) variables to produce an
+ADMG over the observed variables only.
 }
 \examples{
 if (julia_available()) {
   dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
-  edges(latent_project(dag, "U"))
+  latent_project(dag, "U")
 }
 }

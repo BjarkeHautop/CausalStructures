@@ -2,7 +2,7 @@
 % Please edit documentation in R/causal-structures-session.R
 \name{julia_available}
 \alias{julia_available}
-\title{Is Julia available for \code{\link[=setup]{setup()}}?}
+\title{Is Julia available?}
 \usage{
 julia_available()
 }

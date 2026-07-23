@@ -22,6 +22,6 @@ children to preserve reachability.
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% M, M \%-->\% Y)
-  edges(exogenize(dag, "M"))
+  exogenize(dag, "M")
 }
 }

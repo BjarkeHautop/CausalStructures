@@ -7,7 +7,6 @@
 \alias{ancestors}
 \alias{descendants}
 \alias{spouses}
-\alias{markov_blanket}
 \title{Node-set queries}
 \usage{
 parents(cg, node)
@@ -19,15 +18,16 @@ ancestors(cg, node)
 descendants(cg, node)
 
 spouses(cg, node)
-
-markov_blanket(cg, node)
 }
 \arguments{
 \item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. Supported classes vary by
-function: \code{parents()} and \code{children()} accept any class except
-UG; \code{ancestors()}, \code{descendants()}, and \code{markov_blanket()}
-accept DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family (AG,
-MAG); \code{spouses()} accepts ADMG, AG-family, or PAG.}
+function:
+\itemize{
+\item \code{parents()}, \code{children()}: any class except UG.
+\item \code{ancestors()}, \code{descendants()}: DAG, PDAG-family (PDAG, CPDAG,
+MPDAG), ADMG, or AG-family (AG, MAG).
+\item \code{spouses()}: ADMG, AG-family (AG, MAG), or PAG.
+}}
 
 \item{node}{Node name.}
 }
@@ -35,10 +35,17 @@ MAG); \code{spouses()} accepts ADMG, AG-family, or PAG.}
 Sorted character vector of node names.
 }
 \description{
-Relatives of a node: \code{parents()}, \code{children()}, \code{ancestors()},
-\code{descendants()}, \code{spouses()}, and \code{markov_blanket()}. See
-\code{\link[=neighbors]{neighbors()}} and \link{possible-queries} for the remaining node-set
-queries, which take extra arguments.
+\code{parents()} and \code{children()} are the nodes directly connected to \code{node}
+by a directed edge. \code{ancestors()} and \code{descendants()} are all nodes from
+which (respectively, to which) \code{node} is reachable by following directed
+edges; \code{node} itself is always excluded (Julia's \code{ancestors()}/
+\code{descendants()} support including it via \code{open = FALSE}, but that
+argument isn't yet exposed on the R side). \code{spouses()} are the nodes
+connected to \code{node} by a bidirected edge (\verb{node <-> spouse}).
+}
+\details{
+See \code{\link[=neighbors]{neighbors()}}, \code{\link[=markov_blanket]{markov_blanket()}}, and \link{possible-queries} for the
+remaining node-set queries, which take extra arguments.
 }
 \examples{
 if (julia_available()) {

@@ -2,16 +2,23 @@
 
 #' Node-set queries
 #'
-#' Relatives of a node: `parents()`, `children()`, `ancestors()`,
-#' `descendants()`, `spouses()`, and `markov_blanket()`. See
-#' [neighbors()] and [possible-queries] for the remaining node-set
-#' queries, which take extra arguments.
+#' `parents()` and `children()` are the nodes directly connected to `node`
+#' by a directed edge. `ancestors()` and `descendants()` are all nodes from
+#' which (respectively, to which) `node` is reachable by following directed
+#' edges; `node` itself is always excluded (Julia's `ancestors()`/
+#' `descendants()` support including it via `open = FALSE`, but that
+#' argument isn't yet exposed on the R side). `spouses()` are the nodes
+#' connected to `node` by a bidirected edge (`node <-> spouse`).
+#'
+#' See [neighbors()], [markov_blanket()], and [possible-queries] for the
+#' remaining node-set queries, which take extra arguments.
 #'
 #' @param cg A graph created with [cgraph()]. Supported classes vary by
-#'   function: `parents()` and `children()` accept any class except
-#'   UG; `ancestors()`, `descendants()`, and `markov_blanket()`
-#'   accept DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family (AG,
-#'   MAG); `spouses()` accepts ADMG, AG-family, or PAG.
+#'   function:
+#'   * `parents()`, `children()`: any class except UG.
+#'   * `ancestors()`, `descendants()`: DAG, PDAG-family (PDAG, CPDAG,
+#'     MPDAG), ADMG, or AG-family (AG, MAG).
+#'   * `spouses()`: ADMG, AG-family (AG, MAG), or PAG.
 #' @param node Node name.
 #' @return Sorted character vector of node names.
 #' @name node-queries
@@ -47,8 +54,34 @@ descendants <- node_query("descendants")
 #' @export
 spouses <- node_query("spouses")
 
-#' @rdname node-queries
+#' Markov blanket of a node
+#'
+#' Returns the Markov blanket of `node` in `cg`: the minimal set of nodes
+#' that renders `node` conditionally independent of every other node in the
+#' graph. What counts toward it depends on `cg`'s class:
+#'
+#' * **DAG**: parents, children, and co-parents (other parents of `node`'s
+#'   children).
+#' * **PDAG-family** (PDAG, CPDAG, MPDAG): the DAG set, plus undirected
+#'   neighbors.
+#' * **ADMG**: the union of the parents of every node in `node`'s district
+#'   (excluding `node` itself).
+#' * **AG-family** (AG, MAG): parents, children, co-parents, spouses, and
+#'   undirected neighbors.
+#'
+#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family
+#'   (AG, MAG) graph created with [cgraph()].
+#' @param node Node name.
+#' @return Sorted character vector of node names.
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C, D %-->% C)
+#'   list(
+#'     blanket_of_b = markov_blanket(dag, "B"), # A, C, D (D is a co-parent)
+#'     blanket_of_c = markov_blanket(dag, "C")
+#'   )
+#' }
 markov_blanket <- node_query("markov_blanket")
 
 #' Neighbors of a node
@@ -87,20 +120,21 @@ neighbors <- function(
 
 #' Possible-ancestor/descendant node-set queries
 #'
-#' `possible_ancestors()` and `possible_descendants()` find nodes
-#' reachable from `node` by a *possibly directed* path: one on which no edge
-#' is compelled in the direction away from `node`, traversing an undirected
-#' edge or a directed edge pointing the right way. `anteriors()` and
-#' `posteriors()` are the corresponding notions for ancestral-graph
-#' classes (traversing undirected edges too). When `open = TRUE` (default),
-#' `node` itself is excluded from the result; when `FALSE`, it is included.
+#' `possible_ancestors()` finds every node `V` for which some DAG (for a
+#' PDAG-family `cg`) or MAG (for a PAG `cg`) in the equivalence class
+#' represented by `cg` has `V` as an ancestor of `node`: nodes reachable
+#' from `node` by a *possibly directed* path, one on which no edge is
+#' compelled in the direction away from `node` (traversing an undirected
+#' edge, or a directed/circle edge oriented, or possibly orientable, toward
+#' `node`). `possible_descendants()` is the mirror notion in the other
+#' direction. Both are supersets of [ancestors()]/[descendants()], since
+#' those only count edges *compelled* in the right direction.
 #'
-#' @param cg A graph created with [cgraph()]. `possible_ancestors()`
-#'   and `possible_descendants()` accept PDAG-family (PDAG, CPDAG, MPDAG)
-#'   or PAG graphs; `anteriors()` and `posteriors()` accept PDAG-family
-#'   or AG-family (AG, MAG) graphs.
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) or PAG graph created with
+#'   [cgraph()].
 #' @param node Node name.
-#' @param open If `TRUE` (default), exclude `node` itself from the result.
+#' @param open If `TRUE` (default), exclude `node` itself from the result;
+#'   if `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @references
 #' \insertRef{perkovic2018complete}{testpkg}
@@ -129,13 +163,40 @@ possible_descendants <- function(cg, node, open = TRUE) {
   fn("possible_descendants")(cg, node, open)
 }
 
-#' @rdname possible-queries
+#' Anterior/posterior node-set queries
+#'
+#' `anteriors()` finds every node from which `node` is reachable by
+#' following directed edges backward or traversing undirected edges;
+#' `posteriors()` is the mirror notion following directed edges forward.
+#' For a DAG, anteriors/posteriors are equivalent to
+#' [ancestors()]/[descendants()] (no undirected edges exist to traverse);
+#' for a PDAG-family or AG-family graph, undirected edges extend the
+#' reachable set beyond strict ancestors/descendants.
+#'
+#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
+#'   MAG) graph created with [cgraph()].
+#' @param node Node name.
+#' @param open If `TRUE` (default), exclude `node` itself from the result;
+#'   if `FALSE`, include it.
+#' @return Sorted character vector of node names.
+#' @name anteriors
+#' @examples
+#' if (julia_available()) {
+#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#'   list(
+#'     anteriors_of_a = anteriors(pdag, "A"),
+#'     anteriors_of_c = anteriors(pdag, "C") # reaches B via undirected, A via directed
+#'   )
+#' }
+NULL
+
+#' @rdname anteriors
 #' @export
 anteriors <- function(cg, node, open = TRUE) {
   fn("anteriors")(cg, node, open)
 }
 
-#' @rdname possible-queries
+#' @rdname anteriors
 #' @export
 posteriors <- function(cg, node, open = TRUE) {
   fn("posteriors")(cg, node, open)

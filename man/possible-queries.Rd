@@ -4,39 +4,34 @@
 \alias{possible-queries}
 \alias{possible_ancestors}
 \alias{possible_descendants}
-\alias{anteriors}
-\alias{posteriors}
 \title{Possible-ancestor/descendant node-set queries}
 \usage{
 possible_ancestors(cg, node, open = TRUE)
 
 possible_descendants(cg, node, open = TRUE)
-
-anteriors(cg, node, open = TRUE)
-
-posteriors(cg, node, open = TRUE)
 }
 \arguments{
-\item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}. \code{possible_ancestors()}
-and \code{possible_descendants()} accept PDAG-family (PDAG, CPDAG, MPDAG)
-or PAG graphs; \code{anteriors()} and \code{posteriors()} accept PDAG-family
-or AG-family (AG, MAG) graphs.}
+\item{cg}{A PDAG-family (PDAG, CPDAG, MPDAG) or PAG graph created with
+\code{\link[=cgraph]{cgraph()}}.}
 
 \item{node}{Node name.}
 
-\item{open}{If \code{TRUE} (default), exclude \code{node} itself from the result.}
+\item{open}{If \code{TRUE} (default), exclude \code{node} itself from the result;
+if \code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.
 }
 \description{
-\code{possible_ancestors()} and \code{possible_descendants()} find nodes
-reachable from \code{node} by a \emph{possibly directed} path: one on which no edge
-is compelled in the direction away from \code{node}, traversing an undirected
-edge or a directed edge pointing the right way. \code{anteriors()} and
-\code{posteriors()} are the corresponding notions for ancestral-graph
-classes (traversing undirected edges too). When \code{open = TRUE} (default),
-\code{node} itself is excluded from the result; when \code{FALSE}, it is included.
+\code{possible_ancestors()} finds every node \code{V} for which some DAG (for a
+PDAG-family \code{cg}) or MAG (for a PAG \code{cg}) in the equivalence class
+represented by \code{cg} has \code{V} as an ancestor of \code{node}: nodes reachable
+from \code{node} by a \emph{possibly directed} path, one on which no edge is
+compelled in the direction away from \code{node} (traversing an undirected
+edge, or a directed/circle edge oriented, or possibly orientable, toward
+\code{node}). \code{possible_descendants()} is the mirror notion in the other
+direction. Both are supersets of \code{\link[=ancestors]{ancestors()}}/\code{\link[=descendants]{descendants()}}, since
+those only count edges \emph{compelled} in the right direction.
 }
 \examples{
 if (julia_available()) {

@@ -24,6 +24,6 @@ node's child set.
 \examples{
 if (julia_available()) {
   dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
-  edges(normalize_latent_structure(dag, "U"))
+  normalize_latent_structure(dag, "U")
 }
 }

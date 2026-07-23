@@ -28,8 +28,8 @@ incident edges removed, and errors if a node is not present.
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B)
   list(
-    add_nodes = nodes(add_nodes(dag, "C")),
-    remove_nodes = nodes(remove_nodes(dag, "B"))
+    add_nodes = add_nodes(dag, "C"),
+    remove_nodes = remove_nodes(dag, "B")
   )
 }
 }

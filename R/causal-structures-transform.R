@@ -1,70 +1,189 @@
 # --- Transformations ---------------------------------------------------------
 
-#' Graph transformations
+#' Drop edge marks to an undirected graph
 #'
-#' `skeleton()` drops edge marks, `moralize()` moralizes a DAG,
-#' `dag_to_cpdag()` and `dag_from_pdag()` convert between equivalence
-#' classes, `meek_closure()` applies Meek's rules, `ag_to_mag()`
-#' converts an AG to a Markov equivalent MAG, `mag_to_pag()` maps a MAG to
-#' its PAG equivalence class representative, and `mag_from_pag()` resolves
-#' a PAG back to a representative MAG. All return a new graph proxy; the
-#' input graph is unchanged.
+#' Returns the skeleton of `cg`: the undirected graph obtained by replacing
+#' every directed or partially-directed edge with an undirected edge (a
+#' node pair keeps a single edge regardless of how many marked edges
+#' connected it).
 #'
-#' @param cg A graph created with [cgraph()]. Required class depends on
-#'   the function: `skeleton()` and `moralize()` take a DAG or
-#'   PDAG-family (PDAG, CPDAG, MPDAG) graph; `dag_to_cpdag()` and
-#'   `dag_to_mpdag()` take a DAG; `dag_from_pdag()` and
-#'   `meek_closure()` take a PDAG-family graph; `ag_to_mag()` takes an
-#'   AG; `mag_to_pag()` takes a MAG; `mag_from_pag()` takes a PAG.
-#' @return A Julia proxy object representing the transformed graph.
-#' @name transforms
+#' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @return A `UG` graph proxy.
+#' @export
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   skeleton(dag)
 #' }
-#'
-#' if (julia_available()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   cpdag <- dag_to_cpdag(dag)
-#'   dag_from_pdag(cpdag)
-#' }
-NULL
-
-#' @rdname transforms
-#' @export
 skeleton <- cgraph_fn("skeleton")
 
-#' @rdname transforms
+#' Moralize a graph
+#'
+#' Returns the moral graph of `cg`: an undirected graph with a "marriage"
+#' edge added between every pair of directed parents that share a common
+#' child, then every edge replaced with an undirected edge. For a
+#' PDAG-family graph, only directed parents participate in marriage edges;
+#' undirected neighbors are carried over but don't form a clique.
+#'
+#' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @return A `UG` graph proxy.
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% C, B %-->% C)
+#'   moralize(dag) # A and B are now married
+#' }
 moralize <- cgraph_fn("moralize")
 
-#' @rdname transforms
+#' Convert a DAG to its CPDAG
+#'
+#' Returns the CPDAG representing the Markov equivalence class (MEC) of the
+#' DAG `cg`: unshielded colliders (v-structures) determine which edges are
+#' compelled, an initial PDAG is built from the skeleton with those
+#' orientations, and [meek_closure()] propagates the rest.
+#'
+#' @param cg A DAG created with [cgraph()].
+#' @return A `CPDAG` graph proxy.
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
+#'   dag_to_cpdag(dag)
+#' }
 dag_to_cpdag <- cgraph_fn("dag_to_cpdag")
 
-#' @rdname transforms
+#' Extend a PDAG to a consistent DAG
+#'
+#' Orients every undirected edge of the PDAG-family graph `cg`, using the
+#' Dor-Tarsi algorithm: repeatedly find a sink node (no directed children,
+#' whose undirected neighbors form a clique), orient all its undirected
+#' edges toward it, and remove it. Errors if no valid DAG extension exists.
+#'
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @return A `DAG` graph proxy.
+#' @references
+#' \insertRef{dortarsi1992simple}{testpkg}
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
+#'   dag_from_pdag(pdag)
+#' }
 dag_from_pdag <- cgraph_fn("dag_from_pdag")
 
-#' @rdname transforms
+#' Apply Meek's orientation rules
+#'
+#' Applies Meek's rules R1-R4 to the PDAG-family graph `cg` until no further
+#' orientation is implied, returning the resulting MPDAG.
+#'
+#' * **R1**: `a --> b --- c`, `a` not adjacent to `c` implies `b --> c`.
+#' * **R2**: `a --- b`, a directed path `a --> w --> b` exists implies
+#'   `a --> b`.
+#' * **R3**: `a --- b`, two non-adjacent parents `c, d` of `b` with
+#'   `a --- c` and `a --- d` implies `a --> b`.
+#' * **R4**: `a --- b`, a directed path `a -->...--> b` exists implies
+#'   `a --> b`.
+#'
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @return An `MPDAG` graph proxy.
+#' @references
+#' \insertRef{meek1995causal}{testpkg}
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#'   meek_closure(pdag)
+#' }
 meek_closure <- cgraph_fn("meek_closure")
 
-#' @rdname transforms
+#' Convert a DAG to its MPDAG
+#'
+#' Returns the MPDAG representing the DAGs Markov equivalent to `cg`: the
+#' CPDAG of `cg` closed under [meek_closure()]'s rules R1-R4.
+#'
+#' @param cg A DAG created with [cgraph()].
+#' @return An `MPDAG` graph proxy.
+#' @references
+#' \insertRef{meek1995causal}{testpkg}
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
+#'   dag_to_mpdag(dag)
+#' }
 dag_to_mpdag <- cgraph_fn("dag_to_mpdag")
 
-#' @rdname transforms
+#' Convert an AG to a Markov equivalent MAG
+#'
+#' Adds an edge between every pair of non-adjacent nodes in the AG `cg` that
+#' cannot be m-separated by any subset of the remaining nodes, producing a
+#' Markov equivalent MAG. For each such pair `(u, v)`, the edge is directed
+#' toward whichever node is not an ancestor of the other, or bidirected if
+#' neither is an ancestor of the other. Edges are added one at a time, with
+#' the graph re-evaluated after each addition (a new edge can change
+#' m-separation and ancestor relationships).
+#'
+#' @param cg An AG created with [cgraph()].
+#' @return A `MAG` graph proxy.
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   ag <- cgraph(A %-->% B, B %-->% C, class = "AG")
+#'   ag_to_mag(ag)
+#' }
 ag_to_mag <- cgraph_fn("ag_to_mag")
 
-#' @rdname transforms
+#' Map a MAG to its PAG equivalence class
+#'
+#' Returns the PAG representing the Markov equivalence class of the MAG
+#' `cg`: same skeleton, with each endpoint kept as an arrowhead or tail only
+#' if that mark is shared by every MAG in the class (a circle mark
+#' otherwise). Starts from the skeleton with all-circle marks, orients
+#' unshielded colliders as they appear in `cg`, then applies Zhang's
+#' complete orientation rules R1-R10 until no further mark is implied. The
+#' input graph is unchanged; for a single representative MAG instead of the
+#' whole class, use [mag_from_pag()].
+#'
+#' @param cg A MAG created with [cgraph()].
+#' @return A `PAG` graph proxy.
+#' @references
+#' \insertRef{zhang2008completeness}{testpkg}
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   mag <- cgraph(A %-->% B, B %-->% C, class = "MAG")
+#'   mag_to_pag(mag)
+#' }
 mag_to_pag <- cgraph_fn("mag_to_pag")
 
-#' @rdname transforms
+#' Resolve a PAG to a representative MAG
+#'
+#' Returns one MAG belonging to the Markov equivalence class represented by
+#' the PAG `cg`: a left inverse of [mag_to_pag()], so
+#' `mag_to_pag(mag_from_pag(pag))` recovers `pag`. Every circle mark left
+#' unresolved by the PAG is resolved to a tail or arrowhead following
+#' Zhang's construction (2008, Theorem 2): a circle opposite a fixed mark
+#' always becomes directed; an undirected edge (selection bias) is kept
+#' unchanged; the remaining all-circle edges form a chordal component,
+#' oriented into a DAG with no new unshielded colliders by Dor-Tarsi
+#' simplicial elimination.
+#'
+#' @param cg A PAG created with [cgraph()].
+#' @return A `MAG` graph proxy.
+#' @references
+#' \insertRef{zhang2008completeness}{testpkg}
+#'
+#' \insertRef{dortarsi1992simple}{testpkg}
 #' @export
+#' @examples
+#' if (julia_available()) {
+#'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
+#'   mag_from_pag(pag)
+#' }
 mag_from_pag <- cgraph_fn("mag_from_pag")
 
 #' Induced subgraph
@@ -76,7 +195,7 @@ mag_from_pag <- cgraph_fn("mag_from_pag")
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   nodes(subgraph(dag, c("A", "B")))
+#'   subgraph(dag, c("A", "B"))
 #' }
 subgraph <- function(cg, nodes) {
   .tag_cgraph(fn("subgraph")(cg, as.character(nodes)))
@@ -84,9 +203,8 @@ subgraph <- function(cg, nodes) {
 
 #' Project out latent variables
 #'
-#' Eliminates each node in `latents` by vertex substitution, producing an
-#' ADMG over the remaining (observed) variables that preserves the
-#' conditional independence structure among them.
+#' Project out latent (unobserved) variables to produce an
+#' ADMG over the observed variables only.
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
@@ -95,7 +213,7 @@ subgraph <- function(cg, nodes) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
-#'   edges(latent_project(dag, "U"))
+#'   latent_project(dag, "U")
 #' }
 latent_project <- function(cg, latents) {
   .tag_cgraph(fn("latent_project")(cg, as.character(latents)))
@@ -114,7 +232,7 @@ latent_project <- function(cg, latents) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% M, M %-->% Y)
-#'   edges(exogenize(dag, "M"))
+#'   exogenize(dag, "M")
 #' }
 exogenize <- function(cg, nodes) {
   .tag_cgraph(fn("exogenize")(cg, as.character(nodes)))
@@ -135,7 +253,7 @@ exogenize <- function(cg, nodes) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
-#'   edges(normalize_latent_structure(dag, "U"))
+#'   normalize_latent_structure(dag, "U")
 #' }
 normalize_latent_structure <- function(cg, latents) {
   .tag_cgraph(fn("normalize_latent_structure")(cg, as.character(latents)))
@@ -156,7 +274,7 @@ normalize_latent_structure <- function(cg, latents) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
-#'   edges(condition_marginalize(dag, marg_vars = "U"))
+#'   condition_marginalize(dag, marg_vars = "U")
 #' }
 condition_marginalize <- function(
   cg,
@@ -192,8 +310,8 @@ condition_marginalize <- function(
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
 #'   list(
-#'     add_edges = edges(add_edges(dag, B %-->% C)),
-#'     remove_edges = edges(remove_edges(dag, A %-->% B))
+#'     add_edges = add_edges(dag, B %-->% C),
+#'     remove_edges = remove_edges(dag, A %-->% B)
 #'   )
 #' }
 NULL
@@ -228,8 +346,8 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
 #'   list(
-#'     add_nodes = nodes(add_nodes(dag, "C")),
-#'     remove_nodes = nodes(remove_nodes(dag, "B"))
+#'     add_nodes = add_nodes(dag, "C"),
+#'     remove_nodes = remove_nodes(dag, "B")
 #'   )
 #' }
 NULL
