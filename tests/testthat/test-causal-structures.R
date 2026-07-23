@@ -22,6 +22,15 @@ test_that("construction works", {
   )
 })
 
+test_that("print.cgraph strips the Julia module prefix", {
+  skip_if_no_julia()
+  g <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)
+  out <- capture.output(print(g))
+  expect_equal(out[1], "UNKNOWN with 2 nodes and 2 edges:")
+  expect_false(any(grepl("CausalStructures", out, fixed = TRUE)))
+  expect_false(any(grepl("Julia Object", out, fixed = TRUE)))
+})
+
 test_that("invalid graphs error on construction", {
   skip_if_no_julia()
   expect_error(cgraph(A %-->% B %-->% C %-->% A), "cycle")

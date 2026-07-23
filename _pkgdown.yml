@@ -71,17 +71,15 @@ reference:
       - enumerate_mags
 
   - title: "Data generation"
-    desc: "Simulate data from a graph."
     contents:
       - simulate_data
 
   - title: "Plotting"
-    desc: "Lay out and draw a graph."
     contents:
       - plot.cgraph
       - layout
 
-  - title: "Session"
-    desc: "Start the Julia session."
+  - title: "Managing Julia"
     contents:
+      - julia_available
       - setup

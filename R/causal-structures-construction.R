@@ -62,6 +62,12 @@ cgraph <- function(
   ))
 }
 
+#' @export
+print.cgraph <- function(x, ...) {
+  cat(sub("^CausalStructures\\.", "", fn("show")(x)))
+  invisible(x)
+}
+
 #' Generate a random graph
 #'
 #' Generates a random graph on `n` nodes named `V1, ..., Vn`. Edges are

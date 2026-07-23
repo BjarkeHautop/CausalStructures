@@ -80,7 +80,8 @@
   "remove_nodes",
   "reclass",
   "layout",
-  "edge_marks"
+  "edge_marks",
+  "show"
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
@@ -289,7 +290,9 @@
           m[i, 2] = p[2]
       end
       m
-  end'
+  end',
+
+  '_testpkg_show(g) = sprint(show, g)'
 )
 
 #' Path to the local CausalStructures.jl checkout
