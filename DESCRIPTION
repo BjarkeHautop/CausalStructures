@@ -32,6 +32,7 @@ Imports:
     Rdpack,
     utils
 Suggests:
+    quarto,
     spelling,
     testthat (>= 3.0.0),
     withr
@@ -41,3 +42,4 @@ SystemRequirements: Julia (>= 1.10)
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues
+Config/Needs/website: quarto

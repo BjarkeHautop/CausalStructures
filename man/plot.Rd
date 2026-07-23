@@ -10,6 +10,7 @@
   node_style = list(),
   edge_style = list(),
   label_style = list(),
+  tier_style = list(),
   main = NULL,
   title_style = list(),
   asp = NA,
@@ -24,7 +25,7 @@
 
 \item{layout}{Specifies the layout. Can be:
 \itemize{
-\item A character string passed to \code{\link[=layout.cgraph]{layout.cgraph()}} as \code{method}
+\item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
 (\code{"circle"}, \code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
 \code{"shell"}, \code{"squaregrid"}).
 \item A layout function, called with \code{x} and any \code{...}.
@@ -35,17 +36,32 @@
 \code{padding} (mm, default 2), \code{size} (multiplier, default 1), and \code{by_node}
 (named list of per-node overrides).}
 
-\item{edge_style}{List of edge styling parameters: \code{col}, \code{lwd}, \code{fill}
-(arrowhead fill color; defaults to \code{col} so arrowheads render solid and
-match the edge - pass \code{fill = NA} for a hollow/outline arrowhead),
-\code{arrow_size} (mm, default 3), \code{circle_size} (mm, default 1.5, for
-\verb{o->}/\verb{o--}/\code{o-o} endpoints), \code{route} (logical, default \code{TRUE}; when
-\code{TRUE}, an edge that would otherwise cross a non-incident node bends
-around it as a Bezier curve), and \code{by_edge} (named list of per-edge or
-per-node overrides, keyed by node name(s)).}
+\item{edge_style}{List of edge styling parameters. Can specify global
+options or per-type options via \code{directed}, \code{undirected}, \code{bidirected},
+\code{partial} (the last covers \verb{o->}/\code{o-o}/\code{--o}, i.e. any edge with a
+\code{Circle} endpoint mark). Fields: \code{col}, \code{lwd}, \code{fill} (arrowhead fill
+color; defaults to \code{col} so arrowheads render solid and match the edge -
+pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size} (mm,
+default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
+endpoints), \code{route} (logical, default \code{TRUE}; when \code{TRUE}, an edge that
+would otherwise cross a non-incident node bends around it as a Bezier
+curve), and \code{by_edge} (named list of per-edge or per-node overrides,
+keyed by node name(s)). Style precedence (highest to lowest): specific
+edge settings in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type
+settings > global settings.}
 
 \item{label_style}{List of label styling parameters: \code{col}, \code{fontsize},
 \code{fontface}, \code{fontfamily}, \code{cex}.}
+
+\item{tier_style}{List of tier box styling parameters, used only when
+\code{...} includes \code{tiers} (see below). Fields: \code{boxes} (logical, default
+\code{TRUE}; draw a box behind each tier's nodes), \code{labels} (logical or
+character vector; \code{TRUE} uses the names from a named-list \code{tiers},
+a character vector supplies custom labels one per tier, \code{FALSE}/default
+shows no labels), \code{fill}, \code{col} (box border), \code{lwd}, \code{padding} (mm,
+default 4), \code{label_style} (list with \code{col}, \code{fontsize}, \code{fontface}, ...,
+applied to tier labels), and \code{by_tier} (named list keyed by tier name or
+1-based index, e.g. \code{by_tier = list(exposures = list(fill = "lightblue"))} or \code{by_tier = list("1" = list(fill = "lightblue"))}).}
 
 \item{main}{Optional plot title.}
 
@@ -64,7 +80,16 @@ space; \code{asp = 1} makes one x-unit equal one y-unit.}
 \item{newpage}{If \code{TRUE} (default), call \code{\link[grid:grid.newpage]{grid::grid.newpage()}} before
 drawing.}
 
-\item{...}{Passed to \code{layout} when it is a character string or function.}
+\item{...}{Passed to \code{layout} when it is a character string or function.
+Also where tier boxes are triggered from: pass \code{tiers} as a named list
+of node-name vectors (list order is tier order, names become tier
+labels), a named numeric vector (one tier number per node), or a
+data.frame with \code{name}/\code{tier} columns. Nodes \code{tiers} doesn't mention get
+no box. Passing \code{tiers} also arranges the nodes into tiers - left to
+right, in tier order - overriding \code{layout} when it's a string or
+function (an explicit pre-computed \code{layout} data.frame is left as-is).
+Box/label display itself still requires \code{tier_style$boxes} or
+\code{tier_style$labels} to be truthy (default: \code{boxes} on, \code{labels} off).}
 }
 \value{
 A \code{cgraph_plot} object, invisibly. Drawn immediately as a side
@@ -76,12 +101,29 @@ Plot method for \code{cgraph}.
 \examples{
 if (julia_available()) {
   dag <- cgraph("A --> X + Y, X --> M --> Y")
-  plot(dag)
-  plot(dag, layout = "circle", main = "Quick guide DAG")
+  plot(dag, main = "A DAG")
+}
+# Style nodes and edges globally, plus per-node/per-edge overrides.
+if (julia_available()) {
+  dag <- cgraph("A --> X + Y, X --> M --> Y")
+  plot(
+    dag,
+    node_style = list(
+      fill = "lightblue",
+      col = "navy",
+      by_node = list(Y = list(fill = "gold"))
+    ),
+    edge_style = list(
+      col = "gray40",
+      lwd = 2,
+      by_edge = list(X = list(M = list(col = "red", lwd = 3)))
+    ),
+    main = "Styled DAG"
+  )
 }
 }
 \seealso{
 Other plotting:
-\code{\link[=layout]{layout()}}
+\code{\link[=cgraph_layout]{cgraph_layout()}}
 }
 \concept{plotting}

@@ -1,12 +1,8 @@
 # --- Plot layouts -------------------------------------------------------
 #
-# `layout.cgraph()` delegates to CausalStructures.jl's own `layout()` (Julia
+# `cgraph_layout()` delegates to CausalStructures.jl's own `layout()` (Julia
 # side: src/io/layout.jl + ext/NetworkLayoutExt.jl), which wraps
-# NetworkLayout.jl's algorithms. `layout()` itself is a generic re-declared
-# here (base's `graphics::layout()` isn't one) so `layout.cgraph()` can hook
-# in; `layout.default()` forwards to `graphics::layout()` so plain-matrix
-# usage is unaffected by attaching this package.
-#
+# NetworkLayout.jl's algorithms.
 # The grid-graphics rendering in this file's companion
 # (causal-structures-plot.R) is adapted from caugi's plotting code
 # (R/plot-core.R, R/plot-grobs.R).
@@ -15,32 +11,9 @@
 
 #' Compute a graph layout
 #'
-#' A generic function. `layout.cgraph()` computes node coordinates for
-#' [plot.cgraph()]. `layout.default()` forwards to [graphics::layout()], so
-#' attaching this package does not change the behavior of `layout()` on
-#' ordinary matrices.
+#' Computes node coordinates for [plot.cgraph()].
 #'
-#' @param x For `layout.cgraph()`, a graph created with [cgraph()], of any
-#'   class. For `layout.default()`, passed on to [graphics::layout()].
-#' @param ... Passed on to the method.
-#'
-#' @return `layout.cgraph()` returns a `data.frame` with columns `name`,
-#'   `x`, and `y`. `layout.default()` returns whatever
-#'   [graphics::layout()] returns.
-#'
-#' @family plotting
-#' @export
-layout <- function(x, ...) {
-  UseMethod("layout")
-}
-
-#' @rdname layout
-#' @export
-layout.default <- function(x, ...) {
-  graphics::layout(x, ...)
-}
-
-#' @rdname layout
+#' @param x A graph created with [cgraph()], of any class.
 #' @param method Character string specifying the layout method:
 #'   * `"stress"` (default): stress majorization. A good general-purpose
 #'     choice - well-spaced and deterministic for a given graph.
@@ -53,18 +26,23 @@ layout.default <- function(x, ...) {
 #'
 #'   All methods are provided by the
 #'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) package.
+#'
+#' @param ... Additional arguments
+#' @return A `data.frame` with columns `name`, `x`, and `y`.
+#'
+#' @family plotting
 #' @export
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   layout(dag)
+#'   cgraph_layout(dag)
 #' }
 #'
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   layout(dag, method = "circle")
+#'   cgraph_layout(dag, method = "circle")
 #' }
-layout.cgraph <- function(
+cgraph_layout <- function(
   x,
   method = c(
     "stress",
@@ -77,6 +55,9 @@ layout.cgraph <- function(
   ),
   ...
 ) {
+  if (!inherits(x, "cgraph")) {
+    stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
+  }
   method <- match.arg(method)
 
   nm <- nodes(x)

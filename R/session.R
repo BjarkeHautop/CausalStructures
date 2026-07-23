@@ -480,9 +480,8 @@ graph_fn <- function(name) {
   function(cg) fn(name)(cg)
 }
 
-# Tags a graph proxy with the "cgraph" S3 class so plot()/layout() can
-# dispatch on it. Kept separate from graph_fn() because that factory is also
-# used for predicates and count_dags(), which don't return graphs.
+# Kept separate from graph_fn() because that factory is
+# also used for predicates and count_dags(), which don't return graphs.
 .tag_cgraph <- function(g) {
   class(g) <- c("cgraph", class(g))
   g
@@ -492,3 +491,7 @@ cgraph_fn <- function(name) {
   force(name)
   function(cg) .tag_cgraph(fn(name)(cg))
 }
+
+
+#' @importFrom Rdpack reprompt
+NULL

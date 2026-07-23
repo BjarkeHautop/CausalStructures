@@ -87,7 +87,7 @@ reference:
   - title: "Plotting"
     contents:
       - plot.cgraph
-      - layout
+      - cgraph_layout
 
   - title: "Managing Julia"
     contents:

@@ -60,9 +60,10 @@ restart the embedded runtime --- see below.
   any wrapper. Every function that returns a graph (`cgraph()`,
   `generate_graph()`, the `cgraph_fn()`-built transforms, `subgraph()`, mutation
   functions, `reclass()`, ...) tags the result with an extra R-side `"cgraph"`
-  S3 class via `.tag_cgraph()`, so `plot()`/`layout()` can dispatch on it.
-  Functions that don't return a graph (predicates, `count_dags()`, node-set
-  queries, ...) don't tag.
+  S3 class via `.tag_cgraph()`, so `plot()` can dispatch on it and
+  `cgraph_layout()` (a plain function, not a generic - see `layout.R`) can
+  type-check for it. Functions that don't return a graph (predicates,
+  `count_dags()`, node-set queries, ...) don't tag.
 - No session-restart detection: JuliaCall embeds Julia in the R process, so
   there's no separate process to reconnect to --- if the embedded Julia dies, so
   does R. `setup()` is a plain do-once guard. There is no `stop()`/ teardown

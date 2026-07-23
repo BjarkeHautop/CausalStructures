@@ -17,3 +17,7 @@
 ^CLAUDE\.md$
 ^CausalStructures\.jl
 ^JuliaCall$
+^vignettes/articles/\.quarto$
+^vignettes/articles/*_files$
+^vignettes/articles$
+^vignettes/

@@ -6,7 +6,7 @@ test_that("plot.cgraph draws with the default layout", {
   expect_no_error(plot(test_dag()))
 })
 
-test_that("layout.cgraph works for every layout method", {
+test_that("cgraph_layout works for every layout method", {
   skip_if_no_julia()
   methods <- c(
     "circle",
@@ -19,7 +19,7 @@ test_that("layout.cgraph works for every layout method", {
   )
 
   for (m in methods) {
-    coords <- layout(test_dag(), method = m)
+    coords <- cgraph_layout(test_dag(), method = m)
     expect_equal(nrow(coords), 4)
     expect_setequal(coords$name, c("A", "X", "Y", "M"))
     expect_true(is.numeric(coords$x))
@@ -51,7 +51,7 @@ test_that("plot.cgraph draws with a pre-computed layout data.frame", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  coords <- layout(test_dag(), method = "circle")
+  coords <- cgraph_layout(test_dag(), method = "circle")
   expect_no_error(plot(test_dag(), layout = coords))
 })
 
@@ -60,7 +60,7 @@ test_that("plot.cgraph draws with a layout function", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), layout = layout))
+  expect_no_error(plot(test_dag(), layout = cgraph_layout))
 })
 
 test_that("plot.cgraph honors styling options without error", {

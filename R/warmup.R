@@ -107,6 +107,6 @@ warmup <- function() {
 
     # --- Data generation / layout --------------------------------------------
     simulate_data(dag, 5, seed = 1L),
-    layout(dag)
+    cgraph_layout(dag)
   ))
 }

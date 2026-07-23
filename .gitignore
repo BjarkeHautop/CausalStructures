@@ -8,3 +8,6 @@ docs
 CausalStructures.jl/
 JuliaConnectoR/
 JuliaCall/
+**/.quarto/
+*.tar.gz
+*.Rcheck

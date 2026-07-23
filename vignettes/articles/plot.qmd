@@ -1,0 +1,294 @@
+---
+title: "plot"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+```{r}
+#| label: local-julia-path
+#| include: false
+
+#
+local_julia_pkg <- normalizePath(
+  file.path(
+    dirname(knitr::current_input(dir = TRUE)),
+    "..",
+    "..",
+    "CausalStructures.jl"
+  ),
+  mustWork = FALSE
+)
+if (dir.exists(local_julia_pkg)) {
+  options(CausalStructures.causalstructures_path = local_julia_pkg)
+}
+```
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+setup()
+```
+
+`plot()` draws a `cgraph` with grid graphics. Every aspect of the drawing can be
+modified, which we will show below.
+
+## A first plot
+
+All edges are rendered according to their actual edge marks:
+
+```{r}
+#| label: first-plot
+
+unknown <- cgraph(A %-->% B %---% C %o->% D %o-o% A, class = "UNKNOWN")
+plot(unknown)
+```
+
+Now we will showcase how to make adjustments to the plotting
+
+## Layouts
+
+`layout` accepts a method name, a layout function, or a pre-computed
+`data.frame` of `name`/`x`/`y` coordinates. The named methods (`"stress"`,
+`"spring"`, `"sfdp"`, `"spectral"`, `"shell"`, `"squaregrid"`, `"circle"`) all
+come from [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl);
+see `?cgraph_layout` for what each does.
+
+```{r}
+#| label: layout-spring
+
+dag <- cgraph(A %-->% X + Y, X %-->% M, M %-->% Y)
+plot(dag, layout = "spring", main = "Spring layout")
+```
+
+Alternatively you can pass a pre-computed layout, useful for when comparing
+different graphs with the same nodes:
+
+```{r}
+#| label: layout-fixed
+
+fixed <- data.frame(
+  name = c("A", "X", "Y", "M"),
+  x = c(0, 1, 2, 1.5),
+  y = c(1, 1, 1, 0)
+)
+plot(dag, layout = fixed, main = "Fixed coordinates")
+```
+
+Notice the automatic curve on the edge from $A$ to $Y$ to avoid it passing
+through $X$!
+
+## Styling nodes
+
+`node_style` accepts anything `grid::gpar()` understands (`fill`, `col`, `lwd`,
+`lty`, `alpha`) plus two geometry options: `padding` (text padding inside the
+node, in mm; default 2) and `size` (a multiplier on the computed node radius;
+default 1). `by_node` overrides any of these per node.
+
+```{r}
+#| label: node-style
+
+plot(
+  dag,
+  node_style = list(
+    fill = "lightblue",
+    col = "navy",
+    lwd = 2,
+    size = 1.3,
+    by_node = list(
+      Y = list(fill = "gold"),
+      M = list(fill = "white", col = "gray60", size = 0.8)
+    )
+  ),
+  main = "Node styling"
+)
+```
+
+## Styling edges
+
+`edge_style` also accepts `grid::gpar()` fields (`col`, `lwd`, `lty`, `alpha`,
+`fill`) plus `arrow_size` (mm, default 3), `circle_size` (mm, default 1.5, for
+the `o->`/`o--`/`o-o` endpoint marks), and `route` (logical, default `TRUE`:
+bend an edge around a non-incident node it would otherwise cross).
+
+Arrowhead `fill` defaults to the edge's own `col`, so arrowheads render solid by
+default and recolor along with the edge. Pass `fill = NA` for the classic
+hollow/outline arrowhead:
+
+```{r}
+#| label: edge-fill
+
+plot(
+  dag,
+  edge_style = list(col = "darkgreen", fill = NA, lwd = 1.5)
+)
+```
+
+### Per-edge overrides (`by_edge`)
+
+`by_edge` is a named list keyed by node name. A node-wide entry (a plain style
+list) applies to every edge touching that node; a nested entry
+(`A = list(B = list(...))`) targets one specific edge and wins over any
+node-wide setting for the same edge.
+
+```{r}
+#| label: edge-by-edge
+
+plot(
+  dag,
+  edge_style = list(
+    col = "gray50",
+    by_edge = list(
+      # Node-wide: every edge touching X...
+      X = list(col = "steelblue"),
+      # ...except X -> M specifically
+      M = list(X = list(col = "red", lwd = 3))
+    )
+  ),
+  main = "by_edge overrides"
+)
+```
+
+### Per-edge-type styling
+
+`edge_style` can also carry `directed`, `undirected`, `bidirected`, and
+`partial` sub-lists (the last covers any edge with a `o->`/`o-o`/`--o` endpoint
+mark). Style precedence, highest to lowest: specific edge in `by_edge` >
+node-wide entry in `by_edge` > edge-type style > global style.
+
+```{r}
+#| label: edge-per-type
+
+mixed <- cgraph("A --> B, B --- C, C <-> D, D o-> E", class = "UNKNOWN")
+plot(
+  mixed,
+  layout = "circle",
+  edge_style = list(
+    directed = list(col = "black"),
+    undirected = list(col = "forestgreen", lwd = 2),
+    bidirected = list(col = "purple"),
+    partial = list(col = "orange", circle_size = 2)
+  ),
+  main = "Styling by edge type"
+)
+```
+
+## Styling labels
+
+`label_style` sets the node-label text appearance: `col`, `fontsize`,
+`fontface`, `fontfamily`, `cex`.
+
+```{r}
+#| label: label-style
+
+plot(
+  dag,
+  label_style = list(col = "white", fontface = "bold", fontsize = 12),
+  node_style = list(fill = "steelblue4"),
+  main = "Label styling"
+)
+```
+
+## Titles
+
+`main` sets the plot title; `title_style` accepts the same fields as
+`label_style`.
+
+```{r}
+#| label: title-style
+
+plot(
+  dag,
+  main = "Custom title",
+  title_style = list(col = "darkred", fontsize = 18, fontface = "italic")
+)
+```
+
+## Tier boxes
+
+Passing `tiers` (via `...`) arranges the nodes into left-to-right columns by
+tier - overriding whatever `layout` method was requested - and draws a box (and
+optionally a label) behind each group. `tiers` can be:
+
+- a named list of node-name vectors - list order is tier order, and the names
+  become the tier labels;
+- a named numeric vector, one tier number per node; or
+- a `data.frame` with `name` and `tier` columns.
+
+Nodes `tiers` doesn't mention are collected into a trailing tier of their own,
+with no box. Boxes are on by default; labels are off by default (turn them on
+via `tier_style$labels`). Passing an explicit pre-computed `layout` data.frame
+alongside `tiers` keeps those coordinates - only a `layout` *method* (string or
+function) gets overridden.
+
+```{r}
+#| label: tiers-list
+
+plot(
+  dag,
+  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
+  tier_style = list(labels = TRUE),
+  main = "Tier boxes"
+)
+```
+
+`tier_style` also accepts `fill`, `col` (box border), `lwd`, `padding` (mm,
+default 4), `label_style` (styling for the tier labels), and `by_tier` (a named
+list keyed by tier name or by 1-based index) for per-tier overrides:
+
+```{r}
+#| label: tiers-by-tier
+
+plot(
+  dag,
+  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
+  tier_style = list(
+    labels = TRUE,
+    fill = "gray95",
+    by_tier = list(
+      exposures = list(fill = "lightblue"),
+      outcome = list(fill = "lightgoldenrod")
+    )
+  ),
+  main = "by_tier overrides"
+)
+```
+
+## Aspect ratio and margins
+
+`asp` fixes the y/x aspect ratio of the plotted data (`NA`, the default, fills
+the available space; `asp = 1` makes one x-unit equal one y-unit).
+`outer_margin` and `title_gap` are `grid::unit()`s controlling the margin around
+the whole plot and the gap between the title and the graph.
+
+```{r}
+#| label: asp
+
+plot(dag, asp = 1, main = "asp = 1")
+```
+
+## Putting it together
+
+```{r}
+#| label: combined
+
+plot(
+  dag,
+  node_style = list(
+    fill = "white",
+    col = "black",
+    by_node = list(Y = list(fill = "gold", col = "darkorange", lwd = 2))
+  ),
+  edge_style = list(
+    col = "gray40",
+    by_edge = list(X = list(M = list(col = "red", lwd = 2)))
+  ),
+  label_style = list(fontface = "bold"),
+  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
+  tier_style = list(labels = TRUE, fill = "aliceblue"),
+  main = "Everything at once",
+  title_style = list(fontsize = 16)
+)
+```
