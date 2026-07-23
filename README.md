@@ -10,50 +10,81 @@ coverage](https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg)](
 [![R-CMD-check](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of CausalStructures is to …
+CausalStructures is an R binding to the Julia package
+[CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl),
+for building, querying, and transforming causal graphs (DAGs, PDAGs,
+ADMGs, ancestral graphs, PAGs, …) and reading off causal-identification
+results (adjustment sets, front-door sets, instruments, …) from them.
+
+Julia is embedded directly in the R process via
+[JuliaCall](https://non-contradiction.github.io/JuliaCall/).
 
 ## Installation
 
-You can install the development version of CausalStructures like so:
+CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) on
+your `PATH` to function. See [here](https://julialang.org/downloads/)
+for the recommended way to install Julia. Alternatively Julia can be
+installed via `JuliaCall::install:julia()`.
+
+Install CausalStructures from GitHub:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+pak::pak("BjarkeHautop/CausalStructures")
 ```
+
+## Graph types
+
+The following graph types are supported, shown here following the
+abstract type hierarchy from `CausalStructures.jl`:
+
+    CausalGraph
+    ├─ DAG            Directed Acyclic Graph
+    ├─ UG             Undirected Graph
+    ├─ AbstractPDAG   All Partially Directed Acyclic Graphs
+    │  ├─ PDAG        Partially Directed Acyclic Graph
+    │  ├─ CPDAG       Completed Partially Directed Acyclic Graph
+    │  └─ MPDAG       Maximally Oriented Partially Directed Acyclic Graph
+    ├─ ADMG           Acyclic Directed Mixed Graph
+    ├─ AbstractAG     All Ancestral Graphs
+    │  ├─ AG          Ancestral Graph
+    │  └─ MAG         Maximal Ancestral Graph
+    ├─ PAG            Partial Ancestral Graph
+    └─ UNKNOWN        No structural constraints
+
+Each graph class encodes structural constraints, such as no cycles,
+closed under Meek’s rules, etc., and these constraints are verified on
+construction.
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ``` r
 library(CausalStructures)
-#> 
-#> Attaching package: 'CausalStructures'
-#> The following object is masked from 'package:graphics':
-#> 
-#>     layout
-## basic example code
+
+dag <- cgraph("A --> X + Y, X --> M --> Y")
+dag
+#> DAG with 4 nodes and 4 edges:
+#>   nodes: A, M, X, Y
+#>   edges:
+#>     A --> X, A --> Y, X --> M, M --> Y
+
+parents(dag, "Y")
+#> [1] "A" "M"
+adjustment_set(dag, "X", "Y")
+#> [1] "A"
+
+plot(dag, main = "A --> X + Y, X --> M --> Y")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+<img src="man/figures/README-example-1.png" alt="" width="100%" />
+
+Convert it to the CPDAG representing its Markov equivalence class:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+cpdag <- dag_to_cpdag(dag)
+plot(cpdag, main = "Markov equivalence class")
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+<img src="man/figures/README-cpdag-1.png" alt="" width="100%" />
 
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" alt="" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/)
+for the documentation

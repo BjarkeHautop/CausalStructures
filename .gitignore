@@ -11,3 +11,4 @@ JuliaCall/
 **/.quarto/
 *.tar.gz
 *.Rcheck
+README.html
