@@ -1,3 +1,8 @@
+test_that("warmup works", {
+  skip_if_no_julia()
+  warmup()
+})
+
 # API smoke tests for the CausalStructures.jl binding. Known answers come
 # from the quick-guide DAG: A --> X + Y, X --> M --> Y.
 

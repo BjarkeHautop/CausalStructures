@@ -1,17 +1,7 @@
 # Benchmarks every testpkg wrapper (CausalStructures.jl via JuliaCall)
 # against its caugi counterpart, using bench::mark().
 #
-# Not part of the built package (listed in .Rbuildignore). Run with:
-#   Rscript benchmark.R   (from the package root)
-#
-# The query benchmarks run both sides on the *same* graph: a testpkg graph is
-# generated once and converted to caugi with to_caugi() (R's and Julia's
-# RNGs consume randomness differently, so generating on both sides from the
-# same seed produces different graphs, not comparable instances). See
-# to_caugi()/caugi_to_cs() below.
-#
-# caugi doesn't cover every testpkg operation. Where its exported name
-# differs from the Julia one, the closest equivalent is used and noted below:
+# caugi doesn't cover every testpkg operation.
 #   exogenous_nodes()      -> caugi::exogenous()
 #   is_valid_adjustment()  -> caugi::is_valid_adjustment_admg()
 #   all_adjustment_sets()  -> caugi::all_adjustment_sets_admg()
@@ -20,16 +10,16 @@
 # enumeration, possible_ancestors/possible_descendants, has_edge, reclass)
 # are left out of the comparison.
 
+# If GC is triggered it happens in Julia and thus bench::mark() can't
+# filter it. So we only report median.
+
 pkgload::load_all(".", quiet = TRUE)
+warmup()
 
 n <- 1000L
 p <- 0.25
 
-# --- Graph conversion (benchmark-only helpers) --------------------------------
-# Bridges a testpkg (Julia) graph proxy and a caugi graph so both sides of a
-# benchmark can run on the identical graph. Not part of the package API: these
-# add a couple of introspection-only Julia helpers scoped to this script.
-setup()
+# --- Graph conversion --------------------------------
 JuliaCall::julia_command(
   '
 begin
@@ -106,23 +96,16 @@ cadmg_small <- caugi::build(caugi::caugi(
 jpdag_small <- cgraph(A %---% X, X %-->% Y, class = "PDAG")
 cpdag_small <- caugi::build(caugi::caugi(A %---% X, X %-->% Y, class = "PDAG"))
 
-# Warm-up
-invisible(cgraph(spec = spec_small))
-invisible(parents(jdag, node))
-invisible(topological_sort(jdag))
-invisible(d_separated(jdag, x, y, z))
-invisible(adjustment_set(jdag, x, y))
-
 run <- function(name, expr_julia, expr_caugi) {
   print(name)
   res <- bench::mark(
     julia = expr_julia(),
     caugi = expr_caugi(),
     check = FALSE,
-    min_iterations = 10
+    min_time = 2
   )
   res$benchmark <- name
-  res[, c("benchmark", "expression", "median", "itr/sec", "mem_alloc")]
+  res[, c("benchmark", "expression", "median")]
 }
 
 results <- rbind(

@@ -25,6 +25,7 @@ Collate:
     'causal-structures-layout.R'
     'causal-structures-plot-routing.R'
     'causal-structures-plot.R'
+    'causal-structures-warmup.R'
 Imports:
     grid,
     JuliaCall,
