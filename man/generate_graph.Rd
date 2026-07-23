@@ -33,6 +33,6 @@ given. For \code{class = "CPDAG"}, the sampled DAG is converted with
 \examples{
 if (julia_available()) {
   cg <- generate_graph(4, m = 3, seed = 1405)
-  edges(cg)
+  cg
 }
 }

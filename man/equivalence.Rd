@@ -35,6 +35,10 @@ recursive listing algorithm).
 if (julia_available()) {
   pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   count_dags(pdag)
+}
+
+if (julia_available()) {
+  pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   enumerate_dags(pdag)
 }
 }

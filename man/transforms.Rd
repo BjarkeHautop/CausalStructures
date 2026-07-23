@@ -55,6 +55,10 @@ input graph is unchanged.
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   skeleton(dag)
+}
+
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B, B \%-->\% C)
   cpdag <- dag_to_cpdag(dag)
   dag_from_pdag(cpdag)
 }

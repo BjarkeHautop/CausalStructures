@@ -34,12 +34,19 @@ the isolated nodes).
 \examples{
 if (julia_available()) {
   dag <- cgraph(B \%-->\% A, A \%-->\% C)
-  nodes(dag)
-  topological_sort(dag)
-  exogenous_nodes(dag)
+  list(
+    nodes = nodes(dag),
+    topological_sort = topological_sort(dag),
+    exogenous_nodes = exogenous_nodes(dag)
+  )
+}
 
+if (julia_available()) {
   pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
-  exogenous_nodes(pdag)
-  exogenous_nodes(pdag, undirected_as_parents = TRUE)
+  list(
+    exogenous_nodes = exogenous_nodes(pdag),
+    exogenous_nodes_undirected_as_parents =
+      exogenous_nodes(pdag, undirected_as_parents = TRUE)
+  )
 }
 }

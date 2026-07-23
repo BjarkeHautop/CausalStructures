@@ -52,14 +52,22 @@ if (julia_available()) {
     C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
     D \%-->\% Y + G, Y \%-->\% H
   )
-  sort(adjustment_set(dag, "X", "Y", type = "parents")) # A, C
-  adjustment_set(dag, "X", "Y", type = "backdoor") # A
-  adjustment_set(dag, "X", "Y", type = "optimal") # K (default)
+  list(
+    parents = sort(adjustment_set(dag, "X", "Y", type = "parents")),
+    backdoor = adjustment_set(dag, "X", "Y", type = "backdoor"),
+    optimal = adjustment_set(dag, "X", "Y", type = "optimal") # default
+  )
+}
 
+if (julia_available()) {
   pdag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y, class = "PDAG")
-  adjustment_set(pdag, "X", "Y") # A
-  is_valid_adjustment(pdag, "X", "Y", "A")
+  list(
+    adjustment_set = adjustment_set(pdag, "X", "Y"), # A
+    is_valid = is_valid_adjustment(pdag, "X", "Y", "A")
+  )
+}
 
+if (julia_available()) {
   mag <- cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
   adjustment_set(mag, "X", "Y") # A; type is ignored
 }

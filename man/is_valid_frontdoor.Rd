@@ -27,7 +27,9 @@ confounders between \code{x} and \code{y}.
 \examples{
 if (julia_available()) {
   dag <- cgraph(U \%-->\% X, X \%-->\% M, M \%-->\% Y, U \%-->\% Y)
-  is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
-  is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open
+  list(
+    m_mediates = is_valid_frontdoor(dag, "X", "Y", "M"),
+    empty = is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
+  )
 }
 }

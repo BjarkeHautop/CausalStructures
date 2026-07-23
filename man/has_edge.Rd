@@ -22,8 +22,10 @@ Tests adjacency, not directed reachability: \code{has_edge(g, x, y)} and
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B, C)
-  has_edge(dag, "A", "B")
-  has_edge(dag, "B", "A")
-  has_edge(dag, "A", "C")
+  list(
+    "A,B" = has_edge(dag, "A", "B"),
+    "B,A" = has_edge(dag, "B", "A"),
+    "A,C" = has_edge(dag, "A", "C")
+  )
 }
 }

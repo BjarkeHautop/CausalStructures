@@ -29,8 +29,10 @@ effect of \code{x} on \code{y}; validate a candidate set directly with
 \examples{
 if (julia_available()) {
   dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
-  frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
-  frontdoor_set(dag, "X", "Y", restrict = "Z")
+  list(
+    default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y
+    restricted = frontdoor_set(dag, "X", "Y", restrict = "Z")
+  )
 }
 }
 \references{

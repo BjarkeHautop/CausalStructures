@@ -24,7 +24,9 @@ for a DAG, m-separation is equivalent to \code{\link[=d_separated]{d_separated()
 \examples{
 if (julia_available()) {
   admg <- cgraph(A \%-->\% B, A \%<->\% C, class = "ADMG")
-  m_separated(admg, "B", "C") # connected via the bidirected edge at A
-  m_separated(admg, "B", "C", "A") # conditioning on A blocks the path
+  list(
+    open = m_separated(admg, "B", "C"), # bidirected edge at A connects
+    blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
+  )
 }
 }

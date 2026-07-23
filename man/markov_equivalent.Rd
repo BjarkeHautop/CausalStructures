@@ -28,10 +28,11 @@ they map to the same PAG.
 if (julia_available()) {
   g1 <- cgraph(A \%-->\% B, C \%-->\% B)
   g2 <- cgraph(A \%-->\% B, C \%-->\% B)
-  markov_equivalent(g1, g2)
-
   g3 <- cgraph(A \%-->\% B, B \%-->\% C)
-  markov_equivalent(g1, g3)
+  list(
+    same_skeleton_same_v_structures = markov_equivalent(g1, g2),
+    different_v_structures = markov_equivalent(g1, g3)
+  )
 }
 }
 \references{

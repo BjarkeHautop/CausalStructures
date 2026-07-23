@@ -88,7 +88,7 @@ print.cgraph <- function(x, ...) {
 #' @examples
 #' if (julia_available()) {
 #'   cg <- generate_graph(4, m = 3, seed = 1405)
-#'   edges(cg)
+#'   cg
 #' }
 generate_graph <- function(
   n,
@@ -119,13 +119,20 @@ generate_graph <- function(
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(B %-->% A, A %-->% C)
-#'   nodes(dag)
-#'   topological_sort(dag)
-#'   exogenous_nodes(dag)
+#'   list(
+#'     nodes = nodes(dag),
+#'     topological_sort = topological_sort(dag),
+#'     exogenous_nodes = exogenous_nodes(dag)
+#'   )
+#' }
 #'
+#' if (julia_available()) {
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
-#'   exogenous_nodes(pdag)
-#'   exogenous_nodes(pdag, undirected_as_parents = TRUE)
+#'   list(
+#'     exogenous_nodes = exogenous_nodes(pdag),
+#'     exogenous_nodes_undirected_as_parents =
+#'       exogenous_nodes(pdag, undirected_as_parents = TRUE)
+#'   )
 #' }
 NULL
 
@@ -162,9 +169,11 @@ exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, C)
-#'   has_edge(dag, "A", "B")
-#'   has_edge(dag, "B", "A")
-#'   has_edge(dag, "A", "C")
+#'   list(
+#'     "A,B" = has_edge(dag, "A", "B"),
+#'     "B,A" = has_edge(dag, "B", "A"),
+#'     "A,C" = has_edge(dag, "A", "C")
+#'   )
 #' }
 has_edge <- function(cg, x, y) {
   fn("has_edge")(cg, x, y)

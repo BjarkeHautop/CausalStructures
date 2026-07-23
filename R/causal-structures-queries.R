@@ -18,10 +18,12 @@
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
-#'   parents(dag, "M")
-#'   children(dag, "X")
-#'   ancestors(dag, "Y")
-#'   descendants(dag, "X")
+#'   list(
+#'     parents = parents(dag, "M"),
+#'     children = children(dag, "X"),
+#'     ancestors = ancestors(dag, "Y"),
+#'     descendants = descendants(dag, "X")
+#'   )
 #' }
 NULL
 
@@ -68,9 +70,11 @@ markov_blanket <- node_query("markov_blanket")
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, C %-->% B)
-#'   neighbors(dag, "B")
-#'   neighbors(dag, "B", mode = "in")
-#'   neighbors(dag, "A", mode = "out")
+#'   list(
+#'     all = neighbors(dag, "B"),
+#'     "in" = neighbors(dag, "B", mode = "in"),
+#'     out = neighbors(dag, "A", mode = "out")
+#'   )
 #' }
 neighbors <- function(
   cg,
@@ -104,9 +108,12 @@ neighbors <- function(
 #' @examples
 #' if (julia_available()) {
 #'   cpdag <- cgraph(A %---% B, B %---% C, class = "CPDAG")
-#'   ancestors(cpdag, "C") # compelled ancestors: none
-#'   possible_ancestors(cpdag, "C")
-#'   possible_ancestors(cpdag, "C", open = FALSE) # C included too
+#'   list(
+#'     ancestors = ancestors(cpdag, "C"),
+#'     possible_ancestors = possible_ancestors(cpdag, "C"),
+#'     possible_ancestors_including_self =
+#'       possible_ancestors(cpdag, "C", open = FALSE)
+#'   )
 #' }
 NULL
 
@@ -152,10 +159,12 @@ posteriors <- function(cg, node, open = TRUE) {
 #' @name predicates
 #' @examples
 #' if (julia_available()) {
-#'   dag <- cgraph(A %-->% B, class = "UNKNOWN")
-#'   is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
-#'   is_ug(dag)
-#'   is_acyclic(dag)
+#'   dag <- cgraph(A %-->% B, class = "PDAG")
+#'   list(
+#'     is_dag = is_dag(dag), # TRUE, even though assigned PDAG
+#'     is_ug = is_ug(dag),
+#'     is_acyclic = is_acyclic(dag)
+#'   )
 #' }
 NULL
 

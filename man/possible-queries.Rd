@@ -41,9 +41,12 @@ classes (traversing undirected edges too). When \code{open = TRUE} (default),
 \examples{
 if (julia_available()) {
   cpdag <- cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
-  ancestors(cpdag, "C") # compelled ancestors: none
-  possible_ancestors(cpdag, "C")
-  possible_ancestors(cpdag, "C", open = FALSE) # C included too
+  list(
+    ancestors = ancestors(cpdag, "C"),
+    possible_ancestors = possible_ancestors(cpdag, "C"),
+    possible_ancestors_including_self =
+      possible_ancestors(cpdag, "C", open = FALSE)
+  )
 }
 }
 \references{

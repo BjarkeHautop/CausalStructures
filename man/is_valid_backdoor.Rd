@@ -24,7 +24,9 @@ parent of \code{x} is d-separated from \code{y} given \code{given} together with
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
-  is_valid_backdoor(dag, "X", "Y") # empty set leaves A --> Y open
-  is_valid_backdoor(dag, "X", "Y", "A") # conditioning on A blocks it
+  list(
+    empty = is_valid_backdoor(dag, "X", "Y"), # A --> Y left open
+    conditioned_on_a = is_valid_backdoor(dag, "X", "Y", "A")
+  )
 }
 }

@@ -55,9 +55,11 @@ These test the actual edge structure of \code{cg}, independent of the
 }
 \examples{
 if (julia_available()) {
-  dag <- cgraph(A \%-->\% B, class = "UNKNOWN")
-  is_dag(dag) # TRUE, even though dag is tagged UNKNOWN
-  is_ug(dag)
-  is_acyclic(dag)
+  dag <- cgraph(A \%-->\% B, class = "PDAG")
+  list(
+    is_dag = is_dag(dag), # TRUE, even though assigned PDAG
+    is_ug = is_ug(dag),
+    is_acyclic = is_acyclic(dag)
+  )
 }
 }

@@ -31,12 +31,15 @@ them.
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
-  minimal_separator(dag, "X", "Y") # both A and M are needed
+  list(
+    default = minimal_separator(dag, "X", "Y"), # both A and M needed
+    forced_include = minimal_separator(dag, "X", "Y", include = "M"),
+    restricted = minimal_separator(dag, "X", "Y", restrict = "M")
+  )
+}
 
+if (julia_available()) {
   edge <- cgraph(A \%-->\% B)
   minimal_separator(edge, "A", "B") # direct edge: no separator exists
-
-  minimal_separator(dag, "X", "Y", include = "M") # force M in
-  minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
 }
 }

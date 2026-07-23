@@ -16,12 +16,18 @@
 #' @examples
 #' if (julia_available()) {
 #'   chain <- cgraph(A %-->% B, B %-->% C)
-#'   d_separated(chain, "A", "C") # chain A --> B --> C is open
-#'   d_separated(chain, "A", "C", "B") # conditioning on B blocks it
+#'   list(
+#'     open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
+#'     blocked = d_separated(chain, "A", "C", "B") # conditioning on B
+#'   )
+#' }
 #'
+#' if (julia_available()) {
 #'   collider <- cgraph(A %-->% C, B %-->% C)
-#'   d_separated(collider, "A", "B") # collider A --> C <-- B: blocked
-#'   d_separated(collider, "A", "B", "C") # conditioning on C opens it
+#'   list(
+#'     blocked = d_separated(collider, "A", "B"), # collider is blocked
+#'     opened = d_separated(collider, "A", "B", "C") # conditioning opens it
+#'   )
 #' }
 d_separated <- function(cg, x, y, given = character()) {
   fn("d_separated")(cg, x, y, as.character(given))
@@ -40,8 +46,10 @@ d_separated <- function(cg, x, y, given = character()) {
 #' @examples
 #' if (julia_available()) {
 #'   admg <- cgraph(A %-->% B, A %<->% C, class = "ADMG")
-#'   m_separated(admg, "B", "C") # connected via the bidirected edge at A
-#'   m_separated(admg, "B", "C", "A") # conditioning on A blocks the path
+#'   list(
+#'     open = m_separated(admg, "B", "C"), # bidirected edge at A connects
+#'     blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
+#'   )
 #' }
 m_separated <- function(cg, x, y, given = character()) {
   fn("m_separated")(cg, x, y, as.character(given))
@@ -67,13 +75,16 @@ m_separated <- function(cg, x, y, given = character()) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
-#'   minimal_separator(dag, "X", "Y") # both A and M are needed
+#'   list(
+#'     default = minimal_separator(dag, "X", "Y"), # both A and M needed
+#'     forced_include = minimal_separator(dag, "X", "Y", include = "M"),
+#'     restricted = minimal_separator(dag, "X", "Y", restrict = "M")
+#'   )
+#' }
 #'
+#' if (julia_available()) {
 #'   edge <- cgraph(A %-->% B)
 #'   minimal_separator(edge, "A", "B") # direct edge: no separator exists
-#'
-#'   minimal_separator(dag, "X", "Y", include = "M") # force M in
-#'   minimal_separator(dag, "X", "Y", restrict = "M") # M alone can't block
 #' }
 minimal_separator <- function(
   cg,
@@ -140,14 +151,22 @@ minimal_separator <- function(
 #'     C %-->% X, X %-->% F + D, A %-->% X + K, K %-->% Y,
 #'     D %-->% Y + G, Y %-->% H
 #'   )
-#'   sort(adjustment_set(dag, "X", "Y", type = "parents")) # A, C
-#'   adjustment_set(dag, "X", "Y", type = "backdoor") # A
-#'   adjustment_set(dag, "X", "Y", type = "optimal") # K (default)
+#'   list(
+#'     parents = sort(adjustment_set(dag, "X", "Y", type = "parents")),
+#'     backdoor = adjustment_set(dag, "X", "Y", type = "backdoor"),
+#'     optimal = adjustment_set(dag, "X", "Y", type = "optimal") # default
+#'   )
+#' }
 #'
+#' if (julia_available()) {
 #'   pdag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
-#'   adjustment_set(pdag, "X", "Y") # A
-#'   is_valid_adjustment(pdag, "X", "Y", "A")
+#'   list(
+#'     adjustment_set = adjustment_set(pdag, "X", "Y"), # A
+#'     is_valid = is_valid_adjustment(pdag, "X", "Y", "A")
+#'   )
+#' }
 #'
+#' if (julia_available()) {
 #'   mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
 #'   adjustment_set(mag, "X", "Y") # A; type is ignored
 #' }
@@ -181,8 +200,10 @@ adjustment_set <- function(
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
-#'   frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
-#'   frontdoor_set(dag, "X", "Y", restrict = "Z")
+#'   list(
+#'     default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y
+#'     restricted = frontdoor_set(dag, "X", "Y", restrict = "Z")
+#'   )
 #' }
 frontdoor_set <- function(
   cg,
@@ -215,8 +236,10 @@ frontdoor_set <- function(
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
-#'   is_valid_backdoor(dag, "X", "Y") # empty set leaves A --> Y open
-#'   is_valid_backdoor(dag, "X", "Y", "A") # conditioning on A blocks it
+#'   list(
+#'     empty = is_valid_backdoor(dag, "X", "Y"), # A --> Y left open
+#'     conditioned_on_a = is_valid_backdoor(dag, "X", "Y", "A")
+#'   )
 #' }
 is_valid_backdoor <- function(cg, x, y, given = character()) {
   fn("is_valid_backdoor")(cg, x, y, as.character(given))
@@ -300,8 +323,10 @@ all_frontdoor_sets <- function(
 #' @examples
 #' if (julia_available()) {
 #'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
-#'   is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
-#'   is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it
+#'   list(
+#'     empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked
+#'     conditioned_on_l = is_valid_adjustment(admg, "X", "Y", "L")
+#'   )
 #' }
 is_valid_adjustment <- function(cg, x, y, given = character()) {
   fn("is_valid_adjustment")(cg, x, y, as.character(given))
@@ -346,8 +371,10 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
-#'   is_valid_frontdoor(dag, "X", "Y", "M") # M mediates X -> Y
-#'   is_valid_frontdoor(dag, "X", "Y") # empty set leaves X -> M -> Y open
+#'   list(
+#'     m_mediates = is_valid_frontdoor(dag, "X", "Y", "M"),
+#'     empty = is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
+#'   )
 #' }
 is_valid_frontdoor <- function(cg, x, y, given = character()) {
   fn("is_valid_frontdoor")(cg, x, y, as.character(given))
@@ -370,8 +397,10 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' if (julia_available()) {
 #'   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
 #'   dag <- cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
-#'   is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument
-#'   is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
+#'   list(
+#'     z = is_valid_iv(dag, "X", "Y", "Z"), # Z is a valid instrument
+#'     u = is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
+#'   )
 #' }
 is_valid_iv <- function(cg, x, y, z = character()) {
   fn("is_valid_iv")(cg, x, y, as.character(z))
@@ -425,6 +454,10 @@ all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' if (julia_available()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   count_dags(pdag)
+#' }
+#'
+#' if (julia_available()) {
+#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   enumerate_dags(pdag)
 #' }
 NULL
@@ -462,10 +495,11 @@ enumerate_dags <- function(cg) {
 #' if (julia_available()) {
 #'   g1 <- cgraph(A %-->% B, C %-->% B)
 #'   g2 <- cgraph(A %-->% B, C %-->% B)
-#'   markov_equivalent(g1, g2)
-#'
 #'   g3 <- cgraph(A %-->% B, B %-->% C)
-#'   markov_equivalent(g1, g3)
+#'   list(
+#'     same_skeleton_same_v_structures = markov_equivalent(g1, g2),
+#'     different_v_structures = markov_equivalent(g1, g3)
+#'   )
 #' }
 markov_equivalent <- function(g1, g2) {
   fn("markov_equivalent")(g1, g2)

@@ -24,7 +24,10 @@
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   data <- simulate_data(dag, n = 100, seed = 1405)
 #'   head(data)
+#' }
 #'
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   data2 <- simulate_data(
 #'     dag,
 #'     n = 100,

@@ -43,9 +43,11 @@ queries, which take extra arguments.
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
-  parents(dag, "M")
-  children(dag, "X")
-  ancestors(dag, "Y")
-  descendants(dag, "X")
+  list(
+    parents = parents(dag, "M"),
+    children = children(dag, "X"),
+    ancestors = ancestors(dag, "Y"),
+    descendants = descendants(dag, "X")
+  )
 }
 }

@@ -26,11 +26,17 @@ not in \code{given}.
 \examples{
 if (julia_available()) {
   chain <- cgraph(A \%-->\% B, B \%-->\% C)
-  d_separated(chain, "A", "C") # chain A --> B --> C is open
-  d_separated(chain, "A", "C", "B") # conditioning on B blocks it
+  list(
+    open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
+    blocked = d_separated(chain, "A", "C", "B") # conditioning on B
+  )
+}
 
+if (julia_available()) {
   collider <- cgraph(A \%-->\% C, B \%-->\% C)
-  d_separated(collider, "A", "B") # collider A --> C <-- B: blocked
-  d_separated(collider, "A", "B", "C") # conditioning on C opens it
+  list(
+    blocked = d_separated(collider, "A", "B"), # collider is blocked
+    opened = d_separated(collider, "A", "B", "C") # conditioning opens it
+  )
 }
 }

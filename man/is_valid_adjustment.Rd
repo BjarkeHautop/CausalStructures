@@ -28,8 +28,10 @@ graph.
 \examples{
 if (julia_available()) {
   admg <- cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
-  is_valid_adjustment(admg, "X", "Y") # empty set does not block L --> Y
-  is_valid_adjustment(admg, "X", "Y", "L") # conditioning on L blocks it
+  list(
+    empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked
+    conditioned_on_l = is_valid_adjustment(admg, "X", "Y", "L")
+  )
 }
 }
 \references{

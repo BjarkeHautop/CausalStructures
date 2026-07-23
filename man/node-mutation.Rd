@@ -27,7 +27,9 @@ incident edges removed, and errors if a node is not present.
 \examples{
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B)
-  nodes(add_nodes(dag, "C"))
-  nodes(remove_nodes(dag, "B"))
+  list(
+    add_nodes = nodes(add_nodes(dag, "C")),
+    remove_nodes = nodes(remove_nodes(dag, "B"))
+  )
 }
 }

@@ -52,6 +52,10 @@ ordinary matrices.
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   layout(dag)
+}
+
+if (julia_available()) {
+  dag <- cgraph(A \%-->\% B, B \%-->\% C)
   layout(dag, method = "circle")
 }
 }

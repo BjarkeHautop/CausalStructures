@@ -22,6 +22,10 @@
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   skeleton(dag)
+#' }
+#'
+#' if (julia_available()) {
+#'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cpdag <- dag_to_cpdag(dag)
 #'   dag_from_pdag(cpdag)
 #' }
@@ -187,8 +191,10 @@ condition_marginalize <- function(
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
-#'   edges(add_edges(dag, B %-->% C))
-#'   edges(remove_edges(dag, A %-->% B))
+#'   list(
+#'     add_edges = edges(add_edges(dag, B %-->% C)),
+#'     remove_edges = edges(remove_edges(dag, A %-->% B))
+#'   )
 #' }
 NULL
 
@@ -221,8 +227,10 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B)
-#'   nodes(add_nodes(dag, "C"))
-#'   nodes(remove_nodes(dag, "B"))
+#'   list(
+#'     add_nodes = nodes(add_nodes(dag, "C")),
+#'     remove_nodes = nodes(remove_nodes(dag, "B"))
+#'   )
 #' }
 NULL
 
