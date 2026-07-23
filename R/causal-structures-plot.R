@@ -189,6 +189,75 @@
   )
 }
 
+# Given the unit direction (mm space) pointing *into* an arrowhead's tip
+# (i.e. the direction of travel arriving at it) and a grid::arrow() object,
+# returns the two back-corner offsets from the tip (mm, still to be
+# subtracted from the tip position) and how far back along that direction
+# the arrowhead's base sits - grid::linesGrob(arrow=) always draws the
+# connecting line all the way to the tip, which is fine for a filled
+# arrowhead but leaves a visible stroke down the middle of an unfilled one;
+# drawing the arrowhead as a separate polygon and stopping the shaft at its
+# base avoids that.
+.plot_arrowhead_geometry <- function(into_x_mm, into_y_mm, arrow) {
+  length_mm <- grid::convertWidth(arrow$length, "mm", valueOnly = TRUE)
+  theta <- arrow$angle * pi / 180
+  perp_x <- -into_y_mm
+  perp_y <- into_x_mm
+  cos_t <- cos(theta)
+  sin_t <- sin(theta)
+  list(
+    corner1 = c(
+      length_mm * (cos_t * into_x_mm - sin_t * perp_x),
+      length_mm * (cos_t * into_y_mm - sin_t * perp_y)
+    ),
+    corner2 = c(
+      length_mm * (cos_t * into_x_mm + sin_t * perp_x),
+      length_mm * (cos_t * into_y_mm + sin_t * perp_y)
+    ),
+    base_offset_mm = length_mm * cos_t
+  )
+}
+
+# Shortens a sampled mm-space polyline by trim_start_mm/trim_end_mm of arc
+# length at each end (interpolating a new endpoint rather than just
+# dropping sample points), for trimming a routed edge's shaft back from an
+# arrowhead's tip the same way the straight-line case does.
+.plot_trim_polyline <- function(px, py, trim_start_mm, trim_end_mm) {
+  n <- length(px)
+  seg_dx <- diff(px)
+  seg_dy <- diff(py)
+  seg_len <- sqrt(seg_dx^2 + seg_dy^2)
+  cum_len <- c(0, cumsum(seg_len))
+  total_len <- cum_len[n]
+
+  interp_at <- function(s) {
+    s <- min(max(s, 0), total_len)
+    i <- max(which(cum_len <= s))
+    if (i >= n) {
+      return(c(px[n], py[n]))
+    }
+    seg_total <- cum_len[i + 1] - cum_len[i]
+    frac <- if (seg_total > 0) (s - cum_len[i]) / seg_total else 0
+    c(px[i] + frac * seg_dx[i], py[i] + frac * seg_dy[i])
+  }
+
+  s_lo <- trim_start_mm
+  s_hi <- total_len - trim_end_mm
+  if (s_hi < s_lo) {
+    mid <- (s_lo + s_hi) / 2
+    s_lo <- mid
+    s_hi <- mid
+  }
+
+  keep <- which(cum_len > s_lo & cum_len < s_hi)
+  lo_pt <- interp_at(s_lo)
+  hi_pt <- interp_at(s_hi)
+  list(
+    x = c(lo_pt[1], px[keep], hi_pt[1]),
+    y = c(lo_pt[2], py[keep], hi_pt[2])
+  )
+}
+
 #' @importFrom grid makeContent
 #' @export
 makeContent.cs_edge_grob <- function(x) {
@@ -207,6 +276,25 @@ makeContent.cs_edge_grob <- function(x) {
 
     r_from_mm <- grid::convertWidth(x$r_from, "mm", valueOnly = TRUE)
     r_to_mm <- grid::convertWidth(x$r_to, "mm", valueOnly = TRUE)
+
+    # The node radii already add half the *node's* stroke width as clearance
+    # (see .plot_make_nodes), but not half the *edge's* own stroke width.
+    # With the round linejoin used throughout, the arrowhead's tip vertex
+    # renders as a small rounded cap extending roughly half the edge's lwd
+    # past the mathematical tip coordinate - back toward the node - so
+    # without this, the tip's rendered ink oversteps the trimmed endpoint
+    # and visibly overlaps the node's circle (confirmed by comparing exact
+    # SVG path coordinates against the rendered output at high zoom: the gap
+    # between the tip and the node's stroke was consistently short by almost
+    # exactly half the edge's lwd).
+    edge_lwd <- x$gp$lwd %||% 1
+    half_edge_lwd_mm <- grid::convertWidth(
+      grid::unit(edge_lwd / 192, "inches"),
+      "mm",
+      valueOnly = TRUE
+    )
+    r_from_mm <- r_from_mm + half_edge_lwd_mm
+    r_to_mm <- r_to_mm + half_edge_lwd_mm
 
     x0_adj <- x0_unit +
       grid::convertWidth(grid::unit(ux_mm * r_from_mm, "mm"), "native")
@@ -273,24 +361,10 @@ makeContent.cs_edge_grob <- function(x) {
     )
   }
 
-  # Line grob: curved polyline if routed, straight line otherwise.
-  if (is.null(path)) {
-    line_grob <- grid::linesGrob(
-      x = grid::unit.c(x0_adj, x1_adj),
-      y = grid::unit.c(y0_adj, y1_adj),
-      arrow = x$arrow,
-      gp = x$gp
-    )
-  } else {
-    line_grob <- grid::linesGrob(
-      x = grid::unit(path$x, "mm"),
-      y = grid::unit(path$y, "mm"),
-      arrow = x$arrow,
-      gp = x$gp
-    )
-
-    # Endpoint tangents from the first/last sampled segments, so endpoint
-    # circles sit tangent to the curve.
+  # Endpoint tangents from the first/last sampled segments, computed before
+  # any arrowhead trimming below (so endpoint circles, which aren't
+  # trimmed, still sit tangent to the curve).
+  if (!is.null(path)) {
     m <- length(path$x)
     d0 <- c(path$x[2] - path$x[1], path$y[2] - path$y[1])
     d1 <- c(path$x[m] - path$x[m - 1], path$y[m] - path$y[m - 1])
@@ -304,7 +378,94 @@ makeContent.cs_edge_grob <- function(x) {
     }
   }
 
-  grob_list <- grid::gList(line_grob)
+  # "Arrow" marks are drawn as separate closed polygons rather than via
+  # linesGrob(arrow=): that always draws the connecting line all the way to
+  # the tip, which is invisible for a filled arrowhead but leaves a visible
+  # stroke down the middle of ours, which is unfilled. The shaft is trimmed
+  # back to each arrowhead's base (trim_start_mm/trim_end_mm) to match.
+  arrow_grobs <- grid::gList()
+  trim_start_mm <- 0
+  trim_end_mm <- 0
+
+  .arrowhead_grob <- function(tip_x, tip_y, into) {
+    geo <- .plot_arrowhead_geometry(into[1], into[2], x$arrow)
+    if (is.null(path)) {
+      c1x <- tip_x -
+        grid::convertWidth(grid::unit(geo$corner1[1], "mm"), "native")
+      c1y <- tip_y -
+        grid::convertHeight(grid::unit(geo$corner1[2], "mm"), "native")
+      c2x <- tip_x -
+        grid::convertWidth(grid::unit(geo$corner2[1], "mm"), "native")
+      c2y <- tip_y -
+        grid::convertHeight(grid::unit(geo$corner2[2], "mm"), "native")
+      grob <- grid::polygonGrob(
+        x = grid::unit.c(c1x, tip_x, c2x),
+        y = grid::unit.c(c1y, tip_y, c2y),
+        gp = x$gp
+      )
+    } else {
+      grob <- grid::polygonGrob(
+        x = grid::unit(
+          c(tip_x - geo$corner1[1], tip_x, tip_x - geo$corner2[1]),
+          "mm"
+        ),
+        y = grid::unit(
+          c(tip_y - geo$corner1[2], tip_y, tip_y - geo$corner2[2]),
+          "mm"
+        ),
+        gp = x$gp
+      )
+    }
+    list(grob = grob, base_offset_mm = geo$base_offset_mm)
+  }
+
+  if (!is.null(x$arrow) && x$src_mark == "Arrow") {
+    tip <- if (is.null(path)) {
+      list(x0_adj, y0_adj)
+    } else {
+      list(path$x[1], path$y[1])
+    }
+    res <- .arrowhead_grob(tip[[1]], tip[[2]], -t0)
+    arrow_grobs <- grid::gList(arrow_grobs, res$grob)
+    trim_start_mm <- res$base_offset_mm
+  }
+  if (!is.null(x$arrow) && x$dst_mark == "Arrow") {
+    tip <- if (is.null(path)) {
+      list(x1_adj, y1_adj)
+    } else {
+      list(path$x[m], path$y[m])
+    }
+    res <- .arrowhead_grob(tip[[1]], tip[[2]], t1)
+    arrow_grobs <- grid::gList(arrow_grobs, res$grob)
+    trim_end_mm <- res$base_offset_mm
+  }
+
+  # Line grob: curved polyline if routed, straight line otherwise; shaft
+  # stopped short of any arrowhead's tip at its base.
+  if (is.null(path)) {
+    x0_line <- x0_adj +
+      grid::convertWidth(grid::unit(ux_mm * trim_start_mm, "mm"), "native")
+    y0_line <- y0_adj +
+      grid::convertHeight(grid::unit(uy_mm * trim_start_mm, "mm"), "native")
+    x1_line <- x1_adj -
+      grid::convertWidth(grid::unit(ux_mm * trim_end_mm, "mm"), "native")
+    y1_line <- y1_adj -
+      grid::convertHeight(grid::unit(uy_mm * trim_end_mm, "mm"), "native")
+    line_grob <- grid::linesGrob(
+      x = grid::unit.c(x0_line, x1_line),
+      y = grid::unit.c(y0_line, y1_line),
+      gp = x$gp
+    )
+  } else {
+    trimmed <- .plot_trim_polyline(path$x, path$y, trim_start_mm, trim_end_mm)
+    line_grob <- grid::linesGrob(
+      x = grid::unit(trimmed$x, "mm"),
+      y = grid::unit(trimmed$y, "mm"),
+      gp = x$gp
+    )
+  }
+
+  grob_list <- grid::gList(line_grob, arrow_grobs)
 
   # "Circle" marks (PAG-style unknown endpoints, e.g. o->, o-o) get a small
   # open circle drawn just outside the node boundary, in the gap left by the
