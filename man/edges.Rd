@@ -10,8 +10,10 @@ edges(cg)
 \item{cg}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 }
 \value{
-A matrix with 2 columns (source, target) and one row per edge,
-or an empty matrix if the graph has no edges.
+A data frame with one row per edge and columns \code{from}, \code{to} (node
+names) and \code{type} (the edge's notation, e.g. \code{"-->"}, \code{"---"},
+\code{"<->"}, \code{"o->"}, \code{"o--"}, or \code{"o-o"} — see \link{edge-operators}),
+or zero rows if the graph has no edges.
 }
 \description{
 Get all edges in a graph
@@ -20,5 +22,8 @@ Get all edges in a graph
 if (julia_available()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   edges(dag)
+
+  pag <- cgraph(A \%o-o\% B, class = "PAG")
+  edges(pag)
 }
 }

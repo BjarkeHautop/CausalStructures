@@ -5,11 +5,12 @@
 #   ParseError). Helpers take/return plain Strings, doing Symbol conversion
 #   Julia-side.
 # - Flat name/set results (`nodes`, `parents`, `adjustment_set`, ...) return
-#   a plain `Vector{String}`/`Nothing`, which JuliaCall auto-converts - no
-#   joined-string convention needed (verified: no per-element deserialize
-#   cost like JuliaConnectoR had).
-# - `edges()`/`edge_marks()`/`layout()`/`simulate_data()` return a native
-#   Matrix directly, for the same reason.
+#   a plain `Vector{String}`/`Nothing`, which JuliaCall auto-converts.
+# - `edge_marks()`/`layout()`/`simulate_data()` return a native Matrix
+#   directly, for the same reason. `edges()` (causal-structures-
+#   construction.R) builds on the `edge_marks` helper's Matrix, turning its
+#   (src_end, dst_end) mark columns into one `type` notation column
+#   (e.g. `"-->"`, `"o-o"`).
 # - Nested "list of sets" results (`all_backdoor_sets` and friends) still
 #   need a joined-string convention, since `Vector{Vector{String}}` doesn't
 #   auto-convert; see split_sets().
@@ -48,7 +49,6 @@
   "all_backdoor_sets",
   "all_frontdoor_sets",
   "subgraph",
-  "edges",
   "is_valid_adjustment",
   "all_adjustment_sets",
   "is_valid_frontdoor",
@@ -183,16 +183,6 @@
   end',
 
   '_testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))',
-
-  'function _testpkg_edges(g)
-      es = collect(_testpkg_CS.edges(g))
-      m = Matrix{String}(undef, length(es), 2)
-      for (i, e) in enumerate(es)
-          m[i, 1] = String(e.src)
-          m[i, 2] = String(e.dst)
-      end
-      m
-  end',
 
   'function _testpkg_edge_marks(g)
       es = collect(_testpkg_CS.edges(g))

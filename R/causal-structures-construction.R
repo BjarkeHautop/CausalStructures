@@ -181,17 +181,44 @@ has_edge <- function(cg, x, y) {
   fn("has_edge")(cg, x, y)
 }
 
+# Maps a (src_end, dst_end) mark pair (as returned by the Julia
+# `edge_marks` helper) to its notation, e.g. `("Tail", "Arrow")` -> `"-->"`.
+# CausalStructures.jl only ever constructs edges in these 6 canonical
+# orders (never e.g. `("Arrow", "Tail")`; see CausalStructures.jl's
+# core/graph-string.jl, which swaps src/dst rather than store a
+# non-canonical mark pair), so this covers every edge the Julia side can
+# produce.
+.edge_mark_types <- c(
+  "Tail.Arrow" = "-->",
+  "Tail.Tail" = "---",
+  "Arrow.Arrow" = "<->",
+  "Circle.Arrow" = "o->",
+  "Circle.Tail" = "o--",
+  "Circle.Circle" = "o-o"
+)
+
 #' Get all edges in a graph
 #'
 #' @param cg A graph created with [cgraph()], of any class.
-#' @return A matrix with 2 columns (source, target) and one row per edge,
-#'   or an empty matrix if the graph has no edges.
+#' @return A data frame with one row per edge and columns `from`, `to` (node
+#'   names) and `type` (the edge's notation, e.g. `"-->"`, `"---"`,
+#'   `"<->"`, `"o->"`, `"o--"`, or `"o-o"` — see [edge-operators]),
+#'   or zero rows if the graph has no edges.
 #' @export
 #' @examples
 #' if (julia_available()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   edges(dag)
+#'
+#'   pag <- cgraph(A %o-o% B, class = "PAG")
+#'   edges(pag)
 #' }
 edges <- function(cg) {
-  fn("edges")(cg)
+  mat <- fn("edge_marks")(cg)
+  data.frame(
+    from = mat[, 1],
+    to = mat[, 2],
+    type = unname(.edge_mark_types[paste(mat[, 3], mat[, 4], sep = ".")]),
+    stringsAsFactors = FALSE
+  )
 }

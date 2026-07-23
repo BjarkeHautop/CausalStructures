@@ -13,7 +13,8 @@
 # and "Tail" draws nothing (a plain line end).
 
 # Edges with their per-endpoint Tail/Arrow/Circle marks, for drawing (as
-# opposed to edges(), which only returns the (from, to) pairs).
+# opposed to edges(), which collapses the two marks into a single `type`
+# notation column, e.g. "-->").
 .plot_edges <- function(cg) {
   mat <- fn("edge_marks")(cg)
   data.frame(
@@ -691,6 +692,9 @@ plot.cgraph <- function(
   )
 
   if (is.character(layout)) {
+    # Calls layout.cgraph() directly rather than the layout() generic:
+    # `layout` here is this function's own parameter (a string), so
+    # layout(x, ...) would dispatch on that instead of on `x`.
     coords <- layout.cgraph(x, method = layout, ...)
   } else if (is.function(layout)) {
     coords <- layout(x, ...)

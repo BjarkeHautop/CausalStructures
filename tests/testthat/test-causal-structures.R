@@ -72,8 +72,13 @@ test_that("edge queries work", {
   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
   edges <- edges(dag)
   expect_equal(nrow(edges), 4) # A->X, A->Y, X->M, M->Y
-  expect_equal(ncol(edges), 2)
-  expect_true(all(c("A", "X", "Y", "M") %in% edges))
+  expect_identical(names(edges), c("from", "to", "type"))
+  expect_true(all(edges$type == "-->"))
+  expect_true(all(c("A", "X", "Y", "M") %in% c(edges$from, edges$to)))
+
+  pag <- cgraph(A %o->% B, B %o-o% C, D %<->% E, F %---% G, class = "UNKNOWN")
+  pag_edges <- edges(pag)
+  expect_setequal(pag_edges$type, c("o->", "o-o", "<->", "---"))
 })
 
 test_that("node-set queries work", {
