@@ -21,7 +21,7 @@
 
 .cs <- new.env(parent = emptyenv())
 
-# Helpers with a _testpkg_<name> Julia wrapper defined in setup()
+# Helpers with a _CausalStructures_<name> Julia wrapper defined in setup()
 .helpers <- c(
   "cgraph",
   "generate_graph",
@@ -100,92 +100,92 @@
 .helper_defs <- c(
   # A length-1 R character vector arrives in Julia as a scalar String, not
   # a 1-element vector; branch on both.
-  '_testpkg_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)',
-  '_testpkg_sorted(x) = sort!(String.(collect(x)))',
-  '_testpkg_opt(s) = s === nothing ? nothing : _testpkg_sorted(s)',
-  '_testpkg_sets(sets) = isempty(sets) ? nothing :
+  '_CausalStructures_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)',
+  '_CausalStructures_sorted(x) = sort!(String.(collect(x)))',
+  '_CausalStructures_opt(s) = s === nothing ? nothing : _CausalStructures_sorted(s)',
+  '_CausalStructures_sets(sets) = isempty(sets) ? nothing :
       join((join(sort!(String.(collect(s))), "\x1f") for s in sets), "\x1e")',
 
-  '_testpkg_cgraph(spec, class, simple) =
-      _testpkg_CS.cgraph(spec; class = getfield(_testpkg_CS, Symbol(class)), simple = simple)',
+  '_CausalStructures_cgraph(spec, class, simple) =
+      _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)), simple = simple)',
 
-  'function _testpkg_generate_graph(n, m, p, class, rng)
+  'function _CausalStructures_generate_graph(n, m, p, class, rng)
       kwargs = (
           m = m === nothing ? nothing : Int(m), p = p,
-          class = getfield(_testpkg_CS, Symbol(class)),
+          class = getfield(_CausalStructures_CS, Symbol(class)),
       )
-      rng === nothing ? _testpkg_CS.generate_graph(Int(n); kwargs...) :
-      _testpkg_CS.generate_graph(rng, Int(n); kwargs...)
+      rng === nothing ? _CausalStructures_CS.generate_graph(Int(n); kwargs...) :
+      _CausalStructures_CS.generate_graph(rng, Int(n); kwargs...)
   end',
 
-  '_testpkg_topological_sort(g) = String.(_testpkg_CS.topological_sort(g))',
-  '_testpkg_nodes(g) = String.(_testpkg_CS.nodes(g))',
+  '_CausalStructures_topological_sort(g) = String.(_CausalStructures_CS.topological_sort(g))',
+  '_CausalStructures_nodes(g) = String.(_CausalStructures_CS.nodes(g))',
 
-  'function _testpkg_exogenous_nodes(g, undirected_as_parents)
-      result = g isa _testpkg_CS.AbstractPDAG ?
-          _testpkg_CS.exogenous_nodes(g; undirected_as_parents = undirected_as_parents) :
-          _testpkg_CS.exogenous_nodes(g)
-      _testpkg_sorted(result)
+  'function _CausalStructures_exogenous_nodes(g, undirected_as_parents)
+      result = g isa _CausalStructures_CS.AbstractPDAG ?
+          _CausalStructures_CS.exogenous_nodes(g; undirected_as_parents = undirected_as_parents) :
+          _CausalStructures_CS.exogenous_nodes(g)
+      _CausalStructures_sorted(result)
   end',
 
   'for f in (:parents, :children, :ancestors, :descendants, :spouses, :markov_blanket)
-      @eval $(Symbol(:_testpkg_, f))(g, node) = _testpkg_sorted(_testpkg_CS.$f(g, Symbol(node)))
+      @eval $(Symbol(:_CausalStructures_, f))(g, node) = _CausalStructures_sorted(_CausalStructures_CS.$f(g, Symbol(node)))
   end',
 
-  '_testpkg_neighbors(g, node, mode) =
-      _testpkg_sorted(_testpkg_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))',
+  '_CausalStructures_neighbors(g, node, mode) =
+      _CausalStructures_sorted(_CausalStructures_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))',
 
   'for f in (:possible_ancestors, :possible_descendants, :anteriors, :posteriors)
-      @eval $(Symbol(:_testpkg_, f))(g, node, open) =
-          _testpkg_sorted(_testpkg_CS.$f(g, Symbol(node); open = open))
+      @eval $(Symbol(:_CausalStructures_, f))(g, node, open) =
+          _CausalStructures_sorted(_CausalStructures_CS.$f(g, Symbol(node); open = open))
   end',
 
-  '_testpkg_has_edge(g, x, y) = _testpkg_CS.has_edge(g, Symbol(x), Symbol(y))',
+  '_CausalStructures_has_edge(g, x, y) = _CausalStructures_CS.has_edge(g, Symbol(x), Symbol(y))',
 
   'for f in (:d_separated, :m_separated)
-      @eval $(Symbol(:_testpkg_, f))(g, x, y, given) =
-          _testpkg_CS.$f(g, Symbol(x), Symbol(y), _testpkg_syms(given))
+      @eval $(Symbol(:_CausalStructures_, f))(g, x, y, given) =
+          _CausalStructures_CS.$f(g, Symbol(x), Symbol(y), _CausalStructures_syms(given))
   end',
 
-  'function _testpkg_minimal_separator(g, x, y, include, restrict)
-      _testpkg_opt(_testpkg_CS.minimal_separator(g, Symbol(x), Symbol(y);
-          include = _testpkg_syms(include),
-          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  'function _CausalStructures_minimal_separator(g, x, y, include, restrict)
+      _CausalStructures_opt(_CausalStructures_CS.minimal_separator(g, Symbol(x), Symbol(y);
+          include = _CausalStructures_syms(include),
+          restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
 
-  'function _testpkg_adjustment_set(g, x, y, type)
-      result = if g isa Union{_testpkg_CS.DAG,_testpkg_CS.AbstractPDAG}
-          _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
+  'function _CausalStructures_adjustment_set(g, x, y, type)
+      result = if g isa Union{_CausalStructures_CS.DAG,_CausalStructures_CS.AbstractPDAG}
+          _CausalStructures_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
       else
-          _testpkg_CS.adjustment_set(g, Symbol(x), Symbol(y))
+          _CausalStructures_CS.adjustment_set(g, Symbol(x), Symbol(y))
       end
-      _testpkg_opt(result)
+      _CausalStructures_opt(result)
   end',
 
-  'function _testpkg_frontdoor_set(g, x, y, include, restrict)
-      _testpkg_opt(_testpkg_CS.frontdoor_set(g, Symbol(x), Symbol(y);
-          include = _testpkg_syms(include),
-          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  'function _CausalStructures_frontdoor_set(g, x, y, include, restrict)
+      _CausalStructures_opt(_CausalStructures_CS.frontdoor_set(g, Symbol(x), Symbol(y);
+          include = _CausalStructures_syms(include),
+          restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
 
-  '_testpkg_is_valid_backdoor(g, x, y, z) =
-      _testpkg_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+  '_CausalStructures_is_valid_backdoor(g, x, y, z) =
+      _CausalStructures_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
 
-  'function _testpkg_all_backdoor_sets(g, x, y, minimal, max_size)
-      _testpkg_sets(_testpkg_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
+  'function _CausalStructures_all_backdoor_sets(g, x, y, minimal, max_size)
+      _CausalStructures_sets(_CausalStructures_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
-  'function _testpkg_all_frontdoor_sets(g, x, y, include, restrict)
-      _testpkg_sets(_testpkg_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
-          include = _testpkg_syms(include),
-          restrict = restrict === nothing ? nothing : _testpkg_syms(restrict)))
+  'function _CausalStructures_all_frontdoor_sets(g, x, y, include, restrict)
+      _CausalStructures_sets(_CausalStructures_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
+          include = _CausalStructures_syms(include),
+          restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
 
-  '_testpkg_subgraph(g, nodes) = _testpkg_CS.subgraph(g, _testpkg_syms(nodes))',
+  '_CausalStructures_subgraph(g, nodes) = _CausalStructures_CS.subgraph(g, _CausalStructures_syms(nodes))',
 
-  'function _testpkg_edge_marks(g)
-      es = collect(_testpkg_CS.edges(g))
+  'function _CausalStructures_edge_marks(g)
+      es = collect(_CausalStructures_CS.edges(g))
       m = Matrix{String}(undef, length(es), 4)
       for (i, e) in enumerate(es)
           m[i, 1] = String(e.src)
@@ -196,26 +196,26 @@
       m
   end',
 
-  '_testpkg_is_valid_adjustment(g, x, y, z) =
-      _testpkg_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+  '_CausalStructures_is_valid_adjustment(g, x, y, z) =
+      _CausalStructures_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
 
-  'function _testpkg_all_adjustment_sets(g, x, y, minimal, max_size)
-      _testpkg_sets(_testpkg_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
+  'function _CausalStructures_all_adjustment_sets(g, x, y, minimal, max_size)
+      _CausalStructures_sets(_CausalStructures_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
-  '_testpkg_is_valid_frontdoor(g, x, y, z) =
-      _testpkg_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+  '_CausalStructures_is_valid_frontdoor(g, x, y, z) =
+      _CausalStructures_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
 
-  'function _testpkg_simulate_data(g, n, rng, standardize, coef_range, error_sd)
+  'function _CausalStructures_simulate_data(g, n, rng, standardize, coef_range, error_sd)
       kwargs = (
           samples = Int(n),
           standardize = standardize,
           coef_range = (Float64(coef_range[1]), Float64(coef_range[2])),
           error_sd = Float64(error_sd),
       )
-      d = rng === nothing ? _testpkg_CS.simulate_data(g; kwargs...) :
-          _testpkg_CS.simulate_data(rng, g; kwargs...)
+      d = rng === nothing ? _CausalStructures_CS.simulate_data(g; kwargs...) :
+          _CausalStructures_CS.simulate_data(rng, g; kwargs...)
       names = sort!(String.(collect(keys(d))))
       out = Matrix{Float64}(undef, Int(n), length(names))
       for (j, nm) in enumerate(names)
@@ -224,44 +224,44 @@
       out
   end',
 
-  '_testpkg_enumerate_dags(g) = _testpkg_CS.enumerate_dags(g)',
-  '_testpkg_markov_equivalent(g1, g2) = _testpkg_CS.markov_equivalent(g1, g2)',
+  '_CausalStructures_enumerate_dags(g) = _CausalStructures_CS.enumerate_dags(g)',
+  '_CausalStructures_markov_equivalent(g1, g2) = _CausalStructures_CS.markov_equivalent(g1, g2)',
 
-  '_testpkg_is_valid_iv(g, x, y, z) =
-      _testpkg_CS.is_valid_iv(g, Symbol(x), Symbol(y), _testpkg_syms(z))',
+  '_CausalStructures_is_valid_iv(g, x, y, z) =
+      _CausalStructures_CS.is_valid_iv(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
 
-  'function _testpkg_all_iv_sets(g, x, y, minimal, max_size)
-      _testpkg_sets(_testpkg_CS.all_iv_sets(g, Symbol(x), Symbol(y);
+  'function _CausalStructures_all_iv_sets(g, x, y, minimal, max_size)
+      _CausalStructures_sets(_CausalStructures_CS.all_iv_sets(g, Symbol(x), Symbol(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
-  '_testpkg_enumerate_mags(g) = _testpkg_CS.enumerate_mags(g)',
-  '_testpkg_latent_project(g, latents) = _testpkg_CS.latent_project(g, _testpkg_syms(latents))',
-  '_testpkg_exogenize(g, nodes) = _testpkg_CS.exogenize(g, _testpkg_syms(nodes))',
+  '_CausalStructures_enumerate_mags(g) = _CausalStructures_CS.enumerate_mags(g)',
+  '_CausalStructures_latent_project(g, latents) = _CausalStructures_CS.latent_project(g, _CausalStructures_syms(latents))',
+  '_CausalStructures_exogenize(g, nodes) = _CausalStructures_CS.exogenize(g, _CausalStructures_syms(nodes))',
 
-  '_testpkg_normalize_latent_structure(g, latents) =
-      _testpkg_CS.normalize_latent_structure(g, _testpkg_syms(latents))',
+  '_CausalStructures_normalize_latent_structure(g, latents) =
+      _CausalStructures_CS.normalize_latent_structure(g, _CausalStructures_syms(latents))',
 
-  '_testpkg_condition_marginalize(g, cond_vars, marg_vars) =
-      _testpkg_CS.condition_marginalize(g;
-          cond_vars = _testpkg_syms(cond_vars), marg_vars = _testpkg_syms(marg_vars))',
+  '_CausalStructures_condition_marginalize(g, cond_vars, marg_vars) =
+      _CausalStructures_CS.condition_marginalize(g;
+          cond_vars = _CausalStructures_syms(cond_vars), marg_vars = _CausalStructures_syms(marg_vars))',
 
-  '_testpkg_spec_edges(spec) =
-      filter(x -> x isa _testpkg_CS.CausalEdge, _testpkg_CS._parse_graph_string(spec))',
+  '_CausalStructures_spec_edges(spec) =
+      filter(x -> x isa _CausalStructures_CS.CausalEdge, _CausalStructures_CS._parse_graph_string(spec))',
 
-  '_testpkg_add_edges(g, spec) = _testpkg_CS.add_edges(g, _testpkg_spec_edges(spec)...)',
-  '_testpkg_remove_edges(g, spec) = _testpkg_CS.remove_edges(g, _testpkg_spec_edges(spec)...)',
-  '_testpkg_add_nodes(g, nodes) = _testpkg_CS.add_nodes(g, _testpkg_syms(nodes)...)',
-  '_testpkg_remove_nodes(g, nodes) = _testpkg_CS.remove_nodes(g, _testpkg_syms(nodes)...)',
+  '_CausalStructures_add_edges(g, spec) = _CausalStructures_CS.add_edges(g, _CausalStructures_spec_edges(spec)...)',
+  '_CausalStructures_remove_edges(g, spec) = _CausalStructures_CS.remove_edges(g, _CausalStructures_spec_edges(spec)...)',
+  '_CausalStructures_add_nodes(g, nodes) = _CausalStructures_CS.add_nodes(g, _CausalStructures_syms(nodes)...)',
+  '_CausalStructures_remove_nodes(g, nodes) = _CausalStructures_CS.remove_nodes(g, _CausalStructures_syms(nodes)...)',
 
-  'function _testpkg_reclass(g, class, simple)
-      T = getfield(_testpkg_CS, Symbol(class))
-      T === _testpkg_CS.UNKNOWN ? _testpkg_CS.reclass(g, T; simple = simple) :
-      _testpkg_CS.reclass(g, T)
+  'function _CausalStructures_reclass(g, class, simple)
+      T = getfield(_CausalStructures_CS, Symbol(class))
+      T === _CausalStructures_CS.UNKNOWN ? _CausalStructures_CS.reclass(g, T; simple = simple) :
+      _CausalStructures_CS.reclass(g, T)
   end',
 
-  'function _testpkg_layout(g, method)
-      pts = _testpkg_CS.layout(g, Symbol(method))
+  'function _CausalStructures_layout(g, method)
+      pts = _CausalStructures_CS.layout(g, Symbol(method))
       m = Matrix{Float64}(undef, length(pts), 2)
       for (i, p) in enumerate(pts)
           m[i, 1] = p[1]
@@ -270,22 +270,22 @@
       m
   end',
 
-  '_testpkg_show(g) = sprint(show, g)'
+  '_CausalStructures_show(g) = sprint(show, g)'
 )
 
 #' Path to the local CausalStructures.jl checkout
 #'
 #' Defaults to the `CausalStructures.jl/` directory bundled next to this
 #' package's source, and can be overridden with the
-#' `testpkg.causalstructures_path` option.
+#' `CausalStructures.causalstructures_path` option.
 #'
 #' @return Absolute path to the Julia package directory.
 #' @keywords internal
 pkg_path <- function() {
   path <- getOption(
-    "testpkg.causalstructures_path",
+    "CausalStructures.causalstructures_path",
     file.path(
-      dirname(system.file("DESCRIPTION", package = "testpkg")),
+      dirname(system.file("DESCRIPTION", package = "CausalStructures")),
       "CausalStructures.jl"
     )
   )
@@ -351,7 +351,7 @@ preload_julia_libunwind <- function() {
 #' wrapper functions; call it yourself to pay the startup cost up front.
 #'
 #' Errors raised inside Julia are reported with just the underlying Julia
-#' error message; set `options(testpkg.verbose_errors = TRUE)` to see the
+#' error message; set `options(CausalStructures.verbose_errors = TRUE)` to see the
 #' full Julia stacktrace instead.
 #'
 #' @return `NULL`, invisibly.
@@ -384,7 +384,7 @@ setup <- function() {
   JuliaCall::julia_command("import CausalStructures")
   JuliaCall::julia_command("import Random")
   JuliaCall::julia_command("import NetworkLayout")
-  JuliaCall::julia_command("const _testpkg_CS = CausalStructures;")
+  JuliaCall::julia_command("const _CausalStructures_CS = CausalStructures;")
   # Wrapped in begin...end so the whole block is one top-level expression:
   # JuliaCall's eval_string() parses (and rejects, as multiple expressions)
   # a bare sequence of separate definitions.
@@ -393,7 +393,7 @@ setup <- function() {
     collapse = "\n"
   ))
   for (f in .helpers) {
-    .cs[[f]] <- .make_caller(paste0("_testpkg_", f))
+    .cs[[f]] <- .make_caller(paste0("_CausalStructures_", f))
   }
   for (f in .passthrough) {
     .cs[[f]] <- .make_caller(paste0("CausalStructures.", f))
@@ -417,7 +417,7 @@ wrap_errors <- function(fn) {
 # JuliaCall's error messages are "Error happens in Julia.\n<message>\n
 # Stacktrace:\n...", which is noise for most R users.
 clean_error <- function(msg) {
-  if (isTRUE(getOption("testpkg.verbose_errors", FALSE))) {
+  if (isTRUE(getOption("CausalStructures.verbose_errors", FALSE))) {
     return(msg)
   }
   m <- regmatches(

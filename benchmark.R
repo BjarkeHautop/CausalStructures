@@ -1,7 +1,7 @@
-# Benchmarks every testpkg wrapper (CausalStructures.jl via JuliaCall)
+# Benchmarks every CausalStructures wrapper (CausalStructures.jl via JuliaCall)
 # against its caugi counterpart, using bench::mark().
 #
-# caugi doesn't cover every testpkg operation.
+# caugi doesn't cover every CausalStructures operation.
 #   exogenous_nodes()      -> caugi::exogenous()
 #   is_valid_adjustment()  -> caugi::is_valid_adjustment_admg()
 #   all_adjustment_sets()  -> caugi::all_adjustment_sets_admg()
@@ -23,16 +23,18 @@ p <- 0.25
 JuliaCall::julia_command(
   '
 begin
-  _testpkg_bench_class(g) = string(nameof(typeof(g)))
-  _testpkg_bench_edges_typed(g) =
-      join((join([String(e.src), _testpkg_CS._edge_display(e), String(e.dst)], "\x1f")
-            for e in _testpkg_CS.edges(g)), "\x1e")
+  _CausalStructures_bench_class(g) = string(nameof(typeof(g)))
+  _CausalStructures_bench_edges_typed(g) =
+      join((join([String(e.src), _CausalStructures_CS._edge_display(e), String(e.dst)], "\x1f")
+            for e in _CausalStructures_CS.edges(g)), "\x1e")
 end
 '
 )
-.bench_class <- function(g) JuliaCall::julia_call("_testpkg_bench_class", g)
+.bench_class <- function(g) {
+  JuliaCall::julia_call("_CausalStructures_bench_class", g)
+}
 .bench_edges_typed <- function(g) {
-  JuliaCall::julia_call("_testpkg_bench_edges_typed", g)
+  JuliaCall::julia_call("_CausalStructures_bench_edges_typed", g)
 }
 
 to_caugi <- function(graph) {

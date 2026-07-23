@@ -15,19 +15,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-# testpkg
+# CausalStructures
 
 <!-- badges: start -->
 [![Codecov test
-coverage](https://codecov.io/gh/BjarkeHautop/testpkg/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/testpkg)
-[![R-CMD-check](https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml)
+coverage](https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/CausalStructures)
+[![R-CMD-check](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of testpkg is to ...
+The goal of CausalStructures is to ...
 
 ## Installation
 
-You can install the development version of testpkg like so:
+You can install the development version of CausalStructures like so:
 
 ```r
 # FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
@@ -40,7 +40,7 @@ This is a basic example which shows you how to solve a common problem:
 ```{r}
 #| label: example
 
-library(testpkg)
+library(CausalStructures)
 ## basic example code
 ```
 

@@ -65,7 +65,7 @@ dag_to_cpdag <- cgraph_fn("dag_to_cpdag")
 #'   [cgraph()].
 #' @return A `DAG` graph proxy.
 #' @references
-#' \insertRef{dortarsi1992simple}{testpkg}
+#' \insertRef{dortarsi1992simple}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -91,7 +91,7 @@ dag_from_pdag <- cgraph_fn("dag_from_pdag")
 #'   [cgraph()].
 #' @return An `MPDAG` graph proxy.
 #' @references
-#' \insertRef{meek1995causal}{testpkg}
+#' \insertRef{meek1995causal}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -108,7 +108,7 @@ meek_closure <- cgraph_fn("meek_closure")
 #' @param cg A DAG created with [cgraph()].
 #' @return An `MPDAG` graph proxy.
 #' @references
-#' \insertRef{meek1995causal}{testpkg}
+#' \insertRef{meek1995causal}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -151,7 +151,7 @@ ag_to_mag <- cgraph_fn("ag_to_mag")
 #' @param cg A MAG created with [cgraph()].
 #' @return A `PAG` graph proxy.
 #' @references
-#' \insertRef{zhang2008completeness}{testpkg}
+#' \insertRef{zhang2008completeness}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -175,9 +175,9 @@ mag_to_pag <- cgraph_fn("mag_to_pag")
 #' @param cg A PAG created with [cgraph()].
 #' @return A `MAG` graph proxy.
 #' @references
-#' \insertRef{zhang2008completeness}{testpkg}
+#' \insertRef{zhang2008completeness}{CausalStructures}
 #'
-#' \insertRef{dortarsi1992simple}{testpkg}
+#' \insertRef{dortarsi1992simple}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {

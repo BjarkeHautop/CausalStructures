@@ -139,7 +139,7 @@ neighbors <- function(
 #'   if `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @references
-#' \insertRef{perkovic2018complete}{testpkg}
+#' \insertRef{perkovic2018complete}{CausalStructures}
 #' @name possible-queries
 #' @examples
 #' if (julia_available()) {

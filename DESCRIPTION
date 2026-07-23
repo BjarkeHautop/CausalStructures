@@ -1,4 +1,4 @@
-Package: testpkg
+Package: CausalStructures
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: c(
@@ -15,17 +15,17 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
 Collate:
-    'causal-structures-session.R'
-    'causal-structures-dsl.R'
-    'causal-structures-construction.R'
-    'causal-structures-data.R'
-    'causal-structures-identification.R'
-    'causal-structures-queries.R'
-    'causal-structures-transform.R'
-    'causal-structures-layout.R'
-    'causal-structures-plot-routing.R'
-    'causal-structures-plot.R'
-    'causal-structures-warmup.R'
+    'session.R'
+    'dsl.R'
+    'construction.R'
+    'data.R'
+    'identification.R'
+    'queries.R'
+    'transform.R'
+    'layout.R'
+    'plot-routing.R'
+    'plot.R'
+    'warmup.R'
 Imports:
     grid,
     JuliaCall,
@@ -39,5 +39,5 @@ Config/testthat/edition: 3
 RdMacros: Rdpack
 SystemRequirements: Julia (>= 1.10)
 Language: en-US
-URL: https://github.com/BjarkeHautop/testpkg, https://bjarkehautop.github.io/testpkg/
-BugReports: https://github.com/BjarkeHautop/testpkg/issues
+URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
+BugReports: https://github.com/BjarkeHautop/CausalStructures/issues

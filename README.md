@@ -1,20 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# testpkg
+# CausalStructures
 
 <!-- badges: start -->
 
 [![Codecov test
-coverage](https://codecov.io/gh/BjarkeHautop/testpkg/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/testpkg)
-[![R-CMD-check](https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml)
+coverage](https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/CausalStructures)
+[![R-CMD-check](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of testpkg is to …
+The goal of CausalStructures is to …
 
 ## Installation
 
-You can install the development version of testpkg like so:
+You can install the development version of CausalStructures like so:
 
 ``` r
 # FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
@@ -25,7 +25,12 @@ You can install the development version of testpkg like so:
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-library(testpkg)
+library(CausalStructures)
+#> 
+#> Attaching package: 'CausalStructures'
+#> The following object is masked from 'package:graphics':
+#> 
+#>     layout
 ## basic example code
 ```
 

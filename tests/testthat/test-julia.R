@@ -1,6 +1,7 @@
 test_that("warmup works", {
   skip_if_no_julia()
   warmup()
+  expect_true(TRUE)
 })
 
 # API smoke tests for the CausalStructures.jl binding. Known answers come
@@ -41,16 +42,16 @@ test_that("invalid graphs error on construction", {
   expect_error(cgraph(A %-->% B %-->% C %-->% A), "cycle")
 })
 
-test_that("Julia errors are cleaned unless testpkg.verbose_errors is set", {
+test_that("Julia errors are cleaned unless CausalStructures.verbose_errors is set", {
   skip_if_no_julia()
   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 
-  withr::local_options(testpkg.verbose_errors = FALSE)
+  withr::local_options(CausalStructures.verbose_errors = FALSE)
   err <- tryCatch(ancestors(dag, "NOT_A_NODE"), error = function(e) e)
   expect_match(conditionMessage(err), "Unknown node: NOT_A_NODE", fixed = TRUE)
   expect_false(grepl("Stacktrace", conditionMessage(err), fixed = TRUE))
 
-  withr::local_options(testpkg.verbose_errors = TRUE)
+  withr::local_options(CausalStructures.verbose_errors = TRUE)
   err_verbose <- tryCatch(ancestors(dag, "NOT_A_NODE"), error = function(e) {
     e
   })

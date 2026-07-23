@@ -141,9 +141,9 @@ minimal_separator <- function(
 #' @return Character vector with a valid adjustment set, or `NULL` if none
 #'   exists.
 #' @references
-#' \insertRef{henckel2022graphical}{testpkg} (`"optimal"`)
+#' \insertRef{henckel2022graphical}{CausalStructures} (`"optimal"`)
 #'
-#' \insertRef{pearl2009causality}{testpkg} (`"parents"` and `"backdoor"`)
+#' \insertRef{pearl2009causality}{CausalStructures} (`"parents"` and `"backdoor"`)
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -195,7 +195,7 @@ adjustment_set <- function(
 #' @return Character vector with a valid frontdoor set, or `NULL` if none
 #'   exists.
 #' @references
-#' \insertRef{jeong2022finding}{testpkg}
+#' \insertRef{jeong2022finding}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -318,7 +318,7 @@ all_frontdoor_sets <- function(
 #' @return `TRUE` if `given` satisfies the adjustment criterion for
 #'   identifying the causal effect of `x` on `y`.
 #' @references
-#' \insertRef{perkovic2018complete}{testpkg}
+#' \insertRef{perkovic2018complete}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {
@@ -448,7 +448,7 @@ all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' @return For `count_dags()`, an integer count. For `enumerate_dags()`,
 #'   a list of DAG proxies.
 #' @references
-#' \insertRef{chickering2002learning}{testpkg}
+#' \insertRef{chickering2002learning}{CausalStructures}
 #' @name equivalence
 #' @examples
 #' if (julia_available()) {
@@ -487,9 +487,9 @@ enumerate_dags <- function(cg) {
 #'   DAGs, or both must be MAGs.
 #' @return A logical scalar.
 #' @references
-#' \insertRef{vermapearl1990equivalence}{testpkg}
+#' \insertRef{vermapearl1990equivalence}{CausalStructures}
 #'
-#' \insertRef{ali2009markov}{testpkg}
+#' \insertRef{ali2009markov}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_available()) {

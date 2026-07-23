@@ -1,4 +1,4 @@
 library(testthat)
-library(testpkg)
+library(CausalStructures)
 
-test_check("testpkg")
+test_check("CausalStructures")
