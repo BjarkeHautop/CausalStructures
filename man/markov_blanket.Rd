@@ -18,9 +18,11 @@ Sorted character vector of node names.
 \description{
 Returns the Markov blanket of \code{node} in \code{cg}: the minimal set of nodes
 that renders \code{node} conditionally independent of every other node in the
-graph. What counts toward it depends on \code{cg}'s class:
+graph.
 }
 \details{
+The Markov blanket returns the following, depending on the graph
+class:
 \itemize{
 \item \strong{DAG}: parents, children, and co-parents (other parents of \code{node}'s
 children).

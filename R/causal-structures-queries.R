@@ -58,8 +58,10 @@ spouses <- node_query("spouses")
 #'
 #' Returns the Markov blanket of `node` in `cg`: the minimal set of nodes
 #' that renders `node` conditionally independent of every other node in the
-#' graph. What counts toward it depends on `cg`'s class:
+#' graph.
 #'
+#' The Markov blanket returns the following, depending on the graph
+#' class:
 #' * **DAG**: parents, children, and co-parents (other parents of `node`'s
 #'   children).
 #' * **PDAG-family** (PDAG, CPDAG, MPDAG): the DAG set, plus undirected
