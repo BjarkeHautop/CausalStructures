@@ -317,7 +317,7 @@ pkg_path <- function() {
 #' [setup()] it does not start Julia.
 #'
 #' @return A logical scalar.
-#' @keywords internal
+#' @export
 julia_available <- function() {
   nzchar(Sys.which("julia"))
 }

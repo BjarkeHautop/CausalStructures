@@ -507,7 +507,6 @@ makeContent.cs_edge_grob <- function(x) {
 #'   plot(dag, layout = "circle", main = "Quick guide DAG")
 #' }
 #' @rdname plot
-#' @concept plotting
 #' @family plotting
 #' @export
 plot.cgraph <- function(

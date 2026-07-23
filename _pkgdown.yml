@@ -78,7 +78,8 @@ reference:
   - title: "Plotting"
     desc: "Lay out and draw a graph."
     contents:
-      - has_concept("plotting")
+      - plot.cgraph
+      - layout
 
   - title: "Session"
     desc: "Start the Julia session."

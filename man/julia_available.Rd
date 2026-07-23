@@ -13,4 +13,3 @@ A logical scalar.
 A quick, side-effect-free check for use in \verb{@examples}; unlike
 \code{\link[=setup]{setup()}} it does not start Julia.
 }
-\keyword{internal}
