@@ -35,7 +35,9 @@
 \code{padding} (mm, default 2), \code{size} (multiplier, default 1), and \code{by_node}
 (named list of per-node overrides).}
 
-\item{edge_style}{List of edge styling parameters: \code{col}, \code{lwd},
+\item{edge_style}{List of edge styling parameters: \code{col}, \code{lwd}, \code{fill}
+(arrowhead fill color; defaults to \code{col} so arrowheads render solid and
+match the edge - pass \code{fill = NA} for a hollow/outline arrowhead),
 \code{arrow_size} (mm, default 3), \code{circle_size} (mm, default 1.5, for
 \verb{o->}/\verb{o--}/\code{o-o} endpoints), \code{route} (logical, default \code{TRUE}; when
 \code{TRUE}, an edge that would otherwise cross a non-incident node bends

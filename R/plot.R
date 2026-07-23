@@ -594,6 +594,14 @@ makeContent.cs_edge_grob <- function(x) {
       style <- utils::modifyList(style, override)
     }
 
+    # Arrowheads are filled polygons (see .plot_edge_grob); default fill to
+    # the edge's own resolved col so a recolored edge doesn't end up with a
+    # mismatched black arrowhead. Set fill = NA explicitly for a hollow
+    # arrowhead.
+    if (is.null(style$fill)) {
+      style$fill <- style$col
+    }
+
     edge_gpar <- do.call(grid::gpar, .plot_gpar_params(style))
     arrow <- .plot_edge_arrow(
       edges$src_mark[i],
@@ -638,7 +646,9 @@ makeContent.cs_edge_grob <- function(x) {
 #' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
 #'   `padding` (mm, default 2), `size` (multiplier, default 1), and `by_node`
 #'   (named list of per-node overrides).
-#' @param edge_style List of edge styling parameters: `col`, `lwd`,
+#' @param edge_style List of edge styling parameters: `col`, `lwd`, `fill`
+#'   (arrowhead fill color; defaults to `col` so arrowheads render solid and
+#'   match the edge - pass `fill = NA` for a hollow/outline arrowhead),
 #'   `arrow_size` (mm, default 3), `circle_size` (mm, default 1.5, for
 #'   `o->`/`o--`/`o-o` endpoints), `route` (logical, default `TRUE`; when
 #'   `TRUE`, an edge that would otherwise cross a non-incident node bends
