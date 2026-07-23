@@ -1,15 +1,3 @@
-# Binding to the local Julia package CausalStructures.jl via JuliaCall,
-# which embeds Julia in the R process (dlopen on libjulia) rather than
-# talking to an external process over a socket, as the earlier
-# JuliaConnectoR-based binding did (see git history / the JuliaConnectoR and
-# benchmark branches). The Julia session is started lazily on first use and
-# reused afterwards.
-#
-# CRAN's JuliaCall (<= 0.17.6) segfaults R on any Julia exception, on Ubuntu
-# + Julia 1.12: a libunwind version conflict, fixed upstream (JuliaCall
-# PR #265/#282, libunwind/libunwind#637) but not yet released to CRAN.
-# preload_julia_libunwind() applies the same fix until it is.
-#
 # Design notes:
 # - One Julia helper per function, defined at setup time in a single
 #   `begin...end` block (JuliaCall's eval_string() parses one top-level
@@ -330,7 +318,7 @@ julia_available <- function() {
   wrap_errors(function(...) JuliaCall::julia_call(fname, ...))
 }
 
-# Fixed upstream in JuliaCall PR #265 (merged 2025-10-27, not yet on CRAN);
+# Fixed upstream in JuliaCall PR#265 (merged 2025-10-27, not yet on CRAN);
 # only apply our own copy of the workaround below that version.
 needs_libunwind_workaround <- function() {
   tryCatch(
@@ -339,12 +327,6 @@ needs_libunwind_workaround <- function() {
   )
 }
 
-# dyn.load()s Julia's own libunwind.so.8 before julia_setup(), so it wins
-# dynamic-linker resolution ahead of Ubuntu's incompatible system copy
-# (libunwind/libunwind#637) - same fix as JuliaCall PR #265. Best-effort:
-# silently skipped if `julia` isn't on PATH or ships no libunwind.so.8 (e.g.
-# non-Linux, or the conflict doesn't apply), since a missed mitigation
-# should surface as the original segfault, not a confusing setup-time error.
 preload_julia_libunwind <- function() {
   if (!needs_libunwind_workaround()) {
     return(invisible(NULL))
@@ -412,12 +394,12 @@ setup <- function() {
   JuliaCall::julia_command("import CausalStructures")
   JuliaCall::julia_command("import Random")
   JuliaCall::julia_command("import NetworkLayout")
-  JuliaCall::julia_command("const _testpkg_CS = CausalStructures")
+  JuliaCall::julia_command("const _testpkg_CS = CausalStructures;")
   # Wrapped in begin...end so the whole block is one top-level expression:
   # JuliaCall's eval_string() parses (and rejects, as multiple expressions)
   # a bare sequence of separate definitions.
   JuliaCall::julia_command(paste(
-    c("begin", .helper_defs, "end"),
+    c("begin", .helper_defs, "end;"),
     collapse = "\n"
   ))
   for (f in .helpers) {
