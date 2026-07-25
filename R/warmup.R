@@ -29,6 +29,7 @@ warmup <- function() {
   invisible(list(
     # --- Construction / graph-level queries ---------------------------------
     generate_graph(4, p = 0.5, seed = 1L),
+    uniform_dag(4, seed = 1L),
     nodes(dag),
     edges(dag),
     topological_sort(dag),

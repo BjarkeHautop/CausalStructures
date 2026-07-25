@@ -35,8 +35,13 @@ A Julia proxy object representing the graph.
 }
 \description{
 Generates a random graph on \code{n} observed nodes named \verb{V1, ..., Vn}. Edges
-are sampled uniformly at random over all possible pairs and oriented by a
-random topological ordering, which guarantees acyclicity.
+are sampled uniformly at random over all possible pairs using
+Erdős–Rényi and oriented by a random topological ordering, guaranteeing
+acyclicity. This samples uniformly over graphs of a given size/density,
+but \emph{not} uniformly over the space of DAGs (some DAGs correspond to more
+topological orderings than others). For an exact uniform draw from all
+labelled DAGs on \code{n} nodes regardless of edge count, use \code{\link[=uniform_dag]{uniform_dag()}}
+instead.
 }
 \details{
 Exactly one of \code{m} (exact edge count) or \code{p} (edge probability) must be

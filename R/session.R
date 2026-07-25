@@ -25,6 +25,7 @@
 .helpers <- c(
   "cgraph",
   "generate_graph",
+  "uniform_dag",
   "topological_sort",
   "nodes",
   "exogenous_nodes",
@@ -117,6 +118,11 @@
       )
       rng === nothing ? _CausalStructures_CS.generate_graph(Int(n); kwargs...) :
       _CausalStructures_CS.generate_graph(rng, Int(n); kwargs...)
+  end',
+
+  'function _CausalStructures_uniform_dag(n, rng)
+      rng === nothing ? _CausalStructures_CS.uniform_dag(Int(n)) :
+      _CausalStructures_CS.uniform_dag(rng, Int(n))
   end',
 
   '_CausalStructures_topological_sort(g) = String.(_CausalStructures_CS.topological_sort(g))',

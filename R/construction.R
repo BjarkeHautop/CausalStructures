@@ -71,8 +71,13 @@ print.cgraph <- function(x, ...) {
 #' Generate a random graph
 #'
 #' Generates a random graph on `n` observed nodes named `V1, ..., Vn`. Edges
-#' are sampled uniformly at random over all possible pairs and oriented by a
-#' random topological ordering, which guarantees acyclicity.
+#' are sampled uniformly at random over all possible pairs using
+#' Erdős–Rényi and oriented by a random topological ordering, guaranteeing
+#' acyclicity. This samples uniformly over graphs of a given size/density,
+#' but *not* uniformly over the space of DAGs (some DAGs correspond to more
+#' topological orderings than others). For an exact uniform draw from all
+#' labelled DAGs on `n` nodes regardless of edge count, use [uniform_dag()]
+#' instead.
 #'
 #' Exactly one of `m` (exact edge count) or `p` (edge probability) must be
 #' given. For `class = "CPDAG"`, the sampled DAG is converted with
@@ -129,6 +134,30 @@ generate_graph <- function(
     as.integer(latents),
     make_rng(seed)
   ))
+}
+
+#' Generate a uniformly random DAG
+#'
+#' Generates a random [DAG][cgraph()] on `n` observed nodes named
+#' `V1, ..., Vn`, sampled uniformly at random from the space of all labelled
+#' DAGs on `n` nodes, using the recursive-enumeration algorithm of Kuipers &
+#' Moffa (2015).
+#'
+#' Unlike [generate_graph()], which samples edges independently (uniform over
+#' graphs of a given size/density but *not* uniform over the space of DAGs),
+#' this samples uniformly over the full space of labelled DAGs on `n` nodes.
+#'
+#' @param n Number of observed nodes.
+#' @param seed Optional integer seed for reproducibility.
+#' @return A Julia proxy object representing the graph.
+#' @export
+#' @examples
+#' if (julia_available()) {
+#'   dag <- uniform_dag(6, seed = 1405)
+#'   dag
+#' }
+uniform_dag <- function(n, seed = NULL) {
+  .tag_cgraph(fn("uniform_dag")(as.integer(n), make_rng(seed)))
 }
 
 # --- Graph-level queries -----------------------------------------------------

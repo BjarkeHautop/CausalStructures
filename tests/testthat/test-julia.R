@@ -39,6 +39,18 @@ test_that("construction works", {
   )
 })
 
+test_that("uniform_dag works", {
+  skip_if_no_julia()
+  dag <- uniform_dag(6, seed = 1405)
+  expect_s3_class(dag, "cgraph")
+  expect_true(is_dag(dag))
+  expect_length(nodes(dag), 6)
+
+  # With seed, the same DAG should be produced
+  dag2 <- uniform_dag(6, seed = 1405)
+  expect_equal(edges(dag), edges(dag2))
+})
+
 test_that("print.cgraph strips the Julia module prefix", {
   skip_if_no_julia()
   g <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)

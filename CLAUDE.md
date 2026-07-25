@@ -78,11 +78,11 @@ restart the embedded runtime --- see below.
 
 ## Port progress (CausalStructures.jl exports → R)
 
-Ported (68 R functions):
+Ported (69 R functions):
 
   | Group               | Functions                                                                                                                                                                                                                    |
   | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | Construction        | `cgraph`, `generate_graph`                                                                                                                                                                                                   |
+  | Construction        | `cgraph`, `generate_graph`, `uniform_dag`                                                                                                                                                                                    |
   | Graph queries       | `nodes`, `topological_sort`, `exogenous_nodes`, `has_edge`, `edges`                                                                                                                                                          |
   | Node-set queries    | `parents`, `children`, `ancestors`, `descendants`, `spouses`, `neighbors`, `markov_blanket`, `possible_ancestors`, `possible_descendants`, `anteriors`, `posteriors`                                                         |
   | Predicates          | `is_dag`, `is_pdag`, `is_cpdag`, `is_mpdag`, `is_ug`, `is_admg`, `is_ag`, `is_mag`, `is_pag`, `is_simple`, `is_acyclic`                                                                                                      |
