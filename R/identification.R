@@ -122,8 +122,10 @@ minimal_separator <- function(
 #' The available adjustment set types are:
 #' \describe{
 #'   \item{`"parents"`}{The parents of `x`, excluding `x` and `y`.}
-#'   \item{`"backdoor"`}{The adjustment set implied by Pearl's backdoor
-#'     criterion (the parents of `x`).}
+#'   \item{`"backdoor"`}{An inclusion-minimal set satisfying Pearl's backdoor
+#'     criterion: a minimal separator of `x` and `y` among `x`'s
+#'     non-descendants, after removing `x`'s outgoing edges (falls back to
+#'     the parents of `x` if no such separator is found).}
 #'   \item{`"optimal"`}{The O-set: the parents of causal nodes on a
 #'     possibly causal path from `x` to `y`, excluding `x` and those
 #'     causal nodes themselves.}
@@ -187,7 +189,10 @@ adjustment_set <- function(
 #' effect of `x` on `y`; validate a candidate set directly with
 #' [is_valid_frontdoor()].
 #'
-#' @param cg A DAG created with [cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()]. For an ADMG, the backdoor
+#'   and condition-3 checks use m-separation, with bidirected edges treated
+#'   as latent-confounder edges (a spouse contributes an arrowhead into a
+#'   node just like a directed parent does).
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into the set.
 #' @param restrict Character vector of candidate nodes the set is drawn
@@ -272,7 +277,8 @@ all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' front-door criterion; see [frontdoor_set()] and
 #' [is_valid_frontdoor()].
 #'
-#' @param cg A DAG created with [cgraph()].
+#' @param cg A DAG or ADMG created with [cgraph()]. For an ADMG, see the note
+#'   on m-separation in [frontdoor_set()].
 #' @param x,y Exposure and outcome node names.
 #' @param include Character vector of nodes forced into every set.
 #' @param restrict Character vector of candidate nodes sets are drawn from.

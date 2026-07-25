@@ -109,10 +109,11 @@
   '_CausalStructures_cgraph(spec, class, simple) =
       _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)), simple = simple)',
 
-  'function _CausalStructures_generate_graph(n, m, p, class, rng)
+  'function _CausalStructures_generate_graph(n, m, p, class, latents, rng)
       kwargs = (
           m = m === nothing ? nothing : Int(m), p = p,
           class = getfield(_CausalStructures_CS, Symbol(class)),
+          latents = Int(latents),
       )
       rng === nothing ? _CausalStructures_CS.generate_graph(Int(n); kwargs...) :
       _CausalStructures_CS.generate_graph(rng, Int(n); kwargs...)
@@ -378,7 +379,7 @@ setup <- function() {
   )
   path <- pkg_path()
   JuliaCall::julia_command(sprintf(
-    'import Pkg; Pkg.activate("%s"); Pkg.instantiate()',
+    'import Pkg; Pkg.activate("%s"); Pkg.resolve(); Pkg.instantiate(); Pkg.instantiate()',
     path
   ))
   JuliaCall::julia_command("import CausalStructures")

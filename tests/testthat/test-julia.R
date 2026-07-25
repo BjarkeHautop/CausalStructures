@@ -20,6 +20,17 @@ test_that("construction works", {
   g2 <- generate_graph(50, m = 100, seed = 1405)
   expect_true(is_dag(g2))
 
+  admg <- generate_graph(10, p = 0.2, class = "ADMG", latents = 3, seed = 1405)
+  expect_true(is_admg(admg))
+  expect_length(nodes(admg), 10)
+  mag <- generate_graph(10, p = 0.2, class = "MAG", latents = 3, seed = 1405)
+  expect_true(is_mag(mag))
+  expect_length(nodes(mag), 10)
+  expect_error(
+    generate_graph(4, m = 2, class = "DAG", latents = 1),
+    "latents"
+  )
+
   # simple = FALSE allows multiple edges between the same pair of nodes
   multi <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)
   expect_equal(nrow(edges(multi)), 2)

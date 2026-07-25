@@ -78,7 +78,7 @@ restart the embedded runtime --- see below.
 
 ## Port progress (CausalStructures.jl exports → R)
 
-Ported (63 R functions):
+Ported (68 R functions):
 
   | Group               | Functions                                                                                                                                                                                                                    |
   | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -92,7 +92,14 @@ Ported (63 R functions):
   | Equivalence classes | `count_dags`, `enumerate_dags`, `markov_equivalent`, `enumerate_mags`                                                                                                                                                        |
   | Mutation            | `add_edges`, `remove_edges`, `add_nodes`, `remove_nodes`, `reclass`                                                                                                                                                          |
   | Data generation     | `simulate_data`                                                                                                                                                                                                              |
+  | Plotting            | `cgraph_layout` (Julia: `layout`)                                                                                                                                                                                            |
   | Session             | `setup` (binding-specific, no Julia counterpart)                                                                                                                                                                             |
+
+`frontdoor_set`/`all_frontdoor_sets` now accept ADMG as well as DAG (Julia
+extended these from DAG-only); `generate_graph` now also accepts
+`class = "ADMG"`/`"MAG"` plus a `latents` argument (samples a random DAG with
+extra latent nodes, then latent-projects them out) -- the R wrappers and docs
+reflect both.
 
 Not yet ported:
 

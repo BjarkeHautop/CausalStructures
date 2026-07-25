@@ -97,3 +97,14 @@ plot(cpdag, main = "Markov equivalence class")
 
 See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/) for the
 documentation
+
+## Multi-threading
+
+Some algorithms (`all_backdoor_sets()`, `all_adjustment_sets()`,
+`all_frontdoor_sets()`, `all_iv_sets()`, `enumerate_dags()`, `count_dags()`) can
+use multiple threads. To do so you need to set the `JULIA_NUM_THREADS`
+environment variable *before* calling any function:
+
+```r
+Sys.setenv(JULIA_NUM_THREADS = "4")
+```

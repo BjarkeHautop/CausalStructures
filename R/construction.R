@@ -70,18 +70,35 @@ print.cgraph <- function(x, ...) {
 
 #' Generate a random graph
 #'
-#' Generates a random graph on `n` nodes named `V1, ..., Vn`. Edges are
-#' sampled uniformly at random over all `n * (n - 1) / 2` possible pairs and
-#' oriented by a random topological ordering, which guarantees acyclicity.
+#' Generates a random graph on `n` observed nodes named `V1, ..., Vn`. Edges
+#' are sampled uniformly at random over all possible pairs and oriented by a
+#' random topological ordering, which guarantees acyclicity.
 #'
 #' Exactly one of `m` (exact edge count) or `p` (edge probability) must be
 #' given. For `class = "CPDAG"`, the sampled DAG is converted with
-#' [dag_to_cpdag()].
+#' [dag_to_cpdag()]. For `class = "ADMG"` or `class = "MAG"`, `latents`
+#' additional nodes `L1, ..., Lk` are added to the underlying random DAG and
+#' then marginalized out via [latent_project()]; `m`/`p` are applied to the
+#' full `n + latents` node set before projection. `latents` must be `0`
+#' (the default) for `class = "DAG"` or `class = "CPDAG"`.
 #'
-#' @param n Number of nodes.
-#' @param m Number of edges (supply exactly one of `m` and `p`).
-#' @param p Edge probability (supply exactly one of `m` and `p`).
-#' @param class Graph class: `"DAG"` or `"CPDAG"`.
+#' Unlike ADMGs, MAGs additionally require the *ancestral* constraint (no
+#' bidirected edge between a node and its own ancestor), which a naive latent
+#' projection can violate whenever a marginalized common cause and a separate
+#' directed path connect the same pair of observed nodes. For
+#' `class = "MAG"`, each candidate is checked and, if invalid, resampled
+#' (up to an internal retry limit) until a valid MAG is found; this errors if
+#' none is found, which can happen for very dense graphs with many latents.
+#'
+#' @param n Number of observed nodes.
+#' @param m Number of edges (supply exactly one of `m` and `p`); drawn from
+#'   the full `n + latents` node set when `latents > 0`.
+#' @param p Edge probability (supply exactly one of `m` and `p`); applied to
+#'   the full `n + latents` node set when `latents > 0`.
+#' @param class Graph class: `"DAG"`, `"CPDAG"`, `"ADMG"`, or `"MAG"`.
+#' @param latents Number of latent nodes to sample alongside the `n` observed
+#'   nodes and then project out. Only supported for `class = "ADMG"` or
+#'   `class = "MAG"`; must be `0` (default) otherwise.
 #' @param seed Optional integer seed for reproducibility.
 #' @return A Julia proxy object representing the graph.
 #' @export
@@ -90,15 +107,28 @@ print.cgraph <- function(x, ...) {
 #'   cg <- generate_graph(4, m = 3, seed = 1405)
 #'   cg
 #' }
+#'
+#' if (julia_available()) {
+#'   admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
+#'   admg
+#' }
 generate_graph <- function(
   n,
   m = NULL,
   p = NULL,
-  class = c("DAG", "CPDAG"),
+  class = c("DAG", "CPDAG", "ADMG", "MAG"),
+  latents = 0,
   seed = NULL
 ) {
   class <- match.arg(class)
-  .tag_cgraph(fn("generate_graph")(as.integer(n), m, p, class, make_rng(seed)))
+  .tag_cgraph(fn("generate_graph")(
+    as.integer(n),
+    m,
+    p,
+    class,
+    as.integer(latents),
+    make_rng(seed)
+  ))
 }
 
 # --- Graph-level queries -----------------------------------------------------

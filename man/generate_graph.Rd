@@ -4,16 +4,29 @@
 \alias{generate_graph}
 \title{Generate a random graph}
 \usage{
-generate_graph(n, m = NULL, p = NULL, class = c("DAG", "CPDAG"), seed = NULL)
+generate_graph(
+  n,
+  m = NULL,
+  p = NULL,
+  class = c("DAG", "CPDAG", "ADMG", "MAG"),
+  latents = 0,
+  seed = NULL
+)
 }
 \arguments{
-\item{n}{Number of nodes.}
+\item{n}{Number of observed nodes.}
 
-\item{m}{Number of edges (supply exactly one of \code{m} and \code{p}).}
+\item{m}{Number of edges (supply exactly one of \code{m} and \code{p}); drawn from
+the full \code{n + latents} node set when \code{latents > 0}.}
 
-\item{p}{Edge probability (supply exactly one of \code{m} and \code{p}).}
+\item{p}{Edge probability (supply exactly one of \code{m} and \code{p}); applied to
+the full \code{n + latents} node set when \code{latents > 0}.}
 
-\item{class}{Graph class: \code{"DAG"} or \code{"CPDAG"}.}
+\item{class}{Graph class: \code{"DAG"}, \code{"CPDAG"}, \code{"ADMG"}, or \code{"MAG"}.}
+
+\item{latents}{Number of latent nodes to sample alongside the \code{n} observed
+nodes and then project out. Only supported for \code{class = "ADMG"} or
+\code{class = "MAG"}; must be \code{0} (default) otherwise.}
 
 \item{seed}{Optional integer seed for reproducibility.}
 }
@@ -21,18 +34,35 @@ generate_graph(n, m = NULL, p = NULL, class = c("DAG", "CPDAG"), seed = NULL)
 A Julia proxy object representing the graph.
 }
 \description{
-Generates a random graph on \code{n} nodes named \verb{V1, ..., Vn}. Edges are
-sampled uniformly at random over all \code{n * (n - 1) / 2} possible pairs and
-oriented by a random topological ordering, which guarantees acyclicity.
+Generates a random graph on \code{n} observed nodes named \verb{V1, ..., Vn}. Edges
+are sampled uniformly at random over all possible pairs and oriented by a
+random topological ordering, which guarantees acyclicity.
 }
 \details{
 Exactly one of \code{m} (exact edge count) or \code{p} (edge probability) must be
 given. For \code{class = "CPDAG"}, the sampled DAG is converted with
-\code{\link[=dag_to_cpdag]{dag_to_cpdag()}}.
+\code{\link[=dag_to_cpdag]{dag_to_cpdag()}}. For \code{class = "ADMG"} or \code{class = "MAG"}, \code{latents}
+additional nodes \verb{L1, ..., Lk} are added to the underlying random DAG and
+then marginalized out via \code{\link[=latent_project]{latent_project()}}; \code{m}/\code{p} are applied to the
+full \code{n + latents} node set before projection. \code{latents} must be \code{0}
+(the default) for \code{class = "DAG"} or \code{class = "CPDAG"}.
+
+Unlike ADMGs, MAGs additionally require the \emph{ancestral} constraint (no
+bidirected edge between a node and its own ancestor), which a naive latent
+projection can violate whenever a marginalized common cause and a separate
+directed path connect the same pair of observed nodes. For
+\code{class = "MAG"}, each candidate is checked and, if invalid, resampled
+(up to an internal retry limit) until a valid MAG is found; this errors if
+none is found, which can happen for very dense graphs with many latents.
 }
 \examples{
 if (julia_available()) {
   cg <- generate_graph(4, m = 3, seed = 1405)
   cg
+}
+
+if (julia_available()) {
+  admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
+  admg
 }
 }

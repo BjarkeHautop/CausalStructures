@@ -7,7 +7,10 @@
 frontdoor_set(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{cg}{A DAG created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}. For an ADMG, the backdoor
+and condition-3 checks use m-separation, with bidirected edges treated
+as latent-confounder edges (a spouse contributes an arrowhead into a
+node just like a directed parent does).}
 
 \item{x, y}{Exposure and outcome node names.}
 

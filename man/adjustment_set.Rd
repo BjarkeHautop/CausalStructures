@@ -36,8 +36,10 @@ adjustment set is returned by searching sets of increasing size.}
 The available adjustment set types are:
 \describe{
 \item{\code{"parents"}}{The parents of \code{x}, excluding \code{x} and \code{y}.}
-\item{\code{"backdoor"}}{The adjustment set implied by Pearl's backdoor
-criterion (the parents of \code{x}).}
+\item{\code{"backdoor"}}{An inclusion-minimal set satisfying Pearl's backdoor
+criterion: a minimal separator of \code{x} and \code{y} among \code{x}'s
+non-descendants, after removing \code{x}'s outgoing edges (falls back to
+the parents of \code{x} if no such separator is found).}
 \item{\code{"optimal"}}{The O-set: the parents of causal nodes on a
 possibly causal path from \code{x} to \code{y}, excluding \code{x} and those
 causal nodes themselves.}
