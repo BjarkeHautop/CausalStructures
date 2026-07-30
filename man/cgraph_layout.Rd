@@ -49,6 +49,8 @@ if (julia_ready()) {
 }
 \seealso{
 Other plotting:
-\code{\link[=plot.cgraph]{plot.cgraph()}}
+\code{\link[=plot.cgraph]{plot.cgraph()}},
+\code{\link[=plot_default_options]{plot_default_options()}},
+\code{\link[=plot_options]{plot_options()}}
 }
 \concept{plotting}

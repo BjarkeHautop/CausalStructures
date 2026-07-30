@@ -89,6 +89,8 @@ reference:
     contents:
       - plot.cgraph
       - cgraph_layout
+      - plot_options
+      - plot_default_options
 
   - title: "Managing Julia"
     contents:

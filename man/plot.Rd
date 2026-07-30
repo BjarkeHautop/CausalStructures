@@ -96,7 +96,12 @@ A \code{cgraph_plot} object, invisibly. Drawn immediately as a side
 effect; re-drawn if printed or passed to \code{plot()} again.
 }
 \description{
-Plot method for \code{cgraph}.
+Plot method for \code{cgraph}. \code{node_style}, \code{edge_style}, \code{label_style},
+\code{title_style}, and \code{tier_style} each default to the corresponding entry
+from \code{\link[=plot_options]{plot_options()}} (which itself defaults to
+\code{\link[=plot_default_options]{plot_default_options()}}) - set those globally with \code{plot_options()} to
+avoid repeating the same style lists at every call site; arguments passed
+here still take precedence.
 }
 \examples{
 if (julia_ready()) {
@@ -123,7 +128,12 @@ if (julia_ready()) {
 }
 }
 \seealso{
+\code{\link[=plot_options]{plot_options()}} to change the style defaults used above,
+globally, for every plot.
+
 Other plotting:
-\code{\link[=cgraph_layout]{cgraph_layout()}}
+\code{\link[=cgraph_layout]{cgraph_layout()}},
+\code{\link[=plot_default_options]{plot_default_options()}},
+\code{\link[=plot_options]{plot_options()}}
 }
 \concept{plotting}

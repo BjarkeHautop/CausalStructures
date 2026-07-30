@@ -23,6 +23,7 @@ Collate:
     'queries.R'
     'transform.R'
     'layout.R'
+    'plot-options.R'
     'plot-routing.R'
     'plot.R'
     'warmup.R'

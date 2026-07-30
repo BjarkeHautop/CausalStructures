@@ -10,6 +10,10 @@
 # bidirected, and partially-marked (PAG-style) edges alike: an "Arrow" mark
 # draws an arrowhead at that end, a "Circle" mark draws a small open circle,
 # and "Tail" draws nothing (a plain line end).
+#
+# Style defaults (node/edge/label/title/tier) are read from plot_options()
+# (plot-options.R) in .plot_make_styles() below, so they can be overridden
+# globally as well as per-call.
 
 # Edges with their per-endpoint Tail/Arrow/Circle marks, for drawing (as
 # opposed to edges(), which collapses the two marks into a single `type`
@@ -71,31 +75,17 @@
   title_style,
   tier_style
 ) {
-  node_defaults <- list(
-    fill = "white",
-    col = "black",
-    lwd = 1,
-    padding = 2,
-    size = 1
-  )
-  edge_defaults <- list(
-    col = "black",
-    lwd = 1,
-    arrow_size = 3,
-    circle_size = 1.5,
-    route = TRUE
-  )
-  label_defaults <- list(col = "black", fontsize = 10)
-  title_defaults <- list(col = "black", fontsize = 14, fontface = "bold")
-  tier_defaults <- list(
-    boxes = TRUE,
-    labels = FALSE,
-    fill = "lightsteelblue",
-    col = "transparent",
-    lwd = 1,
-    padding = 4,
-    label_style = list()
-  )
+  # Global defaults come from plot_options() (plot-options.R), so
+  # plot_options(node_style = list(fill = "lightblue")) et al. apply to every
+  # subsequent plot() call without repeating style lists at each call site;
+  # arguments passed directly here still take precedence, applied via
+  # modifyList() below.
+  opts <- plot_options()
+  node_defaults <- opts$node_style
+  edge_defaults <- opts$edge_style
+  label_defaults <- opts$label_style
+  title_defaults <- opts$title_style
+  tier_defaults <- opts$tier_style
 
   by_node <- node_style$by_node %||% list()
   node_style$by_node <- NULL
@@ -886,7 +876,12 @@ makeContent.cs_edge_grob <- function(x) {
 
 #' Plot a causal graph
 #'
-#' Plot method for `cgraph`.
+#' Plot method for `cgraph`. `node_style`, `edge_style`, `label_style`,
+#' `title_style`, and `tier_style` each default to the corresponding entry
+#' from [plot_options()] (which itself defaults to
+#' [plot_default_options()]) - set those globally with `plot_options()` to
+#' avoid repeating the same style lists at every call site; arguments passed
+#' here still take precedence.
 #'
 #' @param x A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
@@ -971,6 +966,8 @@ makeContent.cs_edge_grob <- function(x) {
 #'     main = "Styled DAG"
 #'   )
 #' }
+#' @seealso [plot_options()] to change the style defaults used above,
+#'   globally, for every plot.
 #' @rdname plot
 #' @family plotting
 #' @export
