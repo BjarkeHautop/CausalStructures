@@ -12,12 +12,7 @@ coverage](https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg)](
 
 CausalStructures is an R binding to the Julia package
 [CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl),
-for building, querying, and transforming causal graphs (DAGs, PDAGs,
-ADMGs, ancestral graphs, PAGs, …) and reading off causal-identification
-results (adjustment sets, front-door sets, instruments, …) from them.
-
-Julia is embedded directly in the R process via
-[JuliaCall](https://non-contradiction.github.io/JuliaCall/).
+for representing, validating, and reasoning about causal graphs
 
 ## Installation
 
@@ -30,7 +25,7 @@ pak::pak("BjarkeHautop/CausalStructures")
 CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) See
 [here](https://julialang.org/downloads/) for the recommended way to
 install Julia. Alternatively Julia can be installed via
-`JuliaCall::install:julia()`.
+`JuliaCall::install_julia()`.
 
 You can then run `CausalStructures::setup()` to download the Julia
 packages needed.
@@ -38,7 +33,7 @@ packages needed.
 ## Graph types
 
 The following graph types are supported, shown here following the
-abstract type hierarchy from `CausalStructures.jl`:
+abstract type hierarchy from CausalStructures.jl:
 
     CausalGraph
     ├─ DAG            Directed Acyclic Graph
