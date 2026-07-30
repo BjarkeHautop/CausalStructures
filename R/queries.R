@@ -5,10 +5,8 @@
 #' `parents()` and `children()` are the nodes directly connected to `node`
 #' by a directed edge. `ancestors()` and `descendants()` are all nodes from
 #' which (respectively, to which) `node` is reachable by following directed
-#' edges; `node` itself is always excluded (Julia's `ancestors()`/
-#' `descendants()` support including it via `open = FALSE`, but that
-#' argument isn't yet exposed on the R side). `spouses()` are the nodes
-#' connected to `node` by a bidirected edge (`node <-> spouse`).
+#' edges. `spouses()` are the nodes connected to `node` by a bidirected edge
+#' (`node <-> spouse`).
 #'
 #' See [neighbors()], [markov_blanket()], and [possible-queries] for the
 #' remaining node-set queries, which take extra arguments.
@@ -20,6 +18,8 @@
 #'     MPDAG), ADMG, or AG-family (AG, MAG).
 #'   * `spouses()`: ADMG, AG-family (AG, MAG), or PAG.
 #' @param node Node name.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
+#'   exclude `node` itself from the result; if `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name node-queries
 #' @examples
@@ -29,7 +29,8 @@
 #'     parents = parents(dag, "M"),
 #'     children = children(dag, "X"),
 #'     ancestors = ancestors(dag, "Y"),
-#'     descendants = descendants(dag, "X")
+#'     descendants = descendants(dag, "X"),
+#'     descendants_closed = descendants(dag, "X", open = FALSE)
 #'   )
 #' }
 NULL
@@ -44,11 +45,23 @@ children <- node_query("children")
 
 #' @rdname node-queries
 #' @export
-ancestors <- node_query("ancestors")
+ancestors <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
+  fn("ancestors")(cg, node, open)
+}
 
 #' @rdname node-queries
 #' @export
-descendants <- node_query("descendants")
+descendants <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
+  fn("descendants")(cg, node, open)
+}
 
 #' @rdname node-queries
 #' @export
@@ -135,8 +148,8 @@ neighbors <- function(
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) or PAG graph created with
 #'   [cgraph()].
 #' @param node Node name.
-#' @param open If `TRUE` (default), exclude `node` itself from the result;
-#'   if `FALSE`, include it.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
+#'   exclude `node` itself from the result; if `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @references
 #' \insertRef{perkovic2018complete}{CausalStructures}
@@ -155,13 +168,21 @@ NULL
 
 #' @rdname possible-queries
 #' @export
-possible_ancestors <- function(cg, node, open = TRUE) {
+possible_ancestors <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
   fn("possible_ancestors")(cg, node, open)
 }
 
 #' @rdname possible-queries
 #' @export
-possible_descendants <- function(cg, node, open = TRUE) {
+possible_descendants <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
   fn("possible_descendants")(cg, node, open)
 }
 
@@ -178,8 +199,8 @@ possible_descendants <- function(cg, node, open = TRUE) {
 #' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
 #'   MAG) graph created with [cgraph()].
 #' @param node Node name.
-#' @param open If `TRUE` (default), exclude `node` itself from the result;
-#'   if `FALSE`, include it.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
+#'   exclude `node` itself from the result; if `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name anteriors
 #' @examples
@@ -194,13 +215,21 @@ NULL
 
 #' @rdname anteriors
 #' @export
-anteriors <- function(cg, node, open = TRUE) {
+anteriors <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
   fn("anteriors")(cg, node, open)
 }
 
 #' @rdname anteriors
 #' @export
-posteriors <- function(cg, node, open = TRUE) {
+posteriors <- function(
+  cg,
+  node,
+  open = getOption("CausalStructures.open", TRUE)
+) {
   fn("posteriors")(cg, node, open)
 }
 

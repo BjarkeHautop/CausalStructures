@@ -135,14 +135,14 @@
       _CausalStructures_sorted(result)
   end',
 
-  'for f in (:parents, :children, :ancestors, :descendants, :spouses, :markov_blanket)
+  'for f in (:parents, :children, :spouses, :markov_blanket)
       @eval $(Symbol(:_CausalStructures_, f))(g, node) = _CausalStructures_sorted(_CausalStructures_CS.$f(g, Symbol(node)))
   end',
 
   '_CausalStructures_neighbors(g, node, mode) =
       _CausalStructures_sorted(_CausalStructures_CS.neighbors(g, Symbol(node); mode = Symbol(mode)))',
 
-  'for f in (:possible_ancestors, :possible_descendants, :anteriors, :posteriors)
+  'for f in (:ancestors, :descendants, :possible_ancestors, :possible_descendants, :anteriors, :posteriors)
       @eval $(Symbol(:_CausalStructures_, f))(g, node, open) =
           _CausalStructures_sorted(_CausalStructures_CS.$f(g, Symbol(node); open = open))
   end',
@@ -300,6 +300,11 @@
 #'     Errors raised inside Julia are cleaned to just the underlying error
 #'     message by default; set to `TRUE` to see the full Julia stacktrace
 #'     instead.}
+#'   \item{`CausalStructures.open`}{Logical, default `TRUE`. Default for the
+#'     `open` argument of [ancestors()], [descendants()],
+#'     [possible_ancestors()], [possible_descendants()], [anteriors()], and
+#'     [posteriors()]: `TRUE` (open definition) excludes the query node
+#'     itself from the result, `FALSE` (closed definition) includes it.}
 #' }
 #'
 #' @name CausalStructures_options

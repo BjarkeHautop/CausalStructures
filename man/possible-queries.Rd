@@ -6,9 +6,9 @@
 \alias{possible_descendants}
 \title{Possible-ancestor/descendant node-set queries}
 \usage{
-possible_ancestors(cg, node, open = TRUE)
+possible_ancestors(cg, node, open = getOption("CausalStructures.open", TRUE))
 
-possible_descendants(cg, node, open = TRUE)
+possible_descendants(cg, node, open = getOption("CausalStructures.open", TRUE))
 }
 \arguments{
 \item{cg}{A PDAG-family (PDAG, CPDAG, MPDAG) or PAG graph created with
@@ -16,8 +16,8 @@ possible_descendants(cg, node, open = TRUE)
 
 \item{node}{Node name.}
 
-\item{open}{If \code{TRUE} (default), exclude \code{node} itself from the result;
-if \code{FALSE}, include it.}
+\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option),
+exclude \code{node} itself from the result; if \code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.

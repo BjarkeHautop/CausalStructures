@@ -23,5 +23,10 @@ instructions. Ignored interactively, where you're prompted instead.}
 Errors raised inside Julia are cleaned to just the underlying error
 message by default; set to \code{TRUE} to see the full Julia stacktrace
 instead.}
+\item{\code{CausalStructures.open}}{Logical, default \code{TRUE}. Default for the
+\code{open} argument of \code{\link[=ancestors]{ancestors()}}, \code{\link[=descendants]{descendants()}},
+\code{\link[=possible_ancestors]{possible_ancestors()}}, \code{\link[=possible_descendants]{possible_descendants()}}, \code{\link[=anteriors]{anteriors()}}, and
+\code{\link[=posteriors]{posteriors()}}: \code{TRUE} (open definition) excludes the query node
+itself from the result, \code{FALSE} (closed definition) includes it.}
 }
 }

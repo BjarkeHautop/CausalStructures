@@ -5,9 +5,9 @@
 \alias{posteriors}
 \title{Anterior/posterior node-set queries}
 \usage{
-anteriors(cg, node, open = TRUE)
+anteriors(cg, node, open = getOption("CausalStructures.open", TRUE))
 
-posteriors(cg, node, open = TRUE)
+posteriors(cg, node, open = getOption("CausalStructures.open", TRUE))
 }
 \arguments{
 \item{cg}{A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
@@ -15,8 +15,8 @@ MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{node}{Node name.}
 
-\item{open}{If \code{TRUE} (default), exclude \code{node} itself from the result;
-if \code{FALSE}, include it.}
+\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option),
+exclude \code{node} itself from the result; if \code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.

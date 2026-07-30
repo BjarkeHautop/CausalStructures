@@ -13,9 +13,9 @@ parents(cg, node)
 
 children(cg, node)
 
-ancestors(cg, node)
+ancestors(cg, node, open = getOption("CausalStructures.open", TRUE))
 
-descendants(cg, node)
+descendants(cg, node, open = getOption("CausalStructures.open", TRUE))
 
 spouses(cg, node)
 }
@@ -30,6 +30,9 @@ MPDAG), ADMG, or AG-family (AG, MAG).
 }}
 
 \item{node}{Node name.}
+
+\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option),
+exclude \code{node} itself from the result; if \code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.
@@ -38,10 +41,8 @@ Sorted character vector of node names.
 \code{parents()} and \code{children()} are the nodes directly connected to \code{node}
 by a directed edge. \code{ancestors()} and \code{descendants()} are all nodes from
 which (respectively, to which) \code{node} is reachable by following directed
-edges; \code{node} itself is always excluded (Julia's \code{ancestors()}/
-\code{descendants()} support including it via \code{open = FALSE}, but that
-argument isn't yet exposed on the R side). \code{spouses()} are the nodes
-connected to \code{node} by a bidirected edge (\verb{node <-> spouse}).
+edges. \code{spouses()} are the nodes connected to \code{node} by a bidirected edge
+(\verb{node <-> spouse}).
 }
 \details{
 See \code{\link[=neighbors]{neighbors()}}, \code{\link[=markov_blanket]{markov_blanket()}}, and \link{possible-queries} for the
@@ -54,7 +55,8 @@ if (julia_ready()) {
     parents = parents(dag, "M"),
     children = children(dag, "X"),
     ancestors = ancestors(dag, "Y"),
-    descendants = descendants(dag, "X")
+    descendants = descendants(dag, "X"),
+    descendants_closed = descendants(dag, "X", open = FALSE)
   )
 }
 }

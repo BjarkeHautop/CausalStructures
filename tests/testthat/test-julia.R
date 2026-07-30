@@ -118,6 +118,8 @@ test_that("node-set queries work", {
   expect_identical(children(dag, "A"), c("X", "Y"))
   expect_identical(ancestors(dag, "Y"), c("A", "M", "X"))
   expect_identical(descendants(dag, "A"), c("M", "X", "Y"))
+  expect_identical(ancestors(dag, "Y", open = FALSE), c("A", "M", "X", "Y"))
+  expect_identical(descendants(dag, "A", open = FALSE), c("A", "M", "X", "Y"))
   expect_identical(neighbors(dag, "M"), c("X", "Y"))
   expect_identical(neighbors(dag, "M", mode = "in"), "X")
   expect_identical(neighbors(dag, "M", mode = "out"), "Y")
@@ -139,6 +141,18 @@ test_that("node-set queries work", {
 
   admg <- cgraph(A %<->% B, C %-->% B %-->% D, class = "ADMG")
   expect_identical(spouses(admg, "A"), "B")
+})
+
+test_that("CausalStructures.open option sets the default for open", {
+  skip_if_no_julia()
+  dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+  withr::local_options(CausalStructures.open = FALSE)
+  expect_identical(ancestors(dag, "Y"), c("A", "M", "X", "Y"))
+  expect_identical(descendants(dag, "A"), c("A", "M", "X", "Y"))
+  expect_identical(anteriors(dag, "M"), c("A", "M", "X"))
+  expect_identical(posteriors(dag, "X"), c("M", "X", "Y"))
+  # an explicit open argument still overrides the option
+  expect_identical(ancestors(dag, "Y", open = TRUE), c("A", "M", "X"))
 })
 
 test_that("class predicates work", {
