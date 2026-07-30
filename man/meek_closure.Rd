@@ -29,7 +29,7 @@ orientation is implied, returning the resulting MPDAG.
 }
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
   meek_closure(pdag)
 }

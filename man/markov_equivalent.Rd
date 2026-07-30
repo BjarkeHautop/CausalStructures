@@ -25,7 +25,7 @@ non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
 they map to the same PAG.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   g1 <- cgraph(A \%-->\% B, C \%-->\% B)
   g2 <- cgraph(A \%-->\% B, C \%-->\% B)
   g3 <- cgraph(A \%-->\% B, B \%-->\% C)

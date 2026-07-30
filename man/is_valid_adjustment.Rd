@@ -26,7 +26,7 @@ or \code{x} itself), and must m-separate \code{x} from \code{y} in the proper ba
 graph.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   admg <- cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
   list(
     empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked

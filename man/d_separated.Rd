@@ -24,7 +24,7 @@ non-collider node in \code{given}, or a collider node (and all its descendants)
 not in \code{given}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   chain <- cgraph(A \%-->\% B, B \%-->\% C)
   list(
     open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
@@ -32,7 +32,7 @@ if (julia_available()) {
   )
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   collider <- cgraph(A \%-->\% C, B \%-->\% C)
   list(
     blocked = d_separated(collider, "A", "B"), # collider is blocked

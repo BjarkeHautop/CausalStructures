@@ -17,7 +17,7 @@ Returns the MPDAG representing the DAGs Markov equivalent to \code{cg}: the
 CPDAG of \code{cg} closed under \code{\link[=meek_closure]{meek_closure()}}'s rules R1-R4.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   dag_to_mpdag(dag)
 }

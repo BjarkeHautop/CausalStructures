@@ -1,29 +1,10 @@
 ---
-title: "plot"
+title: "Plotting Causal Graphs"
 knitr:
   opts_chunk:
     collapse: true
     comment: "#>"
 ---
-
-```{r}
-#| label: local-julia-path
-#| include: false
-
-#
-local_julia_pkg <- normalizePath(
-  file.path(
-    dirname(knitr::current_input(dir = TRUE)),
-    "..",
-    "..",
-    "CausalStructures.jl"
-  ),
-  mustWork = FALSE
-)
-if (dir.exists(local_julia_pkg)) {
-  options(CausalStructures.causalstructures_path = local_julia_pkg)
-}
-```
 
 ```{r}
 #| label: setup
@@ -206,56 +187,6 @@ plot(
 )
 ```
 
-## Tier boxes
-
-Passing `tiers` (via `...`) arranges the nodes into left-to-right columns by
-tier - overriding whatever `layout` method was requested - and draws a box (and
-optionally a label) behind each group. `tiers` can be:
-
-- a named list of node-name vectors - list order is tier order, and the names
-  become the tier labels;
-- a named numeric vector, one tier number per node; or
-- a `data.frame` with `name` and `tier` columns.
-
-Nodes `tiers` doesn't mention are collected into a trailing tier of their own,
-with no box. Boxes are on by default; labels are off by default (turn them on
-via `tier_style$labels`). Passing an explicit pre-computed `layout` data.frame
-alongside `tiers` keeps those coordinates - only a `layout` *method* (string or
-function) gets overridden.
-
-```{r}
-#| label: tiers-list
-
-plot(
-  dag,
-  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
-  tier_style = list(labels = TRUE),
-  main = "Tier boxes"
-)
-```
-
-`tier_style` also accepts `fill`, `col` (box border), `lwd`, `padding` (mm,
-default 4), `label_style` (styling for the tier labels), and `by_tier` (a named
-list keyed by tier name or by 1-based index) for per-tier overrides:
-
-```{r}
-#| label: tiers-by-tier
-
-plot(
-  dag,
-  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
-  tier_style = list(
-    labels = TRUE,
-    fill = "gray95",
-    by_tier = list(
-      exposures = list(fill = "lightblue"),
-      outcome = list(fill = "lightgoldenrod")
-    )
-  ),
-  main = "by_tier overrides"
-)
-```
-
 ## Aspect ratio and margins
 
 `asp` fixes the y/x aspect ratio of the plotted data (`NA`, the default, fills
@@ -286,8 +217,6 @@ plot(
     by_edge = list(X = list(M = list(col = "red", lwd = 2)))
   ),
   label_style = list(fontface = "bold"),
-  tiers = list(exposures = c("A", "X"), mediator = "M", outcome = "Y"),
-  tier_style = list(labels = TRUE, fill = "aliceblue"),
   main = "Everything at once",
   title_style = list(fontsize = 16)
 )

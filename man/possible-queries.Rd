@@ -34,7 +34,7 @@ direction. Both are supersets of \code{\link[=ancestors]{ancestors()}}/\code{\li
 those only count edges \emph{compelled} in the right direction.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   cpdag <- cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
   list(
     ancestors = ancestors(cpdag, "C"),

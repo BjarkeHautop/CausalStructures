@@ -20,7 +20,7 @@ whose undirected neighbors form a clique), orient all its undirected
 edges toward it, and remove it. Errors if no valid DAG extension exists.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   dag_from_pdag(pdag)
 }

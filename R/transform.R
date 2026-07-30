@@ -12,7 +12,7 @@
 #' @return A `UG` graph proxy.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   skeleton(dag)
 #' }
@@ -31,7 +31,7 @@ skeleton <- cgraph_fn("skeleton")
 #' @return A `UG` graph proxy.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% C, B %-->% C)
 #'   moralize(dag) # A and B are now married
 #' }
@@ -48,7 +48,7 @@ moralize <- cgraph_fn("moralize")
 #' @return A `CPDAG` graph proxy.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   dag_to_cpdag(dag)
 #' }
@@ -68,7 +68,7 @@ dag_to_cpdag <- cgraph_fn("dag_to_cpdag")
 #' \insertRef{dortarsi1992simple}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   dag_from_pdag(pdag)
 #' }
@@ -94,7 +94,7 @@ dag_from_pdag <- cgraph_fn("dag_from_pdag")
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
 #'   meek_closure(pdag)
 #' }
@@ -111,7 +111,7 @@ meek_closure <- cgraph_fn("meek_closure")
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   dag_to_mpdag(dag)
 #' }
@@ -131,7 +131,7 @@ dag_to_mpdag <- cgraph_fn("dag_to_mpdag")
 #' @return A `MAG` graph proxy.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   ag <- cgraph(A %-->% B, B %-->% C, class = "AG")
 #'   ag_to_mag(ag)
 #' }
@@ -154,7 +154,7 @@ ag_to_mag <- cgraph_fn("ag_to_mag")
 #' \insertRef{zhang2008completeness}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   mag <- cgraph(A %-->% B, B %-->% C, class = "MAG")
 #'   mag_to_pag(mag)
 #' }
@@ -180,7 +180,7 @@ mag_to_pag <- cgraph_fn("mag_to_pag")
 #' \insertRef{dortarsi1992simple}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
 #'   mag_from_pag(pag)
 #' }
@@ -193,7 +193,7 @@ mag_from_pag <- cgraph_fn("mag_from_pag")
 #' @return A Julia proxy object representing the subgraph.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   subgraph(dag, c("A", "B"))
 #' }
@@ -211,7 +211,7 @@ subgraph <- function(cg, nodes) {
 #' @return A Julia proxy object representing the resulting ADMG.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   latent_project(dag, "U")
 #' }
@@ -230,7 +230,7 @@ latent_project <- function(cg, latents) {
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% M, M %-->% Y)
 #'   exogenize(dag, "M")
 #' }
@@ -251,7 +251,7 @@ exogenize <- function(cg, nodes) {
 #' @return A Julia proxy object representing the resulting DAG.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
 #'   normalize_latent_structure(dag, "U")
 #' }
@@ -272,7 +272,7 @@ normalize_latent_structure <- function(cg, latents) {
 #' @return A Julia proxy object representing the resulting AG.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
 #'   condition_marginalize(dag, marg_vars = "U")
 #' }
@@ -307,7 +307,7 @@ condition_marginalize <- function(
 #' @return A Julia proxy object representing the resulting graph.
 #' @name edge-mutation
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B)
 #'   list(
 #'     add_edges = add_edges(dag, B %-->% C),
@@ -343,7 +343,7 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' @return A Julia proxy object representing the resulting graph.
 #' @name node-mutation
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B)
 #'   list(
 #'     add_nodes = add_nodes(dag, "C"),
@@ -378,7 +378,7 @@ remove_nodes <- function(cg, nodes) {
 #' @return A Julia proxy object representing the reclassified graph.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, class = "UNKNOWN")
 #'   reclassed <- reclass(dag, class = "DAG")
 #'   is_dag(reclassed)

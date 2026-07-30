@@ -24,7 +24,7 @@
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
 #'   cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
 #'
@@ -108,12 +108,12 @@ print.cgraph <- function(x, ...) {
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   cg <- generate_graph(4, m = 3, seed = 1405)
 #'   cg
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
 #'   admg
 #' }
@@ -152,7 +152,7 @@ generate_graph <- function(
 #' @return A Julia proxy object representing the graph.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- uniform_dag(6, seed = 1405)
 #'   dag
 #' }
@@ -178,7 +178,7 @@ uniform_dag <- function(n, seed = NULL) {
 #' @return Character vector of node names.
 #' @name graph-queries
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(B %-->% A, A %-->% C)
 #'   list(
 #'     nodes = nodes(dag),
@@ -187,7 +187,7 @@ uniform_dag <- function(n, seed = NULL) {
 #'   )
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
 #'   list(
 #'     exogenous_nodes = exogenous_nodes(pdag),
@@ -228,7 +228,7 @@ exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #'   regardless of direction.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, C)
 #'   list(
 #'     "A,B" = has_edge(dag, "A", "B"),
@@ -265,7 +265,7 @@ has_edge <- function(cg, x, y) {
 #'   or zero rows if the graph has no edges.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   edges(dag)
 #'

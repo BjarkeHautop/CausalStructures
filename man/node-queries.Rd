@@ -48,7 +48,7 @@ See \code{\link[=neighbors]{neighbors()}}, \code{\link[=markov_blanket]{markov_b
 remaining node-set queries, which take extra arguments.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
   list(
     parents = parents(dag, "M"),

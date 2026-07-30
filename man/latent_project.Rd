@@ -19,7 +19,7 @@ Project out latent (unobserved) variables to produce an
 ADMG over the observed variables only.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
   latent_project(dag, "U")
 }

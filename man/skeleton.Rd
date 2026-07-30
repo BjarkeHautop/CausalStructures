@@ -20,7 +20,7 @@ node pair keeps a single edge regardless of how many marked edges
 connected it).
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   skeleton(dag)
 }

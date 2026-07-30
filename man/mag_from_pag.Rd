@@ -24,7 +24,7 @@ oriented into a DAG with no new unshielded colliders by Dor-Tarsi
 simplicial elimination.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
   mag_from_pag(pag)
 }

@@ -22,7 +22,7 @@ Generalizes d-separation to graphs with bidirected and undirected edges;
 for a DAG, m-separation is equivalent to \code{\link[=d_separated]{d_separated()}}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   admg <- cgraph(A \%-->\% B, A \%<->\% C, class = "ADMG")
   list(
     open = m_separated(admg, "B", "C"), # bidirected edge at A connects

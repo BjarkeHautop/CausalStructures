@@ -49,7 +49,7 @@ Candidate adjustment sets can be validated with
 \code{\link[=is_valid_adjustment]{is_valid_adjustment()}}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(
     C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
     D \%-->\% Y + G, Y \%-->\% H
@@ -61,7 +61,7 @@ if (julia_available()) {
   )
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y, class = "PDAG")
   list(
     adjustment_set = adjustment_set(pdag, "X", "Y"), # A
@@ -69,7 +69,7 @@ if (julia_available()) {
   )
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   mag <- cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
   adjustment_set(mag, "X", "Y") # A; type is ignored
 }

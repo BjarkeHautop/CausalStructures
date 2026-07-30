@@ -54,7 +54,7 @@ These test the actual edge structure of \code{cg}, independent of the
 \code{class} it has.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, class = "PDAG")
   list(
     is_dag = is_dag(dag), # TRUE, even though assigned PDAG

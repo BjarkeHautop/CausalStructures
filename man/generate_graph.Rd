@@ -61,12 +61,12 @@ directed path connect the same pair of observed nodes. For
 none is found, which can happen for very dense graphs with many latents.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   cg <- generate_graph(4, m = 3, seed = 1405)
   cg
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
   admg
 }

@@ -949,12 +949,12 @@ makeContent.cs_edge_grob <- function(x) {
 #'   effect; re-drawn if printed or passed to `plot()` again.
 #'
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(dag, main = "A DAG")
 #' }
 #' # Style nodes and edges globally, plus per-node/per-edge overrides.
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(
 #'     dag,

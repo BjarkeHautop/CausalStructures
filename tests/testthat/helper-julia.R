@@ -1,16 +1,8 @@
 skip_if_no_julia <- function() {
   testthat::skip_if_not(
-    julia_available(),
-    "Julia is not available"
+    julia_ready(),
+    "Julia is not ready (not installed, or dependencies not instantiated)"
   )
-  has_pkg <- tryCatch(
-    {
-      pkg_path()
-      TRUE
-    },
-    error = function(e) FALSE
-  )
-  testthat::skip_if_not(has_pkg, "CausalStructures.jl checkout not found")
 }
 
 # Quick-guide DAG shared across tests, built once per test run

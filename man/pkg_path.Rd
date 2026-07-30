@@ -2,16 +2,19 @@
 % Please edit documentation in R/session.R
 \name{pkg_path}
 \alias{pkg_path}
-\title{Path to the local CausalStructures.jl checkout}
+\title{Path to the Julia project \code{\link[=setup]{setup()}} should activate}
 \usage{
 pkg_path()
 }
 \value{
-Absolute path to the Julia package directory.
+Absolute path to the Julia project directory.
 }
 \description{
-Defaults to the \verb{CausalStructures.jl/} directory bundled next to this
-package's source, and can be overridden with the
-\code{CausalStructures.causalstructures_path} option.
+Defaults to the \code{CausalStructures} environment shipped in this package's
+\verb{inst/} directory (\code{Project.toml} + \code{Manifest.toml}), which pulls
+CausalStructures.jl from the Julia General registry. Override with the
+\code{CausalStructures.causalstructures_path} option to activate a different
+project instead - e.g. a local \verb{CausalStructures.jl/} checkout, to test
+unreleased changes while co-developing both packages in this monorepo.
 }
 \keyword{internal}

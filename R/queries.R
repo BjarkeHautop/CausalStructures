@@ -23,7 +23,7 @@
 #' @return Sorted character vector of node names.
 #' @name node-queries
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #'   list(
 #'     parents = parents(dag, "M"),
@@ -77,7 +77,7 @@ spouses <- node_query("spouses")
 #' @return Sorted character vector of node names.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C, D %-->% C)
 #'   list(
 #'     blanket_of_b = markov_blanket(dag, "B"), # A, C, D (D is a co-parent)
@@ -103,7 +103,7 @@ markov_blanket <- node_query("markov_blanket")
 #' @return Sorted character vector of node names.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, C %-->% B)
 #'   list(
 #'     all = neighbors(dag, "B"),
@@ -142,7 +142,7 @@ neighbors <- function(
 #' \insertRef{perkovic2018complete}{CausalStructures}
 #' @name possible-queries
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   cpdag <- cgraph(A %---% B, B %---% C, class = "CPDAG")
 #'   list(
 #'     ancestors = ancestors(cpdag, "C"),
@@ -183,7 +183,7 @@ possible_descendants <- function(cg, node, open = TRUE) {
 #' @return Sorted character vector of node names.
 #' @name anteriors
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
 #'   list(
 #'     anteriors_of_a = anteriors(pdag, "A"),
@@ -221,7 +221,7 @@ posteriors <- function(cg, node, open = TRUE) {
 #' @return A logical scalar.
 #' @name predicates
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, class = "PDAG")
 #'   list(
 #'     is_dag = is_dag(dag), # TRUE, even though assigned PDAG

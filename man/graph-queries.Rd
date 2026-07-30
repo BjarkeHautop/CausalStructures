@@ -36,7 +36,7 @@ order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
 the isolated nodes).
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(B \%-->\% A, A \%-->\% C)
   list(
     nodes = nodes(dag),
@@ -45,7 +45,7 @@ if (julia_available()) {
   )
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
   list(
     exogenous_nodes = exogenous_nodes(pdag),

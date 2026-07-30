@@ -27,7 +27,7 @@ edges; neighbors joined by a circle mark (\verb{o->}, \verb{o--}, \code{o-o}) ar
 reported by \code{"all"} only.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, C \%-->\% B)
   list(
     all = neighbors(dag, "B"),

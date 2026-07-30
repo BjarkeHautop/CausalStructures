@@ -291,7 +291,7 @@
 #' @name edge-operators
 #' @keywords internal
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #'   edges(dag)
 #' }

@@ -21,16 +21,19 @@ Julia is embedded directly in the R process via
 
 ## Installation
 
-CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) on
-your `PATH` to function. See [here](https://julialang.org/downloads/)
-for the recommended way to install Julia. Alternatively Julia can be
-installed via `JuliaCall::install:julia()`.
-
 Install CausalStructures from GitHub:
 
 ``` r
 pak::pak("BjarkeHautop/CausalStructures")
 ```
+
+CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) See
+[here](https://julialang.org/downloads/) for the recommended way to
+install Julia. Alternatively Julia can be installed via
+`JuliaCall::install:julia()`.
+
+You can then run `CausalStructures::setup()` to download the Julia
+packages needed.
 
 ## Graph types
 
@@ -72,7 +75,7 @@ parents(dag, "Y")
 adjustment_set(dag, "X", "Y")
 #> [1] "A"
 
-plot(dag, main = "A --> X + Y, X --> M --> Y")
+plot(dag)
 ```
 
 <img src="man/figures/README-example-1.png" alt="" width="100%" />
@@ -81,7 +84,7 @@ Convert it to the CPDAG representing its Markov equivalence class:
 
 ``` r
 cpdag <- dag_to_cpdag(dag)
-plot(cpdag, main = "Markov equivalence class")
+plot(cpdag)
 ```
 
 <img src="man/figures/README-cpdag-1.png" alt="" width="100%" />
@@ -92,10 +95,10 @@ for the documentation
 ## Multi-threading
 
 Some algorithms (`all_backdoor_sets()`, `all_adjustment_sets()`,
-`all_frontdoor_sets()`, `all_iv_sets()`, `enumerate_dags()`, `count_dags()`)
-can use multiple threads. To do so you need
-to set the `JULIA_NUM_THREADS` environment variable *before* calling any function:
+`all_frontdoor_sets()`, `all_iv_sets()`, `enumerate_dags()`,
+`count_dags()`) can use multiple threads. To do so you need to set the
+`JULIA_NUM_THREADS` environment variable *before* calling any function:
 
-```r
+``` r
 Sys.setenv(JULIA_NUM_THREADS = "4")
 ```

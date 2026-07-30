@@ -41,7 +41,7 @@ the same syntax as the operators expand to (e.g.
 \code{"A --> X + Y, X --> M --> Y"}).
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
   cpdag <- cgraph(A \%---\% B \%---\% C, class = "CPDAG")
 

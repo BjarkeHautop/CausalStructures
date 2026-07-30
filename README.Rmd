@@ -34,16 +34,18 @@ Julia is embedded directly in the R process via
 
 ## Installation
 
-CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) on your
-`PATH` to function. See [here](https://julialang.org/downloads/) for the
-recommended way to install Julia. Alternatively Julia can be installed via
-`JuliaCall::install:julia()`.
-
 Install CausalStructures from GitHub:
 
 ```r
 pak::pak("BjarkeHautop/CausalStructures")
 ```
+
+CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) See
+[here](https://julialang.org/downloads/) for the recommended way to install
+Julia. Alternatively Julia can be installed via `JuliaCall::install:julia()`.
+
+You can then run `CausalStructures::setup()` to download the Julia packages
+needed.
 
 ## Graph types
 
@@ -83,7 +85,7 @@ dag
 parents(dag, "Y")
 adjustment_set(dag, "X", "Y")
 
-plot(dag, main = "A --> X + Y, X --> M --> Y")
+plot(dag)
 ```
 
 Convert it to the CPDAG representing its Markov equivalence class:
@@ -92,7 +94,7 @@ Convert it to the CPDAG representing its Markov equivalence class:
 #| label: cpdag
 
 cpdag <- dag_to_cpdag(dag)
-plot(cpdag, main = "Markov equivalence class")
+plot(cpdag)
 ```
 
 See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/) for the

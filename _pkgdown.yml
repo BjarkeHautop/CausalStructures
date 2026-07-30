@@ -4,11 +4,10 @@ template:
 
 reference:
   - title: "Construction"
-    desc: "Build graphs from edge expressions or at random."
+    desc: "Build causal graphs."
     contents:
       - cgraph
       - edge-operators
-      - generate_graph
 
   - title: "Graph queries"
     desc: "Whole-graph queries: nodes, edges, and adjacency."
@@ -80,9 +79,11 @@ reference:
       - markov_equivalent
       - enumerate_mags
 
-  - title: "Data generation"
+  - title: "Generation and simulation"
     contents:
       - simulate_data
+      - generate_graph
+      - uniform_dag
 
   - title: "Plotting"
     contents:
@@ -91,6 +92,6 @@ reference:
 
   - title: "Managing Julia"
     contents:
-      - julia_available
+      - julia_ready
       - setup
       - warmup

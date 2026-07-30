@@ -2,7 +2,7 @@
 % Please edit documentation in R/session.R
 \name{setup}
 \alias{setup}
-\title{Start (or reuse) the Julia session with CausalStructures loaded}
+\title{Start the Julia session with Julia packages loaded}
 \usage{
 setup()
 }
@@ -10,17 +10,22 @@ setup()
 \code{NULL}, invisibly.
 }
 \description{
-Activates the local CausalStructures.jl project, instantiates its
-dependencies, and imports the module. Called automatically by the
-wrapper functions; call it yourself to pay the startup cost up front.
+Called automatically by the wrapper functions; call it yourself to
+pay the startup cost up front.
 }
 \details{
+The first time this runs on a machine, it may need to download and
+precompile Julia package dependencies. Interactively, you'll be asked to
+confirm before that happens. Non-interactively, it errors with
+instructions unless \code{options(CausalStructures.auto_install = TRUE)} is
+set beforehand.
+
 Errors raised inside Julia are reported with just the underlying Julia
 error message; set \code{options(CausalStructures.verbose_errors = TRUE)} to see the
 full Julia stacktrace instead.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   setup()
 }
 }

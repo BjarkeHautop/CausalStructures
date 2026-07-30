@@ -40,13 +40,13 @@ coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE
 (default), each variable is standardized to zero mean and unit variance.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   data <- simulate_data(dag, n = 100, seed = 1405)
   head(data)
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   data2 <- simulate_data(
     dag,

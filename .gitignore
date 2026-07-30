@@ -12,3 +12,5 @@ JuliaCall/
 *.tar.gz
 *.Rcheck
 README.html
+/.quarto/
+**/*.quarto_ipynb

@@ -23,7 +23,7 @@ input graph is unchanged; for a single representative MAG instead of the
 whole class, use \code{\link[=mag_from_pag]{mag_from_pag()}}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   mag <- cgraph(A \%-->\% B, B \%-->\% C, class = "MAG")
   mag_to_pag(mag)
 }

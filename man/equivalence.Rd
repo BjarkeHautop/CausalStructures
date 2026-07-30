@@ -32,12 +32,12 @@ forced orientations via Meek's rules at each step (Chickering's (2002)
 recursive listing algorithm).
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   count_dags(pdag)
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
   enumerate_dags(pdag)
 }

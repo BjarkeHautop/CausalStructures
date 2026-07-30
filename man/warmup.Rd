@@ -19,7 +19,7 @@ Calls \code{\link[=setup]{setup()}} itself, so it can be used standalone right a
 attaching the package to pay all cost upfront.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   warmup()
 }
 }

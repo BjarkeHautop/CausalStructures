@@ -24,7 +24,7 @@ be d-/m-separated from \code{y} given \code{x} in the graph obtained by deleting
 \code{z} must be d-/m-connected to \code{x} (relevance).
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
   dag <- cgraph(Z \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y)
   list(

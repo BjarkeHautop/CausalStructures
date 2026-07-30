@@ -17,10 +17,19 @@ construction, queries, transform, identification, data --- load order fixed by
 session file run at source time). Exported functions are unprefixed (`cgraph()`,
 `nodes()`, ...).
 
-CausalStructures.jl is planned to be published to the Julia General registry;
-`setup()` currently activates the local checkout (path resolved by `pkg_path()`,
-overridable with `options(testpkg.causalstructures_path=)`) and will switch to
-`Pkg.add("CausalStructures")` after registration.
+CausalStructures.jl is published to the Julia General registry. `pkg_path()`
+resolves the Julia project `setup()` activates: it always defaults to the
+`CausalStructures` environment shipped in this package's `inst/` (`Project.toml`
++ `Manifest.toml`, a plain registry dependency), which is what an installed copy
+of this package, CI, and normal local dev all use. There's no automatic
+detection of a local `CausalStructures.jl/` checkout (deliberately - a single
+default code path, no magic); to test unreleased Julia-side changes while
+co-developing both packages in this monorepo, point `setup()` at the checkout
+explicitly with
+`options(CausalStructures.causalstructures_path = "CausalStructures.jl")`. Bump
+the pinned registry version with
+`julia --project=inst -e 'using Pkg; Pkg.update("CausalStructures")'` and commit
+the regenerated `inst/Manifest.toml`.
 
 ## Commands
 
@@ -41,6 +50,13 @@ Tests are API smoke tests with known answers from the quick-guide DAG
 startup takes several seconds; calls after that reuse the session. There's no
 teardown (`setup-julia.R` is now a no-op comment) since JuliaCall can't actually
 restart the embedded runtime --- see below.
+
+CI (`R-CMD-check.yaml`, `test-coverage.yaml`) installs Julia via
+`julia-actions/setup-julia` + `julia-actions/cache` (same pattern as
+CausalStructures.jl's own workflows) and runs
+`julia --project=inst -e 'using Pkg; Pkg.instantiate()'` before the R steps, so
+the Julia depot is already populated when `setup()` runs and tests actually
+execute in CI rather than skipping.
 
 ## Binding architecture
 

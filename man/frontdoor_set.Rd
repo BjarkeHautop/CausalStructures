@@ -30,7 +30,7 @@ effect of \code{x} on \code{y}; validate a candidate set directly with
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
   list(
     default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y

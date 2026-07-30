@@ -280,34 +280,54 @@
   '_CausalStructures_show(g) = sprint(show, g)'
 )
 
-#' Path to the local CausalStructures.jl checkout
+#' Path to the Julia project [setup()] should activate
 #'
-#' Defaults to the `CausalStructures.jl/` directory bundled next to this
-#' package's source, and can be overridden with the
-#' `CausalStructures.causalstructures_path` option.
+#' Defaults to the `CausalStructures` environment shipped in this package's
+#' `inst/` directory (`Project.toml` + `Manifest.toml`), which pulls
+#' CausalStructures.jl from the Julia General registry. Override with the
+#' `CausalStructures.causalstructures_path` option to activate a different
+#' project instead - e.g. a local `CausalStructures.jl/` checkout, to test
+#' unreleased changes while co-developing both packages in this monorepo.
 #'
-#' @return Absolute path to the Julia package directory.
+#' @return Absolute path to the Julia project directory.
 #' @keywords internal
 pkg_path <- function() {
-  path <- getOption(
-    "CausalStructures.causalstructures_path",
-    file.path(
-      dirname(system.file("DESCRIPTION", package = "CausalStructures")),
-      "CausalStructures.jl"
-    )
+  override <- getOption("CausalStructures.causalstructures_path")
+  if (!is.null(override)) {
+    return(normalizePath(override, mustWork = TRUE))
+  }
+  normalizePath(
+    dirname(system.file(
+      "Project.toml",
+      package = "CausalStructures",
+      mustWork = TRUE
+    )),
+    mustWork = TRUE
   )
-  normalizePath(path, mustWork = TRUE)
 }
 
-#' Is Julia available?
+#' Is Julia ready to use, with no setup needed?
 #'
-#' A quick, side-effect-free check for use in `@examples`; unlike
-#' [setup()] it does not start Julia.
+#' Checks that the `julia` binary is on the `PATH` and that [setup()] can
+#' complete without erroring - in particular, without needing to install
+#' Julia package dependencies, which `setup()`.
 #'
 #' @return A logical scalar.
 #' @export
-julia_available <- function() {
-  nzchar(Sys.which("julia"))
+julia_ready <- function() {
+  if (isTRUE(.cs$ready)) {
+    return(TRUE)
+  }
+  if (!nzchar(Sys.which("julia"))) {
+    return(FALSE)
+  }
+  isTRUE(tryCatch(
+    {
+      setup()
+      TRUE
+    },
+    error = function(e) FALSE
+  ))
 }
 
 .make_caller <- function(fname) {
@@ -351,11 +371,82 @@ preload_julia_libunwind <- function() {
   invisible(NULL)
 }
 
-#' Start (or reuse) the Julia session with CausalStructures loaded
+# Side-effect-free, no network: true if either
+# (a) the manifest wasn't resolved from the current Project.toml - e.g. a
+#     dependency was added/removed since the last resolve, detected via
+#     Pkg.is_manifest_current() (compat-only edits don't count, only actual
+#     [deps] drift), or
+# (b) a dependency's source isn't actually present in the local Julia depot
+#     (first run, or a depot that was wiped). `info.source` is `nothing` for
+#     stdlibs (Random, ...), which ship with Julia itself and are never
+#     "missing".
+.needs_instantiate <- function(path) {
+  current <- JuliaCall::julia_eval(sprintf(
+    'Pkg.is_manifest_current("%s")',
+    path
+  ))
+  if (!isTRUE(current)) {
+    return(TRUE)
+  }
+  isTRUE(JuliaCall::julia_eval(paste(
+    "try",
+    "  any(info.source !== nothing && !isdir(info.source)",
+    "      for (uuid, info) in Pkg.dependencies())",
+    "catch",
+    "  true",
+    "end",
+    sep = "\n"
+  )))
+}
+
+# Installing Julia dependencies means downloading and precompiling several
+# packages - slow and network-dependent - so setup() never does it silently.
+# Interactively, ask; non-interactively (scripts, CI, tests), only proceed if
+# the caller opted in via options(CausalStructures.auto_install = TRUE) - the
+# default is to error with instructions rather than block on a prompt or
+# silently download.
+ensure_instantiated <- function(path) {
+  if (!.needs_instantiate(path)) {
+    return(invisible(NULL))
+  }
+  proceed <- if (interactive()) {
+    utils::menu(
+      c("Yes", "No"),
+      title = paste(
+        "CausalStructures needs to download and precompile Julia package",
+        "dependencies. This can take a few minutes and requires network",
+        "access. Proceed?"
+      )
+    ) ==
+      1L
+  } else {
+    isTRUE(getOption("CausalStructures.auto_install", FALSE))
+  }
+  if (!proceed) {
+    stop(
+      "Julia dependencies for CausalStructures are not installed.\n",
+      "Run setup() interactively to be prompted to install them, or set\n",
+      "  options(CausalStructures.auto_install = TRUE)\n",
+      "before calling setup() to install them automatically in ",
+      "non-interactive sessions.",
+      call. = FALSE
+    )
+  }
+  JuliaCall::julia_command(
+    "Pkg.resolve(); Pkg.instantiate(); Pkg.instantiate()"
+  )
+}
+
+#' Start the Julia session with Julia packages loaded
 #'
-#' Activates the local CausalStructures.jl project, instantiates its
-#' dependencies, and imports the module. Called automatically by the
-#' wrapper functions; call it yourself to pay the startup cost up front.
+#' Called automatically by the wrapper functions; call it yourself to
+#' pay the startup cost up front.
+#'
+#' The first time this runs on a machine, it may need to download and
+#' precompile Julia package dependencies. Interactively, you'll be asked to
+#' confirm before that happens. Non-interactively, it errors with
+#' instructions unless `options(CausalStructures.auto_install = TRUE)` is
+#' set beforehand.
 #'
 #' Errors raised inside Julia are reported with just the underlying Julia
 #' error message; set `options(CausalStructures.verbose_errors = TRUE)` to see the
@@ -364,7 +455,7 @@ preload_julia_libunwind <- function() {
 #' @return `NULL`, invisibly.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   setup()
 #' }
 setup <- function() {
@@ -384,10 +475,8 @@ setup <- function() {
     }
   )
   path <- pkg_path()
-  JuliaCall::julia_command(sprintf(
-    'import Pkg; Pkg.activate("%s"); Pkg.resolve(); Pkg.instantiate(); Pkg.instantiate()',
-    path
-  ))
+  JuliaCall::julia_command(sprintf('import Pkg; Pkg.activate("%s")', path))
+  ensure_instantiated(path)
   JuliaCall::julia_command("import CausalStructures")
   JuliaCall::julia_command("import Random")
   JuliaCall::julia_command("import NetworkLayout")

@@ -33,12 +33,12 @@
 #' @family plotting
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cgraph_layout(dag)
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cgraph_layout(dag, method = "circle")
 #' }

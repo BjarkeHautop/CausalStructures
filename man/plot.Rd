@@ -99,12 +99,12 @@ effect; re-drawn if printed or passed to \code{plot()} again.
 Plot method for \code{cgraph}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(dag, main = "A DAG")
 }
 # Style nodes and edges globally, plus per-node/per-edge overrides.
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(
     dag,

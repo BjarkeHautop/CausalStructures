@@ -10,7 +10,7 @@
 #' @return `NULL`, invisibly.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   warmup()
 #' }
 warmup <- function() {

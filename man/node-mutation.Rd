@@ -25,7 +25,7 @@ added as isolated nodes (nodes already present are ignored).
 incident edges removed, and errors if a node is not present.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B)
   list(
     add_nodes = add_nodes(dag, "C"),

@@ -14,7 +14,7 @@
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   chain <- cgraph(A %-->% B, B %-->% C)
 #'   list(
 #'     open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
@@ -22,7 +22,7 @@
 #'   )
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   collider <- cgraph(A %-->% C, B %-->% C)
 #'   list(
 #'     blocked = d_separated(collider, "A", "B"), # collider is blocked
@@ -44,7 +44,7 @@ d_separated <- function(cg, x, y, given = character()) {
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   admg <- cgraph(A %-->% B, A %<->% C, class = "ADMG")
 #'   list(
 #'     open = m_separated(admg, "B", "C"), # bidirected edge at A connects
@@ -73,7 +73,7 @@ m_separated <- function(cg, x, y, given = character()) {
 #'   exists.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
 #'   list(
 #'     default = minimal_separator(dag, "X", "Y"), # both A and M needed
@@ -82,7 +82,7 @@ m_separated <- function(cg, x, y, given = character()) {
 #'   )
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   edge <- cgraph(A %-->% B)
 #'   minimal_separator(edge, "A", "B") # direct edge: no separator exists
 #' }
@@ -148,7 +148,7 @@ minimal_separator <- function(
 #' \insertRef{pearl2009causality}{CausalStructures} (`"parents"` and `"backdoor"`)
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(
 #'     C %-->% X, X %-->% F + D, A %-->% X + K, K %-->% Y,
 #'     D %-->% Y + G, Y %-->% H
@@ -160,7 +160,7 @@ minimal_separator <- function(
 #'   )
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
 #'   list(
 #'     adjustment_set = adjustment_set(pdag, "X", "Y"), # A
@@ -168,7 +168,7 @@ minimal_separator <- function(
 #'   )
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
 #'   adjustment_set(mag, "X", "Y") # A; type is ignored
 #' }
@@ -203,7 +203,7 @@ adjustment_set <- function(
 #' \insertRef{jeong2022finding}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
 #'   list(
 #'     default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y
@@ -239,7 +239,7 @@ frontdoor_set <- function(
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
 #'   list(
 #'     empty = is_valid_backdoor(dag, "X", "Y"), # A --> Y left open
@@ -263,7 +263,7 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
 #'   all_backdoor_sets(dag, "X", "Y")
 #' }
@@ -286,7 +286,7 @@ all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
 #'   all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
 #' }
@@ -327,7 +327,7 @@ all_frontdoor_sets <- function(
 #' \insertRef{perkovic2018complete}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
 #'   list(
 #'     empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked
@@ -352,7 +352,7 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
 #'   all_adjustment_sets(admg, "X", "Y")
 #' }
@@ -375,7 +375,7 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
 #'   list(
 #'     m_mediates = is_valid_frontdoor(dag, "X", "Y", "M"),
@@ -400,7 +400,7 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
 #'   dag <- cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
 #'   list(
@@ -424,7 +424,7 @@ is_valid_iv <- function(cg, x, y, z = character()) {
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(
 #'     Z1 %-->% X, Z2 %-->% X, X %-->% Y, U %-->% X, U %-->% Y
 #'   )
@@ -457,12 +457,12 @@ all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' \insertRef{chickering2002learning}{CausalStructures}
 #' @name equivalence
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   count_dags(pdag)
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   enumerate_dags(pdag)
 #' }
@@ -498,7 +498,7 @@ enumerate_dags <- function(cg) {
 #' \insertRef{ali2009markov}{CausalStructures}
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   g1 <- cgraph(A %-->% B, C %-->% B)
 #'   g2 <- cgraph(A %-->% B, C %-->% B)
 #'   g3 <- cgraph(A %-->% B, B %-->% C)
@@ -524,7 +524,7 @@ markov_equivalent <- function(g1, g2) {
 #' @return A Julia proxy list of MAGs in the equivalence class.
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
 #'   length(enumerate_mags(pag))
 #' }

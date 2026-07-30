@@ -26,7 +26,7 @@ graphs of a given size/density but \emph{not} uniform over the space of DAGs),
 this samples uniformly over the full space of labelled DAGs on \code{n} nodes.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- uniform_dag(6, seed = 1405)
   dag
 }

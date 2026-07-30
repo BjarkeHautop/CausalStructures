@@ -20,7 +20,7 @@ Tests adjacency, not directed reachability: \code{has_edge(g, x, y)} and
 \code{has_edge(g, y, x)} always agree, even for a directed edge \verb{x --> y}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, C)
   list(
     "A,B" = has_edge(dag, "A", "B"),

@@ -19,7 +19,7 @@ or zero rows if the graph has no edges.
 Get all edges in a graph
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   edges(dag)
 

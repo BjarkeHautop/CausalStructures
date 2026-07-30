@@ -20,13 +20,13 @@
 #'   named and ordered as in [nodes()].
 #' @export
 #' @examples
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   data <- simulate_data(dag, n = 100, seed = 1405)
 #'   head(data)
 #' }
 #'
-#' if (julia_available()) {
+#' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   data2 <- simulate_data(
 #'     dag,

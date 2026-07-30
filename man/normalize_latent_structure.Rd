@@ -22,7 +22,7 @@ active child or whose child set is a strict subset of another latent
 node's child set.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
   normalize_latent_structure(dag, "U")
 }

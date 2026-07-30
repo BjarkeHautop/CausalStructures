@@ -37,12 +37,12 @@ A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
 Computes node coordinates for \code{\link[=plot.cgraph]{plot.cgraph()}}.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   cgraph_layout(dag)
 }
 
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
   cgraph_layout(dag, method = "circle")
 }

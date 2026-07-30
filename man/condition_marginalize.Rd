@@ -23,7 +23,7 @@ on \code{cond_vars} and marginalizing out \code{marg_vars}. At least one of the 
 must be non-empty, and they must be disjoint.
 }
 \examples{
-if (julia_available()) {
+if (julia_ready()) {
   dag <- cgraph(A \%-->\% M, M \%-->\% Y, U \%-->\% A, U \%-->\% Y)
   condition_marginalize(dag, marg_vars = "U")
 }
