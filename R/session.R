@@ -280,6 +280,31 @@
   '_CausalStructures_show(g) = sprint(show, g)'
 )
 
+#' Package options
+#'
+#' `CausalStructures` reads the following [options()]:
+#'
+#' \describe{
+#'   \item{`CausalStructures.causalstructures_path`}{Path to a Julia project
+#'     for [setup()] to activate, overriding the default of the
+#'     `CausalStructures` environment shipped in this package's `inst/`
+#'     directory. Useful for testing unreleased CausalStructures.jl changes
+#'     against a local checkout (e.g. while co-developing both packages in
+#'     the same monorepo).}
+#'   \item{`CausalStructures.auto_install`}{Logical, default `FALSE`. When
+#'     [setup()] needs to install or update Julia package dependencies and R
+#'     is running non-interactively, this must be set to `TRUE` beforehand
+#'     for it to proceed automatically - otherwise it errors with
+#'     instructions. Ignored interactively, where you're prompted instead.}
+#'   \item{`CausalStructures.verbose_errors`}{Logical, default `FALSE`.
+#'     Errors raised inside Julia are cleaned to just the underlying error
+#'     message by default; set to `TRUE` to see the full Julia stacktrace
+#'     instead.}
+#' }
+#'
+#' @name CausalStructures_options
+NULL
+
 #' Path to the Julia project [setup()] should activate
 #'
 #' Defaults to the `CausalStructures` environment shipped in this package's
@@ -452,6 +477,7 @@ ensure_instantiated <- function(path) {
 #' error message; set `options(CausalStructures.verbose_errors = TRUE)` to see the
 #' full Julia stacktrace instead.
 #'
+#' @seealso [CausalStructures_options] for all of the above, in one place.
 #' @return `NULL`, invisibly.
 #' @export
 #' @examples

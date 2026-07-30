@@ -29,3 +29,6 @@ if (julia_ready()) {
   setup()
 }
 }
+\seealso{
+\link{CausalStructures_options} for all of the above, in one place.
+}
