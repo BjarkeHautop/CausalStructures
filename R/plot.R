@@ -201,8 +201,7 @@
   name,
   obstacle_x = numeric(0),
   obstacle_y = numeric(0),
-  obstacle_r = list(),
-  route = TRUE
+  obstacle_r = list()
 ) {
   grid::gTree(
     x0 = x0,
@@ -220,7 +219,6 @@
     obstacle_x = obstacle_x,
     obstacle_y = obstacle_y,
     obstacle_r = obstacle_r,
-    route = route,
     cl = "cs_edge_grob"
   )
 }
@@ -357,7 +355,7 @@ makeContent.cs_edge_grob <- function(x) {
   t0 <- c(ux_mm, uy_mm)
   t1 <- c(ux_mm, uy_mm)
 
-  if (isTRUE(x$route) && length_mm > 0 && length(x$obstacle_x) > 0) {
+  if (length_mm > 0 && length(x$obstacle_x) > 0) {
     c0x <- grid::convertX(x0_unit, "mm", valueOnly = TRUE)
     c0y <- grid::convertY(y0_unit, "mm", valueOnly = TRUE)
     c1x <- grid::convertX(x1_unit, "mm", valueOnly = TRUE)
@@ -661,8 +659,7 @@ makeContent.cs_edge_grob <- function(x) {
       name = paste0("edge.", i),
       obstacle_x = coords$x[obstacle_idx],
       obstacle_y = coords$y[obstacle_idx],
-      obstacle_r = node_radii[obstacle_idx],
-      route = isTRUE(style$route)
+      obstacle_r = node_radii[obstacle_idx]
     )
   }
 

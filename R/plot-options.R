@@ -41,8 +41,7 @@ plot_default_options <- function() {
       col = "black",
       lwd = 1,
       arrow_size = 3,
-      circle_size = 1.5,
-      route = TRUE
+      circle_size = 1.5
     ),
     label_style = list(col = "black", fontsize = 10),
     title_style = list(col = "black", fontsize = 14, fontface = "bold"),
@@ -81,7 +80,7 @@ plot_default_options <- function() {
 #'
 #' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier)
 #' - `edge_style`: `col`, `lwd`, `fill` (arrowhead fill), `arrow_size` (mm),
-#'   `circle_size` (mm), `route` (logical)
+#'   `circle_size` (mm)
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
 #' - `title_style`: same fields as `label_style`
 #' - `tier_style`: `boxes`, `labels`, `fill`, `col`, `lwd`, `padding` (mm),

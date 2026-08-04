@@ -90,9 +90,9 @@ plot(
 ## Styling edges
 
 `edge_style` also accepts `grid::gpar()` fields (`col`, `lwd`, `lty`, `alpha`,
-`fill`) plus `arrow_size` (mm, default 3), `circle_size` (mm, default 1.5, for
-the `o->`/`o--`/`o-o` endpoint marks), and `route` (logical, default `TRUE`:
-bend an edge around a non-incident node it would otherwise cross).
+`fill`) plus `arrow_size` (mm, default 3) and `circle_size` (mm, default 1.5,
+for the `o->`/`o--`/`o-o` endpoint marks). An edge that would otherwise cross a
+non-incident node always bends around it.
 
 Arrowhead `fill` defaults to the edge's own `col`, so arrowheads render solid by
 default and recolor along with the edge. Pass `fill = NA` for the classic

@@ -30,7 +30,7 @@ Fields, matching the corresponding \code{plot.cgraph()} argument:
 \itemize{
 \item \code{node_style}: \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm), \code{size} (multiplier)
 \item \code{edge_style}: \code{col}, \code{lwd}, \code{fill} (arrowhead fill), \code{arrow_size} (mm),
-\code{circle_size} (mm), \code{route} (logical)
+\code{circle_size} (mm)
 \item \code{label_style}: \code{col}, \code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}
 \item \code{title_style}: same fields as \code{label_style}
 \item \code{tier_style}: \code{boxes}, \code{labels}, \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm),
