@@ -33,6 +33,7 @@ Imports:
     Rdpack,
     utils
 Suggests:
+    bench,
     quarto,
     spelling,
     testthat (>= 3.0.0),

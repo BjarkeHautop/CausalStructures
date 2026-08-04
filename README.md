@@ -55,37 +55,44 @@ construction.
 
 ## Example
 
+First, we define a causal graph using the `cgraph()` function.
+`cgraph("A --> X + Y, X --> M --> Y")`
+
 ``` r
 library(CausalStructures)
 
 dag <- cgraph("A --> X + Y, X --> M --> Y")
-dag
+
+# Alternatively, wrap the edges in %...%, and then not use a string:
+cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #> DAG with 4 nodes and 4 edges:
 #>   nodes: A, M, X, Y
 #>   edges:
 #>     A --> X, A --> Y, X --> M, M --> Y
+```
 
+You can then run a number of queries, transformations, and plot the
+causal graph:
+
+``` r
 parents(dag, "Y")
 #> [1] "A" "M"
 adjustment_set(dag, "X", "Y")
 #> [1] "A"
 
-plot(dag)
-```
-
-<img src="man/figures/README-example-1.png" alt="" width="100%" />
-
-Convert it to the CPDAG representing its Markov equivalence class:
-
-``` r
 cpdag <- dag_to_cpdag(dag)
+cpdag
+#> CPDAG with 4 nodes and 4 edges:
+#>   nodes: A, M, X, Y
+#>   edges:
+#>     A --- X, M --- X, M --> Y, A --> Y
 plot(cpdag)
 ```
 
-<img src="man/figures/README-cpdag-1.png" alt="" width="100%" />
+<img src="man/figures/README-queries-1.png" alt="" width="100%" />
 
 See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/)
-for the documentation
+for the full documentation.
 
 ## Multi-threading
 

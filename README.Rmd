@@ -68,32 +68,37 @@ Meek's rules, etc., and these constraints are verified on construction.
 
 ## Example
 
+First, we define a causal graph using the `cgraph()` function.
+`cgraph("A --> X + Y, X --> M --> Y")`
+
 ```{r}
-#| label: example
+#| label: load
 #| message: false
 
 library(CausalStructures)
 
 dag <- cgraph("A --> X + Y, X --> M --> Y")
-dag
+
+# Alternatively, wrap the edges in %...%, and then not use a string:
+cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+```
+
+You can then run a number of queries, transformations, and plot the causal
+graph:
+
+```{r}
+#| label: queries
 
 parents(dag, "Y")
 adjustment_set(dag, "X", "Y")
 
-plot(dag)
-```
-
-Convert it to the CPDAG representing its Markov equivalence class:
-
-```{r}
-#| label: cpdag
-
 cpdag <- dag_to_cpdag(dag)
+cpdag
 plot(cpdag)
 ```
 
 See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/) for the
-documentation
+full documentation.
 
 ## Multi-threading
 

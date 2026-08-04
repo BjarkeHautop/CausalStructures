@@ -1,0 +1,191 @@
+---
+title: "Benchmarks"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+Every graph in CausalStructures.jl is stored as a packed CSR (compressed sparse
+row) layout. Each node's parents, children, spouses, and neighbors occupy a
+contiguous slice of a single flat array, so querying a node's parents requires
+only index arithmetic into that array: `parents()`, `children()`, `spouses()`,
+and `neighbors()` are effectively O(1) on the Julia side. Many higher-level
+algorithms, including `d_separated()`, `ancestors()`, and adjustment-set search,
+are built on these primitive operations, so their performance depends directly
+on the efficiency of these basic queries.
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+setup()
+warmup()
+```
+
+## Queries stay fast as graphs grow
+
+Single-hop queries such as `children()` are just slice lookups on the Julia
+side, so their runtime is essentially unchanged whether the graph has 100 nodes
+or 10,000:
+
+```{r}
+#| label: children-scaling
+
+for (n in c(100, 1000, 10000)) {
+  dag <- generate_graph(n, p = 5 / n, seed = 1L)
+  node <- paste0("V", n %/% 2)
+  t <- bench::mark(children(dag, node), check = FALSE)
+  cat(sprintf("n=%-7d children: %s\n", n, format(t$median)))
+}
+```
+
+The same design carries through the rest of the query layer. Functions such as
+`ancestors()`, `d_separated()`, `topological_sort()`, `minimal_separator()`, and
+`markov_blanket()` are all built on the same primitive operations and remain
+fast on graphs with hundreds of nodes:
+
+```{r}
+#| label: multi-query
+
+dag <- generate_graph(500, p = 0.1, seed = 1L)
+x <- "V10"
+y <- "V290"
+
+rows <- list(
+  d_separated = function() d_separated(dag, x, y),
+  ancestors = function() ancestors(dag, x),
+  topological_sort = function() topological_sort(dag),
+  minimal_separator = function() minimal_separator(dag, x, y),
+  markov_blanket = function() markov_blanket(dag, x)
+)
+for (label in names(rows)) {
+  t <- bench::mark(rows[[label]](), check = FALSE)
+  cat(sprintf("%-20s%s\n", label, format(t$median)))
+}
+```
+
+## Searching for adjustment sets
+
+`all_adjustment_sets()` (and `all_backdoor_sets()`, `all_iv_sets()`,
+`all_frontdoor_sets()`) search subsets of the candidate universe up to
+`max_size`, checking each one against the relevant validity criterion.
+Consequently, the runtime grows exponentially with `max_size`:
+
+```{r}
+#| label: adjustment-sets
+
+admg <- generate_graph(35, p = 0.25, class = "ADMG", latents = 8, seed = 1L)
+x <- "V3"
+y <- "V33"
+
+for (ms in c(2, 3, 4)) {
+  t <- bench::mark(
+    all_adjustment_sets(admg, x, y, minimal = FALSE, max_size = ms),
+    iterations = 5,
+    check = FALSE
+  )
+  r <- all_adjustment_sets(admg, x, y, minimal = FALSE, max_size = ms)
+  cat(sprintf("max_size=%d  %s  (%d sets)\n", ms, format(t$median), length(r)))
+}
+```
+
+## Advanced algorithms
+
+### Exact uniform DAG sampling
+
+`generate_graph()` uses an Erdős--Rényi model and therefore does not sample
+uniformly from the space of DAGs. `uniform_dag()` instead draws exactly
+uniformly from all labelled DAGs on `n` nodes:
+
+```{r}
+#| label: uniform-dag
+
+for (n in c(10, 20, 40)) {
+  t <- bench::mark(
+    uniform_dag(n, seed = 1L),
+    iterations = 5,
+    check = FALSE
+  )
+  cat(sprintf("n=%-4d%s\n", n, format(t$median)))
+}
+```
+
+### Markov equivalence class enumeration
+
+`count_dags()` and `enumerate_dags()` operate on a CPDAG/PDAG/MPDAG by
+considering every DAG in its Markov equivalence class. The size of that class
+grows combinatorially with the number of undirected edges: a clique on `k` nodes
+has `k!` consistent orientations, so the class can grow very large very quickly.
+`enumerate_dags()` is more expensive than `count_dags()`, since it must
+materialize every DAG rather than simply count them:
+
+```{r}
+#| label: count-dags
+
+for (k in c(5, 7, 9)) {
+  names_k <- paste0("V", seq_len(k))
+  spec <- paste(
+    combn(names_k, 2, \(p) paste(p[1], "---", p[2])),
+    collapse = ", "
+  )
+  pdag <- cgraph(spec = spec, class = "PDAG")
+
+  n_dags <- count_dags(pdag)
+  t_count <- bench::mark(
+    count_dags(pdag),
+    iterations = 5,
+    check = FALSE
+  )
+  t_enum <- bench::mark(
+    enumerate_dags(pdag),
+    iterations = 5,
+    check = FALSE
+  )
+  cat(sprintf(
+    "k=%d  DAGs=%d  count_dags=%s  enumerate_dags=%s\n",
+    k,
+    n_dags,
+    format(t_count$median),
+    format(t_enum$median)
+  ))
+}
+```
+
+### MAG equivalence class enumeration
+
+`enumerate_mags()` is the PAG/MAG counterpart to `enumerate_dags()`, but the
+algorithm behind it is not the same: it brute-forces every tail/arrowhead
+assignment for each circle endpoint in the PAG (`2^k` candidates for `k` circle
+endpoints), validates each candidate as a MAG, and keeps the ones that map back
+to the original PAG. There's no analog of Chickering's recursive pruning here,
+so it's considerably more expensive than `count_dags()`/`enumerate_dags()` at a
+comparable scale:
+
+```{r}
+#| label: enumerate-mags
+
+for (k in c(3, 4, 5)) {
+  names_k <- paste0("V", seq_len(k))
+  spec <- paste(
+    combn(names_k, 2, \(p) paste(p[1], "o-o", p[2])),
+    collapse = ", "
+  )
+  pag <- cgraph(spec = spec, class = "PAG")
+  n_mags <- length(enumerate_mags(pag))
+  t <- bench::mark(
+    enumerate_mags(pag),
+    iterations = 5,
+    check = FALSE
+  )
+  cat(sprintf("k=%d  MAGs=%d  %s\n", k, n_mags, format(t$median)))
+}
+```
+
+`count_dags()`, `enumerate_dags()`, `enumerate_mags()`, and the whole
+`all_*_sets()` family all parallelize their search across Julia's threads
+automatically once the problem is large enough to benefit.
+
+## Comparison against other R packages:
+
+TODO.
