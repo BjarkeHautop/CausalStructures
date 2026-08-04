@@ -7,8 +7,8 @@
 minimal_separator(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{cg}{A DAG, ADMG, AG-family (AG, MAG), or PDAG-family (PDAG, CPDAG,
-MPDAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, ADMG, AG-family (AG, MAG), PDAG-family (PDAG, CPDAG,
+MPDAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x, y}{Node names.}
 
@@ -24,7 +24,7 @@ exists.
 }
 \description{
 Finds a minimal d-separator (DAG, PDAG classes) or m-separator
-(ADMG, ancestral-graph classes) between \code{x} and \code{y}: no proper subset
+(ADMG, ancestral-graph classes, PAG) between \code{x} and \code{y}: no proper subset
 (excluding forced \code{include} nodes) of the returned set still separates
 them.
 }

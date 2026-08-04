@@ -8,7 +8,7 @@ generate_graph(
   n,
   m = NULL,
   p = NULL,
-  class = c("DAG", "CPDAG", "ADMG", "MAG"),
+  class = c("DAG", "CPDAG", "ADMG", "MAG", "PAG"),
   latents = 0,
   seed = NULL
 )
@@ -22,11 +22,12 @@ the full \code{n + latents} node set when \code{latents > 0}.}
 \item{p}{Edge probability (supply exactly one of \code{m} and \code{p}); applied to
 the full \code{n + latents} node set when \code{latents > 0}.}
 
-\item{class}{Graph class: \code{"DAG"}, \code{"CPDAG"}, \code{"ADMG"}, or \code{"MAG"}.}
+\item{class}{Graph class: \code{"DAG"}, \code{"CPDAG"}, \code{"ADMG"}, \code{"MAG"}, or
+\code{"PAG"}.}
 
 \item{latents}{Number of latent nodes to sample alongside the \code{n} observed
-nodes and then project out. Only supported for \code{class = "ADMG"} or
-\code{class = "MAG"}; must be \code{0} (default) otherwise.}
+nodes and then project out. Only supported for \code{class = "ADMG"},
+\code{"MAG"}, or \code{"PAG"}; must be \code{0} (default) otherwise.}
 
 \item{seed}{Optional integer seed for reproducibility.}
 }
@@ -46,19 +47,22 @@ instead.
 \details{
 Exactly one of \code{m} (exact edge count) or \code{p} (edge probability) must be
 given. For \code{class = "CPDAG"}, the sampled DAG is converted with
-\code{\link[=dag_to_cpdag]{dag_to_cpdag()}}. For \code{class = "ADMG"} or \code{class = "MAG"}, \code{latents}
+\code{\link[=dag_to_cpdag]{dag_to_cpdag()}}. For \code{class = "ADMG"}, \code{"MAG"}, or \code{"PAG"}, \code{latents}
 additional nodes \verb{L1, ..., Lk} are added to the underlying random DAG and
 then marginalized out via \code{\link[=latent_project]{latent_project()}}; \code{m}/\code{p} are applied to the
 full \code{n + latents} node set before projection. \code{latents} must be \code{0}
 (the default) for \code{class = "DAG"} or \code{class = "CPDAG"}.
 
-Unlike ADMGs, MAGs additionally require the \emph{ancestral} constraint (no
-bidirected edge between a node and its own ancestor), which a naive latent
-projection can violate whenever a marginalized common cause and a separate
-directed path connect the same pair of observed nodes. For
-\code{class = "MAG"}, each candidate is checked and, if invalid, resampled
-(up to an internal retry limit) until a valid MAG is found; this errors if
+Unlike ADMGs, MAGs (and PAGs, which are derived from a sampled MAG)
+additionally require the \emph{ancestral} constraint (no bidirected edge
+between a node and its own ancestor), which a naive latent projection can
+violate whenever a marginalized common cause and a separate directed path
+connect the same pair of observed nodes. For \code{class = "MAG"} or
+\code{class = "PAG"}, each candidate is checked and, if invalid, resampled (up
+to an internal retry limit) until a valid MAG is found; this errors if
 none is found, which can happen for very dense graphs with many latents.
+For \code{class = "PAG"}, the resulting MAG is then converted to its
+equivalence class with \code{\link[=mag_to_pag]{mag_to_pag()}}.
 }
 \examples{
 if (julia_ready()) {
@@ -69,5 +73,10 @@ if (julia_ready()) {
 if (julia_ready()) {
   admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
   admg
+}
+
+if (julia_ready()) {
+  pag <- generate_graph(6, p = 0.3, class = "PAG", latents = 2, seed = 1405)
+  pag
 }
 }

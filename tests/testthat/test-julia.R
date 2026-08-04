@@ -26,17 +26,17 @@ test_that("construction works", {
   mag <- generate_graph(10, p = 0.2, class = "MAG", latents = 3, seed = 1405)
   expect_true(is_mag(mag))
   expect_length(nodes(mag), 10)
+  pag <- generate_graph(10, p = 0.2, class = "PAG", latents = 3, seed = 1405)
+  expect_true(is_pag(pag))
+  expect_length(nodes(pag), 10)
   expect_error(
     generate_graph(4, m = 2, class = "DAG", latents = 1),
     "latents"
   )
 
-  # simple = FALSE allows multiple edges between the same pair of nodes
-  multi <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)
+  # UNKNOWN graphs always allow multiple edges between the same pair of nodes
+  multi <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN")
   expect_equal(nrow(edges(multi)), 2)
-  expect_error(
-    cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = TRUE)
-  )
 })
 
 test_that("uniform_dag works", {
@@ -53,7 +53,7 @@ test_that("uniform_dag works", {
 
 test_that("print.cgraph strips the Julia module prefix", {
   skip_if_no_julia()
-  g <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN", simple = FALSE)
+  g <- cgraph(A %-->% B, A %<->% B, class = "UNKNOWN")
   out <- capture.output(print(g))
   expect_equal(out[1], "UNKNOWN with 2 nodes and 2 edges:")
   expect_false(any(grepl("CausalStructures", out, fixed = TRUE)))
@@ -260,6 +260,11 @@ test_that("separation queries work", {
   admg <- cgraph(A %<->% B, C %-->% B %-->% D, class = "ADMG")
   expect_false(m_separated(admg, "A", "D"))
   expect_true(m_separated(admg, "C", "A"))
+
+  pag <- cgraph(A %o->% B, C %o->% B, class = "PAG")
+  expect_true(m_separated(pag, "A", "C")) # collider at B is blocked
+  expect_false(m_separated(pag, "A", "C", "B")) # conditioning opens it
+  expect_identical(minimal_separator(pag, "A", "C"), character(0))
 })
 
 test_that("identification works", {
@@ -294,6 +299,19 @@ test_that("adjustment criterion works", {
     all_adjustment_sets(pdag, "X", "Y", max_size = 0),
     list()
   )
+
+  dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+  expect_true(is_valid_adjustment(dag, "X", "Y", "A"))
+  expect_false(is_valid_adjustment(dag, "X", "Y"))
+  expect_identical(all_adjustment_sets(dag, "X", "Y"), list("A"))
+
+  # B --> X is a witness (unconnected to Y) making A o-> X visible, so A's
+  # confounding of X and Y can be resolved from the PAG alone.
+  mag <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+  pag <- mag_to_pag(mag)
+  expect_true(is_valid_adjustment(pag, "X", "Y", "A"))
+  expect_false(is_valid_adjustment(pag, "X", "Y"))
+  expect_identical(all_adjustment_sets(pag, "X", "Y"), list("A"))
 })
 
 test_that("instrumental variables work", {

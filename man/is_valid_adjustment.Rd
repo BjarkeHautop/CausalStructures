@@ -7,8 +7,8 @@
 is_valid_adjustment(cg, x, y, given = character())
 }
 \arguments{
-\item{cg}{An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+MAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 
@@ -19,11 +19,11 @@ MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
 identifying the causal effect of \code{x} on \code{y}.
 }
 \description{
-Tests the Generalized Adjustment Criterion, which covers ADMGs,
-PDAG-family graphs, and MAG-family graphs alike: \code{given} must contain no
-forbidden node (a descendant of a proper causal node between \code{x} and \code{y},
-or \code{x} itself), and must m-separate \code{x} from \code{y} in the proper backdoor
-graph.
+Tests the Generalized Adjustment Criterion, which covers DAGs, ADMGs,
+PDAG-family graphs, MAG-family graphs, and PAGs alike: \code{given} must
+contain no forbidden node (a descendant of a proper causal node between
+\code{x} and \code{y}, or \code{x} itself), and must m-separate \code{x} from \code{y} in the
+proper backdoor graph.
 }
 \examples{
 if (julia_ready()) {

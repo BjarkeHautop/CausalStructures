@@ -7,7 +7,7 @@
 m_separated(cg, x, y, given = character())
 }
 \arguments{
-\item{cg}{A DAG, ADMG, or AG-family (AG, MAG) graph created with
+\item{cg}{A DAG, ADMG, AG-family (AG, MAG), or PAG graph created with
 \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x, y}{Node names.}
@@ -19,7 +19,9 @@ m_separated(cg, x, y, given = character())
 }
 \description{
 Generalizes d-separation to graphs with bidirected and undirected edges;
-for a DAG, m-separation is equivalent to \code{\link[=d_separated]{d_separated()}}.
+for a DAG, m-separation is equivalent to \code{\link[=d_separated]{d_separated()}}. For a PAG,
+circle marks collapse to tails, as for
+\link[=possible-queries]{possible_ancestors()}.
 }
 \examples{
 if (julia_ready()) {
@@ -28,5 +30,10 @@ if (julia_ready()) {
     open = m_separated(admg, "B", "C"), # bidirected edge at A connects
     blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
   )
+}
+
+if (julia_ready()) {
+  pag <- cgraph(A \%o->\% B, C \%o->\% B, class = "PAG")
+  m_separated(pag, "A", "C")
 }
 }

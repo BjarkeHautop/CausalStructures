@@ -6,8 +6,7 @@
 \usage{
 reclass(
   cg,
-  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN"),
-  simple = TRUE
+  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN")
 )
 }
 \arguments{
@@ -16,8 +15,6 @@ reclass(
 \item{class}{Target graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"},
 \code{"MPDAG"}, \code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no
 structural constraints; accepts all edge types).}
-
-\item{simple}{Only used when \code{class} is \code{"UNKNOWN"}; see \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
 A Julia proxy object representing the reclassified graph.

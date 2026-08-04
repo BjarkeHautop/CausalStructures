@@ -7,8 +7,7 @@
 cgraph(
   ...,
   spec = NULL,
-  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN"),
-  simple = TRUE
+  class = c("DAG", "UG", "PDAG", "CPDAG", "MPDAG", "ADMG", "AG", "MAG", "PAG", "UNKNOWN")
 )
 }
 \arguments{
@@ -20,11 +19,8 @@ Mutually exclusive with \code{...}.}
 
 \item{class}{Graph class: \code{"DAG"}, \code{"UG"}, \code{"PDAG"}, \code{"CPDAG"}, \code{"MPDAG"},
 \code{"ADMG"}, \code{"AG"}, \code{"MAG"}, \code{"PAG"}, or \code{"UNKNOWN"} (no structural
-constraints; accepts all edge types).}
-
-\item{simple}{Only used when \code{class} is \code{"UNKNOWN"}. If \code{TRUE} (default),
-only one edge is allowed between any pair of nodes; if \code{FALSE}, multiple
-edges between the same pair are allowed.}
+constraints; accepts all edge types, including multiple edges between
+the same pair of nodes).}
 }
 \value{
 A Julia proxy object representing the graph.
@@ -48,10 +44,6 @@ if (julia_ready()) {
   # equivalent to the dag above, built from a spec string
   dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
 
-  cgraph(
-    A \%-->\% B, A \%<->\% B,
-    class = "UNKNOWN",
-    simple = FALSE
-  )
+  cgraph(A \%-->\% B, A \%<->\% B, class = "UNKNOWN")
 }
 }

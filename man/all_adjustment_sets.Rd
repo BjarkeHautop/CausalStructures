@@ -7,8 +7,8 @@
 all_adjustment_sets(cg, x, y, minimal = TRUE, max_size = 3)
 }
 \arguments{
-\item{cg}{An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+MAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
 

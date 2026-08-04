@@ -36,10 +36,12 @@ d_separated <- function(cg, x, y, given = character()) {
 #' Test m-separation
 #'
 #' Generalizes d-separation to graphs with bidirected and undirected edges;
-#' for a DAG, m-separation is equivalent to [d_separated()].
+#' for a DAG, m-separation is equivalent to [d_separated()]. For a PAG,
+#' circle marks collapse to tails, as for
+#' [possible_ancestors()][possible-queries].
 #'
 #' @inheritParams d_separated
-#' @param cg A DAG, ADMG, or AG-family (AG, MAG) graph created with
+#' @param cg A DAG, ADMG, AG-family (AG, MAG), or PAG graph created with
 #'   [cgraph()].
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
@@ -51,6 +53,11 @@ d_separated <- function(cg, x, y, given = character()) {
 #'     blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
 #'   )
 #' }
+#'
+#' if (julia_ready()) {
+#'   pag <- cgraph(A %o->% B, C %o->% B, class = "PAG")
+#'   m_separated(pag, "A", "C")
+#' }
 m_separated <- function(cg, x, y, given = character()) {
   fn("m_separated")(cg, x, y, as.character(given))
 }
@@ -58,12 +65,12 @@ m_separated <- function(cg, x, y, given = character()) {
 #' Find a minimal separator
 #'
 #' Finds a minimal d-separator (DAG, PDAG classes) or m-separator
-#' (ADMG, ancestral-graph classes) between `x` and `y`: no proper subset
+#' (ADMG, ancestral-graph classes, PAG) between `x` and `y`: no proper subset
 #' (excluding forced `include` nodes) of the returned set still separates
 #' them.
 #'
-#' @param cg A DAG, ADMG, AG-family (AG, MAG), or PDAG-family (PDAG, CPDAG,
-#'   MPDAG) graph created with [cgraph()].
+#' @param cg A DAG, ADMG, AG-family (AG, MAG), PDAG-family (PDAG, CPDAG,
+#'   MPDAG), or PAG graph created with [cgraph()].
 #' @param x,y Node names.
 #' @param include Character vector of nodes forced into the separator (must
 #'   be a subset of `restrict`, if given).
@@ -311,14 +318,14 @@ all_frontdoor_sets <- function(
 
 #' Validate an adjustment set
 #'
-#' Tests the Generalized Adjustment Criterion, which covers ADMGs,
-#' PDAG-family graphs, and MAG-family graphs alike: `given` must contain no
-#' forbidden node (a descendant of a proper causal node between `x` and `y`,
-#' or `x` itself), and must m-separate `x` from `y` in the proper backdoor
-#' graph.
+#' Tests the Generalized Adjustment Criterion, which covers DAGs, ADMGs,
+#' PDAG-family graphs, MAG-family graphs, and PAGs alike: `given` must
+#' contain no forbidden node (a descendant of a proper causal node between
+#' `x` and `y`, or `x` itself), and must m-separate `x` from `y` in the
+#' proper backdoor graph.
 #'
-#' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-#'   MAG) graph created with [cgraph()].
+#' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+#'   MAG), or PAG graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the adjustment criterion for
@@ -344,8 +351,8 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #' Adjustment Criterion; see [is_valid_adjustment()]. When
 #' `minimal = TRUE` (default), only inclusion-minimal sets are returned.
 #'
-#' @param cg An ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
-#'   MAG) graph created with [cgraph()].
+#' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+#'   MAG), or PAG graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.

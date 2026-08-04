@@ -14,3 +14,4 @@ JuliaCall/
 README.html
 /.quarto/
 **/*.quarto_ipynb
+/inst/Manifest.toml

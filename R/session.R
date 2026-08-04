@@ -107,8 +107,8 @@
   '_CausalStructures_sets(sets) = isempty(sets) ? nothing :
       join((join(sort!(String.(collect(s))), "\x1f") for s in sets), "\x1e")',
 
-  '_CausalStructures_cgraph(spec, class, simple) =
-      _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)), simple = simple)',
+  '_CausalStructures_cgraph(spec, class) =
+      _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)))',
 
   'function _CausalStructures_generate_graph(n, m, p, class, latents, rng)
       kwargs = (
@@ -261,9 +261,8 @@
   '_CausalStructures_add_nodes(g, nodes) = _CausalStructures_CS.add_nodes(g, _CausalStructures_syms(nodes)...)',
   '_CausalStructures_remove_nodes(g, nodes) = _CausalStructures_CS.remove_nodes(g, _CausalStructures_syms(nodes)...)',
 
-  'function _CausalStructures_reclass(g, class, simple)
+  'function _CausalStructures_reclass(g, class)
       T = getfield(_CausalStructures_CS, Symbol(class))
-      T === _CausalStructures_CS.UNKNOWN ? _CausalStructures_CS.reclass(g, T; simple = simple) :
       _CausalStructures_CS.reclass(g, T)
   end',
 
