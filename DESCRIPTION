@@ -13,7 +13,6 @@ License: MIT + file LICENSE
 Copyright: file inst/COPYRIGHTS
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 8.0.0
 Collate:
     'session.R'
     'dsl.R'
@@ -45,3 +44,4 @@ Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues
 Config/Needs/website: quarto
+Config/roxygen2/version: 8.1.0

@@ -43,9 +43,9 @@ options or per-type options via \code{directed}, \code{undirected}, \code{bidire
 color; defaults to \code{col} so arrowheads render solid and match the edge -
 pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size} (mm,
 default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
-endpoints), \code{route} (logical, default \code{TRUE}; when \code{TRUE}, an edge that
-would otherwise cross a non-incident node bends around it as a Bezier
-curve), and \code{by_edge} (named list of per-edge or per-node overrides,
+endpoints; an edge that would otherwise cross a non-incident node always
+bends around it as a Bezier curve), and \code{by_edge} (named list of
+per-edge or per-node overrides,
 keyed by node name(s)). Style precedence (highest to lowest): specific
 edge settings in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type
 settings > global settings.}

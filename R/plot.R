@@ -897,9 +897,9 @@ makeContent.cs_edge_grob <- function(x) {
 #'   color; defaults to `col` so arrowheads render solid and match the edge -
 #'   pass `fill = NA` for a hollow/outline arrowhead), `arrow_size` (mm,
 #'   default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
-#'   endpoints), `route` (logical, default `TRUE`; when `TRUE`, an edge that
-#'   would otherwise cross a non-incident node bends around it as a Bezier
-#'   curve), and `by_edge` (named list of per-edge or per-node overrides,
+#'   endpoints; an edge that would otherwise cross a non-incident node always
+#'   bends around it as a Bezier curve), and `by_edge` (named list of
+#'   per-edge or per-node overrides,
 #'   keyed by node name(s)). Style precedence (highest to lowest): specific
 #'   edge settings in `by_edge` > node-wide settings in `by_edge` > edge-type
 #'   settings > global settings.
