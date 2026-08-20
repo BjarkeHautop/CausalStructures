@@ -10,7 +10,8 @@ d_separated(cg, x, y, given = character())
 \item{cg}{A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Node names.}
+\item{x, y}{Node name, or character vector of node names (to test whether
+the two \emph{sets} are separated).}
 
 \item{given}{Character vector of conditioning node names (may be empty).}
 }

@@ -9,7 +9,6 @@ test_that("plot.cgraph draws with the default layout", {
 test_that("cgraph_layout works for every layout method", {
   skip_if_no_julia()
   methods <- c(
-    "circle",
     "spring",
     "stress",
     "sfdp",
@@ -33,7 +32,6 @@ test_that("plot.cgraph draws with every layout method", {
   on.exit(grDevices::dev.off(), add = TRUE)
 
   methods <- c(
-    "circle",
     "spring",
     "stress",
     "sfdp",
@@ -51,7 +49,7 @@ test_that("plot.cgraph draws with a pre-computed layout data.frame", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  coords <- cgraph_layout(test_dag(), method = "circle")
+  coords <- cgraph_layout(test_dag(), method = "spring")
   expect_no_error(plot(test_dag(), layout = coords))
 })
 
@@ -94,7 +92,7 @@ test_that("plot.cgraph renders every edge type without error", {
     "A --> B, C --- D, E <-> F, G o-> H, I o-- J, K o-o L",
     class = "UNKNOWN"
   )
-  expect_no_error(plot(g, layout = "circle"))
+  expect_no_error(plot(g, layout = "spring"))
 })
 
 test_that("plot.cgraph errors on an empty graph", {

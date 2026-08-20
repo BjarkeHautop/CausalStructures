@@ -22,7 +22,6 @@
 #'   * `"spectral"`: spectral layout.
 #'   * `"shell"`: concentric shells.
 #'   * `"squaregrid"`: square grid.
-#'   * `"circle"`: nodes evenly spaced on a circle, ignoring edge structure.
 #'
 #'   All methods are provided by the
 #'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) package.
@@ -40,7 +39,7 @@
 #'
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   cgraph_layout(dag, method = "circle")
+#'   cgraph_layout(dag, method = "spring")
 #' }
 cgraph_layout <- function(
   x,
@@ -50,8 +49,7 @@ cgraph_layout <- function(
     "sfdp",
     "spectral",
     "shell",
-    "squaregrid",
-    "circle"
+    "squaregrid"
   ),
   ...
 ) {

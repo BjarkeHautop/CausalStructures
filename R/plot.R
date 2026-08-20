@@ -883,7 +883,7 @@ makeContent.cs_edge_grob <- function(x) {
 #' @param x A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
 #'   * A character string passed to [cgraph_layout()] as `method`
-#'     (`"circle"`, `"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
+#'     (`"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
 #'     `"shell"`, `"squaregrid"`).
 #'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.

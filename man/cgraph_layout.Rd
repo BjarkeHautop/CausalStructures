@@ -6,7 +6,7 @@
 \usage{
 cgraph_layout(
   x,
-  method = c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "circle"),
+  method = c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid"),
   ...
 )
 }
@@ -22,7 +22,6 @@ choice - well-spaced and deterministic for a given graph.
 \item \code{"spectral"}: spectral layout.
 \item \code{"shell"}: concentric shells.
 \item \code{"squaregrid"}: square grid.
-\item \code{"circle"}: nodes evenly spaced on a circle, ignoring edge structure.
 }
 
 All methods are provided by the
@@ -44,7 +43,7 @@ if (julia_ready()) {
 
 if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  cgraph_layout(dag, method = "circle")
+  cgraph_layout(dag, method = "spring")
 }
 }
 \seealso{

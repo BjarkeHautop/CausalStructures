@@ -9,7 +9,8 @@ is_valid_frontdoor(cg, x, y, given = character())
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{given}{Character vector of conditioning node names (may be empty).}
 }

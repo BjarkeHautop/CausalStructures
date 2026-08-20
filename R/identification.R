@@ -9,7 +9,8 @@
 #'
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
-#' @param x,y Node names.
+#' @param x,y Node name, or character vector of node names (to test whether
+#'   the two *sets* are separated).
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
 #' @export
@@ -30,7 +31,7 @@
 #'   )
 #' }
 d_separated <- function(cg, x, y, given = character()) {
-  fn("d_separated")(cg, x, y, as.character(given))
+  fn("d_separated")(cg, as.character(x), as.character(y), as.character(given))
 }
 
 #' Test m-separation
@@ -43,6 +44,8 @@ d_separated <- function(cg, x, y, given = character()) {
 #' @inheritParams d_separated
 #' @param cg A DAG, ADMG, AG-family (AG, MAG), or PAG graph created with
 #'   [cgraph()].
+#' @param x,y Node name, or character vector of node names (to test whether
+#'   the two *sets* are separated).
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
 #' @examples
@@ -59,7 +62,7 @@ d_separated <- function(cg, x, y, given = character()) {
 #'   m_separated(pag, "A", "C")
 #' }
 m_separated <- function(cg, x, y, given = character()) {
-  fn("m_separated")(cg, x, y, as.character(given))
+  fn("m_separated")(cg, as.character(x), as.character(y), as.character(given))
 }
 
 #' Find a minimal separator
@@ -71,7 +74,8 @@ m_separated <- function(cg, x, y, given = character()) {
 #'
 #' @param cg A DAG, ADMG, AG-family (AG, MAG), PDAG-family (PDAG, CPDAG,
 #'   MPDAG), or PAG graph created with [cgraph()].
-#' @param x,y Node names.
+#' @param x,y Node name, or character vector of node names (to separate the
+#'   two *sets*).
 #' @param include Character vector of nodes forced into the separator (must
 #'   be a subset of `restrict`, if given).
 #' @param restrict Character vector of candidate nodes the separator is
@@ -103,8 +107,8 @@ minimal_separator <- function(
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   fn("minimal_separator")(
     cg,
-    x,
-    y,
+    as.character(x),
+    as.character(y),
     as.character(include),
     restrict_arg
   )
@@ -122,8 +126,9 @@ minimal_separator <- function(
 #'   \item{DAG}{All three types are supported.}
 #'   \item{PDAG-family (PDAG, CPDAG, MPDAG)}{Only `"parents"` and
 #'     `"optimal"` are supported; `"backdoor"` raises an error.}
-#'   \item{MAG-family (AG, MAG)}{`type` is ignored. The smallest valid
-#'     adjustment set is returned by searching sets of increasing size.}
+#'   \item{ADMG, MAG-family (AG, MAG), PAG}{`type` is ignored. The smallest
+#'     valid adjustment set is returned by searching sets of increasing
+#'     size.}
 #' }
 #'
 #' The available adjustment set types are:
@@ -141,12 +146,14 @@ minimal_separator <- function(
 #' Candidate adjustment sets can be validated with
 #' [is_valid_adjustment()].
 #'
-#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG, MAG)
-#'   graph created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+#'   MAG), or PAG graph created with [cgraph()].
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names (to identify the effect of a set of exposures on a set of
+#'   outcomes).
 #' @param type Adjustment set type: `"optimal"` (default), `"parents"`, or
-#'   `"backdoor"`. Ignored for MAG-family graphs; `"backdoor"` is not
-#'   supported for PDAG-family graphs.
+#'   `"backdoor"`. Ignored for ADMG, MAG-family, and PAG graphs; `"backdoor"`
+#'   is not supported for PDAG-family graphs.
 #' @return Character vector with a valid adjustment set, or `NULL` if none
 #'   exists.
 #' @references
@@ -186,7 +193,7 @@ adjustment_set <- function(
   type = c("optimal", "parents", "backdoor")
 ) {
   type <- match.arg(type)
-  fn("adjustment_set")(cg, x, y, type)
+  fn("adjustment_set")(cg, as.character(x), as.character(y), type)
 }
 
 #' Find a frontdoor adjustment set
@@ -200,7 +207,8 @@ adjustment_set <- function(
 #'   and condition-3 checks use m-separation, with bidirected edges treated
 #'   as latent-confounder edges (a spouse contributes an arrowhead into a
 #'   node just like a directed parent does).
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param include Character vector of nodes forced into the set.
 #' @param restrict Character vector of candidate nodes the set is drawn
 #'   from. `NULL` (default) allows every node except `x` and `y`.
@@ -227,8 +235,8 @@ frontdoor_set <- function(
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   fn("frontdoor_set")(
     cg,
-    x,
-    y,
+    as.character(x),
+    as.character(y),
     as.character(include),
     restrict_arg
   )
@@ -241,7 +249,8 @@ frontdoor_set <- function(
 #' parent of `x` is d-separated from `y` given `given` together with `x`).
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
 #' @export
@@ -254,7 +263,12 @@ frontdoor_set <- function(
 #'   )
 #' }
 is_valid_backdoor <- function(cg, x, y, given = character()) {
-  fn("is_valid_backdoor")(cg, x, y, as.character(given))
+  fn("is_valid_backdoor")(
+    cg,
+    as.character(x),
+    as.character(y),
+    as.character(given)
+  )
 }
 
 #' Enumerate backdoor adjustment sets
@@ -264,7 +278,8 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #' inclusion-minimal sets are returned.
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
@@ -275,7 +290,13 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #'   all_backdoor_sets(dag, "X", "Y")
 #' }
 all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  split_sets(fn("all_backdoor_sets")(cg, x, y, minimal, max_size))
+  split_sets(fn("all_backdoor_sets")(
+    cg,
+    as.character(x),
+    as.character(y),
+    minimal,
+    max_size
+  ))
 }
 
 #' Enumerate frontdoor adjustment sets
@@ -286,7 +307,8 @@ all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #'
 #' @param cg A DAG or ADMG created with [cgraph()]. For an ADMG, see the note
 #'   on m-separation in [frontdoor_set()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param include Character vector of nodes forced into every set.
 #' @param restrict Character vector of candidate nodes sets are drawn from.
 #'   `NULL` (default) allows every node except `x` and `y`.
@@ -308,8 +330,8 @@ all_frontdoor_sets <- function(
   split_sets(
     fn("all_frontdoor_sets")(
       cg,
-      x,
-      y,
+      as.character(x),
+      as.character(y),
       as.character(include),
       restrict_arg
     )
@@ -326,7 +348,8 @@ all_frontdoor_sets <- function(
 #'
 #' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
 #'   MAG), or PAG graph created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the adjustment criterion for
 #'   identifying the causal effect of `x` on `y`.
@@ -342,7 +365,12 @@ all_frontdoor_sets <- function(
 #'   )
 #' }
 is_valid_adjustment <- function(cg, x, y, given = character()) {
-  fn("is_valid_adjustment")(cg, x, y, as.character(given))
+  fn("is_valid_adjustment")(
+    cg,
+    as.character(x),
+    as.character(y),
+    as.character(given)
+  )
 }
 
 #' Enumerate all valid adjustment sets
@@ -353,7 +381,8 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'
 #' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
 #'   MAG), or PAG graph created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
 #' @return List of character vectors (empty list if none exist).
@@ -364,7 +393,13 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'   all_adjustment_sets(admg, "X", "Y")
 #' }
 all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  split_sets(fn("all_adjustment_sets")(cg, x, y, minimal, max_size))
+  split_sets(fn("all_adjustment_sets")(
+    cg,
+    as.character(x),
+    as.character(y),
+    minimal,
+    max_size
+  ))
 }
 
 #' Validate a frontdoor criterion set
@@ -377,7 +412,8 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #' confounders between `x` and `y`.
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x,y Exposure and outcome node name, or character vector of node
+#'   names.
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
 #' @export
@@ -390,7 +426,12 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #'   )
 #' }
 is_valid_frontdoor <- function(cg, x, y, given = character()) {
-  fn("is_valid_frontdoor")(cg, x, y, as.character(given))
+  fn("is_valid_frontdoor")(
+    cg,
+    as.character(x),
+    as.character(y),
+    as.character(given)
+  )
 }
 
 #' Validate instrumental variables
@@ -402,7 +443,8 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' `z` must be d-/m-connected to `x` (relevance).
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x Exposure node name.
+#' @param y Outcome node name, or character vector of node names.
 #' @param z Character vector of instrument node names.
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
@@ -416,7 +458,7 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #'   )
 #' }
 is_valid_iv <- function(cg, x, y, z = character()) {
-  fn("is_valid_iv")(cg, x, y, as.character(z))
+  fn("is_valid_iv")(cg, x, as.character(y), as.character(z))
 }
 
 #' Enumerate all valid instrumental variable sets
@@ -425,7 +467,8 @@ is_valid_iv <- function(cg, x, y, z = character()) {
 #' the causal effect of `x` on `y`; see [is_valid_iv()].
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
-#' @param x,y Exposure and outcome node names.
+#' @param x Exposure node name.
+#' @param y Outcome node name, or character vector of node names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum number of instruments to consider.
 #' @return List of character vectors (empty list if none exist).
@@ -438,7 +481,7 @@ is_valid_iv <- function(cg, x, y, z = character()) {
 #'   all_iv_sets(dag, "X", "Y")
 #' }
 all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  split_sets(fn("all_iv_sets")(cg, x, y, minimal, max_size))
+  split_sets(fn("all_iv_sets")(cg, x, as.character(y), minimal, max_size))
 }
 
 # --- Equivalence classes and counts ------------------------------------------
@@ -537,4 +580,329 @@ markov_equivalent <- function(g1, g2) {
 #' }
 enumerate_mags <- function(cg) {
   fn("enumerate_mags")(cg)
+}
+
+# --- Symbolic identification (ID/IDC) ----------------------------------------
+
+#' Identify an interventional distribution
+#'
+#' `id()` returns the interventional distribution `P(y | do(x))`, rendered as
+#' a formula in terms of the observational distribution (Shpitser & Pearl's
+#' ID algorithm), or `NULL` if the effect is not identifiable. `idc()`
+#' additionally conditions on `given` (the IDC algorithm), reducing to `id()`
+#' when `given` is empty.
+#'
+#' Bidirected edges represent latent confounders. To identify an effect in a
+#' DAG with unobserved variables, project them out first with
+#' [latent_project()].
+#'
+#' The rendered formula may mention variables outside `x`/`y`/`given`: the
+#' algorithm can enlarge the intervention set whenever doing so provably
+#' changes nothing, and the result is then a function of those extra values
+#' too. This binding renders the resulting `Estimand` as a formatted
+#' character string; it does not expose the underlying symbolic-algebra
+#' representation (`Prob`, `Marginal`, `Product`, `Quotient` in
+#' CausalStructures.jl) for programmatic manipulation.
+#'
+#' @param cg A DAG or ADMG created with [cgraph()].
+#' @param x,y Intervention (exposure) and outcome node name, or character
+#'   vector of node names. Must be disjoint from each other (and from
+#'   `given`, for `idc()`).
+#' @param given Character vector of node names to additionally condition on
+#'   (`idc()` only).
+#' @return A character scalar with the rendered formula, or `NULL` if the
+#'   effect is not identifiable.
+#' @references
+#' \insertRef{shpitser2008complete}{CausalStructures}
+#'
+#' \insertRef{tian2002general}{CausalStructures}
+#' @name id
+#' @examples
+#' if (julia_ready()) {
+#'   # Back-door adjustment, recovered as the g-formula
+#'   dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
+#'   id(dag, "X", "Y")
+#' }
+#'
+#' if (julia_ready()) {
+#'   # Front-door graph: X and Y are confounded, but the effect is still
+#'   # identifiable through the mediator M
+#'   admg <- cgraph(X %-->% M, M %-->% Y, X %<->% Y, class = "ADMG")
+#'   id(admg, "X", "Y")
+#' }
+#'
+#' if (julia_ready()) {
+#'   # The bow arc: the canonical unidentifiable effect
+#'   bow <- cgraph(X %-->% Y, X %<->% Y, class = "ADMG")
+#'   is.null(id(bow, "X", "Y"))
+#' }
+#'
+#' if (julia_ready()) {
+#'   dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
+#'   idc(dag, "X", "Y", given = "Z")
+#' }
+NULL
+
+#' @rdname id
+#' @export
+id <- function(cg, x, y) {
+  fn("id")(cg, as.character(x), as.character(y))
+}
+
+#' @rdname id
+#' @export
+idc <- function(cg, x, y, given = character()) {
+  fn("idc")(cg, as.character(x), as.character(y), as.character(given))
+}
+
+# --- Generalized backdoor criterion and local IDA ----------------------------
+
+#' Find a generalized backdoor set
+#'
+#' Returns a generalized back-door set relative to `(x, y)` in `cg` using the
+#' Generalized Backdoor Criterion (GBC), or `NULL` if none exists.
+#'
+#' @param cg A DAG, CPDAG, MAG, or PAG graph created with [cgraph()].
+#' @param x,y Exposure and outcome node names.
+#' @return Character vector with a generalized back-door set, or `NULL` if
+#'   none exists.
+#' @references
+#' \insertRef{maathuiscolombo2015gbc}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   # A --> X <-- C protects both edges into X
+#'   cpdag <- cgraph(A %-->% X, C %-->% X, X %-->% Y, class = "CPDAG")
+#'   sort(backdoor_set(cpdag, "X", "Y"))
+#' }
+backdoor_set <- function(cg, x, y) {
+  fn("backdoor_set")(cg, x, y)
+}
+
+#' Find every possible D-SEP set
+#'
+#' Returns D-SEP(x, y, cg): every vertex other than `x` for which there is a
+#' collider path between `x` and the vertex in `cg` on which every vertex,
+#' including the vertex itself, is an ancestor of `x` or of some member of
+#' `y`. This is the plain graph-level primitive that [backdoor_set()] (for
+#' MAG/PAG) uses internally to build its generalized back-door set.
+#'
+#' @param cg An AG-family (AG, MAG) or PAG graph created with [cgraph()].
+#' @param x Node name.
+#' @param y Node name, or character vector of node names.
+#' @return Sorted character vector of node names.
+#' @references
+#' \insertRef{maathuiscolombo2015gbc}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   mag <- cgraph(A %<->% X, A %-->% M, M %-->% Y, X %-->% Y, class = "MAG")
+#'   list(
+#'     possible_d_sep = possible_d_sep(mag, "X", "Y"),
+#'     backdoor_set = backdoor_set(mag, "X", "Y") # M_X drops X --> Y
+#'   )
+#' }
+possible_d_sep <- function(cg, x, y) {
+  fn("possible_d_sep")(cg, x, as.character(y))
+}
+
+#' Enumerate possible parent sets (local IDA)
+#'
+#' Returns every possible parental set of `x` implied by `cg`: the
+#' graph-only half of the local IDA algorithm. One entry is returned per
+#' locally valid orientation of `x`'s undirected neighbors (not per DAG in
+#' the Markov equivalence class of `cg` - the two collections agree when
+#' read as sets, but their multiplicities differ in general).
+#'
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @param x Node name.
+#' @return List of character vectors, one per locally valid orientation.
+#' @references
+#' \insertRef{maathuis2009estimating}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   cpdag <- cgraph(
+#'     X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
+#'     class = "CPDAG"
+#'   )
+#'   possible_parent_sets(cpdag, "X1")
+#' }
+possible_parent_sets <- function(cg, x) {
+  split_sets(fn("possible_parent_sets")(cg, x))
+}
+
+#' Enumerate possible joint parent sets (joint-IDA)
+#'
+#' Generalizes [possible_parent_sets()] from a single intervention node to a
+#' set `xs` of simultaneous interventions: every undirected edge incident to
+#' at least one node of `xs` is jointly reoriented, keeping only orientations
+#' that introduce no new v-structure and remain acyclic. Each returned entry
+#' is a list of parent sets in the same order as `xs` (entry `i` gives a
+#' valid parent set for `xs[i]` under that joint orientation).
+#'
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @param xs Character vector of node names (the simultaneous interventions;
+#'   must be non-empty with no duplicates).
+#' @return List of lists of character vectors: one list per valid joint
+#'   orientation, each containing one parent set per node of `xs`.
+#' @references
+#' \insertRef{maathuis2009estimating}{CausalStructures}
+#'
+#' \insertRef{nandy2017jointida}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   cpdag <- cgraph(
+#'     X1 %---% X2, X1 %---% A, X2 %---% B, A %-->% Y, B %-->% Y,
+#'     class = "CPDAG"
+#'   )
+#'   possible_joint_parent_sets(cpdag, c("X1", "X2"))
+#' }
+possible_joint_parent_sets <- function(cg, xs) {
+  split_sets_of_sets(fn("possible_joint_parent_sets")(cg, as.character(xs)))
+}
+
+#' Enumerate possible optimal adjustment sets (O-set-based IDA)
+#'
+#' Returns the optimal adjustment set for each locally valid orientation of
+#' `x`'s undirected neighbors in `cg`: the graph part of optimal-adjustment
+#' IDA. Entries are in the same order (one per locally valid orientation) as
+#' [possible_parent_sets()]`(cg, x)`, so pairing the two element-wise
+#' recovers, for each orientation, both its parent set and its optimal
+#' adjustment set. An entry is `NULL` when `y` is among the resulting parents
+#' of `x` for that orientation.
+#'
+#' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
+#'   [cgraph()].
+#' @param x,y Exposure and outcome node names.
+#' @return List of character vectors, or `NULL` entries, one per locally
+#'   valid orientation of `x`'s undirected neighbors.
+#' @references
+#' \insertRef{maathuis2009estimating}{CausalStructures}
+#'
+#' \insertRef{henckel2022graphical}{CausalStructures}
+#'
+#' \insertRef{witte2020efficient}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   cpdag <- cgraph(
+#'     X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
+#'     class = "CPDAG"
+#'   )
+#'   list(
+#'     parent_sets = possible_parent_sets(cpdag, "X1"),
+#'     optimal_adjustment_sets = possible_optimal_adjustment_sets(
+#'       cpdag, "X1", "Y"
+#'     )
+#'   )
+#' }
+possible_optimal_adjustment_sets <- function(cg, x, y) {
+  split_opt_sets(fn("possible_optimal_adjustment_sets")(cg, x, y))
+}
+
+# --- PAGcauses and local MAG structures ---------------------------------------
+
+#' Enumerate valid local structures at a node of a PAG
+#'
+#' Returns every valid local structure at `x` in the PAG `cg`: each entry is
+#' a subset of `x`'s circle-marked neighbors for which a MAG consistent with
+#' `cg` exists with a bidirected edge to every node in the subset and a
+#' directed edge away from `x` to every other circle-marked neighbor. Pair an
+#' entry with [maximal_local_mag()] to get the corresponding graph; this is
+#' the graph-only ingredient [pagcauses()] enumerates local structures with.
+#'
+#' Assumes `cg` has no selection bias (no undirected edges).
+#'
+#' @param cg A PAG created with [cgraph()].
+#' @param x Node name.
+#' @return List of character vectors, one per valid local structure.
+#' @references
+#' \insertRef{wang2023localbk}{CausalStructures}
+#'
+#' \insertRef{wang2025pagcauses}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   pag <- cgraph(
+#'     X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
+#'     B %o->% C, B %o->% Y, B %o->% A,
+#'     class = "PAG"
+#'   )
+#'   possible_local_structures(pag, "X")
+#' }
+possible_local_structures <- function(cg, x) {
+  split_sets(fn("possible_local_structures")(cg, x))
+}
+
+#' Build the maximal local MAG for a local structure
+#'
+#' Returns the maximal local MAG for the local structure `c` at `x` in the
+#' PAG `cg`: `cg` with a bidirected edge from `x` to every node in `c` and a
+#' directed edge from `x` to every other circle-marked neighbor, treated as
+#' local background knowledge and closed under the corresponding rule set.
+#' `c` should be a valid local structure, i.e. an entry of
+#' [possible_local_structures()]`(cg, x)`; passing an invalid one gives an
+#' unsound result. The returned graph may still contain circles, which is why
+#' it is returned as class `"UNKNOWN"` rather than validated as a MAG or PAG.
+#'
+#' Assumes `cg` has no selection bias (no undirected edges).
+#'
+#' @param cg A PAG created with [cgraph()].
+#' @param x Node name.
+#' @param c Character vector of node names: a valid local structure at `x`.
+#' @return A Julia proxy object representing the resulting `"UNKNOWN"` graph.
+#' @references
+#' \insertRef{wang2023localbk}{CausalStructures}
+#'
+#' \insertRef{wang2025pagcauses}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   mag <- cgraph(
+#'     A %<->% X, B %-->% X, A %<->% B, X %-->% Y,
+#'     class = "MAG"
+#'   )
+#'   pag <- mag_to_pag(mag)
+#'   maximal_local_mag(pag, "X", "A")
+#' }
+maximal_local_mag <- function(cg, x, c) {
+  .tag_cgraph(fn("maximal_local_mag")(cg, x, as.character(c)))
+}
+
+#' Find every possible causal effect in a PAG (PAGcauses)
+#'
+#' Returns every valid adjustment set relative to `(x, y)` in some MAG
+#' consistent with the PAG `cg`: the set of possible causal effects of `x` on
+#' `y` identifiable via covariate adjustment, found without enumerating MAGs
+#' (PAGcauses, Algorithm 1). If `x` is not a possible ancestor of `y`,
+#' returns an empty list (no causal effect). If the causal effect is already
+#' identifiable directly in `cg` ([backdoor_set()]), returns that single set.
+#' Otherwise, this searches every valid local structure at `x`
+#' ([possible_local_structures()]) and its maximal local MAG
+#' ([maximal_local_mag()]) for potential adjustment sets.
+#'
+#' Assumes `cg` has no selection bias (no undirected edges).
+#'
+#' @param cg A PAG created with [cgraph()].
+#' @param x,y Exposure and outcome node names.
+#' @return List of character vectors (empty list if `x` has no possible
+#'   causal effect on `y`).
+#' @references
+#' \insertRef{wang2025pagcauses}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   pag <- cgraph(
+#'     X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
+#'     B %o->% C, B %o->% Y, B %o->% A,
+#'     class = "PAG"
+#'   )
+#'   pagcauses(pag, "X", "Y")
+#' }
+pagcauses <- function(cg, x, y) {
+  split_sets(fn("pagcauses")(cg, x, y))
 }

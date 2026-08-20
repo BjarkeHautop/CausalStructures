@@ -26,7 +26,7 @@
 \item{layout}{Specifies the layout. Can be:
 \itemize{
 \item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
-(\code{"circle"}, \code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
+(\code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
 \code{"shell"}, \code{"squaregrid"}).
 \item A layout function, called with \code{x} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.

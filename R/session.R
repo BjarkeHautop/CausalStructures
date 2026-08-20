@@ -13,7 +13,15 @@
 #   (e.g. `"-->"`, `"o-o"`).
 # - Nested "list of sets" results (`all_backdoor_sets` and friends) still
 #   need a joined-string convention, since `Vector{Vector{String}}` doesn't
-#   auto-convert; see split_sets().
+#   auto-convert; see split_sets(). Each item is prefixed with a `\x01`
+#   marker byte before joining (`_CausalStructures_mjoin()`), so that no
+#   split fragment - including a trailing one - is ever literally "",
+#   letting a genuine empty set round-trip even when it is the list's last
+#   element (plain `strsplit()` silently drops a trailing empty match).
+#   Three shapes reuse this: `_CausalStructures_sets()` (list of sets),
+#   `_CausalStructures_opt_sets()` (list of optional sets, `\x02` marking a
+#   `nothing` entry), and `_CausalStructures_sets_of_sets()` (list of lists
+#   of sets, e.g. `possible_joint_parent_sets()`).
 # - No session-restart detection: no separate process to reconnect to - if
 #   the embedded Julia dies, so does R. setup() is a plain do-once guard.
 # - JuliaCall exposes no way to tear down and restart the embedded runtime
@@ -70,7 +78,18 @@
   "reclass",
   "layout",
   "edge_marks",
-  "show"
+  "show",
+  "meek_closure",
+  "id",
+  "idc",
+  "backdoor_set",
+  "possible_parent_sets",
+  "possible_joint_parent_sets",
+  "possible_optimal_adjustment_sets",
+  "possible_d_sep",
+  "possible_local_structures",
+  "maximal_local_mag",
+  "pagcauses"
 )
 
 # Functions called directly (graph proxy in, Bool or graph proxy out)
@@ -90,7 +109,6 @@
   "moralize",
   "dag_to_cpdag",
   "dag_from_pdag",
-  "meek_closure",
   "dag_to_mpdag",
   "count_dags",
   "ag_to_mag",
@@ -104,8 +122,20 @@
   '_CausalStructures_syms(x) = x isa AbstractString ? [Symbol(x)] : Symbol.(x)',
   '_CausalStructures_sorted(x) = sort!(String.(collect(x)))',
   '_CausalStructures_opt(s) = s === nothing ? nothing : _CausalStructures_sorted(s)',
-  '_CausalStructures_sets(sets) = isempty(sets) ? nothing :
-      join((join(sort!(String.(collect(s))), "\x1f") for s in sets), "\x1e")',
+
+  '_CausalStructures_mjoin(items, sep) = join(("\x01" * i for i in items), sep)',
+  '_CausalStructures_leaf(s) = join(sort!(String.(collect(s))), "\x1f")',
+  '_CausalStructures_sets(sets) = _CausalStructures_mjoin(_CausalStructures_leaf.(sets), "\x1e")',
+
+  'function _CausalStructures_opt_sets(sets)
+      _CausalStructures_mjoin(
+          [s === nothing ? "\x02" : _CausalStructures_leaf(s) for s in sets], "\x1e"
+      )
+  end',
+
+  'function _CausalStructures_sets_of_sets(groups)
+      _CausalStructures_mjoin([_CausalStructures_sets(g) for g in groups], "\x1d")
+  end',
 
   '_CausalStructures_cgraph(spec, class) =
       _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)))',
@@ -151,40 +181,40 @@
 
   'for f in (:d_separated, :m_separated)
       @eval $(Symbol(:_CausalStructures_, f))(g, x, y, given) =
-          _CausalStructures_CS.$f(g, Symbol(x), Symbol(y), _CausalStructures_syms(given))
+          _CausalStructures_CS.$f(g, _CausalStructures_syms(x), _CausalStructures_syms(y), _CausalStructures_syms(given))
   end',
 
   'function _CausalStructures_minimal_separator(g, x, y, include, restrict)
-      _CausalStructures_opt(_CausalStructures_CS.minimal_separator(g, Symbol(x), Symbol(y);
+      _CausalStructures_opt(_CausalStructures_CS.minimal_separator(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
           include = _CausalStructures_syms(include),
           restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
 
   'function _CausalStructures_adjustment_set(g, x, y, type)
       result = if g isa Union{_CausalStructures_CS.DAG,_CausalStructures_CS.AbstractPDAG}
-          _CausalStructures_CS.adjustment_set(g, Symbol(x), Symbol(y); type = Symbol(type))
+          _CausalStructures_CS.adjustment_set(g, _CausalStructures_syms(x), _CausalStructures_syms(y); type = Symbol(type))
       else
-          _CausalStructures_CS.adjustment_set(g, Symbol(x), Symbol(y))
+          _CausalStructures_CS.adjustment_set(g, _CausalStructures_syms(x), _CausalStructures_syms(y))
       end
       _CausalStructures_opt(result)
   end',
 
   'function _CausalStructures_frontdoor_set(g, x, y, include, restrict)
-      _CausalStructures_opt(_CausalStructures_CS.frontdoor_set(g, Symbol(x), Symbol(y);
+      _CausalStructures_opt(_CausalStructures_CS.frontdoor_set(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
           include = _CausalStructures_syms(include),
           restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
 
   '_CausalStructures_is_valid_backdoor(g, x, y, z) =
-      _CausalStructures_CS.is_valid_backdoor(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
+      _CausalStructures_CS.is_valid_backdoor(g, _CausalStructures_syms(x), _CausalStructures_syms(y), _CausalStructures_syms(z))',
 
   'function _CausalStructures_all_backdoor_sets(g, x, y, minimal, max_size)
-      _CausalStructures_sets(_CausalStructures_CS.all_backdoor_sets(g, Symbol(x), Symbol(y);
+      _CausalStructures_sets(_CausalStructures_CS.all_backdoor_sets(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
   'function _CausalStructures_all_frontdoor_sets(g, x, y, include, restrict)
-      _CausalStructures_sets(_CausalStructures_CS.all_frontdoor_sets(g, Symbol(x), Symbol(y);
+      _CausalStructures_sets(_CausalStructures_CS.all_frontdoor_sets(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
           include = _CausalStructures_syms(include),
           restrict = restrict === nothing ? nothing : _CausalStructures_syms(restrict)))
   end',
@@ -204,15 +234,15 @@
   end',
 
   '_CausalStructures_is_valid_adjustment(g, x, y, z) =
-      _CausalStructures_CS.is_valid_adjustment(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
+      _CausalStructures_CS.is_valid_adjustment(g, _CausalStructures_syms(x), _CausalStructures_syms(y), _CausalStructures_syms(z))',
 
   'function _CausalStructures_all_adjustment_sets(g, x, y, minimal, max_size)
-      _CausalStructures_sets(_CausalStructures_CS.all_adjustment_sets(g, Symbol(x), Symbol(y);
+      _CausalStructures_sets(_CausalStructures_CS.all_adjustment_sets(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
   '_CausalStructures_is_valid_frontdoor(g, x, y, z) =
-      _CausalStructures_CS.is_valid_frontdoor(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
+      _CausalStructures_CS.is_valid_frontdoor(g, _CausalStructures_syms(x), _CausalStructures_syms(y), _CausalStructures_syms(z))',
 
   'function _CausalStructures_simulate_data(g, n, rng, standardize, coef_range, error_sd)
       kwargs = (
@@ -235,10 +265,10 @@
   '_CausalStructures_markov_equivalent(g1, g2) = _CausalStructures_CS.markov_equivalent(g1, g2)',
 
   '_CausalStructures_is_valid_iv(g, x, y, z) =
-      _CausalStructures_CS.is_valid_iv(g, Symbol(x), Symbol(y), _CausalStructures_syms(z))',
+      _CausalStructures_CS.is_valid_iv(g, Symbol(x), _CausalStructures_syms(y), _CausalStructures_syms(z))',
 
   'function _CausalStructures_all_iv_sets(g, x, y, minimal, max_size)
-      _CausalStructures_sets(_CausalStructures_CS.all_iv_sets(g, Symbol(x), Symbol(y);
+      _CausalStructures_sets(_CausalStructures_CS.all_iv_sets(g, Symbol(x), _CausalStructures_syms(y);
           minimal = minimal, max_size = Int(max_size)))
   end',
 
@@ -267,16 +297,56 @@
   end',
 
   'function _CausalStructures_layout(g, method)
-      pts = _CausalStructures_CS.layout(g, Symbol(method))
-      m = Matrix{Float64}(undef, length(pts), 2)
-      for (i, p) in enumerate(pts)
+      d = _CausalStructures_CS.layout(g, Symbol(method))
+      nms = String.(_CausalStructures_CS.nodes(g))
+      m = Matrix{Float64}(undef, length(nms), 2)
+      for (i, nm) in enumerate(nms)
+          p = d[Symbol(nm)]
           m[i, 1] = p[1]
           m[i, 2] = p[2]
       end
       m
   end',
 
-  '_CausalStructures_show(g) = sprint(show, g)'
+  '_CausalStructures_show(g) = sprint(show, g)',
+
+  '_CausalStructures_meek_closure(g, check_cycles, r4) =
+      _CausalStructures_CS.meek_closure(g; check_cycles = check_cycles, r4 = r4)',
+
+  'function _CausalStructures_id(g, x, y)
+      r = _CausalStructures_CS.id(g, _CausalStructures_syms(x), _CausalStructures_syms(y))
+      r === nothing ? nothing : string(r)
+  end',
+
+  'function _CausalStructures_idc(g, x, y, given)
+      r = _CausalStructures_CS.idc(g, _CausalStructures_syms(x), _CausalStructures_syms(y);
+          given = _CausalStructures_syms(given))
+      r === nothing ? nothing : string(r)
+  end',
+
+  '_CausalStructures_backdoor_set(g, x, y) =
+      _CausalStructures_opt(_CausalStructures_CS.backdoor_set(g, Symbol(x), Symbol(y)))',
+
+  '_CausalStructures_possible_parent_sets(g, x) =
+      _CausalStructures_sets(_CausalStructures_CS.possible_parent_sets(g, Symbol(x)))',
+
+  '_CausalStructures_possible_joint_parent_sets(g, xs) =
+      _CausalStructures_sets_of_sets(_CausalStructures_CS.possible_joint_parent_sets(g, _CausalStructures_syms(xs)))',
+
+  '_CausalStructures_possible_optimal_adjustment_sets(g, x, y) =
+      _CausalStructures_opt_sets(_CausalStructures_CS.possible_optimal_adjustment_sets(g, Symbol(x), Symbol(y)))',
+
+  '_CausalStructures_possible_d_sep(g, x, y) =
+      _CausalStructures_sorted(_CausalStructures_CS.possible_d_sep(g, Symbol(x), _CausalStructures_syms(y)))',
+
+  '_CausalStructures_possible_local_structures(g, x) =
+      _CausalStructures_sets(_CausalStructures_CS.possible_local_structures(g, Symbol(x)))',
+
+  '_CausalStructures_maximal_local_mag(g, x, c) =
+      _CausalStructures_CS.maximal_local_mag(g, Symbol(x), _CausalStructures_syms(c))',
+
+  '_CausalStructures_pagcauses(g, x, y) =
+      _CausalStructures_sets(_CausalStructures_CS.pagcauses(g, Symbol(x), Symbol(y)))'
 )
 
 #' Package options
@@ -284,12 +354,6 @@
 #' `CausalStructures` reads the following [options()]:
 #'
 #' \describe{
-#'   \item{`CausalStructures.causalstructures_path`}{Path to a Julia project
-#'     for [setup()] to activate, overriding the default of the
-#'     `CausalStructures` environment shipped in this package's `inst/`
-#'     directory. Useful for testing unreleased CausalStructures.jl changes
-#'     against a local checkout (e.g. while co-developing both packages in
-#'     the same monorepo).}
 #'   \item{`CausalStructures.auto_install`}{Logical, default `FALSE`. When
 #'     [setup()] needs to install or update Julia package dependencies and R
 #'     is running non-interactively, this must be set to `TRUE` beforehand
@@ -311,20 +375,13 @@ NULL
 
 #' Path to the Julia project [setup()] should activate
 #'
-#' Defaults to the `CausalStructures` environment shipped in this package's
-#' `inst/` directory (`Project.toml` + `Manifest.toml`), which pulls
-#' CausalStructures.jl from the Julia General registry. Override with the
-#' `CausalStructures.causalstructures_path` option to activate a different
-#' project instead - e.g. a local `CausalStructures.jl/` checkout, to test
-#' unreleased changes while co-developing both packages in this monorepo.
+#' The `CausalStructures` environment shipped in this package's `inst/`
+#' directory (`Project.toml` + `Manifest.toml`), which pulls
+#' CausalStructures.jl from the Julia General registry.
 #'
 #' @return Absolute path to the Julia project directory.
 #' @keywords internal
 pkg_path <- function() {
-  override <- getOption("CausalStructures.causalstructures_path")
-  if (!is.null(override)) {
-    return(normalizePath(override, mustWork = TRUE))
-  }
   normalizePath(
     dirname(system.file(
       "Project.toml",
@@ -573,26 +630,42 @@ make_rng <- function(seed) {
   JuliaCall::julia_call("Random.Xoshiro", as.integer(seed))
 }
 
-# Only used by split_sets() now (nested "list of sets" results); flat
-# results return a plain Vector{String}, which JuliaCall auto-converts.
-split <- function(x) {
+# Decode the marker-prefixed joins built by _CausalStructures_mjoin(): every
+# item was prefixed with a "\x01" byte before joining on `sep`, so no split
+# fragment - including a trailing one - is ever literally "", letting a
+# genuine empty item round-trip even when it is the list's last element
+# (plain strsplit() silently drops a trailing empty match). Zero items
+# encodes to "", which strsplit() already turns into character(0).
+.msplit <- function(x, sep) {
   x <- as.character(x)
-  if (identical(x, "")) {
-    character(0)
-  } else {
-    strsplit(x, "\x1f", fixed = TRUE, useBytes = TRUE)[[1]]
-  }
+  parts <- strsplit(x, sep, fixed = TRUE, useBytes = TRUE)[[1]]
+  substring(parts, 2)
 }
 
+# A leaf set (Vector{Symbol}, sorted and joined on "\x1f" Julia-side).
+split_leaf <- function(s) {
+  if (identical(s, "")) {
+    return(character(0))
+  }
+  strsplit(s, "\x1f", fixed = TRUE, useBytes = TRUE)[[1]]
+}
+
+# Nested "list of sets" results (`all_backdoor_sets` and friends).
 split_sets <- function(x) {
-  if (is.null(x)) {
-    return(list())
-  }
-  x <- as.character(x)
-  if (identical(x, "")) {
-    return(list(character(0)))
-  }
-  lapply(strsplit(x, "\x1e", fixed = TRUE, useBytes = TRUE)[[1]], split)
+  lapply(.msplit(x, "\x1e"), split_leaf)
+}
+
+# Nested "list of optional sets" (`possible_optimal_adjustment_sets()`):
+# "\x02" marks an entry that was `nothing` Julia-side.
+split_opt_sets <- function(x) {
+  lapply(.msplit(x, "\x1e"), function(s) {
+    if (identical(s, "\x02")) NULL else split_leaf(s)
+  })
+}
+
+# Nested "list of lists of sets" (`possible_joint_parent_sets()`).
+split_sets_of_sets <- function(x) {
+  lapply(.msplit(x, "\x1d"), split_sets)
 }
 
 # Wrapper factories

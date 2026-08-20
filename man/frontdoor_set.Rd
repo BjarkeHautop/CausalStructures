@@ -12,7 +12,8 @@ and condition-3 checks use m-separation, with bidirected edges treated
 as latent-confounder edges (a spouse contributes an arrowhead into a
 node just like a directed parent does).}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{include}{Character vector of nodes forced into the set.}
 

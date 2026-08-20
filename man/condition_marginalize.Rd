@@ -7,7 +7,8 @@
 condition_marginalize(cg, cond_vars = character(), marg_vars = character())
 }
 \arguments{
-\item{cg}{A DAG or AG-family (AG, MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, ADMG, or AG-family (AG, MAG) graph created with
+\code{\link[=cgraph]{cgraph()}}.}
 
 \item{cond_vars}{Character vector of node names to condition on.}
 

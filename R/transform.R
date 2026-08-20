@@ -89,6 +89,12 @@ dag_from_pdag <- cgraph_fn("dag_from_pdag")
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
+#' @param check_cycles If `TRUE` (default), reject an orientation that would
+#'   introduce a directed cycle. Disabling this can speed up closure when
+#'   `cg` is known to admit no such cycle.
+#' @param r4 If `TRUE` (default), apply rule R4. Disabling this can speed up
+#'   closure when `cg` is known not to need it (e.g. it has no background
+#'   knowledge beyond the v-structures already encoded in it).
 #' @return An `MPDAG` graph proxy.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
@@ -98,7 +104,9 @@ dag_from_pdag <- cgraph_fn("dag_from_pdag")
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
 #'   meek_closure(pdag)
 #' }
-meek_closure <- cgraph_fn("meek_closure")
+meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
+  .tag_cgraph(fn("meek_closure")(cg, check_cycles, r4))
+}
 
 #' Convert a DAG to its MPDAG
 #'
@@ -266,7 +274,8 @@ normalize_latent_structure <- function(cg, latents) {
 #' on `cond_vars` and marginalizing out `marg_vars`. At least one of the two
 #' must be non-empty, and they must be disjoint.
 #'
-#' @param cg A DAG or AG-family (AG, MAG) graph created with [cgraph()].
+#' @param cg A DAG, ADMG, or AG-family (AG, MAG) graph created with
+#'   [cgraph()].
 #' @param cond_vars Character vector of node names to condition on.
 #' @param marg_vars Character vector of node names to marginalize out.
 #' @return A Julia proxy object representing the resulting AG.

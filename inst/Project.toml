@@ -4,7 +4,7 @@ NetworkLayout = "46757867-2c16-5918-afeb-47bfcb05e46a"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-CausalStructures = "0.2"
+CausalStructures = "0.3.1"
 julia = "1.10"
 NetworkLayout = "0.4.10"
 Random = "1"

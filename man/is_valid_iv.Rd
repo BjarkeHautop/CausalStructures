@@ -9,7 +9,9 @@ is_valid_iv(cg, x, y, z = character())
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x}{Exposure node name.}
+
+\item{y}{Outcome node name, or character vector of node names.}
 
 \item{z}{Character vector of instrument node names.}
 }

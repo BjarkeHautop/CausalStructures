@@ -10,7 +10,8 @@ minimal_separator(cg, x, y, include = character(), restrict = NULL)
 \item{cg}{A DAG, ADMG, AG-family (AG, MAG), PDAG-family (PDAG, CPDAG,
 MPDAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Node names.}
+\item{x, y}{Node name, or character vector of node names (to separate the
+two \emph{sets}).}
 
 \item{include}{Character vector of nodes forced into the separator (must
 be a subset of \code{restrict}, if given).}

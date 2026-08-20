@@ -196,7 +196,7 @@ possible_descendants <- function(
 #' for a PDAG-family or AG-family graph, undirected edges extend the
 #' reachable set beyond strict ancestors/descendants.
 #'
-#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
+#' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
 #'   MAG) graph created with [cgraph()].
 #' @param node Node name.
 #' @param open If `TRUE` (default, from the `CausalStructures.open` option),

@@ -265,6 +265,10 @@ test_that("separation queries work", {
   expect_true(m_separated(pag, "A", "C")) # collider at B is blocked
   expect_false(m_separated(pag, "A", "C", "B")) # conditioning opens it
   expect_identical(minimal_separator(pag, "A", "C"), character(0))
+
+  # x/y accept a character vector of nodes (querying separation of sets)
+  expect_false(d_separated(dag, "M", c("A", "X"))) # X --> M is a direct edge
+  expect_true(d_separated(dag, "M", "A", "X")) # blocked by conditioning on X
 })
 
 test_that("identification works", {
@@ -287,6 +291,14 @@ test_that("identification works", {
   # Test frontdoor criterion on the appropriate graph
   expect_true(is_valid_frontdoor(dag, "X", "Y", "M"))
   expect_false(is_valid_frontdoor(dag, "X", "Y"))
+
+  # x/y accept a character vector of nodes (querying a set of
+  # treatments/outcomes)
+  two_x <- cgraph(A %-->% X1 + X2, X1 %-->% Y, X2 %-->% Y)
+  expect_identical(
+    adjustment_set(two_x, c("X1", "X2"), "Y", type = "parents"),
+    "A"
+  )
 })
 
 test_that("adjustment criterion works", {
@@ -312,6 +324,10 @@ test_that("adjustment criterion works", {
   expect_true(is_valid_adjustment(pag, "X", "Y", "A"))
   expect_false(is_valid_adjustment(pag, "X", "Y"))
   expect_identical(all_adjustment_sets(pag, "X", "Y"), list("A"))
+
+  # adjustment_set() also supports ADMG (type is ignored, as for MAG/PAG)
+  admg <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "ADMG")
+  expect_identical(adjustment_set(admg, "X", "Y"), "A")
 })
 
 test_that("instrumental variables work", {
@@ -359,4 +375,130 @@ test_that("data simulation works", {
   # With seed, the same data should be produced
   data2 <- simulate_data(dag, n = 100, seed = 1405)
   expect_equal(data, data2)
+})
+
+test_that("meek_closure accepts check_cycles/r4", {
+  skip_if_no_julia()
+  pdag <- cgraph(A %-->% X, X %---% Y, class = "PDAG")
+  mpdag <- meek_closure(pdag, check_cycles = TRUE, r4 = FALSE)
+  expect_s3_class(mpdag, "cgraph")
+  expect_true(is_mpdag(mpdag))
+})
+
+test_that("anteriors/posteriors and condition_marginalize accept ADMG", {
+  skip_if_no_julia()
+  admg <- cgraph(A %-->% X, X %-->% Y, class = "ADMG")
+  # For an ADMG, anteriors()/posteriors() are equivalent to
+  # ancestors()/descendants() (bidirected edges don't extend reachability).
+  expect_identical(anteriors(admg, "Y"), ancestors(admg, "Y"))
+  expect_identical(posteriors(admg, "A"), descendants(admg, "A"))
+  expect_identical(anteriors(admg, "Y"), c("A", "X"))
+
+  admg2 <- cgraph(A %-->% X, X %<->% Y, class = "ADMG")
+  ag <- condition_marginalize(admg2, marg_vars = "X")
+  expect_s3_class(ag, "cgraph")
+})
+
+test_that("id/idc identify interventional distributions", {
+  skip_if_no_julia()
+  dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
+  expect_identical(id(dag, "X", "Y"), "Σ_{Z} P(Y | X, Z) P(Z)")
+  expect_identical(idc(dag, "X", "Y", given = "Z"), "P(Y | X, Z)")
+
+  admg <- cgraph(X %-->% M, M %-->% Y, X %<->% Y, class = "ADMG")
+  expect_false(is.null(id(admg, "X", "Y")))
+
+  bow <- cgraph(X %-->% Y, X %<->% Y, class = "ADMG")
+  expect_null(id(bow, "X", "Y"))
+})
+
+test_that("backdoor_set and possible_d_sep work", {
+  skip_if_no_julia()
+  cpdag <- cgraph(A %-->% X, C %-->% X, X %-->% Y, class = "CPDAG")
+  expect_identical(sort(backdoor_set(cpdag, "X", "Y")), c("A", "C"))
+
+  cpdag2 <- cgraph(X %---% Y, class = "CPDAG")
+  expect_null(backdoor_set(cpdag2, "X", "Y"))
+
+  mag <- cgraph(A %<->% X, A %-->% M, M %-->% Y, X %-->% Y, class = "MAG")
+  expect_identical(
+    sort(possible_d_sep(mag, "X", "Y")),
+    c("A", "M", "Y")
+  )
+})
+
+test_that("possible_parent_sets/possible_optimal_adjustment_sets pair up", {
+  skip_if_no_julia()
+  cpdag <- cgraph(
+    X1 %---% X2,
+    X1 %---% X3,
+    X1 %---% X4,
+    X3 %-->% Y,
+    X4 %-->% Y,
+    class = "CPDAG"
+  )
+  parent_sets <- possible_parent_sets(cpdag, "X1")
+  opt_sets <- possible_optimal_adjustment_sets(cpdag, "X1", "Y")
+
+  expect_length(parent_sets, 4)
+  expect_length(opt_sets, length(parent_sets))
+  # A trailing/embedded empty set must round-trip correctly (regression test
+  # for the joined-string encoding): the empty parental set is present.
+  expect_true(any(vapply(parent_sets, function(s) length(s) == 0, logical(1))))
+  # The orientation with an empty parent set has an empty optimal adjustment
+  # set too (pairing by index).
+  empty_idx <- which(vapply(
+    parent_sets,
+    function(s) length(s) == 0,
+    logical(1)
+  ))
+  expect_identical(opt_sets[[empty_idx]], character(0))
+})
+
+test_that("possible_joint_parent_sets enumerates joint orientations", {
+  skip_if_no_julia()
+  cpdag <- cgraph(
+    X1 %---% X2,
+    X1 %---% A,
+    X2 %---% B,
+    A %-->% Y,
+    B %-->% Y,
+    class = "CPDAG"
+  )
+  groups <- possible_joint_parent_sets(cpdag, c("X1", "X2"))
+  expect_length(groups, 4)
+  for (g in groups) {
+    expect_length(g, 2)
+  }
+})
+
+test_that("possible_local_structures/maximal_local_mag/pagcauses work", {
+  skip_if_no_julia()
+  pag <- cgraph(
+    X %o->% Y,
+    X %o->% C,
+    X %o->% A,
+    Y %o-o% C,
+    C %o-o% A,
+    B %o->% C,
+    B %o->% Y,
+    B %o->% A,
+    class = "PAG"
+  )
+  structures <- possible_local_structures(pag, "X")
+  expect_true(length(structures) > 0)
+
+  mag <- cgraph(A %<->% X, B %-->% X, A %<->% B, X %-->% Y, class = "MAG")
+  small_pag <- mag_to_pag(mag)
+  local_mag <- maximal_local_mag(small_pag, "X", "A")
+  expect_s3_class(local_mag, "cgraph")
+
+  causes <- pagcauses(pag, "X", "Y")
+  expect_type(causes, "list")
+})
+
+test_that("cgraph_layout no longer accepts the removed circle method", {
+  skip_if_no_julia()
+  dag <- cgraph(A %-->% B, B %-->% C)
+  expect_error(cgraph_layout(dag, method = "circle"))
 })

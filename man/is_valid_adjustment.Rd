@@ -10,7 +10,8 @@ is_valid_adjustment(cg, x, y, given = character())
 \item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
 MAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{given}{Character vector of adjustment node names (may be empty).}
 }

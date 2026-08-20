@@ -10,7 +10,8 @@ all_frontdoor_sets(cg, x, y, include = character(), restrict = NULL)
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}. For an ADMG, see the note
 on m-separation in \code{\link[=frontdoor_set]{frontdoor_set()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{include}{Character vector of nodes forced into every set.}
 

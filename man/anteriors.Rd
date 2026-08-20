@@ -10,7 +10,7 @@ anteriors(cg, node, open = getOption("CausalStructures.open", TRUE))
 posteriors(cg, node, open = getOption("CausalStructures.open", TRUE))
 }
 \arguments{
-\item{cg}{A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
+\item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
 MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{node}{Node name.}

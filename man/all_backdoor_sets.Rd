@@ -9,7 +9,8 @@ all_backdoor_sets(cg, x, y, minimal = TRUE, max_size = 3)
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{minimal}{If \code{TRUE} (default), return only minimal sets.}
 

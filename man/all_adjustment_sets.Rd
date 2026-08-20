@@ -10,7 +10,8 @@ all_adjustment_sets(cg, x, y, minimal = TRUE, max_size = 3)
 \item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
 MAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names.}
 
 \item{minimal}{If \code{TRUE} (default), return only minimal sets.}
 

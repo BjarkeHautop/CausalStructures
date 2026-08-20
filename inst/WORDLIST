@@ -1,6 +1,7 @@
 ADMG
 ADMGs
 Bezier
+Bidirected
 CMD
 CPDAG
 CSR
@@ -10,6 +11,8 @@ DAGs
 Dor
 Erdős
 Fruchterman
+GBC
+IDC
 JIT
 Kuipers
 MAGs
@@ -20,10 +23,12 @@ Meek’s
 Moffa
 NetworkLayout
 PAG
+PAGcauses
 PAGs
 PDAG
 Reingold
 Rényi
+Shpitser
 UG
 Verma
 Zhang's
@@ -36,11 +41,11 @@ erroring
 exogenize
 exogenizes
 frontdoor
+interventional
 jl
 labelled
 latents
 majorization
-monorepo
 orientable
 pkgdown
 pre

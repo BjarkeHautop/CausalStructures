@@ -7,14 +7,16 @@
 adjustment_set(cg, x, y, type = c("optimal", "parents", "backdoor"))
 }
 \arguments{
-\item{cg}{A DAG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG, MAG)
-graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
+MAG), or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{x, y}{Exposure and outcome node names.}
+\item{x, y}{Exposure and outcome node name, or character vector of node
+names (to identify the effect of a set of exposures on a set of
+outcomes).}
 
 \item{type}{Adjustment set type: \code{"optimal"} (default), \code{"parents"}, or
-\code{"backdoor"}. Ignored for MAG-family graphs; \code{"backdoor"} is not
-supported for PDAG-family graphs.}
+\code{"backdoor"}. Ignored for ADMG, MAG-family, and PAG graphs; \code{"backdoor"}
+is not supported for PDAG-family graphs.}
 }
 \value{
 Character vector with a valid adjustment set, or \code{NULL} if none
@@ -29,8 +31,9 @@ The supported adjustment set types depend on the graph class:
 \item{DAG}{All three types are supported.}
 \item{PDAG-family (PDAG, CPDAG, MPDAG)}{Only \code{"parents"} and
 \code{"optimal"} are supported; \code{"backdoor"} raises an error.}
-\item{MAG-family (AG, MAG)}{\code{type} is ignored. The smallest valid
-adjustment set is returned by searching sets of increasing size.}
+\item{ADMG, MAG-family (AG, MAG), PAG}{\code{type} is ignored. The smallest
+valid adjustment set is returned by searching sets of increasing
+size.}
 }
 
 The available adjustment set types are:

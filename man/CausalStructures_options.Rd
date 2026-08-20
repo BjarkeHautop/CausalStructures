@@ -8,12 +8,6 @@
 }
 \details{
 \describe{
-\item{\code{CausalStructures.causalstructures_path}}{Path to a Julia project
-for \code{\link[=setup]{setup()}} to activate, overriding the default of the
-\code{CausalStructures} environment shipped in this package's \verb{inst/}
-directory. Useful for testing unreleased CausalStructures.jl changes
-against a local checkout (e.g. while co-developing both packages in
-the same monorepo).}
 \item{\code{CausalStructures.auto_install}}{Logical, default \code{FALSE}. When
 \code{\link[=setup]{setup()}} needs to install or update Julia package dependencies and R
 is running non-interactively, this must be set to \code{TRUE} beforehand
