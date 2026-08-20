@@ -120,3 +120,118 @@ test_that("print.cgraph_plot and plot.cgraph_plot redraw a saved plot", {
   expect_no_error(print(p))
   expect_no_error(plot(p))
 })
+
+test_that("node_style shape draws box and per-node overrides without error", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_no_error(plot(test_dag(), node_style = list(shape = "box")))
+  expect_no_error(plot(
+    test_dag(),
+    node_style = list(by_node = list(A = list(shape = "box")))
+  ))
+})
+
+test_that("node shape fitting caps aspect ratio unless the label is oblong", {
+  short <- .plot_shape_half_extents(
+    "round",
+    "A",
+    list(fontsize = 10),
+    2
+  )
+  expect_true(short[1] / short[2] <= 1.4 + 1e-8)
+  expect_equal(short[1], short[2])
+
+  long <- .plot_shape_half_extents(
+    "round",
+    "A very very long label indeed",
+    list(fontsize = 10),
+    2
+  )
+  expect_true(long[1] / long[2] > 1.4)
+})
+
+test_that("node_style linestyle draws without error", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_no_error(plot(test_dag(), node_style = list(linestyle = "dashed")))
+})
+
+test_that("labels overrides node text, falling back to the node name", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  p <- plot(test_dag(), labels = c(A = "Confounder"))
+  expect_s3_class(p, "cgraph_plot")
+
+  label_texts <- vapply(
+    p$grob$children$cs.graph$children$node_gtree$children,
+    function(g) {
+      if (grepl("^label", g$name)) as.character(g$label) else NA_character_
+    },
+    character(1)
+  )
+  label_texts <- label_texts[!is.na(label_texts)]
+  expect_true("Confounder" %in% label_texts)
+  # A node not in `labels` keeps its own name
+  expect_true("X" %in% label_texts)
+})
+
+test_that("layout accepts a named list of node positions", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  dict_layout <- list(A = c(0, 1), X = c(1, 1), Y = c(2, 0.5), M = c(1.5, 0))
+  expect_no_error(plot(test_dag(), layout = dict_layout))
+
+  incomplete <- list(A = c(0, 0), X = c(1, 0))
+  expect_error(
+    plot(test_dag(), layout = incomplete),
+    "missing a position"
+  )
+})
+
+test_that("edge_style curvature draws globally and per-edge without error", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_no_error(plot(test_dag(), edge_style = list(curvature = 0.3)))
+  expect_no_error(plot(
+    test_dag(),
+    edge_style = list(by_edge = list(A = list(X = list(curvature = -0.2))))
+  ))
+})
+
+test_that("by_edge .by_type disambiguates parallel edges of different types", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  admg <- cgraph("X --> Y, X <-> Y", class = "UNKNOWN")
+  by_type_style <- list(
+    by_edge = list(
+      X = list(
+        Y = list(
+          .by_type = list(
+            "-->" = list(col = "red"),
+            "<->" = list(col = "blue")
+          )
+        )
+      )
+    )
+  )
+  expect_no_error(plot(admg, edge_style = by_type_style))
+
+  edges <- .plot_edges(admg)
+  styles <- .plot_make_styles(list(), by_type_style, list(), list(), list())
+  s1 <- .plot_edge_style(edges, 1, styles$edge_style)
+  s2 <- .plot_edge_style(edges, 2, styles$edge_style)
+  expect_false(identical(s1$col, s2$col))
+  expect_setequal(c(s1$col, s2$col), c("red", "blue"))
+})

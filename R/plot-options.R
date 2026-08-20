@@ -35,13 +35,15 @@ plot_default_options <- function() {
       col = "black",
       lwd = 1,
       padding = 2,
-      size = 1
+      size = 1,
+      shape = "round"
     ),
     edge_style = list(
       col = "black",
       lwd = 1,
       arrow_size = 3,
-      circle_size = 1.5
+      circle_size = 1.5,
+      curvature = 0
     ),
     label_style = list(col = "black", fontsize = 10),
     title_style = list(col = "black", fontsize = 14, fontface = "bold"),
@@ -78,9 +80,10 @@ plot_default_options <- function() {
 #' @details
 #' Fields, matching the corresponding `plot.cgraph()` argument:
 #'
-#' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier)
+#' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier),
+#'   `shape` (`"round"` or `"box"`), `linestyle` (e.g. `"dashed"`)
 #' - `edge_style`: `col`, `lwd`, `fill` (arrowhead fill), `arrow_size` (mm),
-#'   `circle_size` (mm)
+#'   `circle_size` (mm), `curvature` (signed fraction of edge length)
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
 #' - `title_style`: same fields as `label_style`
 #' - `tier_style`: `boxes`, `labels`, `fill`, `col`, `lwd`, `padding` (mm),

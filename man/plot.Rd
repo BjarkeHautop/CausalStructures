@@ -10,6 +10,7 @@
   node_style = list(),
   edge_style = list(),
   label_style = list(),
+  labels = NULL,
   tier_style = list(),
   main = NULL,
   title_style = list(),
@@ -30,11 +31,19 @@
 \code{"shell"}, \code{"squaregrid"}).
 \item A layout function, called with \code{x} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
+\item A named list keyed by node name, each element a length-2 \code{c(x, y)},
+e.g. \code{list(A = c(0, 0), X = c(1, 0))}.
 }}
 
 \item{node_style}{List of node styling parameters: \code{fill}, \code{col}, \code{lwd},
-\code{padding} (mm, default 2), \code{size} (multiplier, default 1), and \code{by_node}
-(named list of per-node overrides).}
+\code{padding} (mm, default 2), \code{size} (multiplier, default 1), \code{shape}
+(\code{"round"} (default) or \code{"box"}; both are fitted to their label but
+rounded out to a circle/square unless the label is oblong enough to
+read as an ellipse/rectangle instead - edges clip to, and route around,
+the shape actually drawn), \code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} -
+any value grid's \code{lty} accepts - for a non-solid node border; default
+solid), and \code{by_node} (named list of per-node overrides, which can
+include \code{shape}/\code{linestyle} too).}
 
 \item{edge_style}{List of edge styling parameters. Can specify global
 options or per-type options via \code{directed}, \code{undirected}, \code{bidirected},
@@ -44,14 +53,33 @@ color; defaults to \code{col} so arrowheads render solid and match the edge -
 pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size} (mm,
 default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
 endpoints; an edge that would otherwise cross a non-incident node always
-bends around it as a Bezier curve), and \code{by_edge} (named list of
-per-edge or per-node overrides,
-keyed by node name(s)). Style precedence (highest to lowest): specific
-edge settings in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type
-settings > global settings.}
+bends around it as a Bezier curve unless \code{curvature} overrides this),
+\code{curvature} (default 0; bows an edge into an arc by this signed
+fraction of its length - positive bows left of the \code{from}-to-\code{to}
+direction, negative right; a non-zero value is a manual override that
+takes precedence over the automatic obstacle-avoidance bend above), and
+\code{by_edge} (named list of per-edge or per-node overrides, keyed by node
+name(s)). Style precedence (highest to lowest): specific edge settings
+in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type settings >
+global settings.
+
+\code{by_edge}'s pair-level entries (\code{by_edge[[from]][[to]]}) apply to every
+edge between that pair, which can't tell apart e.g. an ADMG's parallel
+\verb{X --> Y} and \verb{X <-> Y}. To style one exact edge type between a pair,
+nest it one level deeper under the reserved key \code{.by_type}, keyed by
+the edge's notation (\code{"-->"}, \code{"<->"}, \code{"o-o"}, ...; see \code{\link[=edges]{edges()}}):
+\code{by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col = "red"), "<->" = list(col = "blue")))))}. This tier takes precedence
+over the plain pair-level entry.}
 
 \item{label_style}{List of label styling parameters: \code{col}, \code{fontsize},
 \code{fontface}, \code{fontfamily}, \code{cex}.}
+
+\item{labels}{Optional named character vector or list overriding the text
+drawn in each node (e.g. \code{c(X = "Exposure", Y = "Outcome")}), while
+\code{edge_style}/\code{by_node}/\code{by_edge} etc. keep using the graph's actual
+node names. A node missing from \code{labels} falls back to a \code{"default"}
+entry if present, else its own name. \code{NULL} (default) shows every
+node's own name, as before. Embedded \verb{\\n} gives a multi-line label.}
 
 \item{tier_style}{List of tier box styling parameters, used only when
 \code{...} includes \code{tiers} (see below). Fields: \code{boxes} (logical, default
@@ -124,6 +152,16 @@ if (julia_ready()) {
       by_edge = list(X = list(M = list(col = "red", lwd = 3)))
     ),
     main = "Styled DAG"
+  )
+}
+# Box-shaped, dashed-border nodes with custom labels and a curved edge.
+if (julia_ready()) {
+  dag <- cgraph("A --> X + Y, X --> M --> Y")
+  plot(
+    dag,
+    node_style = list(shape = "box", linestyle = "dashed"),
+    edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
+    labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
   )
 }
 }

@@ -127,14 +127,69 @@
   )
 }
 
+# Node shape fitted to its label: half-width/half-height (mm) big enough to
+# contain the label plus padding, rounded out to equal sides ("round" ->
+# circle, "box" -> square) unless the fitted box is oblong enough to read as
+# an ellipse/rectangle instead. Mirrors CausalStructures.jl's Makie `plot()`
+# node_shape fitting (nodes.jl): round is the ellipse inscribing a w x h box
+# (hw = w/sqrt(2), hh = h/sqrt(2)); box is just half the label box plus
+# padding; either way, if the fitted aspect ratio hi/lo is at or under
+# _NODE_ASPECT_CAP (1.4), both half-extents are equalized to the larger one.
+.NODE_ASPECT_CAP <- 1.4
+
+.plot_shape_half_extents <- function(shape, label, label_style, padding_mm) {
+  label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
+  tg <- grid::textGrob(label, gp = label_gpar)
+  w <- grid::convertWidth(grid::grobWidth(tg), "mm", valueOnly = TRUE)
+  h <- grid::convertHeight(grid::grobHeight(tg), "mm", valueOnly = TRUE)
+
+  if (identical(shape, "box")) {
+    hw <- 0.5 * w + padding_mm
+    hh <- 0.5 * h + padding_mm
+  } else {
+    hw <- w / sqrt(2) + padding_mm
+    hh <- h / sqrt(2) + padding_mm
+  }
+
+  hi <- max(hw, hh)
+  lo <- min(hw, hh)
+  if (lo <= 0 || hi / lo <= .NODE_ASPECT_CAP) {
+    c(hi, hi)
+  } else {
+    c(hw, hh)
+  }
+}
+
+# Ellipse (or, when hw == hh, a circle) as a closed polygon of n points,
+# since grid has no native ellipse grob. Mirrors the sampled-polygon
+# approach CausalStructures.jl's Makie `plot()` uses for the same shape
+# (nodes.jl's `_shape_polygon`, n = 60 there too).
+.plot_ellipse_grob <- function(x, y, hw, hh, gp, name, n = 60) {
+  theta <- seq(0, 2 * pi, length.out = n + 1)[seq_len(n)]
+  grid::polygonGrob(
+    x = x + grid::unit(hw, "mm") * cos(theta),
+    y = y + grid::unit(hh, "mm") * sin(theta),
+    gp = gp,
+    name = name
+  )
+}
+
+# Circumradius of a node's shape (mm): the radius of the smallest circle
+# centered on the node that fully contains it. Used as a conservative
+# bounding circle for non-incident-node obstacle avoidance (route_edge_path()
+# tests obstacles as circles; an exact-shape obstacle test isn't done).
+.plot_circumradius <- function(shape, hw, hh) {
+  if (identical(shape, "box")) sqrt(hw^2 + hh^2) else max(hw, hh)
+}
+
 .plot_make_nodes <- function(coords, labels, node_style, label_style) {
   n_nodes <- nrow(coords)
 
   circle_grobs <- grid::gList()
   label_grobs <- grid::gList()
-  node_radii <- vector("list", n_nodes)
+  node_geom <- vector("list", n_nodes)
 
-  padding_global <- grid::unit(node_style$global$padding, "mm")
+  padding_global_mm <- node_style$global$padding
 
   for (i in seq_len(n_nodes)) {
     node_name <- coords$name[i]
@@ -143,21 +198,52 @@
     if (!is.null(node_style$by_node[[node_name]])) {
       style <- utils::modifyList(style, node_style$by_node[[node_name]])
     }
+    if (!is.null(style$linestyle) && is.null(style$lty)) {
+      style$lty <- style$linestyle
+    }
 
-    padding <- grid::unit(style$padding %||% padding_global, "mm")
-    r <- (0.5 * grid::stringWidth(labels[i]) + padding) * style$size
+    shape <- style$shape %||% "round"
+    padding_mm <- style$padding %||% padding_global_mm
+    half_extents <- .plot_shape_half_extents(
+      shape,
+      labels[i],
+      label_style,
+      padding_mm
+    ) *
+      style$size
+
+    # Node stroke straddles the shape's path (half the line width falls
+    # outside it), so edges must be trimmed past that half-width or a thick
+    # border can cover the line end (and any arrowhead on it). lwd is in
+    # grid's 1/96-inch convention; 1 inch = 25.4 mm.
+    stroke_pad_mm <- style$lwd / 192 * 25.4
+    hw <- half_extents[1] + stroke_pad_mm
+    hh <- half_extents[2] + stroke_pad_mm
 
     x <- grid::unit(coords$x[i], "native")
     y <- grid::unit(coords$y[i], "native")
 
     node_gpar <- do.call(grid::gpar, .plot_gpar_params(style))
-    circle_grobs[[i]] <- grid::circleGrob(
-      x = x,
-      y = y,
-      r = r,
-      gp = node_gpar,
-      name = paste0("node.", i)
-    )
+    circle_grobs[[i]] <- if (identical(shape, "box")) {
+      grid::rectGrob(
+        x = x,
+        y = y,
+        width = grid::unit(2 * hw, "mm"),
+        height = grid::unit(2 * hh, "mm"),
+        gp = node_gpar,
+        name = paste0("node.", i)
+      )
+    } else if (isTRUE(all.equal(hw, hh))) {
+      grid::circleGrob(
+        x = x,
+        y = y,
+        r = grid::unit(hw, "mm"),
+        gp = node_gpar,
+        name = paste0("node.", i)
+      )
+    } else {
+      .plot_ellipse_grob(x, y, hw, hh, node_gpar, paste0("node.", i))
+    }
 
     label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
     label_grobs[[i]] <- grid::textGrob(
@@ -168,17 +254,18 @@
       name = paste0("label.", i)
     )
 
-    # Node stroke straddles the circle's path (half the line width falls
-    # outside r), so edges must be trimmed at r plus that half-width or a
-    # thick border can cover the line end (and any arrowhead on it). lwd is
-    # in grid's 1/96-inch convention.
-    node_radii[[i]] <- r + grid::unit(style$lwd / 192, "inches")
+    node_geom[[i]] <- list(
+      shape = shape,
+      hw = hw,
+      hh = hh,
+      circumradius = .plot_circumradius(shape, hw, hh)
+    )
   }
 
   list(
     circle_grobs = circle_grobs,
     label_grobs = label_grobs,
-    node_radii = node_radii
+    node_geom = node_geom
   )
 }
 
@@ -191,30 +278,32 @@
   y0,
   x1,
   y1,
-  r_from,
-  r_to,
+  geom_from,
+  geom_to,
   src_mark,
   dst_mark,
   arrow,
   gp,
   circle_size,
+  curvature,
   name,
   obstacle_x = numeric(0),
   obstacle_y = numeric(0),
-  obstacle_r = list()
+  obstacle_r = numeric(0)
 ) {
   grid::gTree(
     x0 = x0,
     y0 = y0,
     x1 = x1,
     y1 = y1,
-    r_from = r_from,
-    r_to = r_to,
+    geom_from = geom_from,
+    geom_to = geom_to,
     src_mark = src_mark,
     dst_mark = dst_mark,
     arrow = arrow,
     gp = gp,
     circle_size = circle_size,
+    curvature = curvature,
     name = name,
     obstacle_x = obstacle_x,
     obstacle_y = obstacle_y,
@@ -308,27 +397,41 @@ makeContent.cs_edge_grob <- function(x) {
     ux_mm <- dx_mm / length_mm
     uy_mm <- dy_mm / length_mm
 
-    r_from_mm <- grid::convertWidth(x$r_from, "mm", valueOnly = TRUE)
-    r_to_mm <- grid::convertWidth(x$r_to, "mm", valueOnly = TRUE)
-
-    # The node radii already add half the *node's* stroke width as clearance
-    # (see .plot_make_nodes), but not half the *edge's* own stroke width.
-    # With the round linejoin used throughout, the arrowhead's tip vertex
-    # renders as a small rounded cap extending roughly half the edge's lwd
-    # past the mathematical tip coordinate - back toward the node - so
-    # without this, the tip's rendered ink oversteps the trimmed endpoint
-    # and visibly overlaps the node's circle (confirmed by comparing exact
-    # SVG path coordinates against the rendered output at high zoom: the gap
-    # between the tip and the node's stroke was consistently short by almost
-    # exactly half the edge's lwd).
+    # The node geometry already adds half the *node's* stroke width as
+    # clearance (see .plot_make_nodes), but not half the *edge's* own stroke
+    # width. With the round linejoin used throughout, the arrowhead's tip
+    # vertex renders as a small rounded cap extending roughly half the
+    # edge's lwd past the mathematical tip coordinate - back toward the
+    # node - so without this, the tip's rendered ink oversteps the trimmed
+    # endpoint and visibly overlaps the node's shape (confirmed by comparing
+    # exact SVG path coordinates against the rendered output at high zoom:
+    # the gap between the tip and the node's stroke was consistently short
+    # by almost exactly half the edge's lwd).
     edge_lwd <- x$gp$lwd %||% 1
     half_edge_lwd_mm <- grid::convertWidth(
       grid::unit(edge_lwd / 192, "inches"),
       "mm",
       valueOnly = TRUE
     )
-    r_from_mm <- r_from_mm + half_edge_lwd_mm
-    r_to_mm <- r_to_mm + half_edge_lwd_mm
+    hw_from <- x$geom_from$hw + half_edge_lwd_mm
+    hh_from <- x$geom_from$hh + half_edge_lwd_mm
+    hw_to <- x$geom_to$hw + half_edge_lwd_mm
+    hh_to <- x$geom_to$hh + half_edge_lwd_mm
+
+    r_from_mm <- .shape_boundary_distance(
+      x$geom_from$shape,
+      hw_from,
+      hh_from,
+      ux_mm,
+      uy_mm
+    )
+    r_to_mm <- .shape_boundary_distance(
+      x$geom_to$shape,
+      hw_to,
+      hh_to,
+      -ux_mm,
+      -uy_mm
+    )
 
     x0_adj <- x0_unit +
       grid::convertWidth(grid::unit(ux_mm * r_from_mm, "mm"), "native")
@@ -345,54 +448,75 @@ makeContent.cs_edge_grob <- function(x) {
     y1_adj <- y1_unit
   }
 
-  # Route the edge around any non-incident nodes it would otherwise cross.
-  # Detection and curve construction happen in mm, since the layout's native
-  # [0, 1] space is aspect-distorted. The curve is built between node centers
-  # and clipped to the borders, so the edge projects radially from each
-  # center, matching the straight-line case below.
+  # Route the edge around any non-incident nodes it would otherwise cross,
+  # or bow it into a manually specified arc. Detection and curve
+  # construction happen in mm, since the layout's native [0, 1] space is
+  # aspect-distorted. The curve is built between node centers and clipped
+  # to the shape boundaries, so the edge projects radially from each
+  # center, matching the straight-line case above. An explicit non-zero
+  # curvature takes precedence and skips obstacle-avoidance routing
+  # entirely, mirroring CausalStructures.jl's Makie `plot()` (curvature is a
+  # manual override for when automatic routing picks an awkward path).
   path <- NULL
   # Endpoint tangents (mm): default to the straight-line direction.
   t0 <- c(ux_mm, uy_mm)
   t1 <- c(ux_mm, uy_mm)
 
-  if (length_mm > 0 && length(x$obstacle_x) > 0) {
+  if (length_mm > 0) {
     c0x <- grid::convertX(x0_unit, "mm", valueOnly = TRUE)
     c0y <- grid::convertY(y0_unit, "mm", valueOnly = TRUE)
     c1x <- grid::convertX(x1_unit, "mm", valueOnly = TRUE)
     c1y <- grid::convertY(y1_unit, "mm", valueOnly = TRUE)
 
-    ox <- grid::convertX(
-      grid::unit(x$obstacle_x, "native"),
-      "mm",
-      valueOnly = TRUE
-    )
-    oy <- grid::convertY(
-      grid::unit(x$obstacle_y, "native"),
-      "mm",
-      valueOnly = TRUE
-    )
-    or <- vapply(
-      x$obstacle_r,
-      function(r) grid::convertWidth(r, "mm", valueOnly = TRUE),
-      numeric(1)
-    )
+    curvature <- x$curvature %||% 0
+    if (curvature != 0) {
+      path <- bow_edge_path(
+        c0x,
+        c0y,
+        c1x,
+        c1y,
+        x$geom_from$shape,
+        hw_from,
+        hh_from,
+        x$geom_to$shape,
+        hw_to,
+        hh_to,
+        curvature * length_mm
+      )
+    } else if (length(x$obstacle_x) > 0) {
+      ox <- grid::convertX(
+        grid::unit(x$obstacle_x, "native"),
+        "mm",
+        valueOnly = TRUE
+      )
+      oy <- grid::convertY(
+        grid::unit(x$obstacle_y, "native"),
+        "mm",
+        valueOnly = TRUE
+      )
+      or <- x$obstacle_r
 
-    lwd_pt <- x$gp$lwd %||% 1
-    line_hw_mm <- (lwd_pt / 72.27 * 25.4) / 2
-    clearance <- line_hw_mm + 1.0
+      lwd_pt <- x$gp$lwd %||% 1
+      line_hw_mm <- (lwd_pt / 72.27 * 25.4) / 2
+      clearance <- line_hw_mm + 1.0
 
-    path <- route_edge_path(
-      c0x,
-      c0y,
-      c1x,
-      c1y,
-      r_from_mm,
-      r_to_mm,
-      ox,
-      oy,
-      or,
-      clearance
-    )
+      path <- route_edge_path(
+        c0x,
+        c0y,
+        c1x,
+        c1y,
+        x$geom_from$shape,
+        hw_from,
+        hh_from,
+        x$geom_to$shape,
+        hw_to,
+        hh_to,
+        ox,
+        oy,
+        or,
+        clearance
+      )
+    }
   }
 
   # Endpoint tangents from the first/last sampled segments, computed before
@@ -585,11 +709,69 @@ makeContent.cs_edge_grob <- function(x) {
   )
 }
 
-.plot_make_edges <- function(edges, coords, node_radii, edge_style) {
+# Resolves one edge's style, including the .by_type precedence tier for
+# disambiguating parallel edges of different types between the same node
+# pair (e.g. an ADMG's X-->Y and X<->Y) - see plot.cgraph()'s edge_style
+# docs. Split out from .plot_make_edges() so it can be unit-tested directly.
+.plot_edge_style <- function(edges, i, edge_style) {
+  from_name <- edges$from[i]
+  to_name <- edges$to[i]
+  by_edge <- edge_style$by_edge
+
+  edge_type <- .plot_edge_type(edges$src_mark[i], edges$dst_mark[i])
+  style <- edge_style$types[[edge_type]]
+
+  # Precedence (highest to lowest): exact-edge-type override (.by_type,
+  # disambiguating e.g. an ADMG's parallel X-->Y/X<->Y) > specific
+  # from->to/to->from override > node-wide "to" override > node-wide "from"
+  # override > edge-type style > global style.
+  override <- list()
+
+  if (!is.null(by_edge[[from_name]][[to_name]])) {
+    override <- utils::modifyList(override, by_edge[[from_name]][[to_name]])
+  } else if (!is.null(by_edge[[to_name]][[from_name]])) {
+    override <- utils::modifyList(override, by_edge[[to_name]][[from_name]])
+  }
+
+  for (node_name in c(from_name, to_name)) {
+    node_wide <- by_edge[[node_name]]
+    if (!is.null(node_wide)) {
+      node_wide <- node_wide[!vapply(node_wide, is.list, logical(1))]
+      if (length(node_wide) > 0) {
+        override <- utils::modifyList(node_wide, override)
+      }
+    }
+  }
+
+  type_str <- unname(.edge_mark_types[
+    paste(edges$src_mark[i], edges$dst_mark[i], sep = ".")
+  ])
+  type_override <- by_edge[[from_name]][[to_name]][[".by_type"]][[
+    type_str
+  ]] %||%
+    by_edge[[to_name]][[from_name]][[".by_type"]][[type_str]]
+  if (!is.null(type_override)) {
+    override <- utils::modifyList(override, type_override)
+  }
+
+  if (length(override) > 0) {
+    style <- utils::modifyList(style, override)
+  }
+
+  # Arrowheads are filled polygons (see .plot_edge_grob); default fill to
+  # the edge's own resolved col so a recolored edge doesn't end up with a
+  # mismatched black arrowhead. Set fill = NA explicitly for a hollow
+  # arrowhead.
+  if (is.null(style$fill)) {
+    style$fill <- style$col
+  }
+
+  style
+}
+
+.plot_make_edges <- function(edges, coords, node_geom, edge_style) {
   n_edges <- nrow(edges)
   edge_grobs <- grid::gList()
-
-  by_edge <- edge_style$by_edge
 
   for (i in seq_len(n_edges)) {
     from_name <- edges$from[i]
@@ -601,41 +783,7 @@ makeContent.cs_edge_grob <- function(x) {
     # endpoints by index (robust to duplicate coordinates).
     obstacle_idx <- setdiff(seq_len(nrow(coords)), c(from_idx, to_idx))
 
-    edge_type <- .plot_edge_type(edges$src_mark[i], edges$dst_mark[i])
-    style <- edge_style$types[[edge_type]]
-
-    # Precedence (highest to lowest): specific from->to/to->from override >
-    # node-wide "to" override > node-wide "from" override > edge-type style >
-    # global style.
-    override <- list()
-
-    if (!is.null(by_edge[[from_name]][[to_name]])) {
-      override <- utils::modifyList(override, by_edge[[from_name]][[to_name]])
-    } else if (!is.null(by_edge[[to_name]][[from_name]])) {
-      override <- utils::modifyList(override, by_edge[[to_name]][[from_name]])
-    }
-
-    for (node_name in c(from_name, to_name)) {
-      node_wide <- by_edge[[node_name]]
-      if (!is.null(node_wide)) {
-        node_wide <- node_wide[!vapply(node_wide, is.list, logical(1))]
-        if (length(node_wide) > 0) {
-          override <- utils::modifyList(node_wide, override)
-        }
-      }
-    }
-
-    if (length(override) > 0) {
-      style <- utils::modifyList(style, override)
-    }
-
-    # Arrowheads are filled polygons (see .plot_edge_grob); default fill to
-    # the edge's own resolved col so a recolored edge doesn't end up with a
-    # mismatched black arrowhead. Set fill = NA explicitly for a hollow
-    # arrowhead.
-    if (is.null(style$fill)) {
-      style$fill <- style$col
-    }
+    style <- .plot_edge_style(edges, i, edge_style)
 
     edge_gpar <- do.call(grid::gpar, .plot_gpar_params(style))
     arrow <- .plot_edge_arrow(
@@ -649,17 +797,22 @@ makeContent.cs_edge_grob <- function(x) {
       y0 = coords$y[from_idx],
       x1 = coords$x[to_idx],
       y1 = coords$y[to_idx],
-      r_from = node_radii[[from_idx]],
-      r_to = node_radii[[to_idx]],
+      geom_from = node_geom[[from_idx]],
+      geom_to = node_geom[[to_idx]],
       src_mark = edges$src_mark[i],
       dst_mark = edges$dst_mark[i],
       arrow = arrow,
       gp = edge_gpar,
       circle_size = style$circle_size,
+      curvature = style$curvature %||% 0,
       name = paste0("edge.", i),
       obstacle_x = coords$x[obstacle_idx],
       obstacle_y = coords$y[obstacle_idx],
-      obstacle_r = node_radii[obstacle_idx]
+      obstacle_r = vapply(
+        node_geom[obstacle_idx],
+        function(g) g$circumradius,
+        numeric(1)
+      )
     )
   }
 
@@ -887,9 +1040,17 @@ makeContent.cs_edge_grob <- function(x) {
 #'     `"shell"`, `"squaregrid"`).
 #'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
+#'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
+#'     e.g. `list(A = c(0, 0), X = c(1, 0))`.
 #' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
-#'   `padding` (mm, default 2), `size` (multiplier, default 1), and `by_node`
-#'   (named list of per-node overrides).
+#'   `padding` (mm, default 2), `size` (multiplier, default 1), `shape`
+#'   (`"round"` (default) or `"box"`; both are fitted to their label but
+#'   rounded out to a circle/square unless the label is oblong enough to
+#'   read as an ellipse/rectangle instead - edges clip to, and route around,
+#'   the shape actually drawn), `linestyle` (e.g. `"dashed"`, `"dotted"` -
+#'   any value grid's `lty` accepts - for a non-solid node border; default
+#'   solid), and `by_node` (named list of per-node overrides, which can
+#'   include `shape`/`linestyle` too).
 #' @param edge_style List of edge styling parameters. Can specify global
 #'   options or per-type options via `directed`, `undirected`, `bidirected`,
 #'   `partial` (the last covers `o->`/`o-o`/`--o`, i.e. any edge with a
@@ -898,13 +1059,32 @@ makeContent.cs_edge_grob <- function(x) {
 #'   pass `fill = NA` for a hollow/outline arrowhead), `arrow_size` (mm,
 #'   default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
 #'   endpoints; an edge that would otherwise cross a non-incident node always
-#'   bends around it as a Bezier curve), and `by_edge` (named list of
-#'   per-edge or per-node overrides,
-#'   keyed by node name(s)). Style precedence (highest to lowest): specific
-#'   edge settings in `by_edge` > node-wide settings in `by_edge` > edge-type
-#'   settings > global settings.
+#'   bends around it as a Bezier curve unless `curvature` overrides this),
+#'   `curvature` (default 0; bows an edge into an arc by this signed
+#'   fraction of its length - positive bows left of the `from`-to-`to`
+#'   direction, negative right; a non-zero value is a manual override that
+#'   takes precedence over the automatic obstacle-avoidance bend above), and
+#'   `by_edge` (named list of per-edge or per-node overrides, keyed by node
+#'   name(s)). Style precedence (highest to lowest): specific edge settings
+#'   in `by_edge` > node-wide settings in `by_edge` > edge-type settings >
+#'   global settings.
+#'
+#'   `by_edge`'s pair-level entries (`by_edge[[from]][[to]]`) apply to every
+#'   edge between that pair, which can't tell apart e.g. an ADMG's parallel
+#'   `X --> Y` and `X <-> Y`. To style one exact edge type between a pair,
+#'   nest it one level deeper under the reserved key `.by_type`, keyed by
+#'   the edge's notation (`"-->"`, `"<->"`, `"o-o"`, ...; see [edges()]):
+#'   `by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col =
+#'   "red"), "<->" = list(col = "blue")))))`. This tier takes precedence
+#'   over the plain pair-level entry.
 #' @param label_style List of label styling parameters: `col`, `fontsize`,
 #'   `fontface`, `fontfamily`, `cex`.
+#' @param labels Optional named character vector or list overriding the text
+#'   drawn in each node (e.g. `c(X = "Exposure", Y = "Outcome")`), while
+#'   `edge_style`/`by_node`/`by_edge` etc. keep using the graph's actual
+#'   node names. A node missing from `labels` falls back to a `"default"`
+#'   entry if present, else its own name. `NULL` (default) shows every
+#'   node's own name, as before. Embedded `\n` gives a multi-line label.
 #' @param tier_style List of tier box styling parameters, used only when
 #'   `...` includes `tiers` (see below). Fields: `boxes` (logical, default
 #'   `TRUE`; draw a box behind each tier's nodes), `labels` (logical or
@@ -963,6 +1143,16 @@ makeContent.cs_edge_grob <- function(x) {
 #'     main = "Styled DAG"
 #'   )
 #' }
+#' # Box-shaped, dashed-border nodes with custom labels and a curved edge.
+#' if (julia_ready()) {
+#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'   plot(
+#'     dag,
+#'     node_style = list(shape = "box", linestyle = "dashed"),
+#'     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
+#'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
+#'   )
+#' }
 #' @seealso [plot_options()] to change the style defaults used above,
 #'   globally, for every plot.
 #' @rdname plot
@@ -974,6 +1164,7 @@ plot.cgraph <- function(
   node_style = list(),
   edge_style = list(),
   label_style = list(),
+  labels = NULL,
   tier_style = list(),
   main = NULL,
   title_style = list(),
@@ -1034,9 +1225,28 @@ plot.cgraph <- function(
       )
     }
     coords <- layout[match(graph_nodes, layout$name), , drop = FALSE]
+  } else if (is.list(layout)) {
+    # A plain named list keyed by node name, e.g.
+    # list(A = c(0, 0), X = c(1, 0)) - each value a length-2 c(x, y).
+    graph_nodes <- nodes(x)
+    missing_nodes <- setdiff(graph_nodes, names(layout))
+    if (length(missing_nodes) > 0) {
+      stop(
+        "layout is missing a position for node(s): ",
+        paste(missing_nodes, collapse = ", "),
+        call. = FALSE
+      )
+    }
+    coords <- data.frame(
+      name = graph_nodes,
+      x = vapply(graph_nodes, function(nm) layout[[nm]][1], numeric(1)),
+      y = vapply(graph_nodes, function(nm) layout[[nm]][2], numeric(1)),
+      stringsAsFactors = FALSE
+    )
   } else {
     stop(
-      "layout must be a character string, function, or data.frame",
+      "layout must be a character string, function, data.frame, or named ",
+      "list of node positions",
       call. = FALSE
     )
   }
@@ -1053,7 +1263,28 @@ plot.cgraph <- function(
     tier_style
   )
 
-  labels <- coords$name
+  node_labels <- if (is.null(labels)) {
+    coords$name
+  } else {
+    # as.list() so a plain named character vector (or list) can be looked up
+    # with [[ ]] safely - unlike an atomic vector, a list's [[ ]] returns
+    # NULL (not an error) for a name that isn't present.
+    labels_list <- as.list(labels)
+    vapply(
+      coords$name,
+      function(nm) {
+        if (!is.null(labels_list[[nm]])) {
+          as.character(labels_list[[nm]])
+        } else if (!is.null(labels_list[["default"]])) {
+          as.character(labels_list[["default"]])
+        } else {
+          nm
+        }
+      },
+      character(1),
+      USE.NAMES = FALSE
+    )
+  }
   edges <- .plot_edges(x)
 
   x_range <- range(coords$x)
@@ -1067,14 +1298,14 @@ plot.cgraph <- function(
 
   nodes_res <- .plot_make_nodes(
     coords,
-    labels,
+    node_labels,
     styles$node_style,
     styles$label_style
   )
   edge_grobs <- .plot_make_edges(
     edges,
     coords,
-    nodes_res$node_radii,
+    nodes_res$node_geom,
     styles$edge_style
   )
 
