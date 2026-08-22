@@ -24,6 +24,7 @@ reference:
       - neighbors
       - possible-queries
       - anteriors
+      - possible_d_sep
 
   - title: "Graph class predicates"
     desc: "Test structural properties of a graph."
@@ -71,6 +72,18 @@ reference:
       - is_valid_frontdoor
       - is_valid_iv
       - all_iv_sets
+      - backdoor_set
+      - id
+
+  - title: "Local IDA"
+    desc: "Local structure-learning identification (IDA and its variants)."
+    contents:
+      - possible_parent_sets
+      - possible_joint_parent_sets
+      - possible_optimal_adjustment_sets
+      - possible_local_structures
+      - maximal_local_mag
+      - pagcauses
 
   - title: "Equivalence classes"
     desc: "Count and enumerate Markov equivalent graphs."
