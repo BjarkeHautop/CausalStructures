@@ -36,22 +36,29 @@ e.g. \code{list(A = c(0, 0), X = c(1, 0))}.
 }}
 
 \item{node_style}{List of node styling parameters: \code{fill}, \code{col}, \code{lwd},
-\code{padding} (mm, default 2), \code{size} (multiplier, default 1), \code{shape}
-(\code{"round"} (default) or \code{"box"}; both are fitted to their label but
-rounded out to a circle/square unless the label is oblong enough to
-read as an ellipse/rectangle instead - edges clip to, and route around,
-the shape actually drawn), \code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} -
-any value grid's \code{lty} accepts - for a non-solid node border; default
-solid), and \code{by_node} (named list of per-node overrides, which can
-include \code{shape}/\code{linestyle} too).}
+\code{padding} (mm, default 2), \code{size} (multiplier, default 1), \code{radius}
+(mm; when set, every node is drawn at this fixed half-extent instead of
+being fitted to its label - mirrors CausalStructures.jl's Makie
+\code{plot()}'s \code{node_radius}), \code{shape} (\code{"round"} (default), \code{"box"},
+\code{"ellipse"}, or \code{"rect"} - \code{"round"}/\code{"box"} are fitted to their label
+and rounded out to a circle/square unless the label is oblong enough to
+read as an ellipse/rectangle instead, while \code{"ellipse"}/\code{"rect"} force
+that oblong shape unconditionally, matching CausalStructures.jl's Makie
+\code{plot()}, whose \code{node_shape} is an explicit choice among these same four
+with no auto-detection - edges clip to, and route around, the shape
+actually drawn), \code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} - any value
+grid's \code{lty} accepts - for a non-solid node border; default solid), and
+\code{by_node} (named list of per-node overrides, which can include
+\code{shape}/\code{linestyle}/\code{radius} too).}
 
 \item{edge_style}{List of edge styling parameters. Can specify global
 options or per-type options via \code{directed}, \code{undirected}, \code{bidirected},
-\code{partial} (the last covers \verb{o->}/\code{o-o}/\code{--o}, i.e. any edge with a
-\code{Circle} endpoint mark). Fields: \code{col}, \code{lwd}, \code{fill} (arrowhead fill
-color; defaults to \code{col} so arrowheads render solid and match the edge -
-pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size} (mm,
-default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
+\code{partially_directed} (\verb{o->}), \code{partially_undirected} (\verb{o--}), \code{partial}
+(\code{o-o}) - matching CausalStructures.jl's Makie \code{plot()}'s six edge-type
+groups (draw.jl's \verb{_edge_type}). Fields: \code{col}, \code{lwd}, \code{fill} (arrowhead
+fill color; defaults to \code{col} so arrowheads render solid and match the
+edge - pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size}
+(mm, default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
 endpoints; an edge that would otherwise cross a non-incident node always
 bends around it as a Bezier curve unless \code{curvature} overrides this),
 \code{curvature} (default 0; bows an edge into an arc by this signed

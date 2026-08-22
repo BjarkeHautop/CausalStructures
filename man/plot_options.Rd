@@ -29,7 +29,8 @@ over these global defaults.
 Fields, matching the corresponding \code{plot.cgraph()} argument:
 \itemize{
 \item \code{node_style}: \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm), \code{size} (multiplier),
-\code{shape} (\code{"round"} or \code{"box"}), \code{linestyle} (e.g. \code{"dashed"})
+\code{radius} (mm, fixed override), \code{shape} (\code{"round"}, \code{"box"}, \code{"ellipse"},
+or \code{"rect"}), \code{linestyle} (e.g. \code{"dashed"})
 \item \code{edge_style}: \code{col}, \code{lwd}, \code{fill} (arrowhead fill), \code{arrow_size} (mm),
 \code{circle_size} (mm), \code{curvature} (signed fraction of edge length)
 \item \code{label_style}: \code{col}, \code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}

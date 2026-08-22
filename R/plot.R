@@ -29,19 +29,24 @@
   )
 }
 
-# Classifies an edge's style group from its endpoint marks: any "Circle" end
-# makes it PAG-style "partial" (covers o->, o-o, --o) regardless of the other
-# mark; otherwise two "Arrow" ends is "bidirected", one is "directed", and
-# none is "undirected".
+# Classifies an edge's style group from its endpoint marks, mirroring
+# CausalStructures.jl's Makie `plot()` (draw.jl's `_edge_type`): "directed"
+# (-->), "undirected" (---), "bidirected" (<->), "partially_directed" (o->),
+# "partially_undirected" (o--), and "partial" (o-o) are six distinct groups,
+# so a PAG's o->/o--/o-o edges can each be styled independently.
 .plot_edge_type <- function(src_mark, dst_mark) {
-  if (src_mark == "Circle" || dst_mark == "Circle") {
-    "partial"
+  if (src_mark == "Tail" && dst_mark == "Arrow") {
+    "directed"
+  } else if (src_mark == "Tail" && dst_mark == "Tail") {
+    "undirected"
   } else if (src_mark == "Arrow" && dst_mark == "Arrow") {
     "bidirected"
-  } else if (src_mark == "Arrow" || dst_mark == "Arrow") {
-    "directed"
+  } else if (src_mark == "Circle" && dst_mark == "Arrow") {
+    "partially_directed"
+  } else if (src_mark == "Circle" && dst_mark == "Tail") {
+    "partially_undirected"
   } else {
-    "undirected"
+    "partial"
   }
 }
 
@@ -91,9 +96,17 @@
   node_style$by_node <- NULL
 
   # Per-type overrides (edge_style$directed / $undirected / $bidirected /
-  # $partial) layer on top of the global edge options; by_edge overrides are
-  # applied later, per edge, in .plot_make_edges().
-  edge_type_names <- c("directed", "undirected", "bidirected", "partial")
+  # $partially_directed / $partially_undirected / $partial) layer on top of
+  # the global edge options; by_edge overrides are applied later, per edge,
+  # in .plot_make_edges().
+  edge_type_names <- c(
+    "directed",
+    "undirected",
+    "bidirected",
+    "partially_directed",
+    "partially_undirected",
+    "partial"
+  )
   by_edge <- edge_style$by_edge %||% list()
   global_edge_opts <- edge_style[
     setdiff(names(edge_style), c(edge_type_names, "by_edge"))
@@ -128,14 +141,20 @@
 }
 
 # Node shape fitted to its label: half-width/half-height (mm) big enough to
-# contain the label plus padding, rounded out to equal sides ("round" ->
-# circle, "box" -> square) unless the fitted box is oblong enough to read as
-# an ellipse/rectangle instead. Mirrors CausalStructures.jl's Makie `plot()`
-# node_shape fitting (nodes.jl): round is the ellipse inscribing a w x h box
-# (hw = w/sqrt(2), hh = h/sqrt(2)); box is just half the label box plus
-# padding; either way, if the fitted aspect ratio hi/lo is at or under
+# contain the label plus padding. "round" and "box" round out to equal sides
+# (circle/square respectively) unless the fitted box is oblong enough to read
+# as an ellipse/rectangle instead; "ellipse" and "rect" force that oblong box
+# unconditionally, mirroring CausalStructures.jl's Makie `plot()`, whose
+# node_shape is an explicit choice among :circle/:square/:ellipse/:rect with
+# no auto-detection (nodes.jl's `_text_fit_pixel_size`/`_is_fixed_aspect`).
+# Sizing itself: round/ellipse is the ellipse inscribing a w x h box (hw =
+# w/sqrt(2), hh = h/sqrt(2)); box/rect is just half the label box plus
+# padding. For round/box, if the fitted aspect ratio hi/lo is at or under
 # _NODE_ASPECT_CAP (1.4), both half-extents are equalized to the larger one.
 .NODE_ASPECT_CAP <- 1.4
+.NODE_SHAPES <- c("round", "box", "ellipse", "rect")
+
+.plot_is_boxy <- function(shape) shape %in% c("box", "rect")
 
 .plot_shape_half_extents <- function(shape, label, label_style, padding_mm) {
   label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
@@ -143,12 +162,16 @@
   w <- grid::convertWidth(grid::grobWidth(tg), "mm", valueOnly = TRUE)
   h <- grid::convertHeight(grid::grobHeight(tg), "mm", valueOnly = TRUE)
 
-  if (identical(shape, "box")) {
+  if (.plot_is_boxy(shape)) {
     hw <- 0.5 * w + padding_mm
     hh <- 0.5 * h + padding_mm
   } else {
     hw <- w / sqrt(2) + padding_mm
     hh <- h / sqrt(2) + padding_mm
+  }
+
+  if (shape %in% c("ellipse", "rect")) {
+    return(c(hw, hh))
   }
 
   hi <- max(hw, hh)
@@ -179,7 +202,7 @@
 # bounding circle for non-incident-node obstacle avoidance (route_edge_path()
 # tests obstacles as circles; an exact-shape obstacle test isn't done).
 .plot_circumradius <- function(shape, hw, hh) {
-  if (identical(shape, "box")) sqrt(hw^2 + hh^2) else max(hw, hh)
+  if (.plot_is_boxy(shape)) sqrt(hw^2 + hh^2) else max(hw, hh)
 }
 
 .plot_make_nodes <- function(coords, labels, node_style, label_style) {
@@ -203,14 +226,24 @@
     }
 
     shape <- style$shape %||% "round"
+    if (!shape %in% .NODE_SHAPES) {
+      stop(
+        sprintf(
+          "Unknown node shape %s for node %s. Available: %s.",
+          dQuote(shape, q = FALSE),
+          dQuote(node_name, q = FALSE),
+          paste(dQuote(.NODE_SHAPES, q = FALSE), collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
     padding_mm <- style$padding %||% padding_global_mm
-    half_extents <- .plot_shape_half_extents(
-      shape,
-      labels[i],
-      label_style,
-      padding_mm
-    ) *
-      style$size
+    unscaled_extents <- if (!is.null(style$radius)) {
+      c(style$radius, style$radius)
+    } else {
+      .plot_shape_half_extents(shape, labels[i], label_style, padding_mm)
+    }
+    half_extents <- unscaled_extents * style$size
 
     # Node stroke straddles the shape's path (half the line width falls
     # outside it), so edges must be trimmed past that half-width or a thick
@@ -224,7 +257,7 @@
     y <- grid::unit(coords$y[i], "native")
 
     node_gpar <- do.call(grid::gpar, .plot_gpar_params(style))
-    circle_grobs[[i]] <- if (identical(shape, "box")) {
+    circle_grobs[[i]] <- if (.plot_is_boxy(shape)) {
       grid::rectGrob(
         x = x,
         y = y,
@@ -1043,21 +1076,28 @@ makeContent.cs_edge_grob <- function(x) {
 #'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
 #'     e.g. `list(A = c(0, 0), X = c(1, 0))`.
 #' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
-#'   `padding` (mm, default 2), `size` (multiplier, default 1), `shape`
-#'   (`"round"` (default) or `"box"`; both are fitted to their label but
-#'   rounded out to a circle/square unless the label is oblong enough to
-#'   read as an ellipse/rectangle instead - edges clip to, and route around,
-#'   the shape actually drawn), `linestyle` (e.g. `"dashed"`, `"dotted"` -
-#'   any value grid's `lty` accepts - for a non-solid node border; default
-#'   solid), and `by_node` (named list of per-node overrides, which can
-#'   include `shape`/`linestyle` too).
+#'   `padding` (mm, default 2), `size` (multiplier, default 1), `radius`
+#'   (mm; when set, every node is drawn at this fixed half-extent instead of
+#'   being fitted to its label - mirrors CausalStructures.jl's Makie
+#'   `plot()`'s `node_radius`), `shape` (`"round"` (default), `"box"`,
+#'   `"ellipse"`, or `"rect"` - `"round"`/`"box"` are fitted to their label
+#'   and rounded out to a circle/square unless the label is oblong enough to
+#'   read as an ellipse/rectangle instead, while `"ellipse"`/`"rect"` force
+#'   that oblong shape unconditionally, matching CausalStructures.jl's Makie
+#'   `plot()`, whose `node_shape` is an explicit choice among these same four
+#'   with no auto-detection - edges clip to, and route around, the shape
+#'   actually drawn), `linestyle` (e.g. `"dashed"`, `"dotted"` - any value
+#'   grid's `lty` accepts - for a non-solid node border; default solid), and
+#'   `by_node` (named list of per-node overrides, which can include
+#'   `shape`/`linestyle`/`radius` too).
 #' @param edge_style List of edge styling parameters. Can specify global
 #'   options or per-type options via `directed`, `undirected`, `bidirected`,
-#'   `partial` (the last covers `o->`/`o-o`/`--o`, i.e. any edge with a
-#'   `Circle` endpoint mark). Fields: `col`, `lwd`, `fill` (arrowhead fill
-#'   color; defaults to `col` so arrowheads render solid and match the edge -
-#'   pass `fill = NA` for a hollow/outline arrowhead), `arrow_size` (mm,
-#'   default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
+#'   `partially_directed` (`o->`), `partially_undirected` (`o--`), `partial`
+#'   (`o-o`) - matching CausalStructures.jl's Makie `plot()`'s six edge-type
+#'   groups (draw.jl's `_edge_type`). Fields: `col`, `lwd`, `fill` (arrowhead
+#'   fill color; defaults to `col` so arrowheads render solid and match the
+#'   edge - pass `fill = NA` for a hollow/outline arrowhead), `arrow_size`
+#'   (mm, default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
 #'   endpoints; an edge that would otherwise cross a non-incident node always
 #'   bends around it as a Bezier curve unless `curvature` overrides this),
 #'   `curvature` (default 0; bows an edge into an arc by this signed

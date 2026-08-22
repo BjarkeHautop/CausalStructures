@@ -50,13 +50,13 @@
 }
 
 # Distance from a node's center to its own shape boundary along unit
-# direction (dx, dy): an ellipse for "round" (half-axes hw, hh), or an
-# axis-aligned box for "box" (half-width hw, half-height hh). A circle is
-# just the round case with hw == hh.
+# direction (dx, dy): an ellipse for "round"/"ellipse" (half-axes hw, hh), or
+# an axis-aligned box for "box"/"rect" (half-width hw, half-height hh). A
+# circle/square is just the round/box case with hw == hh.
 .shape_boundary_distance <- function(shape, hw, hh, dx, dy) {
   c <- abs(dx)
   s <- abs(dy)
-  if (identical(shape, "box")) {
+  if (.plot_is_boxy(shape)) {
     tx <- if (c > 1e-9) hw / c else Inf
     ty <- if (s > 1e-9) hh / s else Inf
     min(tx, ty)

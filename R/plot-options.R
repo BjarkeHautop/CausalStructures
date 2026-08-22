@@ -81,7 +81,8 @@ plot_default_options <- function() {
 #' Fields, matching the corresponding `plot.cgraph()` argument:
 #'
 #' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier),
-#'   `shape` (`"round"` or `"box"`), `linestyle` (e.g. `"dashed"`)
+#'   `radius` (mm, fixed override), `shape` (`"round"`, `"box"`, `"ellipse"`,
+#'   or `"rect"`), `linestyle` (e.g. `"dashed"`)
 #' - `edge_style`: `col`, `lwd`, `fill` (arrowhead fill), `arrow_size` (mm),
 #'   `circle_size` (mm), `curvature` (signed fraction of edge length)
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`

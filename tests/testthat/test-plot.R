@@ -133,6 +133,74 @@ test_that("node_style shape draws box and per-node overrides without error", {
   ))
 })
 
+test_that("node_style shape draws ellipse and rect without error", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_no_error(plot(test_dag(), node_style = list(shape = "ellipse")))
+  expect_no_error(plot(test_dag(), node_style = list(shape = "rect")))
+})
+
+test_that("node_style shape errors on an unknown shape", {
+  skip_if_no_julia()
+  expect_error(
+    plot(test_dag(), node_style = list(shape = "hexagon")),
+    "Unknown node shape"
+  )
+})
+
+test_that("ellipse/rect force an oblong box even for a short label", {
+  ellipse <- .plot_shape_half_extents("ellipse", "A", list(fontsize = 10), 2)
+  expect_true(ellipse[1] / ellipse[2] <= 1.4 + 1e-8)
+
+  rect <- .plot_shape_half_extents("rect", "A", list(fontsize = 10), 2)
+  expect_true(rect[1] / rect[2] <= 1.4 + 1e-8)
+})
+
+test_that("node_style radius overrides label-based sizing", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_no_error(plot(test_dag(), node_style = list(radius = 15)))
+  expect_no_error(plot(
+    test_dag(),
+    node_style = list(by_node = list(A = list(radius = 20)))
+  ))
+})
+
+test_that("edge_style styles the three partial-mark edge types independently", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  g <- cgraph("A o-> B, C o-- D, E o-o F", class = "UNKNOWN")
+  expect_no_error(plot(
+    g,
+    edge_style = list(
+      partially_directed = list(col = "red"),
+      partially_undirected = list(col = "blue"),
+      partial = list(col = "green")
+    )
+  ))
+
+  styles <- .plot_make_styles(
+    list(),
+    list(
+      partially_directed = list(col = "red"),
+      partially_undirected = list(col = "blue"),
+      partial = list(col = "green")
+    ),
+    list(),
+    list(),
+    list()
+  )
+  expect_equal(styles$edge_style$types$partially_directed$col, "red")
+  expect_equal(styles$edge_style$types$partially_undirected$col, "blue")
+  expect_equal(styles$edge_style$types$partial$col, "green")
+})
+
 test_that("node shape fitting caps aspect ratio unless the label is oblong", {
   short <- .plot_shape_half_extents(
     "round",
