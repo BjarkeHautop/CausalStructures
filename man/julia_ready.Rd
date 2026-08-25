@@ -12,5 +12,5 @@ A logical scalar.
 \description{
 Checks that the \code{julia} binary is on the \code{PATH} and that \code{\link[=setup]{setup()}} can
 complete without erroring - in particular, without needing to install
-Julia package dependencies, which \code{setup()}.
+Julia package dependencies.
 }

@@ -396,7 +396,7 @@ pkg_path <- function() {
 #'
 #' Checks that the `julia` binary is on the `PATH` and that [setup()] can
 #' complete without erroring - in particular, without needing to install
-#' Julia package dependencies, which `setup()`.
+#' Julia package dependencies.
 #'
 #' @return A logical scalar.
 #' @export
