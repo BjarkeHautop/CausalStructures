@@ -16,6 +16,12 @@ are built on these primitive operations, so their performance depends directly
 on the efficiency of these basic queries.
 
 ```{r}
+#| include: false
+
+options(CausalStructures.auto_install = TRUE)
+```
+
+```{r}
 #| label: setup
 
 library(CausalStructures)

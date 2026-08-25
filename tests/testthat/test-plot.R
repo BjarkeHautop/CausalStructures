@@ -121,15 +121,15 @@ test_that("print.cgraph_plot and plot.cgraph_plot redraw a saved plot", {
   expect_no_error(plot(p))
 })
 
-test_that("node_style shape draws box and per-node overrides without error", {
+test_that("node_style shape draws square and per-node overrides without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), node_style = list(shape = "box")))
+  expect_no_error(plot(test_dag(), node_style = list(shape = "square")))
   expect_no_error(plot(
     test_dag(),
-    node_style = list(by_node = list(A = list(shape = "box")))
+    node_style = list(by_node = list(A = list(shape = "square")))
   ))
 })
 
@@ -201,23 +201,30 @@ test_that("edge_style styles the three partial-mark edge types independently", {
   expect_equal(styles$edge_style$types$partial$col, "green")
 })
 
-test_that("node shape fitting caps aspect ratio unless the label is oblong", {
+test_that("circle/square always equalize half-extents regardless of label length", {
   short <- .plot_shape_half_extents(
-    "round",
+    "circle",
     "A",
     list(fontsize = 10),
     2
   )
-  expect_true(short[1] / short[2] <= 1.4 + 1e-8)
   expect_equal(short[1], short[2])
 
   long <- .plot_shape_half_extents(
-    "round",
+    "circle",
     "A very very long label indeed",
     list(fontsize = 10),
     2
   )
-  expect_true(long[1] / long[2] > 1.4)
+  expect_equal(long[1], long[2])
+
+  square <- .plot_shape_half_extents(
+    "square",
+    "A very very long label indeed",
+    list(fontsize = 10),
+    2
+  )
+  expect_equal(square[1], square[2])
 })
 
 test_that("node_style linestyle draws without error", {

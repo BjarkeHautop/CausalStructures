@@ -29,10 +29,12 @@ over these global defaults.
 Fields, matching the corresponding \code{plot.cgraph()} argument:
 \itemize{
 \item \code{node_style}: \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm), \code{size} (multiplier),
-\code{radius} (mm, fixed override), \code{shape} (\code{"round"}, \code{"box"}, \code{"ellipse"},
-or \code{"rect"}), \code{linestyle} (e.g. \code{"dashed"})
+\code{radius} (mm, fixed override), \code{shape} (\code{"circle"}, \code{"square"},
+\code{"ellipse"}, or \code{"rect"}), \code{linestyle} (e.g. \code{"dashed"})
 \item \code{edge_style}: \code{col}, \code{lwd}, \code{fill} (arrowhead fill), \code{arrow_size} (mm),
-\code{circle_size} (mm), \code{curvature} (signed fraction of edge length)
+\code{circle_size} (mm), \code{curvature} (signed fraction of edge length; unset by
+default, so parallel edges between the same node pair fan out
+automatically - see \code{\link[=plot.cgraph]{plot.cgraph()}})
 \item \code{label_style}: \code{col}, \code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}
 \item \code{title_style}: same fields as \code{label_style}
 \item \code{tier_style}: \code{boxes}, \code{labels}, \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm),

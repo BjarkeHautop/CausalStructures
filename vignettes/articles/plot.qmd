@@ -7,66 +7,110 @@ knitr:
 ---
 
 ```{r}
+#| include: false
+
+options(CausalStructures.auto_install = TRUE)
+```
+
+```{r}
 #| label: setup
 
 library(CausalStructures)
 setup()
 ```
 
-`plot()` draws a `cgraph` with grid graphics. Every aspect of the drawing can be
-modified, which we will show below.
+`plot()` draws a `cgraph` with grid graphics. We `plot` deliberately impose no
+conventions on how to draw causal graphs, such as making bidirected edges
+(`<->`) an arc. Instead, we just provide the capabilties, and downstream
+packages are encouraged to build an opinionated layer on top.
 
-## A first plot
+## Basic usage
 
-All edges are rendered according to their actual edge marks:
+Pass any `cgraph` to `plot()`.Every edge mark is supported natively:
 
 ```{r}
-#| label: first-plot
+#| label: edge-marks
 
-unknown <- cgraph(A %-->% B %---% C %o->% D %o-o% A, class = "UNKNOWN")
+unknown <- cgraph(A %<->% B %o->% C %o-o% A, class = "UNKNOWN")
 plot(unknown)
 ```
 
-Now we will showcase how to make adjustments to the plotting
-
 ## Layouts
 
-`layout` accepts a method name, a layout function, or a pre-computed
-`data.frame` of `name`/`x`/`y` coordinates. The named methods (`"stress"`,
-`"spring"`, `"sfdp"`, `"spectral"`, `"shell"`, `"squaregrid"`, `"circle"`) all
-come from [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl);
-see `?cgraph_layout` for what each does.
+`layout` controls node placement and defaults to `"stress"`.
 
 ```{r}
 #| label: layout-spring
 
-dag <- cgraph(A %-->% X + Y, X %-->% M, M %-->% Y)
-plot(dag, layout = "spring", main = "Spring layout")
+dag <- cgraph(
+  C %-->% X,
+  A %-->% X + K,
+  X %-->% F + D,
+  K %-->% Y,
+  D %-->% Y + G,
+  Y %-->% H
+)
+plot(dag, layout = "spring")
 ```
 
-Alternatively you can pass a pre-computed layout, useful for when comparing
-different graphs with the same nodes:
+`layout` can be:
+
+  | `layout`       | Algorithm                           |
+  | -------------- | ----------------------------------- |
+  | `"spring"`     | Fruchterman-Reingold force-directed |
+  | `"stress"`     | Stress majorization (the default)   |
+  | `"sfdp"`       | Scalable Force-Directed Placement   |
+  | `"spectral"`   | Spectral layout                     |
+  | `"shell"`      | Concentric shells                   |
+  | `"squaregrid"` | Square grid                         |
+
+All come from
+[NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl); see
+`?cgraph_layout` for what each does. Extra arguments (`...`) are forwarded to
+the underlying algorithm:
+
+```{r}
+#| label: layout-args
+
+plot(dag, layout = "spring", seed = 1405, iterations = 500)
+```
+
+`layout` also accepts a pre-computed `data.frame` of `name`/`x`/`y` coordinates,
+useful when comparing different graphs over the same nodes:
 
 ```{r}
 #| label: layout-fixed
 
 fixed <- data.frame(
-  name = c("A", "X", "Y", "M"),
-  x = c(0, 1, 2, 1.5),
-  y = c(1, 1, 1, 0)
+  name = c("C", "A", "X", "K", "F", "D", "Y", "G", "H"),
+  x = c(0, 0, 1, 1, 2, 2, 3, 3, 4),
+  y = c(1, -1, 0, -2, 1, -1, 0, -2, 0)
 )
-plot(dag, layout = fixed, main = "Fixed coordinates")
+plot(dag, layout = fixed)
 ```
 
-Notice the automatic curve on the edge from $A$ to $Y$ to avoid it passing
-through $X$!
+Notice also how the edge from $K$ to $Y$ automatically routed!
 
-## Styling nodes
+You can also call `cgraph_layout()` on your graph to get the positions, and
+manually tweak a few nodes:
+
+```{r}
+#| label: layout-tweak
+
+positions <- cgraph_layout(dag, method = "spring")
+positions[positions$name == "A", c("x", "y")] <- c(0, 2)
+plot(dag, layout = positions)
+```
+
+## Node styling
 
 `node_style` accepts anything `grid::gpar()` understands (`fill`, `col`, `lwd`,
-`lty`, `alpha`) plus two geometry options: `padding` (text padding inside the
-node, in mm; default 2) and `size` (a multiplier on the computed node radius;
-default 1). `by_node` overrides any of these per node.
+`lty`, `alpha`) plus geometry options: `padding` (mm, default 2, text clearance
+kept when sizing to the label), `size` (multiplier on the computed node radius,
+default 1), `radius` (mm; when set, every node is drawn at this fixed
+half-extent instead of being fitted to its label), `shape`
+(`"circle"`/`"square"`/`"ellipse"`/`"rect"`), and `linestyle` (e.g. `"dashed"`
+for a non-solid border). `by_node` overrides any of these per node.
 
 ```{r}
 #| label: node-style
@@ -76,26 +120,86 @@ plot(
   node_style = list(
     fill = "lightblue",
     col = "navy",
-    lwd = 2,
-    size = 1.3,
     by_node = list(
-      Y = list(fill = "gold"),
-      M = list(fill = "white", col = "gray60", size = 0.8)
+      A = list(fill = "salmon", col = "firebrick"),
+      Y = list(fill = "gold")
     )
-  ),
-  main = "Node styling"
+  )
 )
 ```
 
-## Styling edges
+### Node shapes
 
-`edge_style` also accepts `grid::gpar()` fields (`col`, `lwd`, `lty`, `alpha`,
-`fill`) plus `arrow_size` (mm, default 3) and `circle_size` (mm, default 1.5,
-for the `o->`/`o--`/`o-o` endpoint marks). An edge that would otherwise cross a
-non-incident node always bends around it.
+`shape` is one of `"circle"` (the default), `"square"`, `"ellipse"`, or
+`"rect"`. `"circle"`/`"square"` fit the label and always round out to equal
+sides; `"ellipse"`/`"rect"` keep the fitted oblong box as-is - useful for
+fitting a long label.
 
-Arrowhead `fill` defaults to the edge's own `col`, so arrowheads render solid by
-default and recolor along with the edge. Pass `fill = NA` for the classic
+```{r}
+#| label: node-shape
+
+plot(
+  dag,
+  node_style = list(
+    by_node = list(
+      A = list(shape = "circle"),
+      X = list(shape = "square"),
+      Y = list(shape = "ellipse"),
+      D = list(shape = "rect")
+    )
+  ),
+  labels = c(A = "Confounder", X = "Exposure", Y = "Outcome", D = "Mediator")
+)
+```
+
+`linestyle` styles the border:
+
+```{r}
+#| label: node-linestyle
+
+plot(
+  cgraph("U --> X + Y, X --> Y", class = "DAG"),
+  node_style = list(
+    col = "black",
+    by_node = list(
+      U = list(linestyle = "dashed", col = "gray50")
+    )
+  )
+)
+```
+
+### Text-fit node sizing
+
+By default each node is sized to fit its own label:
+
+```{r}
+#| label: text-fit
+
+longlabels <- cgraph(
+  "Exposure --> Mediator --> Y_outcome",
+  class = "DAG"
+)
+plot(longlabels)
+```
+
+Pass `radius` explicitly to size every node uniformly instead:
+
+```{r}
+#| label: fixed-radius
+
+plot(dag, node_style = list(radius = 8))
+```
+
+## Edge styling
+
+`edge_style` accepts `grid::gpar()` fields (`col`, `lwd`, `lty`, `alpha`,
+`fill`) plus `arrow_size` (mm, default 3), `circle_size` (mm, default 1.5, for
+`o->`/`o--`/`o-o` endpoints), and `curvature` (unset by default; bows an edge
+into an arc by this signed fraction of its length - positive bows left of the
+`from`-to-`to` direction, negative right).
+
+`fill` is the arrowhead's fill color and defaults to the edge's own `col`, so
+arrowheads render solid by default. Pass `fill = NA` for the classic
 hollow/outline arrowhead:
 
 ```{r}
@@ -103,16 +207,39 @@ hollow/outline arrowhead:
 
 plot(
   dag,
-  edge_style = list(col = "darkgreen", fill = NA, lwd = 1.5)
+  edge_style = list(
+    col = "darkgreen",
+    fill = NA,
+    lwd = 1.5
+  )
 )
 ```
 
-### Per-edge overrides (`by_edge`)
+### Per-type styling
+
+`edge_style` can carry `directed`, `undirected`, `bidirected`,
+`partially_directed` (`o->`), `partially_undirected` (`o--`), and `partial`
+(`o-o`) sub-lists, so each of the six edge-mark groups can be styled
+independently:
+
+```{r}
+#| label: edge-per-type
+
+admg <- cgraph("X --> Y, X <-> Z, Z --> Y", class = "ADMG")
+plot(
+  admg,
+  edge_style = list(
+    directed = list(col = "steelblue"),
+    bidirected = list(col = "firebrick", lwd = 2.5)
+  )
+)
+```
+
+### Per-edge overrides
 
 `by_edge` is a named list keyed by node name. A node-wide entry (a plain style
-list) applies to every edge touching that node; a nested entry
-(`A = list(B = list(...))`) targets one specific edge and wins over any
-node-wide setting for the same edge.
+list) applies to every edge touching that node; a pair-level entry
+(`by_edge[[from]][[to]]`) targets every edge between that pair.
 
 ```{r}
 #| label: edge-by-edge
@@ -124,75 +251,102 @@ plot(
     by_edge = list(
       # Node-wide: every edge touching X...
       X = list(col = "steelblue"),
-      # ...except X -> M specifically
-      M = list(X = list(col = "red", lwd = 3))
+      # ...except X -> D specifically
+      D = list(X = list(col = "red", lwd = 3))
     )
-  ),
-  main = "by_edge overrides"
+  )
 )
 ```
 
-### Per-edge-type styling
+Style precedence, highest to lowest: exact-edge-type override (`.by_type`,
+below) > specific pair override in `by_edge` > node-wide override in `by_edge` >
+per-type style > global style.
 
-`edge_style` can also carry `directed`, `undirected`, `bidirected`, and
-`partial` sub-lists (the last covers any edge with a `o->`/`o-o`/`--o` endpoint
-mark). Style precedence, highest to lowest: specific edge in `by_edge` >
-node-wide entry in `by_edge` > edge-type style > global style.
+A pair-level `by_edge` entry can't tell apart parallel edges of different types
+between the same pair (e.g. an `ADMG`'s `X --> Y` and `X <-> Y`). Nest one level
+deeper under the reserved key `.by_type`, keyed by the edge's notation (`"-->"`,
+`"<->"`, ...), to style one exact edge:
 
 ```{r}
-#| label: edge-per-type
+#| label: edge-by-type
 
-mixed <- cgraph("A --> B, B --- C, C <-> D, D o-> E", class = "UNKNOWN")
+shared <- cgraph("X --> Y, X <-> Y", class = "ADMG")
 plot(
-  mixed,
-  layout = "circle",
+  shared,
   edge_style = list(
-    directed = list(col = "black"),
-    undirected = list(col = "forestgreen", lwd = 2),
-    bidirected = list(col = "purple"),
-    partial = list(col = "orange", circle_size = 2)
-  ),
-  main = "Styling by edge type"
+    col = "steelblue",
+    by_edge = list(
+      X = list(
+        Y = list(
+          .by_type = list("-->" = list(col = "firebrick"))
+        )
+      )
+    )
+  )
 )
 ```
 
-## Styling labels
+Note that `X --> Y` and `X <-> Y` are automatically bent into two parallel arcs
+rather than drawn on top of each other.
+
+### Curved edges
+
+`curvature` bows an edge into an arc instead of drawing it straight:
+
+```{r}
+#| label: curvature
+
+plot(admg, edge_style = list(bidirected = list(curvature = -0.3)))
+```
+
+## Label styling
 
 `label_style` sets the node-label text appearance: `col`, `fontsize`,
 `fontface`, `fontfamily`, `cex`.
 
+By default each node is labelled with its own name. `labels` overrides this,
+falling back to a node's own name (or a `"default"` entry) when not mentioned;
+node sizing accounts for multi-line labels (`\n`), so nodes grow to fit.
+
+```{r}
+#| label: labels
+
+plot(
+  cgraph("A0 --> L1 --> A1 --> Y, A0 --> Y + A1", class = "DAG"),
+  labels = c(
+    A0 = "Treatment\nat baseline",
+    L1 = "Confounder\nat time 1",
+    A1 = "Treatment\nat time 1"
+  )
+)
+```
+
 ```{r}
 #| label: label-style
 
-plot(
-  dag,
-  label_style = list(col = "white", fontface = "bold", fontsize = 12),
-  node_style = list(fill = "steelblue4"),
-  main = "Label styling"
-)
+plot(dag, label_style = list(fontsize = 14, col = "navy"))
 ```
 
-## Titles
+## Title
 
-`main` sets the plot title; `title_style` accepts the same fields as
-`label_style`.
+Pass `main` to add a plot title (`NULL` by default, i.e. no title).
+`title_style` (same fields as `label_style`) styles it, and `title_gap` (default
+`grid::unit(1, "lines")`) controls the spacing between the title and the graph.
 
 ```{r}
-#| label: title-style
+#| label: title
 
-plot(
-  dag,
-  main = "Custom title",
-  title_style = list(col = "darkred", fontsize = 18, fontface = "italic")
-)
+plot(dag, main = "My DAG", title_style = list(fontsize = 18, col = "navy"))
 ```
 
-## Aspect ratio and margins
+## Figure size and margins
 
-`asp` fixes the y/x aspect ratio of the plotted data (`NA`, the default, fills
-the available space; `asp = 1` makes one x-unit equal one y-unit).
-`outer_margin` and `title_gap` are `grid::unit()`s controlling the margin around
-the whole plot and the gap between the title and the graph.
+`outer_margin` (default `grid::unit(2, "mm")`) pads the whole plot, and `asp`
+fixes the y/x aspect ratio of the plotted data - `NA` (default) fills the
+available space, `asp = 1` makes one x-unit equal one y-unit. The figure size
+itself is set the usual R way, e.g. via `grDevices::pdf(width =, height =)` or
+an RStudio/Quarto chunk's `fig-width`/`fig-height`, since `plot()` draws with
+grid graphics into whatever device is already open.
 
 ```{r}
 #| label: asp
@@ -200,24 +354,78 @@ the whole plot and the gap between the title and the graph.
 plot(dag, asp = 1, main = "asp = 1")
 ```
 
-## Putting it together
+## Tiers
+
+Pass `tiers` (via `...`) to arrange nodes into left-to-right columns instead of
+using `layout` - a named list of node-name vectors (list order is tier order,
+names become tier labels), a named numeric vector (one tier number per node), or
+a `data.frame` with `name`/`tier` columns. `tier_style` controls the boxes drawn
+behind each tier: `boxes` (default `TRUE`), `labels` (logical or character
+vector; `TRUE` uses the tier names), `fill`, `col`, `lwd`, `padding` (mm),
+`label_style`, and `by_tier` (per-tier overrides keyed by tier name or 1-based
+index).
+
+```{r}
+#| label: tiers
+
+plot(
+  dag,
+  tiers = list(
+    exposure = "A",
+    mediators = c("X", "K", "D"),
+    outcome = c("Y", "H")
+  ),
+  tier_style = list(labels = TRUE)
+)
+```
+
+## Global styling defaults
+
+`node_style`, `edge_style`, `label_style`, `title_style`, and `tier_style` each
+default to the corresponding entry from `plot_options()` (itself defaulting to
+`plot_default_options()`). Set them globally with `plot_options()` to avoid
+repeating the same style lists at every call site - arguments passed to `plot()`
+still take precedence:
+
+```{r}
+#| label: plot-options
+
+plot_options(node_style = list(fill = "white", col = "black"))
+plot(dag)
+
+# Reset to the built-in defaults
+plot_options(plot_default_options())
+```
+
+## Combining options
+
+Here we plot a `PAG` where we combine a bunch of different styling options:
 
 ```{r}
 #| label: combined
 
+pag <- cgraph(
+  "C o-> X, D --> G + Y, X --> D + F, Y --> H, K o-> X, K --> Y",
+  class = "PAG"
+)
+
 plot(
-  dag,
+  pag,
   node_style = list(
-    fill = "white",
-    col = "black",
-    by_node = list(Y = list(fill = "gold", col = "darkorange", lwd = 2))
+    fill = "#f8fafc",
+    col = "#64748b",
+    by_node = list(
+      X = list(fill = "#dbeafe", col = "#2563eb"),
+      Y = list(fill = "#fef3c7", col = "#d97706"),
+      K = list(linestyle = "dashed")
+    )
   ),
   edge_style = list(
-    col = "gray40",
-    by_edge = list(X = list(M = list(col = "red", lwd = 2)))
+    col = "#334155",
+    partially_directed = list(col = "#2563eb")
   ),
-  label_style = list(fontface = "bold"),
-  main = "Everything at once",
-  title_style = list(fontsize = 16)
+  label_style = list(col = "#1e293b", fontsize = 16),
+  main = "A PAG",
+  title_style = list(fontsize = 18, col = "#1e293b")
 )
 ```

@@ -50,9 +50,9 @@
 }
 
 # Distance from a node's center to its own shape boundary along unit
-# direction (dx, dy): an ellipse for "round"/"ellipse" (half-axes hw, hh), or
-# an axis-aligned box for "box"/"rect" (half-width hw, half-height hh). A
-# circle/square is just the round/box case with hw == hh.
+# direction (dx, dy): an ellipse for "circle"/"ellipse" (half-axes hw, hh),
+# or an axis-aligned box for "square"/"rect" (half-width hw, half-height
+# hh). A circle/square is just the ellipse/box case with hw == hh.
 .shape_boundary_distance <- function(shape, hw, hh, dx, dy) {
   c <- abs(dx)
   s <- abs(dy)
@@ -200,7 +200,7 @@ bow_edge_path <- function(
 # to project radially from each center. The straight center-to-center
 # segment is tested against obstacle nodes (circle centers ox/oy, each
 # treated as its bounding circumradius `or` for this proximity test - an
-# approximation for non-circular "box" nodes, which callers must already
+# approximation for non-circular "square"/"rect" nodes, which callers must already
 # have padded by half their stroke width so a thick node border is treated
 # as part of its footprint). If no obstacle is closer than or + clearance,
 # no routing is needed and NULL is returned. Otherwise a cubic Bezier is

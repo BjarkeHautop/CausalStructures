@@ -39,14 +39,14 @@ e.g. \code{list(A = c(0, 0), X = c(1, 0))}.
 \code{padding} (mm, default 2), \code{size} (multiplier, default 1), \code{radius}
 (mm; when set, every node is drawn at this fixed half-extent instead of
 being fitted to its label - mirrors CausalStructures.jl's Makie
-\code{plot()}'s \code{node_radius}), \code{shape} (\code{"round"} (default), \code{"box"},
-\code{"ellipse"}, or \code{"rect"} - \code{"round"}/\code{"box"} are fitted to their label
-and rounded out to a circle/square unless the label is oblong enough to
-read as an ellipse/rectangle instead, while \code{"ellipse"}/\code{"rect"} force
-that oblong shape unconditionally, matching CausalStructures.jl's Makie
-\code{plot()}, whose \code{node_shape} is an explicit choice among these same four
-with no auto-detection - edges clip to, and route around, the shape
-actually drawn), \code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} - any value
+\code{plot()}'s \code{node_radius}), \code{shape} (\code{"circle"} (default), \code{"square"},
+\code{"ellipse"}, or \code{"rect"} - \code{"circle"}/\code{"square"} are fitted to their
+label and always rounded out to equal sides, while \code{"ellipse"}/\code{"rect"}
+keep the fitted oblong box as-is; there is no automatic switching
+between them based on label length, matching CausalStructures.jl's
+Makie \code{plot()}, whose \code{node_shape} is an explicit choice among these
+same four - edges clip to, and route around, the shape actually drawn),
+\code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} - any value
 grid's \code{lty} accepts - for a non-solid node border; default solid), and
 \code{by_node} (named list of per-node overrides, which can include
 \code{shape}/\code{linestyle}/\code{radius} too).}
@@ -60,11 +60,14 @@ fill color; defaults to \code{col} so arrowheads render solid and match the
 edge - pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size}
 (mm, default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
 endpoints; an edge that would otherwise cross a non-incident node always
-bends around it as a Bezier curve unless \code{curvature} overrides this),
-\code{curvature} (default 0; bows an edge into an arc by this signed
+bends around it as a Bezier curve unless \code{curvature} overrides this;
+parallel edges sharing a node pair, e.g. an ADMG's \verb{X --> Y}/\verb{X <-> Y},
+automatically fan out apart from each other for the same reason), and
+\code{curvature} (unset by default; bows an edge into an arc by this signed
 fraction of its length - positive bows left of the \code{from}-to-\code{to}
-direction, negative right; a non-zero value is a manual override that
-takes precedence over the automatic obstacle-avoidance bend above), and
+direction, negative right; setting it (including to \code{0}) is a manual
+override that takes precedence over both the automatic
+obstacle-avoidance bend and the automatic parallel-edge fan-out above), and
 \code{by_edge} (named list of per-edge or per-node overrides, keyed by node
 name(s)). Style precedence (highest to lowest): specific edge settings
 in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type settings >
@@ -161,12 +164,12 @@ if (julia_ready()) {
     main = "Styled DAG"
   )
 }
-# Box-shaped, dashed-border nodes with custom labels and a curved edge.
+# Square-shaped, dashed-border nodes with custom labels and a curved edge.
 if (julia_ready()) {
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(
     dag,
-    node_style = list(shape = "box", linestyle = "dashed"),
+    node_style = list(shape = "square", linestyle = "dashed"),
     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
   )

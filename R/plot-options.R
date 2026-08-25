@@ -36,14 +36,13 @@ plot_default_options <- function() {
       lwd = 1,
       padding = 2,
       size = 1,
-      shape = "round"
+      shape = "circle"
     ),
     edge_style = list(
       col = "black",
       lwd = 1,
       arrow_size = 3,
-      circle_size = 1.5,
-      curvature = 0
+      circle_size = 1.5
     ),
     label_style = list(col = "black", fontsize = 10),
     title_style = list(col = "black", fontsize = 14, fontface = "bold"),
@@ -81,10 +80,12 @@ plot_default_options <- function() {
 #' Fields, matching the corresponding `plot.cgraph()` argument:
 #'
 #' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier),
-#'   `radius` (mm, fixed override), `shape` (`"round"`, `"box"`, `"ellipse"`,
-#'   or `"rect"`), `linestyle` (e.g. `"dashed"`)
+#'   `radius` (mm, fixed override), `shape` (`"circle"`, `"square"`,
+#'   `"ellipse"`, or `"rect"`), `linestyle` (e.g. `"dashed"`)
 #' - `edge_style`: `col`, `lwd`, `fill` (arrowhead fill), `arrow_size` (mm),
-#'   `circle_size` (mm), `curvature` (signed fraction of edge length)
+#'   `circle_size` (mm), `curvature` (signed fraction of edge length; unset by
+#'   default, so parallel edges between the same node pair fan out
+#'   automatically - see [plot.cgraph()])
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
 #' - `title_style`: same fields as `label_style`
 #' - `tier_style`: `boxes`, `labels`, `fill`, `col`, `lwd`, `padding` (mm),

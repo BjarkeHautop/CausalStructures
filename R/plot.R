@@ -140,21 +140,9 @@
   )
 }
 
-# Node shape fitted to its label: half-width/half-height (mm) big enough to
-# contain the label plus padding. "round" and "box" round out to equal sides
-# (circle/square respectively) unless the fitted box is oblong enough to read
-# as an ellipse/rectangle instead; "ellipse" and "rect" force that oblong box
-# unconditionally, mirroring CausalStructures.jl's Makie `plot()`, whose
-# node_shape is an explicit choice among :circle/:square/:ellipse/:rect with
-# no auto-detection (nodes.jl's `_text_fit_pixel_size`/`_is_fixed_aspect`).
-# Sizing itself: round/ellipse is the ellipse inscribing a w x h box (hw =
-# w/sqrt(2), hh = h/sqrt(2)); box/rect is just half the label box plus
-# padding. For round/box, if the fitted aspect ratio hi/lo is at or under
-# _NODE_ASPECT_CAP (1.4), both half-extents are equalized to the larger one.
-.NODE_ASPECT_CAP <- 1.4
-.NODE_SHAPES <- c("round", "box", "ellipse", "rect")
+.NODE_SHAPES <- c("circle", "square", "ellipse", "rect")
 
-.plot_is_boxy <- function(shape) shape %in% c("box", "rect")
+.plot_is_boxy <- function(shape) shape %in% c("square", "rect")
 
 .plot_shape_half_extents <- function(shape, label, label_style, padding_mm) {
   label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
@@ -174,13 +162,8 @@
     return(c(hw, hh))
   }
 
-  hi <- max(hw, hh)
-  lo <- min(hw, hh)
-  if (lo <= 0 || hi / lo <= .NODE_ASPECT_CAP) {
-    c(hi, hi)
-  } else {
-    c(hw, hh)
-  }
+  m <- max(hw, hh)
+  c(m, m)
 }
 
 # Ellipse (or, when hw == hh, a circle) as a closed polygon of n points,
@@ -225,7 +208,7 @@
       style$lty <- style$linestyle
     }
 
-    shape <- style$shape %||% "round"
+    shape <- style$shape %||% "circle"
     if (!shape %in% .NODE_SHAPES) {
       stop(
         sprintf(
@@ -319,6 +302,7 @@
   gp,
   circle_size,
   curvature,
+  fan_slot = 0,
   name,
   obstacle_x = numeric(0),
   obstacle_y = numeric(0),
@@ -337,6 +321,7 @@
     gp = gp,
     circle_size = circle_size,
     curvature = curvature,
+    fan_slot = fan_slot,
     name = name,
     obstacle_x = obstacle_x,
     obstacle_y = obstacle_y,
@@ -345,15 +330,10 @@
   )
 }
 
-# Given the unit direction (mm space) pointing *into* an arrowhead's tip
-# (i.e. the direction of travel arriving at it) and a grid::arrow() object,
-# returns the two back-corner offsets from the tip (mm, still to be
-# subtracted from the tip position) and how far back along that direction
-# the arrowhead's base sits - grid::linesGrob(arrow=) always draws the
-# connecting line all the way to the tip, which is fine for a filled
-# arrowhead but leaves a visible stroke down the middle of an unfilled one;
-# drawing the arrowhead as a separate polygon and stopping the shaft at its
-# base avoids that.
+# Given the unit direction (mm space) pointing *into* an arrowhead's tip and
+# a grid::arrow() object, returns the two back-corner offsets from the tip
+# (mm, still to be subtracted from the tip position) and how far back along
+# that direction the arrowhead's base sits.
 .plot_arrowhead_geometry <- function(into_x_mm, into_y_mm, arrow) {
   length_mm <- grid::convertWidth(arrow$length, "mm", valueOnly = TRUE)
   theta <- arrow$angle * pi / 180
@@ -436,10 +416,7 @@ makeContent.cs_edge_grob <- function(x) {
     # vertex renders as a small rounded cap extending roughly half the
     # edge's lwd past the mathematical tip coordinate - back toward the
     # node - so without this, the tip's rendered ink oversteps the trimmed
-    # endpoint and visibly overlaps the node's shape (confirmed by comparing
-    # exact SVG path coordinates against the rendered output at high zoom:
-    # the gap between the tip and the node's stroke was consistently short
-    # by almost exactly half the edge's lwd).
+    # endpoint and visibly overlaps the node's shape.
     edge_lwd <- x$gp$lwd %||% 1
     half_edge_lwd_mm <- grid::convertWidth(
       grid::unit(edge_lwd / 192, "inches"),
@@ -481,15 +458,11 @@ makeContent.cs_edge_grob <- function(x) {
     y1_adj <- y1_unit
   }
 
-  # Route the edge around any non-incident nodes it would otherwise cross,
-  # or bow it into a manually specified arc. Detection and curve
-  # construction happen in mm, since the layout's native [0, 1] space is
-  # aspect-distorted. The curve is built between node centers and clipped
-  # to the shape boundaries, so the edge projects radially from each
-  # center, matching the straight-line case above. An explicit non-zero
-  # curvature takes precedence and skips obstacle-avoidance routing
-  # entirely, mirroring CausalStructures.jl's Makie `plot()` (curvature is a
-  # manual override for when automatic routing picks an awkward path).
+  # Route the edge around any non-incident nodes it would otherwise cross, or
+  # bow it into a manually specified arc. Detection and curve construction
+  # happen in mm, since the layout's native [0, 1] space is aspect-distorted.
+  # An explicit non-zero curvature takes precedence and skips
+  # obstacle-avoidance routing entirely.
   path <- NULL
   # Endpoint tangents (mm): default to the straight-line direction.
   t0 <- c(ux_mm, uy_mm)
@@ -501,8 +474,8 @@ makeContent.cs_edge_grob <- function(x) {
     c1x <- grid::convertX(x1_unit, "mm", valueOnly = TRUE)
     c1y <- grid::convertY(y1_unit, "mm", valueOnly = TRUE)
 
-    curvature <- x$curvature %||% 0
-    if (curvature != 0) {
+    curvature <- x$curvature
+    if (!is.null(curvature)) {
       path <- bow_edge_path(
         c0x,
         c0y,
@@ -516,7 +489,9 @@ makeContent.cs_edge_grob <- function(x) {
         hh_to,
         curvature * length_mm
       )
-    } else if (length(x$obstacle_x) > 0) {
+    }
+
+    if (is.null(path) && length(x$obstacle_x) > 0) {
       ox <- grid::convertX(
         grid::unit(x$obstacle_x, "native"),
         "mm",
@@ -548,6 +523,26 @@ makeContent.cs_edge_grob <- function(x) {
         oy,
         or,
         clearance
+      )
+    }
+
+    # No explicit curvature and no obstacle to route around: fan parallel
+    # edges between the same node pair (e.g. an ADMG's X-->Y/X<->Y) apart so
+    # they don't draw as overlapping lines - see .plot_edge_fan_slots().
+    fan_slot <- x$fan_slot %||% 0
+    if (is.null(path) && fan_slot != 0) {
+      path <- bow_edge_path(
+        c0x,
+        c0y,
+        c1x,
+        c1y,
+        x$geom_from$shape,
+        hw_from,
+        hh_from,
+        x$geom_to$shape,
+        hw_to,
+        hh_to,
+        fan_slot * 0.3 * length_mm
       )
     }
   }
@@ -720,6 +715,46 @@ makeContent.cs_edge_grob <- function(x) {
   grid::setChildren(x, grob_list)
 }
 
+#' @importFrom grid makeContent
+#' @export
+makeContent.cs_graph_grob <- function(x) {
+  vp_width_mm <- grid::convertWidth(
+    grid::unit(1, "npc"),
+    "mm",
+    valueOnly = TRUE
+  )
+  vp_height_mm <- grid::convertHeight(
+    grid::unit(1, "npc"),
+    "mm",
+    valueOnly = TRUE
+  )
+
+  padded <- .plot_curvature_padded_range(
+    x$cs_edges,
+    x$cs_coords,
+    x$cs_edge_style,
+    x$cs_node_geom,
+    x$cs_x_range,
+    x$cs_y_range,
+    vp_width_mm,
+    vp_height_mm
+  )
+
+  content_vp <- grid::viewport(
+    xscale = padded$x_range,
+    yscale = padded$y_range,
+    name = paste0(x$name, ".scale")
+  )
+
+  content <- grid::gTree(
+    children = x$children,
+    vp = content_vp,
+    name = paste0(x$name, ".content")
+  )
+
+  grid::setChildren(x, grid::gList(content))
+}
+
 # Arrow spec for an edge given its endpoint marks, or NULL for edges with no
 # "Arrow" end (undirected `---`, or fully-circle `o-o`).
 .plot_edge_arrow <- function(src_mark, dst_mark, arrow_size) {
@@ -802,9 +837,123 @@ makeContent.cs_edge_grob <- function(x) {
   style
 }
 
+# Assigns each edge a signed fan-out slot: 0 when it is the only edge on its
+# (undirected) node pair, otherwise evenly spaced values centered on 0.
+# Grouping ignores direction, so antiparallel edges fan out too - and since
+# the slot is later applied as a bow along each edge's own from->to vector, a
+# reversed edge needs its slot's sign flipped to land opposite its sibling
+# rather than on top of it.
+.plot_edge_fan_slots <- function(from, to) {
+  n <- length(from)
+  slots <- numeric(n)
+  lo <- ifelse(from < to, from, to)
+  hi <- ifelse(from < to, to, from)
+  key <- paste(lo, hi, sep = "\r")
+
+  for (k in unique(key)) {
+    idx <- which(key == k)
+    m <- length(idx)
+    if (m <= 1) {
+      next
+    }
+    for (rank in seq_along(idx)) {
+      i <- idx[rank]
+      raw <- (rank - 1) - (m - 1) / 2
+      flip <- if (from[i] == lo[i]) 1 else -1
+      slots[i] <- raw * flip
+    }
+  }
+
+  slots
+}
+
+# Widens x_range/y_range so an explicit `curvature`'s Bezier bow fits inside
+# the graph viewport instead of bowing out past the plot boundary - the
+# curvature counterpart to the node-radius margin in plot.cgraph(). Traces
+# each curved edge with the real bow_edge_path() geometry and iterates,
+# since padding one axis changes that axis's native-to-mm scale, which
+# changes how much mm bulge an edge running along the *other* axis produces.
+.plot_curvature_padded_range <- function(
+  edges,
+  coords,
+  edge_style,
+  node_geom,
+  x_range,
+  y_range,
+  vp_width_mm,
+  vp_height_mm,
+  n_iter = 8L
+) {
+  curved <- list()
+  for (i in seq_len(nrow(edges))) {
+    style <- .plot_edge_style(edges, i, edge_style)
+    curvature <- style$curvature
+    if (is.null(curvature) || curvature == 0) {
+      next
+    }
+    curved[[length(curved) + 1]] <- list(
+      from_idx = match(edges$from[i], coords$name),
+      to_idx = match(edges$to[i], coords$name),
+      curvature = curvature
+    )
+  }
+  if (length(curved) == 0) {
+    return(list(x_range = x_range, y_range = y_range))
+  }
+
+  for (iter in seq_len(n_iter)) {
+    scale_x <- vp_width_mm / diff(x_range)
+    scale_y <- vp_height_mm / diff(y_range)
+    x_min <- x_range[1]
+    x_max <- x_range[2]
+    y_min <- y_range[1]
+    y_max <- y_range[2]
+
+    for (edge in curved) {
+      geom_from <- node_geom[[edge$from_idx]]
+      geom_to <- node_geom[[edge$to_idx]]
+      p0x <- coords$x[edge$from_idx] * scale_x
+      p0y <- coords$y[edge$from_idx] * scale_y
+      p2x <- coords$x[edge$to_idx] * scale_x
+      p2y <- coords$y[edge$to_idx] * scale_y
+      length_mm <- sqrt((p2x - p0x)^2 + (p2y - p0y)^2)
+
+      path <- bow_edge_path(
+        p0x,
+        p0y,
+        p2x,
+        p2y,
+        geom_from$shape,
+        geom_from$hw,
+        geom_from$hh,
+        geom_to$shape,
+        geom_to$hw,
+        geom_to$hh,
+        edge$curvature * length_mm
+      )
+      if (is.null(path)) {
+        next
+      }
+
+      path_x <- path$x / scale_x
+      path_y <- path$y / scale_y
+      x_min <- min(x_min, path_x)
+      x_max <- max(x_max, path_x)
+      y_min <- min(y_min, path_y)
+      y_max <- max(y_max, path_y)
+    }
+
+    x_range <- c(x_min, x_max)
+    y_range <- c(y_min, y_max)
+  }
+
+  list(x_range = x_range, y_range = y_range)
+}
+
 .plot_make_edges <- function(edges, coords, node_geom, edge_style) {
   n_edges <- nrow(edges)
   edge_grobs <- grid::gList()
+  fan_slots <- .plot_edge_fan_slots(edges$from, edges$to)
 
   for (i in seq_len(n_edges)) {
     from_name <- edges$from[i]
@@ -837,7 +986,8 @@ makeContent.cs_edge_grob <- function(x) {
       arrow = arrow,
       gp = edge_gpar,
       circle_size = style$circle_size,
-      curvature = style$curvature %||% 0,
+      curvature = style$curvature,
+      fan_slot = fan_slots[i],
       name = paste0("edge.", i),
       obstacle_x = coords$x[obstacle_idx],
       obstacle_y = coords$y[obstacle_idx],
@@ -1079,14 +1229,14 @@ makeContent.cs_edge_grob <- function(x) {
 #'   `padding` (mm, default 2), `size` (multiplier, default 1), `radius`
 #'   (mm; when set, every node is drawn at this fixed half-extent instead of
 #'   being fitted to its label - mirrors CausalStructures.jl's Makie
-#'   `plot()`'s `node_radius`), `shape` (`"round"` (default), `"box"`,
-#'   `"ellipse"`, or `"rect"` - `"round"`/`"box"` are fitted to their label
-#'   and rounded out to a circle/square unless the label is oblong enough to
-#'   read as an ellipse/rectangle instead, while `"ellipse"`/`"rect"` force
-#'   that oblong shape unconditionally, matching CausalStructures.jl's Makie
-#'   `plot()`, whose `node_shape` is an explicit choice among these same four
-#'   with no auto-detection - edges clip to, and route around, the shape
-#'   actually drawn), `linestyle` (e.g. `"dashed"`, `"dotted"` - any value
+#'   `plot()`'s `node_radius`), `shape` (`"circle"` (default), `"square"`,
+#'   `"ellipse"`, or `"rect"` - `"circle"`/`"square"` are fitted to their
+#'   label and always rounded out to equal sides, while `"ellipse"`/`"rect"`
+#'   keep the fitted oblong box as-is; there is no automatic switching
+#'   between them based on label length, matching CausalStructures.jl's
+#'   Makie `plot()`, whose `node_shape` is an explicit choice among these
+#'   same four - edges clip to, and route around, the shape actually drawn),
+#'   `linestyle` (e.g. `"dashed"`, `"dotted"` - any value
 #'   grid's `lty` accepts - for a non-solid node border; default solid), and
 #'   `by_node` (named list of per-node overrides, which can include
 #'   `shape`/`linestyle`/`radius` too).
@@ -1099,11 +1249,14 @@ makeContent.cs_edge_grob <- function(x) {
 #'   edge - pass `fill = NA` for a hollow/outline arrowhead), `arrow_size`
 #'   (mm, default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
 #'   endpoints; an edge that would otherwise cross a non-incident node always
-#'   bends around it as a Bezier curve unless `curvature` overrides this),
-#'   `curvature` (default 0; bows an edge into an arc by this signed
+#'   bends around it as a Bezier curve unless `curvature` overrides this;
+#'   parallel edges sharing a node pair, e.g. an ADMG's `X --> Y`/`X <-> Y`,
+#'   automatically fan out apart from each other for the same reason), and
+#'   `curvature` (unset by default; bows an edge into an arc by this signed
 #'   fraction of its length - positive bows left of the `from`-to-`to`
-#'   direction, negative right; a non-zero value is a manual override that
-#'   takes precedence over the automatic obstacle-avoidance bend above), and
+#'   direction, negative right; setting it (including to `0`) is a manual
+#'   override that takes precedence over both the automatic
+#'   obstacle-avoidance bend and the automatic parallel-edge fan-out above), and
 #'   `by_edge` (named list of per-edge or per-node overrides, keyed by node
 #'   name(s)). Style precedence (highest to lowest): specific edge settings
 #'   in `by_edge` > node-wide settings in `by_edge` > edge-type settings >
@@ -1183,12 +1336,12 @@ makeContent.cs_edge_grob <- function(x) {
 #'     main = "Styled DAG"
 #'   )
 #' }
-#' # Box-shaped, dashed-border nodes with custom labels and a curved edge.
+#' # Square-shaped, dashed-border nodes with custom labels and a curved edge.
 #' if (julia_ready()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(
 #'     dag,
-#'     node_style = list(shape = "box", linestyle = "dashed"),
+#'     node_style = list(shape = "square", linestyle = "dashed"),
 #'     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
 #'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
 #'   )
@@ -1266,8 +1419,6 @@ plot.cgraph <- function(
     }
     coords <- layout[match(graph_nodes, layout$name), , drop = FALSE]
   } else if (is.list(layout)) {
-    # A plain named list keyed by node name, e.g.
-    # list(A = c(0, 0), X = c(1, 0)) - each value a length-2 c(x, y).
     graph_nodes <- nodes(x)
     missing_nodes <- setdiff(graph_nodes, names(layout))
     if (length(missing_nodes) > 0) {
@@ -1369,16 +1520,10 @@ plot.cgraph <- function(
     tier_label_grobs <- tiers_res$label_grobs
   }
 
-  # Viewport sizing: shrink from [0, 1] x [0, 1] npc by the largest node
-  # circle's radius so no node gets clipped at the plot edge. This only
-  # works because grobWidth()/grobHeight() measure a grob's own size, not
-  # its position - unlike grobX()/grobY(), they don't need to resolve the
-  # "native" coordinates the graph_vp being sized here is what defines in
-  # the first place, so there's no circularity. Tier boxes/labels extend
-  # past the circles by their own padding/size, so their contribution is
-  # added the same size-only way rather than via grobX()/grobY() bounds
-  # (which would need graph_vp's own native scale to resolve, before it
-  # exists).
+  # Shrink from [0, 1] x [0, 1] npc by the largest node circle's radius so no
+  # node gets clipped at the plot edge. grobWidth()/grobHeight() (size-only)
+  # rather than grobX()/grobY() (position) avoid circularity: the latter
+  # would need graph_vp's own native scale resolved before it exists.
   margin_x <- grid::unit(0, "mm")
   margin_y <- grid::unit(0, "mm")
   if (!is.null(tier_box_grobs) || !is.null(tier_label_grobs)) {
@@ -1411,6 +1556,38 @@ plot.cgraph <- function(
     }
   }
 
+  title_grob <- if (is.null(main)) {
+    grid::nullGrob(name = "title")
+  } else {
+    title_gpar <- do.call(grid::gpar, .plot_gpar_params(styles$title_style))
+    grid::textGrob(label = main, gp = title_gpar, name = "title")
+  }
+
+  title_height <- grid::unit(1, "grobheight", list(title_grob))
+  if (is.null(main)) {
+    title_gap <- grid::unit(0, "mm")
+  }
+
+  layout_vp <- grid::viewport(
+    layout = grid::grid.layout(
+      nrow = 5,
+      ncol = 3,
+      heights = grid::unit.c(
+        outer_margin,
+        title_height,
+        title_gap,
+        grid::unit(1, "null"),
+        outer_margin
+      ),
+      widths = grid::unit.c(outer_margin, grid::unit(1, "null"), outer_margin)
+    ),
+    name = "layout"
+  )
+
+  # xscale/yscale here are an inert fallback; makeContent.cs_graph_grob()
+  # below computes the real, curvature-padded scale and applies it via a
+  # nested viewport once this one is actually active on the device (needed
+  # for its width/height to resolve to real mm).
   graph_vp <- grid::viewport(
     x = vp_x,
     y = vp_y,
@@ -1438,36 +1615,15 @@ plot.cgraph <- function(
 
   graph_grob <- grid::gTree(
     children = graph_children,
+    cs_edges = edges,
+    cs_coords = coords,
+    cs_edge_style = styles$edge_style,
+    cs_node_geom = nodes_res$node_geom,
+    cs_x_range = x_range,
+    cs_y_range = y_range,
     vp = graph_vp,
-    name = "cs.graph"
-  )
-
-  title_grob <- if (is.null(main)) {
-    grid::nullGrob(name = "title")
-  } else {
-    title_gpar <- do.call(grid::gpar, .plot_gpar_params(styles$title_style))
-    grid::textGrob(label = main, gp = title_gpar, name = "title")
-  }
-
-  title_height <- grid::unit(1, "grobheight", list(title_grob))
-  if (is.null(main)) {
-    title_gap <- grid::unit(0, "mm")
-  }
-
-  layout_vp <- grid::viewport(
-    layout = grid::grid.layout(
-      nrow = 5,
-      ncol = 3,
-      heights = grid::unit.c(
-        outer_margin,
-        title_height,
-        title_gap,
-        grid::unit(1, "null"),
-        outer_margin
-      ),
-      widths = grid::unit.c(outer_margin, grid::unit(1, "null"), outer_margin)
-    ),
-    name = "layout"
+    name = "cs.graph",
+    cl = "cs_graph_grob"
   )
 
   title_grob$vp <- grid::vpStack(
