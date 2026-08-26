@@ -391,6 +391,56 @@ pkg_path <- function() {
   )
 }
 
+#' Local CausalStructures.jl checkout, for local dev only
+#'
+#' When this R package is loaded from its source checkout (e.g. via
+#' [pkgload::load_all()]) and a sibling `CausalStructures.jl` directory
+#' exists next to it (i.e. the two repos are checked out side by side), that
+#' local checkout is used instead of the registry version pinned in
+#' `inst/Project.toml` - so local Julia-side changes are picked up without
+#' publishing a release first. Returns `NULL` (falling back to the pinned
+#' registry version) for an installed copy of this package, where no such
+#' sibling directory exists.
+#'
+#' @return Absolute path to the local `CausalStructures.jl` checkout, or
+#'   `NULL`.
+#' @keywords internal
+local_julia_dev_path <- function() {
+  candidate <- file.path(
+    dirname(dirname(pkg_path())),
+    "CausalStructures.jl"
+  )
+  if (!file.exists(file.path(candidate, "Project.toml"))) {
+    return(NULL)
+  }
+  normalizePath(candidate, mustWork = TRUE)
+}
+
+#' Julia project directory to activate for a local dev checkout
+#'
+#' `inst/Project.toml` pins `CausalStructures` to the latest *released*
+#' version, so activating it directly would reject an unreleased/breaking
+#' local checkout via a compat error. Instead, mirror `inst/Project.toml`'s
+#' other dependencies (and their compat bounds) into a scratch project
+#' outside the git working tree, with the `CausalStructures` compat entry
+#' dropped, then [dev][setup()] the local checkout into it. Regenerated on
+#' every [setup()] call, so edits to `inst/Project.toml`'s other deps are
+#' always picked up; the resulting `Manifest.toml` persists across R
+#' sessions like the regular `inst/Manifest.toml` does.
+#'
+#' @param dev_path Local `CausalStructures.jl` checkout, from
+#'   [local_julia_dev_path()].
+#' @return Absolute path to the scratch Julia project directory.
+#' @keywords internal
+dev_julia_project <- function(dev_path) {
+  dir <- file.path(tools::R_user_dir("CausalStructures", "cache"), "julia-dev")
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+  lines <- readLines(file.path(pkg_path(), "Project.toml"))
+  lines <- lines[!grepl("^CausalStructures\\s*=", lines)]
+  writeLines(lines, file.path(dir, "Project.toml"))
+  normalizePath(dir, mustWork = TRUE)
+}
+
 #' Is Julia ready to use, with no setup needed?
 #'
 #' Checks that the `julia` binary is on the `PATH` and that [setup()] can
@@ -560,8 +610,15 @@ setup <- function() {
       )
     }
   )
-  path <- pkg_path()
+  dev_path <- local_julia_dev_path()
+  path <- if (is.null(dev_path)) pkg_path() else dev_julia_project(dev_path)
   JuliaCall::julia_command(sprintf('import Pkg; Pkg.activate("%s")', path))
+  if (!is.null(dev_path)) {
+    JuliaCall::julia_command(sprintf(
+      'Pkg.develop(Pkg.PackageSpec(path = "%s"))',
+      dev_path
+    ))
+  }
   ensure_instantiated(path)
   JuliaCall::julia_command("import CausalStructures")
   JuliaCall::julia_command("import Random")
