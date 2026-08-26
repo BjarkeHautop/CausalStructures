@@ -137,8 +137,7 @@
       _CausalStructures_mjoin([_CausalStructures_sets(g) for g in groups], "\x1d")
   end',
 
-  '_CausalStructures_cgraph(spec, class) =
-      _CausalStructures_CS.cgraph(spec; class = getfield(_CausalStructures_CS, Symbol(class)))',
+  '_CausalStructures_cgraph(spec, class) = getfield(_CausalStructures_CS, Symbol(class))(spec)',
 
   'function _CausalStructures_generate_graph(n, m, p, class, latents, rng)
       kwargs = (
