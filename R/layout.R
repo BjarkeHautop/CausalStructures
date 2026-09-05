@@ -15,17 +15,24 @@
 #'
 #' @param x A graph created with [cgraph()], of any class.
 #' @param method Character string specifying the layout method:
-#'   * `"stress"` (default): stress majorization. A good general-purpose
-#'     choice - well-spaced and deterministic for a given graph.
+#'   * `"stress"`: stress majorization. A good general-purpose choice - well-
+#'     spaced and deterministic for a given graph.
 #'   * `"spring"`: Fruchterman-Reingold force-directed.
 #'   * `"sfdp"`: scalable force-directed placement.
 #'   * `"spectral"`: spectral layout.
 #'   * `"shell"`: concentric shells.
 #'   * `"squaregrid"`: square grid.
+#'   * `"sugiyama"`: layered/hierarchical layout, `DAG` only. Provided by the
+#'     [Sugiyama.jl](https://github.com/JuliaGraphs/Sugiyama.jl) package.
 #'
-#'   All methods are provided by the
+#'   All other methods are provided by the
 #'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) package.
 #'
+#'   Defaults (`NULL`) to `"sugiyama"` when `x` was constructed (or
+#'   [reclass()]ed) as a `DAG`, `"stress"` otherwise - matching
+#'   CausalStructures.jl's own default. This checks `x`'s actual class, not
+#'   its edge structure (see [predicates]) - a `PDAG` with only directed,
+#'   acyclic edges still defaults to `"stress"`.
 #' @param ... Additional arguments
 #' @return A `data.frame` with columns `name`, `x`, and `y`.
 #'
@@ -41,22 +48,15 @@
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cgraph_layout(dag, method = "spring")
 #' }
-cgraph_layout <- function(
-  x,
-  method = c(
-    "stress",
-    "spring",
-    "sfdp",
-    "spectral",
-    "shell",
-    "squaregrid"
-  ),
-  ...
-) {
+cgraph_layout <- function(x, method = NULL, ...) {
   if (!inherits(x, "cgraph")) {
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
-  method <- match.arg(method)
+  method <- method %||% if (fn("is_dag_type")(x)) "sugiyama" else "stress"
+  method <- match.arg(
+    method,
+    c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "sugiyama")
+  )
 
   nm <- nodes(x)
   n <- length(nm)

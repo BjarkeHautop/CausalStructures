@@ -1218,9 +1218,11 @@ makeContent.cs_graph_grob <- function(x) {
 #'
 #' @param x A graph created with [cgraph()], of any class.
 #' @param layout Specifies the layout. Can be:
+#'   * `NULL` (default): [cgraph_layout()]'s own default - `"sugiyama"` for a
+#'     `DAG`, `"stress"` otherwise.
 #'   * A character string passed to [cgraph_layout()] as `method`
 #'     (`"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
-#'     `"shell"`, `"squaregrid"`).
+#'     `"shell"`, `"squaregrid"`, `"sugiyama"`).
 #'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
 #'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
@@ -1353,7 +1355,7 @@ makeContent.cs_graph_grob <- function(x) {
 #' @export
 plot.cgraph <- function(
   x,
-  layout = "stress",
+  layout = NULL,
   node_style = list(),
   edge_style = list(),
   label_style = list(),
@@ -1375,16 +1377,19 @@ plot.cgraph <- function(
 
   dots <- list(...)
 
-  if (!is.null(dots$tiers) && (is.character(layout) || is.function(layout))) {
+  if (
+    !is.null(dots$tiers) &&
+      (is.null(layout) || is.character(layout) || is.function(layout))
+  ) {
     # tiers implies a tiered arrangement - overrides the layout method
-    # (string or function), but not an explicit pre-computed data.frame of
-    # coordinates, which is left alone below.
+    # (string, NULL default, or function), but not an explicit pre-computed
+    # data.frame of coordinates, which is left alone below.
     graph_node_names <- nodes(x)
     coords <- .plot_tiered_layout(
       graph_node_names,
       .plot_tier_index(dots$tiers, graph_node_names)
     )
-  } else if (is.character(layout)) {
+  } else if (is.null(layout) || is.character(layout)) {
     coords <- cgraph_layout(x, method = layout, ...)
   } else if (is.function(layout)) {
     coords <- layout(x, ...)

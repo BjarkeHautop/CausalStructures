@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{cgraph}(
   x,
-  layout = "stress",
+  layout = NULL,
   node_style = list(),
   edge_style = list(),
   label_style = list(),
@@ -26,9 +26,11 @@
 
 \item{layout}{Specifies the layout. Can be:
 \itemize{
+\item \code{NULL} (default): \code{\link[=cgraph_layout]{cgraph_layout()}}'s own default - \code{"sugiyama"} for a
+\code{DAG}, \code{"stress"} otherwise.
 \item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
 (\code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
-\code{"shell"}, \code{"squaregrid"}).
+\code{"shell"}, \code{"squaregrid"}, \code{"sugiyama"}).
 \item A layout function, called with \code{x} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
 \item A named list keyed by node name, each element a length-2 \code{c(x, y)},

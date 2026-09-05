@@ -5,205 +5,162 @@ code in this repository.
 
 ## What this is
 
-R package binding the Julia package `CausalStructures.jl` (published to the
-Julia General registry) to R via JuliaCall, which embeds Julia in the R process
-(dlopen on libjulia) rather than talking to an external process over a socket.
-All binding code lives in `R/*.R` (session/setup, construction, queries,
-transform, identification, data --- load order fixed by `Collate` in
-`DESCRIPTION` since `graph_fn()`/`node_query()` factories from the session file
-run at source time). Exported functions are unprefixed (`cgraph()`, `nodes()`,
-...).
+`CausalStructures` is an R package that binds to the Julia package
+[CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl) via
+`JuliaCall`, for representing, validating, and reasoning about causal graphs
+(DAG, UG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). Almost every
+user-facing R function is a thin wrapper that marshals arguments to Julia, calls
+into `CausalStructures.jl`, and unmarshals the result --- the actual algorithms
+live in the Julia package, not in this repo.
 
-`pkg_path()` resolves the Julia project `setup()` activates: always the
-`CausalStructures` environment shipped in this package's `inst/`
-(`Project.toml`, a plain registry dependency), which is what an installed copy
-of this package, CI, and local dev all use.
+## Common commands
 
-`inst/Manifest.toml` is deliberately `.gitignore`d/`.Rbuildignore`d, not
-committed: the only pin is the `[compat]` bound on `CausalStructures` in
-`inst/Project.toml` (e.g. `"0.2"`, i.e. any `0.2.x`). This is intentional so
-that every fresh install/CI run (no cached depot) resolves and picks up
-non-breaking `0.2.x` CausalStructures.jl releases automatically, at the cost of
-CI/first-run resolving against the registry instead of a pinned lockfile.
-Locally, once `setup()` has instantiated once, the generated (untracked)
-`inst/Manifest.toml` sticks around and is reused, so this isn't a per-call
-resolve. Bump the compat bound by hand in `inst/Project.toml` only for a
-breaking CausalStructures.jl release (i.e. a minor-version bump pre-1.0, per its
-own CHANGELOG's "Breaking changes" sections) - patch releases need no change
-here at all.
+```r
+# Load package for interactive dev
+pkgload::load_all(".")
 
-## Commands
+# Run the full test suite
+Rscript - e
+'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
 
-```bash
-# Run tests (skip automatically when Julia is unavailable)
-Rscript -e 'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
+# Run a single test file
+Rscript - e
+'pkgload::load_all("."); testthat::test_file("tests/testthat/test-julia.R")'
 
-# Regenerate NAMESPACE + man/ after changing roxygen comments
-Rscript -e 'roxygen2::roxygenise()'
+# Regenerate roxygen docs (NAMESPACE + man/) after touching R/ or roxygen comments
+Rscript - e
+'roxygen2::roxygenise()'
 
-# Run the benchmark vs caugi (from the package root; .Rbuildignore'd)
-Rscript benchmark.R
+# Full R CMD check (mirrors CI)
+Rscript - e
+'devtools::check()'
+
+# Re-knit README.md from README.Rmd after editing README.Rmd
+Rscript - e
+'devtools::build_readme()'
+
+# Build pkgdown site locally
+Rscript - e
+'pkgdown::build_site(devel = TRUE)'
 ```
 
-Tests are API smoke tests with known answers from the quick-guide DAG
-(`cgraph("A --> X + Y, X --> M --> Y")`); every `test_that` block starts with
-`skip_if_no_julia()` (defined in `tests/testthat/helper-julia.R`). First Julia
-startup takes several seconds; calls after that reuse the session. There's no
-teardown (`setup-julia.R` is now a no-op comment) since JuliaCall can't actually
-restart the embedded runtime --- see below.
+Tests that need a working Julia install call `skip_if_no_julia()` (see
+`tests/testthat/helper-julia.R`) and are skipped otherwise --- `julia_ready()`
+also runs `setup()` as a side effect the first time it's called, which can be
+slow (Julia package precompilation).
 
-CI (`R-CMD-check.yaml`, `test-coverage.yaml`) installs Julia via
-`julia-actions/setup-julia` + `julia-actions/cache` (same pattern as
-CausalStructures.jl's own workflows) and runs
-`julia --project=inst -e 'using Pkg; Pkg.instantiate()'` before the R steps, so
-the Julia depot is already populated when `setup()` runs and tests actually
-execute in CI rather than skipping.
+Pre-commit hooks (`.pre-commit-config.yaml`) enforce: `air` formatting,
+`jarl`/`panache` linting, README.md being newer than README.Rmd, and roxygen
+docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
+`roxygen2::roxygenise()` before committing if you touched `R/`, `DESCRIPTION`,
+`NAMESPACE`, or `man/`.
 
-## Binding architecture
+## Architecture
 
-- `setup()` starts one shared Julia session lazily, activates the `inst/`
-  project, and defines one Julia helper per wrapper (named `_testpkg_<fn>`,
-  generated with `@eval` loops inside a single `begin...end` block sent via one
-  `JuliaCall::julia_command()` call). R wrappers are built from factories
-  (`node_query()`, `graph_fn()`).
-- Helpers take plain Strings (or String vectors) and do Symbol conversion
-  Julia-side via `_CausalStructures_syms()` (handles both a scalar String and a
-  `Vector{String}`, since JuliaCall passes a length-1 R character vector as a
-  scalar). Most functions whose Julia `x`/`y` accept
-  `Union{Symbol,AbstractVector{Symbol}}` (separation, minimal-separator,
-  backdoor/frontdoor/adjustment-set families) route both `x` and `y` through
-  `_CausalStructures_syms()` unconditionally, since a length-1 `Vector{Symbol}`
-  also satisfies that Union - see `is_valid_iv`/ `all_iv_sets` (`y` only) and
-  `possible_d_sep` (`y` only) for the asymmetric cases, and
-  `backdoor_set`/`possible_parent_sets`/
-  `possible_optimal_adjustment_sets`/`possible_local_structures`/
-  `maximal_local_mag`/`pagcauses` (plain `Symbol(x)`) for the functions that
-  stayed scalar-only.
-- Helpers mostly *return* native types directly (`Vector{String}`, `Nothing`,
-  `Matrix`), which JuliaCall auto-converts --- no joined-string convention
-  needed except for nested "list of sets" results (`Vector{Vector{String}}`
-  doesn't auto-convert). Three shapes share one marker-prefixed join scheme
-  (`_CausalStructures_mjoin()`, `R/session.R`): `_CausalStructures_sets()` (list
-  of sets, e.g. `all_backdoor_sets`), `_CausalStructures_opt_sets()` (list of
-  optional sets, `possible_optimal_adjustment_sets`), and
-  `_CausalStructures_sets_of_sets()` (list of lists of sets,
-  `possible_joint_parent_sets`) - decoded R-side by `split_sets()`/
-  `split_opt_sets()`/`split_sets_of_sets()`. Every joined item is prefixed with
-  a `\x01` marker byte, so a genuine empty set/list round-trips even as the last
-  element (plain `strsplit()` would otherwise silently drop a trailing empty
-  match). Simple predicates/transforms (Bool or graph-proxy returns) call the
-  Julia functions directly via
-  `JuliaCall::julia_call("CausalStructures.<fn>", ...)`.
-- Graphs cross the boundary as opaque `JuliaObject` proxies; pass them back into
-  any wrapper. Every function that returns a graph (`cgraph()`,
-  `generate_graph()`, the `cgraph_fn()`-built transforms, `subgraph()`, mutation
-  functions, `reclass()`, ...) tags the result with an extra R-side `"cgraph"`
-  S3 class via `.tag_cgraph()`, so `plot()` can dispatch on it and
-  `cgraph_layout()` (a plain function, not a generic - see `layout.R`) can
-  type-check for it. Functions that don't return a graph (predicates,
-  `count_dags()`, node-set queries, ...) don't tag.
-- No session-restart detection: JuliaCall embeds Julia in the R process, so
-  there's no separate process to reconnect to --- if the embedded Julia dies, so
-  does R. `setup()` is a plain do-once guard. There is no `stop()`/ teardown
-  function: JuliaCall exposes no way to tear down and restart the embedded
-  runtime within a session.
+### The Julia bridge (`R/session.R`)
 
-### CausalStructures semantics to remember
+This is the file to read first for anything touching the R↔Julia boundary.
 
-- `has_edge(g, x, y)` tests **adjacency** (any edge, either direction).
-- `cgraph` classes are passed as strings (`"DAG"`, `"MAG"`, ...) and resolved
-  Julia-side via `getfield`.
-- `id()`/`idc()` (Shpitser & Pearl's ID/IDC algorithm) return the resulting
-  `Estimand` rendered as a character string (Julia's `string(e)`), not the
-  underlying symbolic-algebra object - the `Estimand`/`Prob`/`Marginal`/
-  `Product`/`Quotient` types and their `prob`/`marginal`/`product`/`quotient`
-  smart constructors are deliberately not ported (see "Not yet ported").
-- `layout()` returns a `Dict{Symbol,NTuple{2,Float64}}` keyed by node name (not
-  an ordered `Vector` anymore, as of some point before 0.3.1) -
-  `_CausalStructures_layout()` looks each node up by name via `nodes(g)` to keep
-  row order aligned with what `cgraph_layout()` expects.
+- `setup()` lazily starts an embedded Julia session (via
+  `JuliaCall::julia_setup()`), activates the Julia project shipped in `inst/`
+  (`Project.toml` + `Manifest.toml`), installs/updates Julia deps if needed, and
+  defines a block of Julia helper functions (`.helper_defs`) that get `eval`'d
+  once. It's a do-once guard (`.cs$ready`) --- there's no teardown/restart,
+  since JuliaCall doesn't support one and if the embedded Julia dies, so does R.
+- Every exported R function that touches Julia goes through `fn(name)`, which
+  calls `setup()` then looks up a caller closure in the `.cs` environment. Two
+  families of wrapper are registered at setup time:
+  - **`.helpers`**: functions with a hand-written `_CausalStructures_<name>`
+    Julia wrapper in `.helper_defs`, needed to convert R args (character
+    vectors) to Julia `Symbol`s/kwargs and coerce results back to plain,
+    JuliaCall-auto-convertible types (`Vector{String}`, `Matrix`, scalars).
+  - **`.passthrough`**: predicates and simple graph transforms called directly
+    against `CausalStructures.<name>` with no wrapper needed (graph proxy in,
+    `Bool` or graph proxy out).
+- Adding a new wrapped Julia function means: add a `_CausalStructures_<name>`
+  definition to `.helper_defs` (or just the bare name to `.passthrough` if no
+  marshaling is needed), add the name to `.helpers`/`.passthrough`, and add the
+  calling R function elsewhere in `R/` that invokes `fn("name")(...)`.
+- **Nested "list of sets" results** (e.g. `all_backdoor_sets()`,
+  `possible_optimal_adjustment_sets()`) don't auto-convert
+  (`Vector{Vector{String}}` isn't a JuliaCall-native type), so they're joined
+  into a single marker-delimited string Julia-side (`_CausalStructures_sets()`
+  and friends, using `\x01`/`\x1e`/ `\x1f`/`\x1d` marker bytes) and split back
+  apart R-side (`split_sets()`, `split_opt_sets()`, `split_sets_of_sets()` at
+  the bottom of `session.R`). Read the comment block at the top of `session.R`
+  before changing this convention --- the marker-byte scheme exists specifically
+  to make empty sets and `nothing`/`NULL` entries round-trip correctly through
+  `strsplit()`.
+- Errors raised inside Julia are cleaned to just the underlying message by
+  `wrap_errors()`/ `clean_error()` (set
+  `options(CausalStructures.verbose_errors = TRUE)` to see the full Julia
+  stacktrace).
+- `julia_ready()` is the check-only counterpart to `setup()` --- used in
+  examples/tests to skip cleanly when Julia isn't available, without erroring.
 
-## Port progress (CausalStructures.jl exports → R)
+### The Julia project shipped in `inst/`
 
-Ported (79 R functions):
+`inst/Project.toml` pins `CausalStructures.jl` (from the Julia General registry)
+plus `NetworkLayout`, `Sugiyama`, `Random`, `Suppressor`. `inst/Manifest.toml`
+is gitignored on purpose (see `.gitignore`) so that patch releases of pinned
+deps get picked up automatically on `Pkg.instantiate()` rather than being frozen
+at whatever was resolved at commit time; only the `[compat]` bound in
+`Project.toml` is version-controlled.
 
-  | Group               | Functions                                                                                                                                                                                                                                                              |
-  | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | Construction        | `cgraph`, `generate_graph`, `uniform_dag`                                                                                                                                                                                                                              |
-  | Graph queries       | `nodes`, `topological_sort`, `exogenous_nodes`, `has_edge`, `edges`                                                                                                                                                                                                    |
-  | Node-set queries    | `parents`, `children`, `ancestors`, `descendants`, `spouses`, `neighbors`, `markov_blanket`, `possible_ancestors`, `possible_descendants`, `anteriors`, `posteriors`, `possible_d_sep`                                                                                 |
-  | Predicates          | `is_dag`, `is_pdag`, `is_cpdag`, `is_mpdag`, `is_ug`, `is_admg`, `is_ag`, `is_mag`, `is_pag`, `is_simple`, `is_acyclic`                                                                                                                                                |
-  | Transformations     | `skeleton`, `moralize`, `subgraph`, `dag_to_cpdag`, `dag_from_pdag`, `meek_closure`, `dag_to_mpdag`, `ag_to_mag`, `mag_to_pag`, `mag_from_pag`, `latent_project`, `exogenize`, `normalize_latent_structure`, `maximal_local_mag`                                       |
-  | Separation          | `d_separated`, `m_separated`, `minimal_separator`                                                                                                                                                                                                                      |
-  | Identification      | `adjustment_set`, `frontdoor_set`, `is_valid_backdoor`, `all_backdoor_sets`, `all_frontdoor_sets`, `is_valid_adjustment`, `all_adjustment_sets`, `is_valid_frontdoor`, `is_valid_iv`, `all_iv_sets`, `condition_marginalize`, `id`, `idc`, `backdoor_set`, `pagcauses` |
-  | Local IDA           | `possible_parent_sets`, `possible_joint_parent_sets`, `possible_optimal_adjustment_sets`, `possible_local_structures`                                                                                                                                                  |
-  | Equivalence classes | `count_dags`, `enumerate_dags`, `markov_equivalent`, `enumerate_mags`                                                                                                                                                                                                  |
-  | Mutation            | `add_edges`, `remove_edges`, `add_nodes`, `remove_nodes`, `reclass`                                                                                                                                                                                                    |
-  | Data generation     | `simulate_data`                                                                                                                                                                                                                                                        |
-  | Plotting            | `cgraph_layout` (Julia: `layout`)                                                                                                                                                                                                                                      |
-  | Session             | `setup` (binding-specific, no Julia counterpart)                                                                                                                                                                                                                       |
+Installing Julia deps is never silent: `ensure_instantiated()` prompts
+interactively, and non-interactively requires
+`options(CausalStructures.auto_install = TRUE)` to proceed (otherwise it errors
+with instructions) --- see the `CausalStructures_options` help topic in
+`session.R` for all package-level options.
 
-`frontdoor_set`/`all_frontdoor_sets` now accept ADMG as well as DAG (Julia
-extended these from DAG-only); `generate_graph` now also accepts
-`class = "ADMG"`/`"MAG"`/`"PAG"` plus a `latents` argument (samples a random DAG
-with extra latent nodes, then latent-projects them out) -- the R wrappers and
-docs reflect both.
+### The edge-operator DSL (`R/dsl.R`, `R/construction.R`)
 
-CausalStructures.jl 0.2.0 dropped the `simple` keyword from `cgraph()`/
-`reclass()` entirely (an `UNKNOWN` graph now always allows parallel edges, no
-opt-in needed) and extended separation/adjustment to PAG: `m_separated`,
-`minimal_separator`, `is_valid_adjustment`, and `all_adjustment_sets` now accept
-a PAG graph (the latter two also gained a DAG method); `d_separated` and
-`adjustment_set` were not extended. The R wrappers and docs reflect all of this.
+`cgraph(A %-->% X + Y, X %-->% M %-->% Y)` uses custom infix operators (`%-->%`,
+`%<--%`, `%---%`, `%<->%`, `%o->%`, etc., listed in `.edge_glyphs`) that are
+never evaluated --- `...` is captured unevaluated and walked as an unevaluated
+call tree (`.is_edge_call`, `.is_node_expr`, `.contains_edge`), then translated
+into `CausalStructures.jl`'s own string DSL (e.g.
+`"A --> X + Y, X --> M --> Y"`). `cgraph(spec = "...")` bypasses the operator
+DSL entirely for programmatic construction from a spec string built at runtime.
+Note the custom-operator precedence gotcha documented at the top of `dsl.R`:
+`%any%` operators bind tighter than `+`, so `A %-->% B + C` parses as
+`(A %-->% B) + C`.
 
-CausalStructures.jl 0.3.0 removed the built-in `:circle` layout (`layout()` now
-needs `NetworkLayout` loaded, same as every other method) - R's
-`cgraph_layout()`/`plot()` no longer offer `method = "circle"`. It also extended
-`adjustment_set` to ADMG and PAG, `anteriors`/`posteriors` to ADMG,
-`condition_marginalize` to ADMG, and added `check_cycles`/`r4` keywords to
-`meek_closure()`; the existing generic R wrappers already dispatched by Julia
-method so most of this needed doc-only updates (only `meek_closure()` gained new
-R-side parameters). CausalStructures.jl's own Makie-based `plot()`
-(`ext/MakieExt/`, keywords like `node_shape`, `curvature`, `node_padding`,
-`fig_size`) is a **separate plotting system R does not wrap** - R's
-`plot.cgraph()` is an independent grid-graphics reimplementation that only
-shares `layout()` with the Julia side, so Makie-only features are out of scope
-for this binding.
+### Graph objects
 
-CausalStructures.jl 0.3.1 generalized `x`/`y` to
-`Union{Symbol,AbstractVector{Symbol}}` across `d_separated`, `m_separated`,
-`minimal_separator`, and every backdoor/frontdoor/adjustment-set function (see
-the binding-architecture note above for which stayed scalar-only), and added 9
-new functions: `id`/`idc` (ID/IDC identification), `backdoor_set` (Generalized
-Backdoor Criterion), the local-IDA family (`possible_parent_sets`,
-`possible_joint_parent_sets`, `possible_optimal_adjustment_sets`,
-`possible_d_sep`), and PAGcauses (`possible_local_structures`,
-`maximal_local_mag`, `pagcauses`). It also fixed a bug in
-`possible_ancestors`/`possible_descendants` for `MPDAG` (Julia-side only, no R
-change needed) and changed `layout()`'s return type to a `Dict` (see the
-binding-architecture note above).
+A causal graph is a Julia proxy object (`JuliaObject`) tagged with an R S3 class
+`"cgraph"` (`.tag_cgraph()` in `session.R`). Query functions (`R/queries.R`,
+`R/identification.R`) call through to Julia and return plain R vectors/data
+frames; transform functions (`R/transform.R`) return new tagged graph proxies.
+`R/data.R` covers simulating data from a graph.
 
-Not yet ported:
+### Plotting (`R/plot.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
 
-- **Background knowledge**: `apply_background_knowledge`, `BackgroundKnowledge`,
-  `RequiredEdge`, `ForbiddenEdge`, `required_directed`, `forbidden_directed`
-- **Symbolic estimand algebra**: `Estimand`, `Prob`, `Marginal`, `Product`,
-  `Quotient`, and their `prob`/`marginal`/`product`/`quotient` smart
-  constructors - `id()`/`idc()` return the rendered formula string only, not
-  this underlying representation
-- **Graph info**: `districts` (graph-level partition query, needs custom
-  wrapper)
-- **Not planned** (string DSL covers these): edge/type constructors `directed`,
-  `undirected`, `bidirected`, `partially_directed`, `partially_undirected`,
-  `partial`, `node`, and the graph-class types (`DAG`, `MAG`, ... are passed as
-  strings)
-- **Not planned** (separate plotting system, not wrapped by R):
-  CausalStructures.jl's Makie-based `plot()` and its keywords (`node_shape`,
-  `node_linestyle`, `labels`, `curvature`, `node_padding`, `arrow_fill`,
-  `fig_size`, ...) - see the 0.3.0/0.3.1 note above
+- `cgraph_layout()` (`R/layout.R`) delegates node-coordinate computation to
+  `CausalStructures.jl`'s own `layout()` Julia-side (which wraps
+  `NetworkLayout.jl` and `Sugiyama.jl`); it defaults to `"sugiyama"` for graphs
+  constructed/reclassed as `DAG` and `"stress"` otherwise, based on the graph's
+  actual class rather than its edge structure.
+- The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
+  `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
+  code (see attribution comments in those files and `inst/COPYRIGHTS`) rather
+  than written from scratch --- check there before assuming rendering behavior
+  is bespoke to this package.
+- `plot_options()`/`plot_default_options()` (`R/plot-options.R`) is a dedicated
+  get/set/reset accessor for plot styling defaults (`node_style`, `edge_style`,
+  `label_style`, `title_style`, `tier_style`), deliberately kept separate from
+  base `options()` since it's a nested graphics-parameter list rather than a
+  flat behavioral toggle.
 
-When porting a new function, keep the checklist above in sync: add the Julia
-helper (or pass-through name) in `setup()`, register it in `.helpers` /
-`.passthrough`, add the R wrapper with roxygen docs (join an existing `@rdname`
-group where one fits), regenerate docs, and extend the end-to-end check with a
-known-answer assertion.
+### Warmup (`R/warmup.R`)
+
+`warmup()` calls every exported wrapper once on small graphs to force Julia's
+JIT to compile each method up front, since Julia compiles per argument-type
+combination on first call. Update it when adding a new exported function so its
+first real call isn't the slow one.
+
+## File organization
+
+`DESCRIPTION`'s `Collate:` field defines load order (`session.R` first, since
+everything else calls `fn()`/`setup()`); keep new files added to `R/` there if
+load order matters.

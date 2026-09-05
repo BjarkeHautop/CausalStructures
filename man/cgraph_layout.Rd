@@ -4,28 +4,32 @@
 \alias{cgraph_layout}
 \title{Compute a graph layout}
 \usage{
-cgraph_layout(
-  x,
-  method = c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid"),
-  ...
-)
+cgraph_layout(x, method = NULL, ...)
 }
 \arguments{
 \item{x}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{method}{Character string specifying the layout method:
 \itemize{
-\item \code{"stress"} (default): stress majorization. A good general-purpose
-choice - well-spaced and deterministic for a given graph.
+\item \code{"stress"}: stress majorization. A good general-purpose choice - well-
+spaced and deterministic for a given graph.
 \item \code{"spring"}: Fruchterman-Reingold force-directed.
 \item \code{"sfdp"}: scalable force-directed placement.
 \item \code{"spectral"}: spectral layout.
 \item \code{"shell"}: concentric shells.
 \item \code{"squaregrid"}: square grid.
+\item \code{"sugiyama"}: layered/hierarchical layout, \code{DAG} only. Provided by the
+\href{https://github.com/JuliaGraphs/Sugiyama.jl}{Sugiyama.jl} package.
 }
 
-All methods are provided by the
-\href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} package.}
+All other methods are provided by the
+\href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} package.
+
+Defaults (\code{NULL}) to \code{"sugiyama"} when \code{x} was constructed (or
+\code{\link[=reclass]{reclass()}}ed) as a \code{DAG}, \code{"stress"} otherwise - matching
+CausalStructures.jl's own default. This checks \code{x}'s actual class, not
+its edge structure (see \link{predicates}) - a \code{PDAG} with only directed,
+acyclic edges still defaults to \code{"stress"}.}
 
 \item{...}{Additional arguments}
 }
