@@ -20,5 +20,4 @@
 ^vignettes/articles/*_files$
 ^vignettes/articles$
 ^vignettes/
-^inst/Manifest\.toml$
 ^inst/csjl$

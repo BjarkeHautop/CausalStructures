@@ -26,6 +26,13 @@ julia --startup-file=no inst/julia/build.jl inst/csjl
 CAUSALSTRUCTURES_JL_PATH=../CausalStructures.jl \
   julia --startup-file=no inst/julia/build.jl inst/csjl
 
+# ... with the newest dependency versions [compat] allows, ignoring the manifest
+julia --startup-file=no inst/julia/build.jl inst/csjl --update
+
+# Update the shipped manifest (e.g. for a new CausalStructures.jl release);
+# resolve with the Julia version the package requires, then rebuild and test
+julia --startup-file=no --project=inst/julia -e 'import Pkg; Pkg.update()'
+
 # Run the full test suite
 Rscript -e 'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
 
@@ -87,6 +94,17 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
   JuliaC is never compiled into the library) with JuliaC's recipe API: the
   equivalent of `--output-lib --trim=safe --experimental --compile-ccallable`,
   plus the C source `set_threads.c`, which the JuliaC CLI cannot add.
+- `inst/julia/Manifest.toml` is committed and shipped, so a package version
+  always builds against the dependency versions it was tested with: under
+  `--trim=safe`, a dependency release that adds a dynamic call would otherwise
+  break every user's build at once. `install_backend(update = TRUE)`
+  (`--update`) resolves the newest versions `[compat]` allows instead, and
+  `install_backend(project = dir)` (`--project=dir`) builds from a user's own
+  `Project.toml`/`Manifest.toml` (same name, UUID and deps; e.g. a `[sources]`
+  entry for a development CausalStructures.jl). If the manifest fails to
+  instantiate (resolved with another Julia version), `build.jl` warns and
+  resolves from `[compat]`. Copies are `chmod`ed writable, since an installed
+  package's files may be read-only.
 - The library links against the runtime of the Julia that built it (its RUNPATH
   points there), so nothing is bundled. If that Julia is removed (e.g. by a
   juliaup update), loading fails and `setup()` tells the user to run

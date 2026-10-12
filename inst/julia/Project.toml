@@ -2,8 +2,9 @@ name = "csjl"
 uuid = "5b7847be-0a43-48f2-a83d-4b9045fd9db0"
 version = "0.1.0"
 
-# The binding layer compiled into the `csjl` shared library when the R package
-# is installed; see `build.jl`. Only runtime dependencies belong here.
+# The binding layer compiled into the `csjl` shared library by the R package's
+# install_backend(); see `build.jl`. Only runtime dependencies belong here. The
+# shipped Manifest.toml pins their exact versions.
 
 [deps]
 CausalStructures = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"

@@ -4,7 +4,13 @@
 \alias{install_backend}
 \title{Build the compiled CausalStructures.jl library}
 \usage{
-install_backend(julia = NULL, ask = interactive(), force = FALSE)
+install_backend(
+  julia = NULL,
+  ask = interactive(),
+  force = FALSE,
+  update = FALSE,
+  project = NULL
+)
 }
 \arguments{
 \item{julia}{Path to the \code{julia} binary to build with. Defaults to the
@@ -14,7 +20,13 @@ install_backend(julia = NULL, ask = interactive(), force = FALSE)
 \code{\link[=interactive]{interactive()}}.}
 
 \item{force}{Rebuild even if a library for this version of
-CausalStructures already exists?}
+CausalStructures already exists? Implied by \code{update} and \code{project}.}
+
+\item{update}{Use the newest dependency versions the \code{Project.toml} allows
+instead of those in its \code{Manifest.toml}?}
+
+\item{project}{Path to a directory with the \code{Project.toml} (and optionally
+a \code{Manifest.toml}) to build from, instead of the shipped ones.}
 }
 \value{
 The path to the library, invisibly.
@@ -32,11 +44,25 @@ them, which takes several minutes. The library is written to a directory
 per package version under \code{tools::R_user_dir("CausalStructures", "data")},
 and libraries built for other versions are removed from there.
 
-Julia can only be started once per R process, so a library replaced with
-\code{force = TRUE} is used from the next R session on.
+By default the dependencies are the exact versions in the \code{Manifest.toml}
+shipped with this version of CausalStructures, which are the versions it
+was tested with. \code{update = TRUE} instead uses the newest versions the
+shipped \code{Project.toml} allows, e.g. to get a CausalStructures.jl bug fix
+before the next release of this package. \code{project} builds from your own
+Julia environment: start from a copy of
+\code{system.file("julia", "Project.toml", package = "CausalStructures")},
+keep its name, UUID and dependencies, and change e.g. the \verb{[compat]}
+bounds, or add a \verb{[sources]} section to use a development version of
+CausalStructures.jl.
+
+Julia can only be started once per R process, so a library that replaces
+one already loaded is used from the next R session on.
 }
 \examples{
 \dontrun{
 install_backend()
+
+# The newest CausalStructures.jl release, instead of the tested one
+install_backend(update = TRUE)
 }
 }

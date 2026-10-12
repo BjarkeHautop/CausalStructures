@@ -12,7 +12,6 @@ CausalStructures.jl/
 README.html
 /.quarto/
 **/*.quarto_ipynb
-/inst/Manifest.toml
 .claude/
 *.pdf
 /inst/csjl/
