@@ -35,14 +35,23 @@ Install CausalStructures from GitHub:
 pak::pak("BjarkeHautop/CausalStructures")
 ```
 
-Installing CausalStructures requires [Julia](https://julialang.org/) (\>= 1.13);
-see https://julialang.org/install/ for the recommended way to install Julia. The
-first installation takes a few minutes while Julia downloads and compiles the
-dependencies. Set the `JULIA` environment variable to the path of a `julia`
-binary to use a Julia other than the one on the `PATH`.
+CausalStructures needs [Julia](https://julialang.org/) (\>= 1.13); see
+https://julialang.org/install/ for the recommended way to install Julia. Once
+the package is installed, build the compiled CausalStructures.jl library it
+calls with
 
-The compiled library uses the runtime of the Julia that built it, so reinstall
-CausalStructures if that Julia is removed (for example by a `juliaup` update).
+```r
+CausalStructures::install_backend()
+```
+
+This takes a few minutes while Julia downloads and compiles the dependencies,
+and only needs to be done once per version of CausalStructures. Pass
+`julia = "/path/to/julia"` (or set the `JULIA` environment variable) to use a
+Julia other than the one on the `PATH`.
+
+The compiled library uses the runtime of the Julia that built it, so run
+`install_backend(force = TRUE)` again if that Julia is removed (for example by a
+`juliaup` update).
 
 ## Graph types
 

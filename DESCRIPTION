@@ -21,6 +21,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Collate:
     'session.R'
+    'install.R'
     'dsl.R'
     'construction.R'
     'data.R'
@@ -32,11 +33,14 @@ Collate:
     'plot-routing.R'
     'plot.R'
     'warmup.R'
+Depends:
+    R (>= 4.0.0)
 Imports:
     grid,
     parallel,
     Rdpack,
     stats,
+    tools,
     utils
 Suggests:
     bench,
@@ -46,7 +50,8 @@ Suggests:
     withr
 Config/testthat/edition: 3
 RdMacros: Rdpack
-SystemRequirements: Julia (>= 1.13), needed at install time
+SystemRequirements: Julia (>= 1.13), needed to build the compiled library
+    with install_backend()
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues

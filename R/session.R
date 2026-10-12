@@ -1,9 +1,9 @@
 # Design notes:
 # - CausalStructures.jl is compiled with juliac into the `csjl` shared library
-#   when the package is installed (`configure` runs `tools/csjl/build.jl` with
-#   the user's Julia), and the library links against that Julia's runtime.
-#   setup() loads it with dyn.load(); there is no Julia session to start and
-#   nothing to precompile.
+#   by install_backend() (R/install.R), which runs the installed package's
+#   `julia/build.jl` with the user's Julia; the library links against that
+#   Julia's runtime. setup() loads it with dyn.load(); there is no Julia
+#   session to start and nothing to precompile.
 # - Each library entrypoint `csjl_r_<name>` takes and returns R objects and
 #   converts them itself through R's C API, so a call is a single `.Call`.
 #   A failure inside the library comes back as a `csjl_error` object and is
@@ -39,23 +39,47 @@
 #'
 #' The compiled library is looked up in the `CAUSALSTRUCTURES_LIBRARY`
 #' environment variable first (a path to the `csjl` shared library), then in
-#' the installed package's `csjl` directory, where installation builds it.
+#' the installed package's `csjl` directory (a development build), then where
+#' [install_backend()] builds it.
 #'
 #' @name CausalStructures_options
 NULL
 
-.library_path <- function() {
-  override <- Sys.getenv("CAUSALSTRUCTURES_LIBRARY", unset = "")
-  if (nzchar(override)) {
-    return(override)
-  }
+.library_file <- function() {
   ext <- switch(
     Sys.info()[["sysname"]],
     Darwin = ".dylib",
     Windows = ".dll",
     ".so"
   )
-  system.file("csjl", paste0("csjl", ext), package = "CausalStructures")
+  paste0("csjl", ext)
+}
+
+# Where install_backend() builds the library: one directory per package version,
+# so a library built for another version, whose entrypoints may differ from
+# this version's src/entrypoints.h, is never loaded.
+.user_library_root <- function() {
+  file.path(tools::R_user_dir("CausalStructures", "data"), "csjl")
+}
+
+.user_library_dir <- function() {
+  file.path(
+    .user_library_root(),
+    as.character(utils::packageVersion("CausalStructures"))
+  )
+}
+
+.library_path <- function() {
+  override <- Sys.getenv("CAUSALSTRUCTURES_LIBRARY", unset = "")
+  if (nzchar(override)) {
+    return(override)
+  }
+  # A development build: `julia inst/julia/build.jl inst/csjl`.
+  dev <- system.file("csjl", .library_file(), package = "CausalStructures")
+  if (nzchar(dev)) {
+    return(dev)
+  }
+  file.path(.user_library_dir(), .library_file())
 }
 
 # On Windows the library has no RUNPATH, so the directory of the Julia
@@ -113,9 +137,8 @@ setup <- function() {
   path <- .library_path()
   if (!nzchar(path) || !file.exists(path)) {
     stop(
-      "The compiled CausalStructures.jl library was not found. Reinstall ",
-      "the package, or for development build it with ",
-      "`julia tools/csjl/build.jl inst/csjl`.",
+      "The compiled CausalStructures.jl library was not found. Run ",
+      "install_backend() to build it (this needs Julia >= 1.13).",
       call. = FALSE
     )
   }
@@ -128,7 +151,7 @@ setup <- function() {
       stop(
         "The compiled CausalStructures.jl library could not be loaded; the ",
         "Julia it was built with may have been removed or updated. ",
-        "Reinstall CausalStructures to rebuild it.\n",
+        "Run install_backend(force = TRUE) in a new R session to rebuild it.\n",
         conditionMessage(e),
         call. = FALSE
       )
@@ -184,6 +207,15 @@ make_rng <- function(seed) {
 
 .onLoad <- function(libname, pkgname) {
   tryCatch(setup(), error = function(e) NULL)
+}
+
+.onAttach <- function(libname, pkgname) {
+  if (!isTRUE(.cs$ready)) {
+    packageStartupMessage(
+      "The compiled CausalStructures.jl library is not available. Run ",
+      "install_backend() to build it, or setup() for details."
+    )
+  }
 }
 
 #' @importFrom Rdpack reprompt

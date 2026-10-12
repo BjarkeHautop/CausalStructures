@@ -1,6 +1,6 @@
 /*
  * The library entrypoints: CSJL_ENTRY(name, number of arguments), one per
- * `@rcall` declaration in tools/csjl/src/csjl.jl. Each is registered as the
+ * `@rcall` declaration in inst/julia/src/csjl.jl. Each is registered as the
  * .Call routine `C_<name>` and forwards to the library's `csjl_r_<name>`.
  */
 

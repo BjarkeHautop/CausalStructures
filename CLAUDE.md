@@ -9,22 +9,22 @@ code in this repository.
 [CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl) for
 representing, validating, and reasoning about causal graphs (DAG, UG, PDAG,
 CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). CausalStructures.jl is compiled with
-`juliac --trim=safe` into a shared library when the package is installed, and
-every user-facing R function is a single `.Call` into that library --- the
-actual algorithms live in the Julia package, not in this repo. There is no
-embedded Julia session at run time.
+`juliac --trim=safe` into a shared library by `install_backend()`, and every
+user-facing R function is a single `.Call` into that library --- the actual
+algorithms live in the Julia package, not in this repo. There is no embedded
+Julia session at run time.
 
 ## Common commands
 
 ```sh
 # Build the compiled library for development (needs Julia >= 1.13 on the PATH).
-# pkgload::load_all() does not run `configure`, so do this once, and again
-# after changing anything in tools/csjl/.
-julia --startup-file=no tools/csjl/build.jl inst/csjl
+# Do this once, and again after changing anything in inst/julia/; setup()
+# prefers a build in inst/csjl over the one install_backend() makes.
+julia --startup-file=no inst/julia/build.jl inst/csjl
 
 # ... against a local CausalStructures.jl checkout instead of the release
 CAUSALSTRUCTURES_JL_PATH=../CausalStructures.jl \
-  julia --startup-file=no tools/csjl/build.jl inst/csjl
+  julia --startup-file=no inst/julia/build.jl inst/csjl
 
 # Run the full test suite
 Rscript -e 'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
@@ -35,8 +35,9 @@ Rscript -e 'pkgload::load_all("."); testthat::test_file("tests/testthat/test-jul
 # Regenerate roxygen docs (NAMESPACE + man/) after touching R/ or roxygen comments
 Rscript -e 'roxygen2::roxygenise()'
 
-# Full R CMD check (mirrors CI; builds the library via `configure`)
-Rscript -e 'devtools::check()'
+# Full R CMD check. Installing does not build the library, so point the check
+# at a build (as CI does), or the tests and examples needing it are skipped.
+CAUSALSTRUCTURES_LIBRARY=$PWD/inst/csjl/csjl.so Rscript -e 'devtools::check()'
 
 # Re-knit README.md from README.Rmd after editing README.Rmd
 Rscript -e 'devtools::build_readme()'
@@ -57,14 +58,30 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 
 ## Architecture
 
-### Building the library at install time (`configure`, `tools/csjl/`)
+### Building the library (`install_backend()`, `inst/julia/`)
 
-- `configure` finds Julia (`$JULIA`, else `julia` on the PATH), requires Julia
-  >= 1.13, and runs `tools/csjl/build.jl inst/csjl`. `R CMD INSTALL` then
-  installs `inst/csjl/csjl.so` (`.dylib` on macOS, `.dll` on Windows) with the
-  package. `tools/` ships in the source tarball but is not installed.
-- `tools/csjl/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
-  instantiates the binding project (`tools/csjl/Project.toml`, CausalStructures
+- Installing the package builds nothing, so it installs (and passes CRAN's
+  checks) without Julia; then every function errors, `julia_ready()` is `FALSE`,
+  and examples and tests skip. CRAN's policy forbids downloading software and
+  writing to the home directory (`~/.julia`) during installation, which an
+  install-time build needs; a function the user calls explicitly may.
+- `install_backend()` (`R/install.R`) finds Julia (`julia` argument, `$JULIA`,
+  else `julia` on the PATH), requires >= 1.13, asks for confirmation when
+  interactive, and runs the installed package's `julia/build.jl` in a child
+  process. It writes `csjl.so` (`.dylib` on macOS, `.dll` on Windows) to
+  `tools::R_user_dir("CausalStructures", "data")/csjl/<package version>/`, so a
+  library built for another version (whose entrypoints may not match
+  `src/entrypoints.h`) is never loaded; other versions' directories are pruned.
+  It builds into a temporary sibling directory and renames it into place (a
+  loaded DLL cannot be deleted on Windows but can be renamed), then loads it
+  with `setup()`, unless a library is already loaded: Julia can only start once
+  per process, so a rebuild is used from the next session.
+- `setup()` looks for the library in `CAUSALSTRUCTURES_LIBRARY`, then
+  `system.file("csjl")` (a development build in `inst/csjl`), then the
+  `install_backend()` directory. CI builds with `build.jl` directly and sets
+  `CAUSALSTRUCTURES_LIBRARY`.
+- `inst/julia/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
+  instantiates the binding project (`inst/julia/Project.toml`, CausalStructures
   from the General registry, or `CAUSALSTRUCTURES_JL_PATH` via `Pkg.develop`) in
   a scratch copy, then compiles it from a separate temporary environment (so
   JuliaC is never compiled into the library) with JuliaC's recipe API: the
@@ -72,10 +89,11 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
   plus the C source `set_threads.c`, which the JuliaC CLI cannot add.
 - The library links against the runtime of the Julia that built it (its RUNPATH
   points there), so nothing is bundled. If that Julia is removed (e.g. by a
-  juliaup update), loading fails and `setup()` tells the user to reinstall.
-- `configure` unsets `LD_LIBRARY_PATH`: R puts its own library directories on
-  it, which otherwise makes Julia's bundled tools (Pkg's `zstd`) load the system
-  libraries instead of Julia's.
+  juliaup update), loading fails and `setup()` tells the user to run
+  `install_backend(force = TRUE)`.
+- `install_backend()` unsets `LD_LIBRARY_PATH` for the build: R puts its own
+  library directories on it, which otherwise makes Julia's bundled tools (Pkg's
+  `zstd`) load the system libraries instead of Julia's.
 - A juliac library fixes its Julia options when compiled (one thread, Julia
   signal handling off) and ignores `JULIA_NUM_THREADS`
   ([JuliaC.jl#152](https://github.com/JuliaLang/JuliaC.jl/issues/152)).
@@ -84,15 +102,14 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
   shim's `C_csjl_set_threads` after `dyn.load()` and before the first
   entrypoint, from `JULIA_NUM_THREADS` (a count or `"auto"`). More than one
   thread turns on Julia's signal handling, which multi-threaded GC needs.
-- `inst/csjl/` is build output: gitignored and in `.Rbuildignore`.
-- Windows: `configure.win` runs `configure` (R uses Rtools' `sh`), producing
-  `inst/csjl/csjl.dll`. A DLL has no RUNPATH, so `build.jl` records Julia's
-  `Sys.BINDIR` in `inst/csjl/julia_bindir` and `setup()` prepends it to the
-  `PATH` before `dyn.load()`. A `ccall` without a library only searches Julia's
-  own DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`, which
-  adds `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
+- `inst/csjl/` is development build output: gitignored and in `.Rbuildignore`.
+- Windows: a DLL has no RUNPATH, so `build.jl` records Julia's `Sys.BINDIR` in
+  `julia_bindir` next to `csjl.dll` and `setup()` prepends it to the `PATH`
+  before `dyn.load()`. A `ccall` without a library only searches Julia's own
+  DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`, which adds
+  `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
 
-### The binding layer (`tools/csjl/src/`)
+### The binding layer (`inst/julia/src/`)
 
 This is the code to read first for anything touching the R<->Julia boundary.
 
@@ -139,10 +156,10 @@ This is the code to read first for anything touching the R<->Julia boundary.
   function pointer, plus `csjl_bind` and `csjl_set_threads`. A routine raises a
   returned `csjl_error` as an R error itself, once the Julia call has returned,
   so no R wrapper needs to check results.
-- The csjl library cannot be linked into it (it is built at install time against
-  the user's Julia and loaded later by `setup()`), so `csjl_bind` resolves every
-  pointer with `R_FindSymbol` once the library is loaded. A routine called
-  before that raises an error instead of crashing.
+- The csjl library cannot be linked into it (it is built by `install_backend()`
+  against the user's Julia and loaded later by `setup()`), so `csjl_bind`
+  resolves every pointer with `R_FindSymbol` once the library is loaded. A
+  routine called before that raises an error instead of crashing.
 - This keeps every `.Call` in `R/` a registered routine of the package itself,
   so `R CMD check`'s foreign-function checks pass without workarounds.
 

@@ -28,13 +28,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Installing the package compiles CausalStructures.jl with this Julia
-      # (see `configure`).
       - uses: julia-actions/setup-julia@v3
         with:
           version: "1.13"
 
       - uses: julia-actions/cache@v3
+
+      # The library that install_backend() would build, built from the sources
+      # and handed to the package through CAUSALSTRUCTURES_LIBRARY.
+      - name: Build the CausalStructures.jl library
+        run: |
+          julia --startup-file=no inst/julia/build.jl "$RUNNER_TEMP/csjl"
+          echo "CAUSALSTRUCTURES_LIBRARY=$RUNNER_TEMP/csjl/csjl.so" >> "$GITHUB_ENV"
+        shell: bash
 
       - uses: r-lib/actions/setup-pandoc@v2
 

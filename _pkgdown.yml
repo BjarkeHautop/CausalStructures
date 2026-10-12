@@ -107,6 +107,7 @@ reference:
 
   - title: "Managing Julia"
     contents:
+      - install_backend
       - julia_ready
       - setup
       - warmup

@@ -1315,32 +1315,34 @@ makeContent.cs_graph_grob <- function(x) {
 #'   effect; re-drawn if printed or passed to `plot()` again.
 #'
 #' @examples
-#' dag <- cgraph("A --> X + Y, X --> M --> Y")
-#' plot(dag, main = "A DAG")
-#' # Style nodes and edges globally, plus per-node/per-edge overrides.
-#' dag <- cgraph("A --> X + Y, X --> M --> Y")
-#' plot(
-#'   dag,
-#'   node_style = list(
-#'     fill = "lightblue",
-#'     col = "navy",
-#'     by_node = list(Y = list(fill = "gold"))
-#'   ),
-#'   edge_style = list(
-#'     col = "gray40",
-#'     lwd = 2,
-#'     by_edge = list(X = list(M = list(col = "red", lwd = 3)))
-#'   ),
-#'   main = "Styled DAG"
-#' )
-#' # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-#' dag <- cgraph("A --> X + Y, X --> M --> Y")
-#' plot(
-#'   dag,
-#'   node_style = list(shape = "square", linestyle = "dashed"),
-#'   edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
-#'   labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
-#' )
+#' if (julia_ready()) {
+#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'   plot(dag, main = "A DAG")
+#'   # Style nodes and edges globally, plus per-node/per-edge overrides.
+#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'   plot(
+#'     dag,
+#'     node_style = list(
+#'       fill = "lightblue",
+#'       col = "navy",
+#'       by_node = list(Y = list(fill = "gold"))
+#'     ),
+#'     edge_style = list(
+#'       col = "gray40",
+#'       lwd = 2,
+#'       by_edge = list(X = list(M = list(col = "red", lwd = 3)))
+#'     ),
+#'     main = "Styled DAG"
+#'   )
+#'   # Square-shaped, dashed-border nodes with custom labels and a curved edge.
+#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'   plot(
+#'     dag,
+#'     node_style = list(shape = "square", linestyle = "dashed"),
+#'     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
+#'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
+#'   )
+#' }
 #' @seealso [plot_options()] to change the style defaults used above,
 #'   globally, for every plot.
 #' @rdname plot

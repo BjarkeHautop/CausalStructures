@@ -1,5 +1,0 @@
-#!/bin/sh
-# Windows: R runs this with Rtools' sh, so the steps are those of `configure`.
-# build.jl also records the Julia bin directory next to the library, since a
-# Windows DLL has no RUNPATH; setup() puts it on the PATH before loading.
-exec sh ./configure

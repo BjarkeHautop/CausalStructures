@@ -23,5 +23,6 @@ needs for multi-threading.
 
 The compiled library is looked up in the \code{CAUSALSTRUCTURES_LIBRARY}
 environment variable first (a path to the \code{csjl} shared library), then in
-the installed package's \code{csjl} directory, where installation builds it.
+the installed package's \code{csjl} directory (a development build), then where
+\code{\link[=install_backend]{install_backend()}} builds it.
 }

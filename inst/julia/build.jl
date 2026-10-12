@@ -1,11 +1,11 @@
 # Compile the csjl binding layer into a shared library with juliac.
 #
-#     julia --startup-file=no tools/csjl/build.jl <output directory>
+#     julia --startup-file=no inst/julia/build.jl <output directory>
 #
-# Run by the R package's `configure` when it is installed, so the library is
-# built by, and links against, the user's own Julia. Set
-# CAUSALSTRUCTURES_JL_PATH to a local CausalStructures.jl checkout to build
-# against it instead of the registered release.
+# Run by the R package's install_backend() (from the installed package's
+# `julia` directory), so the library is built by, and links against, the
+# user's own Julia. Set CAUSALSTRUCTURES_JL_PATH to a local CausalStructures.jl
+# checkout to build against it instead of the registered release.
 
 import Pkg
 

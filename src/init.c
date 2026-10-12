@@ -2,7 +2,7 @@
  * The package's own native routines: a thin layer over the compiled
  * CausalStructures.jl library (`csjl`).
  *
- * The library is built at install time against the user's Julia and loaded
+ * The library is built by install_backend() against the user's Julia and loaded
  * by setup() with dyn.load(), so it cannot be linked into this shared object.
  * Instead each entrypoint is registered here as the .Call routine
  * `C_<name>`, which forwards to the library's `csjl_r_<name>` through a
@@ -74,7 +74,7 @@ static csjl_fn find(const char *dll, const char *symbol)
     DL_FUNC f = R_FindSymbol(symbol, dll, NULL);
     if (f == NULL)
         Rf_error("Symbol '%s' not found in the compiled CausalStructures.jl "
-                 "library; reinstall CausalStructures to rebuild it.",
+                 "library; run install_backend(force = TRUE) to rebuild it.",
                  symbol);
     return (csjl_fn)f;
 }
@@ -97,7 +97,7 @@ static SEXP C_csjl_bind(SEXP dll)
 
 /* Set the Julia thread count; must run before the first entrypoint call,
  * which initializes Julia. Returns the status of csjl_set_julia_threads
- * (tools/csjl/src/set_threads.c). */
+ * (inst/julia/src/set_threads.c). */
 static SEXP C_csjl_set_threads(SEXP dll, SEXP threads)
 {
     csjl_threads_fn f = (csjl_threads_fn)find(CHAR(STRING_ELT(dll, 0)),
