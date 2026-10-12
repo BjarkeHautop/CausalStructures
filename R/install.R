@@ -17,7 +17,10 @@
 #' shipped with this version of CausalStructures, which are the versions it
 #' was tested with. `update = TRUE` instead uses the newest versions the
 #' shipped `Project.toml` allows, e.g. to get a CausalStructures.jl bug fix
-#' before the next release of this package.
+#' before the next release of this package. `develop` builds with a local
+#' checkout of CausalStructures.jl (or another Julia dependency) instead of
+#' the release, e.g. to try a fix that is not released yet; run
+#' `install_backend()` without it to go back to the release.
 #'
 #' Julia can only be started once per R process, so a library that replaces
 #' one already loaded is used from the next R session on.
@@ -32,17 +35,22 @@
 #'
 #' # The newest CausalStructures.jl release, instead of the tested one
 #' install_backend(update = TRUE)
+#'
+#' # A local checkout of CausalStructures.jl
+#' install_backend(develop = "~/dev/CausalStructures.jl")
 #' }
 install_backend <- function(
   julia = NULL,
   ask = interactive(),
   force = FALSE,
-  update = FALSE
+  update = FALSE,
+  develop = NULL
 ) {
   jlbind::install_backend(
     julia = julia,
     ask = ask,
     force = force,
-    update = update
+    update = update,
+    develop = develop
   )
 }

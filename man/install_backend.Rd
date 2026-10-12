@@ -8,7 +8,8 @@ install_backend(
   julia = NULL,
   ask = interactive(),
   force = FALSE,
-  update = FALSE
+  update = FALSE,
+  develop = NULL
 )
 }
 \arguments{
@@ -19,10 +20,13 @@ install_backend(
 \code{\link[=interactive]{interactive()}}.}
 
 \item{force}{Rebuild even if the library is up to date with the installed
-packages? Implied by \code{update}.}
+packages? Implied by \code{update} and \code{develop}.}
 
 \item{update}{Use the newest dependency versions the packages allow
 instead of those in their \code{Manifest.toml}s?}
+
+\item{develop}{Paths to local Julia packages to build with in place of
+their registered releases.}
 }
 \value{
 The path to the library, invisibly.
@@ -46,7 +50,10 @@ By default the dependencies are the exact versions in the \code{Manifest.toml}
 shipped with this version of CausalStructures, which are the versions it
 was tested with. \code{update = TRUE} instead uses the newest versions the
 shipped \code{Project.toml} allows, e.g. to get a CausalStructures.jl bug fix
-before the next release of this package.
+before the next release of this package. \code{develop} builds with a local
+checkout of CausalStructures.jl (or another Julia dependency) instead of
+the release, e.g. to try a fix that is not released yet; run
+\code{install_backend()} without it to go back to the release.
 
 Julia can only be started once per R process, so a library that replaces
 one already loaded is used from the next R session on.
@@ -57,5 +64,8 @@ install_backend()
 
 # The newest CausalStructures.jl release, instead of the tested one
 install_backend(update = TRUE)
+
+# A local checkout of CausalStructures.jl
+install_backend(develop = "~/dev/CausalStructures.jl")
 }
 }
