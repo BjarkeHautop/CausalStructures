@@ -23,11 +23,8 @@ pak::pak("BjarkeHautop/CausalStructures")
 ```
 
 Installing CausalStructures requires [Julia](https://julialang.org/)
-(\>= 1.13); see [here](https://julialang.org/install/) for the
-recommended way to install it. During installation, CausalStructures.jl
-is compiled with that Julia into a shared library the R package calls
-directly, so there is no Julia session to start when you use the
-package. The first installation takes a few minutes while Julia
+(\>= 1.13); see <https://julialang.org/install/> for the recommended way
+to install Julia. The first installation takes a few minutes while Julia
 downloads and compiles the dependencies. Set the `JULIA` environment
 variable to the path of a `julia` binary to use a Julia other than the
 one on the `PATH`.
