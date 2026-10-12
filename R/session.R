@@ -49,8 +49,35 @@ NULL
   if (nzchar(override)) {
     return(override)
   }
-  ext <- if (Sys.info()[["sysname"]] == "Darwin") ".dylib" else ".so"
+  ext <- switch(
+    Sys.info()[["sysname"]],
+    Darwin = ".dylib",
+    Windows = ".dll",
+    ".so"
+  )
   system.file("csjl", paste0("csjl", ext), package = "CausalStructures")
+}
+
+# On Windows the library has no RUNPATH, so the directory of the Julia
+# runtime it links against (recorded by build.jl next to it) is put on the
+# PATH, where Windows finds libjulia.dll and its dependencies.
+.add_julia_bindir <- function(path) {
+  if (.Platform$OS.type != "windows") {
+    return(invisible(NULL))
+  }
+  record <- file.path(dirname(path), "julia_bindir")
+  if (!file.exists(record)) {
+    return(invisible(NULL))
+  }
+  bindir <- normalizePath(
+    readLines(record, warn = FALSE)[[1L]],
+    mustWork = FALSE
+  )
+  dirs <- strsplit(Sys.getenv("PATH"), ";", fixed = TRUE)[[1L]]
+  if (!tolower(bindir) %in% tolower(normalizePath(dirs, mustWork = FALSE))) {
+    Sys.setenv(PATH = paste(c(bindir, dirs), collapse = ";"))
+  }
+  invisible(NULL)
 }
 
 #' Is the compiled CausalStructures.jl library available?
@@ -94,6 +121,7 @@ setup <- function() {
   }
   # The library links against the Julia that built it, so it stops loading
   # if that Julia is removed (e.g. by a juliaup update).
+  .add_julia_bindir(path)
   dll <- tryCatch(
     dyn.load(path, local = TRUE, now = TRUE),
     error = function(e) {

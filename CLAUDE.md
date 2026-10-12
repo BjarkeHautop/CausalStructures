@@ -62,7 +62,7 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 
 - `configure` finds Julia (`$JULIA`, else `julia` on the PATH), requires Julia
   >= 1.13, and runs `tools/csjl/build.jl inst/csjl`. `R CMD INSTALL` then
-  installs `inst/csjl/csjl.so` (`.dylib` on macOS) with the package. `tools/`
+  installs `inst/csjl/csjl.so` (`.dylib` on macOS, `.dll` on Windows) with the package. `tools/`
   ships in the source tarball but is not installed.
 - `tools/csjl/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
   instantiates the binding project (`tools/csjl/Project.toml`, CausalStructures
@@ -86,7 +86,12 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
   entrypoint, from `JULIA_NUM_THREADS` (a count or `"auto"`). More than one
   thread turns on Julia's signal handling, which multi-threaded GC needs.
 - `inst/csjl/` is build output: gitignored and in `.Rbuildignore`.
-- Windows has no `configure.win` yet, so the library is not built there.
+- Windows: `configure.win` runs `configure` (R uses Rtools' `sh`), producing
+  `inst/csjl/csjl.dll`. A DLL has no RUNPATH, so `build.jl` records Julia's
+  `Sys.BINDIR` in `inst/csjl/julia_bindir` and `setup()` prepends it to the
+  `PATH` before `dyn.load()`. A `ccall` without a library only searches
+  Julia's own DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`,
+  which adds `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
 
 ### The binding layer (`tools/csjl/src/`)
 

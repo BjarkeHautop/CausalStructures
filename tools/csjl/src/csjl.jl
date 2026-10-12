@@ -204,7 +204,7 @@ function edges(h::Int64)
     # Notation by (src mark, dst mark), indexed 3 * src + dst. Only the six
     # canonical mark pairs occur; the rest stay NA.
     notation = _protect(_alloc(STRSXP, 9))
-    na = _r_global(:R_NaString)
+    na = @r_global(R_NaString)
     for k = 0:8
         _set_string_elt(notation, k, na)
     end

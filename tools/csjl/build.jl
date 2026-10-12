@@ -42,3 +42,9 @@ image = JuliaC.ImageRecipe(;
 )
 JuliaC.compile_products(image)
 JuliaC.link_products(JuliaC.LinkRecipe(; image_recipe = image, outname = joinpath(OUT, "csjl")))
+
+# A Windows DLL has no RUNPATH, so record where the Julia runtime it links
+# against lives; the R package puts it on the DLL search path before loading.
+if Sys.iswindows()
+    write(joinpath(OUT, "julia_bindir"), Sys.BINDIR)
+end
