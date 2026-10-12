@@ -4,34 +4,40 @@
 \alias{cgraph_layout}
 \title{Compute a graph layout}
 \usage{
-cgraph_layout(x, method = NULL, ...)
+cgraph_layout(
+  x,
+  method = NULL,
+  direction = c("right", "down", "up", "left"),
+  ...
+)
 }
 \arguments{
 \item{x}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{method}{Character string specifying the layout method:
 \itemize{
-\item \code{"stress"}: stress majorization. A good general-purpose choice - well-
-spaced and deterministic for a given graph.
-\item \code{"spring"}: Fruchterman-Reingold force-directed.
-\item \code{"sfdp"}: scalable force-directed placement.
-\item \code{"spectral"}: spectral layout.
-\item \code{"shell"}: concentric shells.
-\item \code{"squaregrid"}: square grid.
-\item \code{"sugiyama"}: layered/hierarchical layout, \code{DAG} only. Provided by the
-\href{https://github.com/JuliaGraphs/Sugiyama.jl}{Sugiyama.jl} package.
+\item \code{"sugiyama"}: layered/hierarchical layout, from the
+\href{https://github.com/BjarkeHautop/Sugiyama.jl}{Sugiyama.jl} package.
+Every edge is layered from its first to its second node (\verb{A --> B}
+puts \code{A} before \code{B}), and any cycles are broken, so it works for every
+graph class.
+\item \code{"stress"}: stress majorization (Gansner, Koren and North, 2005),
+starting from classical multidimensional scaling. A good
+general-purpose choice - well-spaced and deterministic for a given
+graph.
+\item \code{"shell"}: nodes evenly spaced on a circle, in \code{\link[=nodes]{nodes()}} order.
+\item \code{"squaregrid"}: nodes on a square grid, row by row in \code{\link[=nodes]{nodes()}} order.
 }
 
-All other methods are provided by the
-\href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} package.
-
 Defaults (\code{NULL}) to \code{"sugiyama"} when \code{x} was constructed (or
-\code{\link[=reclass]{reclass()}}ed) as a \code{DAG}, \code{"stress"} otherwise - matching
-CausalStructures.jl's own default. This checks \code{x}'s actual class, not
-its edge structure (see \link{predicates}) - a \code{PDAG} with only directed,
-acyclic edges still defaults to \code{"stress"}.}
+\code{\link[=reclass]{reclass()}}ed) as a \code{DAG}, \code{"stress"} otherwise. This checks \code{x}'s
+actual class, not its edge structure (see \link{predicates}) - a \code{PDAG}
+with only directed, acyclic edges still defaults to \code{"stress"}.}
 
-\item{...}{Additional arguments}
+\item{direction}{For \code{"sugiyama"}, which way the layers flow: \code{"right"}
+(the default, as in CausalStructures.jl), \code{"down"}, \code{"up"} or \code{"left"}.}
+
+\item{...}{Ignored, so that \code{\link[=plot.cgraph]{plot.cgraph()}} can pass its \code{...} through.}
 }
 \value{
 A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
@@ -40,15 +46,9 @@ A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
 Computes node coordinates for \code{\link[=plot.cgraph]{plot.cgraph()}}.
 }
 \examples{
-if (FALSE) { # plotting needs layout algorithms, not in the library yet
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  cgraph_layout(dag)
-}
-
-if (FALSE) { # plotting needs layout algorithms, not in the library yet
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  cgraph_layout(dag, method = "spring")
-}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+cgraph_layout(dag)
+cgraph_layout(dag, method = "stress")
 }
 \seealso{
 Other plotting:

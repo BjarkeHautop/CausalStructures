@@ -1,5 +1,3 @@
-skip_if_no_layout()
-
 test_that("plot.cgraph draws with the default layout", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
@@ -10,14 +8,7 @@ test_that("plot.cgraph draws with the default layout", {
 
 test_that("cgraph_layout works for every layout method", {
   skip_if_no_julia()
-  methods <- c(
-    "spring",
-    "stress",
-    "sfdp",
-    "spectral",
-    "shell",
-    "squaregrid"
-  )
+  methods <- c("sugiyama", "stress", "shell", "squaregrid")
 
   for (m in methods) {
     coords <- cgraph_layout(test_dag(), method = m)
@@ -33,14 +24,7 @@ test_that("plot.cgraph draws with every layout method", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  methods <- c(
-    "spring",
-    "stress",
-    "sfdp",
-    "spectral",
-    "shell",
-    "squaregrid"
-  )
+  methods <- c("sugiyama", "stress", "shell", "squaregrid")
   for (m in methods) {
     expect_no_error(plot(test_dag(), layout = m))
   }
@@ -51,7 +35,7 @@ test_that("plot.cgraph draws with a pre-computed layout data.frame", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  coords <- cgraph_layout(test_dag(), method = "spring")
+  coords <- cgraph_layout(test_dag(), method = "stress")
   expect_no_error(plot(test_dag(), layout = coords))
 })
 
@@ -94,7 +78,7 @@ test_that("plot.cgraph renders every edge type without error", {
     "A --> B, C --- D, E <-> F, G o-> H, I o-- J, K o-o L",
     class = "UNKNOWN"
   )
-  expect_no_error(plot(g, layout = "spring"))
+  expect_no_error(plot(g, layout = "stress"))
 })
 
 test_that("plot.cgraph errors on an empty graph", {
@@ -311,4 +295,74 @@ test_that("by_edge .by_type disambiguates parallel edges of different types", {
   s2 <- .plot_edge_style(edges, 2, styles$edge_style)
   expect_false(identical(s1$col, s2$col))
   expect_setequal(c(s1$col, s2$col), c("red", "blue"))
+})
+
+test_that("sugiyama layers follow the edges in every direction", {
+  skip_if_no_julia()
+  g <- cgraph(A %-->% B, B %-->% C)
+  pos <- function(direction) {
+    coords <- cgraph_layout(g, method = "sugiyama", direction = direction)
+    coords[match(c("A", "B", "C"), coords$name), ]
+  }
+  expect_true(all(diff(pos("right")$x) > 0))
+  expect_true(all(diff(pos("left")$x) < 0))
+  expect_true(all(diff(pos("down")$y) < 0))
+  expect_true(all(diff(pos("up")$y) > 0))
+  expect_error(cgraph_layout(g, method = "sugiyama", direction = "sideways"))
+})
+
+test_that("sugiyama works for graphs that are not DAGs", {
+  skip_if_no_julia()
+  cyclic <- cgraph("A --> B, B --> C, C --> A", class = "UNKNOWN")
+  pag <- cgraph("A o-> B, B <-> C, C --- D", class = "UNKNOWN")
+  for (g in list(cyclic, pag)) {
+    coords <- cgraph_layout(g, method = "sugiyama")
+    expect_setequal(coords$name, nodes(g))
+    expect_true(all(is.finite(c(coords$x, coords$y))))
+  }
+})
+
+test_that("stress is deterministic and handles awkward graphs", {
+  skip_if_no_julia()
+  expect_identical(
+    cgraph_layout(test_dag(), method = "stress"),
+    cgraph_layout(test_dag(), method = "stress")
+  )
+
+  graphs <- list(
+    single = cgraph("A", class = "UG"),
+    pair = cgraph("A --- B", class = "UG"),
+    path = cgraph("A --- B, B --- C, C --- D", class = "UG"),
+    isolated = cgraph("A --> B, C, D", class = "DAG"),
+    components = cgraph("A --> B, C <-> D, D <-> E", class = "ADMG")
+  )
+  for (g in graphs) {
+    coords <- cgraph_layout(g, method = "stress")
+    expect_setequal(coords$name, nodes(g))
+    expect_true(all(is.finite(c(coords$x, coords$y))))
+    if (nrow(coords) > 1) {
+      # No two nodes on top of each other.
+      expect_gt(min(stats::dist(coords[, c("x", "y")])), 1e-3)
+    }
+  }
+})
+
+test_that("stress places adjacent nodes about one unit apart", {
+  skip_if_no_julia()
+  g <- cgraph("A --- B, B --- C, C --- D, D --- A", class = "UG")
+  coords <- cgraph_layout(g, method = "stress")
+  d <- as.matrix(stats::dist(coords[, c("x", "y")]))
+  dimnames(d) <- list(coords$name, coords$name)
+  expect_equal(d["A", "B"], 1, tolerance = 0.1)
+  expect_equal(d["A", "C"], sqrt(2), tolerance = 0.1)
+})
+
+test_that("shell and squaregrid place nodes in nodes() order", {
+  skip_if_no_julia()
+  shell <- cgraph_layout(test_dag(), method = "shell")
+  expect_equal(shell$name, nodes(test_dag()))
+  expect_equal(sqrt(shell$x^2 + shell$y^2), rep(1, 4))
+  grid <- cgraph_layout(test_dag(), method = "squaregrid")
+  expect_equal(grid$x, c(0, 1, 0, 1))
+  expect_equal(grid$y, c(0, 0, -1, -1))
 })

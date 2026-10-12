@@ -108,6 +108,10 @@ warmup <- function() {
     enumerate_mags(pag),
 
     # --- Data generation --------------------------------------------
-    simulate_data(dag, 5, seed = 1L)
+    simulate_data(dag, 5, seed = 1L),
+
+    # --- Layout ---------------------------------------------------------------
+    cgraph_layout(dag),
+    cgraph_layout(pag, method = "sugiyama")
   ))
 }

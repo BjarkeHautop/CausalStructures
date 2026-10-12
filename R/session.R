@@ -177,21 +177,6 @@ setup <- function() {
   n
 }
 
-# Calls with no library entrypoint.
-fn <- function(name) {
-  switch(
-    name,
-    # NetworkLayout and Sugiyama do not compile under `juliac --trim`, so the
-    # library carries no layout algorithms.
-    layout = function(...) {
-      stop(
-        "cgraph_layout() is not available in the compiled library.",
-        call. = FALSE
-      )
-    }
-  )
-}
-
 # A seed for the library's RNG, or `NULL` for an unseeded one.
 make_rng <- function(seed) {
   if (is.null(seed)) NULL else as.numeric(seed)

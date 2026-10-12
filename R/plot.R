@@ -1221,8 +1221,7 @@ makeContent.cs_graph_grob <- function(x) {
 #'   * `NULL` (default): [cgraph_layout()]'s own default - `"sugiyama"` for a
 #'     `DAG`, `"stress"` otherwise.
 #'   * A character string passed to [cgraph_layout()] as `method`
-#'     (`"spring"`, `"stress"`, `"sfdp"`, `"spectral"`,
-#'     `"shell"`, `"squaregrid"`, `"sugiyama"`).
+#'     (`"sugiyama"`, `"stress"`, `"shell"`, `"squaregrid"`).
 #'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
 #'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
@@ -1316,38 +1315,32 @@ makeContent.cs_graph_grob <- function(x) {
 #'   effect; re-drawn if printed or passed to `plot()` again.
 #'
 #' @examples
-#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   plot(dag, main = "A DAG")
-#' }
+#' dag <- cgraph("A --> X + Y, X --> M --> Y")
+#' plot(dag, main = "A DAG")
 #' # Style nodes and edges globally, plus per-node/per-edge overrides.
-#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   plot(
-#'     dag,
-#'     node_style = list(
-#'       fill = "lightblue",
-#'       col = "navy",
-#'       by_node = list(Y = list(fill = "gold"))
-#'     ),
-#'     edge_style = list(
-#'       col = "gray40",
-#'       lwd = 2,
-#'       by_edge = list(X = list(M = list(col = "red", lwd = 3)))
-#'     ),
-#'     main = "Styled DAG"
-#'   )
-#' }
+#' dag <- cgraph("A --> X + Y, X --> M --> Y")
+#' plot(
+#'   dag,
+#'   node_style = list(
+#'     fill = "lightblue",
+#'     col = "navy",
+#'     by_node = list(Y = list(fill = "gold"))
+#'   ),
+#'   edge_style = list(
+#'     col = "gray40",
+#'     lwd = 2,
+#'     by_edge = list(X = list(M = list(col = "red", lwd = 3)))
+#'   ),
+#'   main = "Styled DAG"
+#' )
 #' # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   plot(
-#'     dag,
-#'     node_style = list(shape = "square", linestyle = "dashed"),
-#'     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
-#'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
-#'   )
-#' }
+#' dag <- cgraph("A --> X + Y, X --> M --> Y")
+#' plot(
+#'   dag,
+#'   node_style = list(shape = "square", linestyle = "dashed"),
+#'   edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
+#'   labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
+#' )
 #' @seealso [plot_options()] to change the style defaults used above,
 #'   globally, for every plot.
 #' @rdname plot

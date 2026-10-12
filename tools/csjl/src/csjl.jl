@@ -18,6 +18,7 @@ import CausalStructures as CS
 using CausalStructures:
     CausalGraph, CausalEdge, DAG, UG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN
 import Random
+import Sugiyama
 
 include("rapi.jl")
 
@@ -637,6 +638,32 @@ function simulate_data(
     return out
 end
 
+# --- Layout ------------------------------------------------------------------
+
+# Node positions from Sugiyama.jl's layered layout: an n-by-2 numeric matrix,
+# one row per node in `nodes()` order. Every edge counts as pointing from `src`
+# to `dst`; Sugiyama breaks any cycles itself, so this works for every class.
+function sugiyama_layout(h::Int64, direction::Symbol)
+    g = _graph(h)
+    ns = @on "sugiyama_layout" g ALL CS.nodes(g)
+    es = @on "sugiyama_layout" g ALL g.edges
+    n = length(ns)
+    idx = Dict{Symbol,Int}(ns[i] => i for i in eachindex(ns))
+    A = zeros(Int, n, n)
+    for e in es
+        A[idx[e.src], idx[e.dst]] = 1
+    end
+    pts = Sugiyama.sugiyama(A; direction = direction)
+    out = _protect(_alloc_matrix(REALSXP, n, 2))
+    p = _real_ptr(out)
+    for (i, pt) in enumerate(pts)
+        unsafe_store!(p, Float64(pt[1]), i)
+        unsafe_store!(p, Float64(pt[2]), n + i)
+    end
+    _unprotect(1)
+    return out
+end
+
 # --- R entrypoints -----------------------------------------------------------
 
 @rcall graph_count()::Int64
@@ -748,5 +775,7 @@ end
     h::GraphHandle, n::Int64, seed::Union{Nothing,Int64}, standardize::Bool,
     coef_range::Vector{Float64}, error_sd::Float64,
 )::SEXP
+
+@rcall sugiyama_layout(h::GraphHandle, direction::Symbol)::SEXP
 
 end # module

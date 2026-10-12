@@ -36,6 +36,7 @@ Imports:
     grid,
     parallel,
     Rdpack,
+    stats,
     utils
 Suggests:
     bench,

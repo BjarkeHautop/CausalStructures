@@ -47,8 +47,7 @@ Rscript -e 'pkgdown::build_site(devel = TRUE)'
 
 Tests that need the compiled library call `skip_if_no_julia()` (see
 `tests/testthat/helper-julia.R`) and are skipped otherwise. `julia_ready()`
-checks that the library loads. The plotting tests are skipped unconditionally
-(`skip_if_no_layout()`): see Plotting below.
+checks that the library loads.
 
 Pre-commit hooks (`.pre-commit-config.yaml`) enforce: `air` formatting,
 `jarl`/`panache` linting, README.md being newer than README.Rmd, and roxygen
@@ -62,8 +61,8 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 
 - `configure` finds Julia (`$JULIA`, else `julia` on the PATH), requires Julia
   >= 1.13, and runs `tools/csjl/build.jl inst/csjl`. `R CMD INSTALL` then
-  installs `inst/csjl/csjl.so` (`.dylib` on macOS, `.dll` on Windows) with the package. `tools/`
-  ships in the source tarball but is not installed.
+  installs `inst/csjl/csjl.so` (`.dylib` on macOS, `.dll` on Windows) with the
+  package. `tools/` ships in the source tarball but is not installed.
 - `tools/csjl/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
   instantiates the binding project (`tools/csjl/Project.toml`, CausalStructures
   from the General registry, or `CAUSALSTRUCTURES_JL_PATH` via `Pkg.develop`) in
@@ -89,9 +88,9 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 - Windows: `configure.win` runs `configure` (R uses Rtools' `sh`), producing
   `inst/csjl/csjl.dll`. A DLL has no RUNPATH, so `build.jl` records Julia's
   `Sys.BINDIR` in `inst/csjl/julia_bindir` and `setup()` prepends it to the
-  `PATH` before `dyn.load()`. A `ccall` without a library only searches
-  Julia's own DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`,
-  which adds `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
+  `PATH` before `dyn.load()`. A `ccall` without a library only searches Julia's
+  own DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`, which
+  adds `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
 
 ### The binding layer (`tools/csjl/src/`)
 
@@ -186,10 +185,16 @@ data from a graph.
 
 ### Plotting (`R/plot.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
 
-- Plotting is currently unavailable: `cgraph_layout()` needs
-  CausalStructures.jl's NetworkLayout/Sugiyama extensions, and those packages do
-  not compile under `juliac --trim`, so the library has no layout algorithms and
-  `fn("layout")` errors.
+- `cgraph_layout()` (`R/layout.R`) computes node positions. `"sugiyama"` is the
+  library's `sugiyama_layout` entrypoint, which calls
+  [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) directly on the
+  adjacency matrix (every edge as `src -> dst`, so any class works) rather than
+  through CausalStructures.jl's `layout()`, whose `Val(method)` dispatch and
+  forwarded `kwargs...` `--trim` rejects. `"stress"`, `"shell"` and
+  `"squaregrid"` are plain R: NetworkLayout.jl does not compile under `--trim`,
+  and causal graphs are small enough that dense-matrix R code is fast. Stress
+  starts from classical MDS (`stats::cmdscale()`), so it needs no RNG and is
+  deterministic.
 - The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather

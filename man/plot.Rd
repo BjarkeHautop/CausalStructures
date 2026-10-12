@@ -29,8 +29,7 @@
 \item \code{NULL} (default): \code{\link[=cgraph_layout]{cgraph_layout()}}'s own default - \code{"sugiyama"} for a
 \code{DAG}, \code{"stress"} otherwise.
 \item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
-(\code{"spring"}, \code{"stress"}, \code{"sfdp"}, \code{"spectral"},
-\code{"shell"}, \code{"squaregrid"}, \code{"sugiyama"}).
+(\code{"sugiyama"}, \code{"stress"}, \code{"shell"}, \code{"squaregrid"}).
 \item A layout function, called with \code{x} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
 \item A named list keyed by node name, each element a length-2 \code{c(x, y)},
@@ -144,38 +143,32 @@ avoid repeating the same style lists at every call site; arguments passed
 here still take precedence.
 }
 \examples{
-if (FALSE) { # plotting needs layout algorithms, not in the library yet
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
-  plot(dag, main = "A DAG")
-}
+dag <- cgraph("A --> X + Y, X --> M --> Y")
+plot(dag, main = "A DAG")
 # Style nodes and edges globally, plus per-node/per-edge overrides.
-if (FALSE) { # plotting needs layout algorithms, not in the library yet
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
-  plot(
-    dag,
-    node_style = list(
-      fill = "lightblue",
-      col = "navy",
-      by_node = list(Y = list(fill = "gold"))
-    ),
-    edge_style = list(
-      col = "gray40",
-      lwd = 2,
-      by_edge = list(X = list(M = list(col = "red", lwd = 3)))
-    ),
-    main = "Styled DAG"
-  )
-}
+dag <- cgraph("A --> X + Y, X --> M --> Y")
+plot(
+  dag,
+  node_style = list(
+    fill = "lightblue",
+    col = "navy",
+    by_node = list(Y = list(fill = "gold"))
+  ),
+  edge_style = list(
+    col = "gray40",
+    lwd = 2,
+    by_edge = list(X = list(M = list(col = "red", lwd = 3)))
+  ),
+  main = "Styled DAG"
+)
 # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-if (FALSE) { # plotting needs layout algorithms, not in the library yet
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
-  plot(
-    dag,
-    node_style = list(shape = "square", linestyle = "dashed"),
-    edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
-    labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
-  )
-}
+dag <- cgraph("A --> X + Y, X --> M --> Y")
+plot(
+  dag,
+  node_style = list(shape = "square", linestyle = "dashed"),
+  edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
+  labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
+)
 }
 \seealso{
 \code{\link[=plot_options]{plot_options()}} to change the style defaults used above,
