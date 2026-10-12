@@ -31,14 +31,6 @@ jobs:
 
       - uses: julia-actions/cache@v3
 
-      # The library that install_backend() would build, built from the sources
-      # and handed to the package through CAUSALSTRUCTURES_LIBRARY.
-      - name: Build the CausalStructures.jl library
-        run: |
-          julia --startup-file=no inst/julia/build.jl "$RUNNER_TEMP/csjl"
-          echo "CAUSALSTRUCTURES_LIBRARY=$RUNNER_TEMP/csjl/csjl.so" >> "$GITHUB_ENV"
-        shell: bash
-
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: quarto-dev/quarto-actions/setup@v2
@@ -49,6 +41,14 @@ jobs:
         with:
           extra-packages: github::BjarkeHautop/pkgdown@callout-blocks, local::.
           needs: website
+
+      # The library that install_backend() would build, built by jlbind from the
+      # sources and handed to the package through JLBIND_LIBRARY.
+      - name: Build the CausalStructures.jl library
+        run: |
+          Rscript -e 'jlbind::build_library(".", file.path(Sys.getenv("RUNNER_TEMP"), "jlbind"))'
+          echo "JLBIND_LIBRARY=$RUNNER_TEMP/jlbind/jlbind.so" >> "$GITHUB_ENV"
+        shell: bash
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

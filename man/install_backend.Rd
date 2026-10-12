@@ -8,8 +8,7 @@ install_backend(
   julia = NULL,
   ask = interactive(),
   force = FALSE,
-  update = FALSE,
-  project = NULL
+  update = FALSE
 )
 }
 \arguments{
@@ -19,14 +18,11 @@ install_backend(
 \item{ask}{Ask for confirmation before building? Defaults to
 \code{\link[=interactive]{interactive()}}.}
 
-\item{force}{Rebuild even if a library for this version of
-CausalStructures already exists? Implied by \code{update} and \code{project}.}
+\item{force}{Rebuild even if the library is up to date with the installed
+packages? Implied by \code{update}.}
 
-\item{update}{Use the newest dependency versions the \code{Project.toml} allows
-instead of those in its \code{Manifest.toml}?}
-
-\item{project}{Path to a directory with the \code{Project.toml} (and optionally
-a \code{Manifest.toml}) to build from, instead of the shipped ones.}
+\item{update}{Use the newest dependency versions the packages allow
+instead of those in their \code{Manifest.toml}s?}
 }
 \value{
 The path to the library, invisibly.
@@ -38,22 +34,19 @@ installing or updating CausalStructures, and again (with \code{force = TRUE}) if
 the Julia it was built with is removed, for example by a \code{juliaup} update.
 }
 \details{
-Julia downloads CausalStructures.jl and its dependencies into its package
-depot (\verb{~/.julia} unless \code{JULIA_DEPOT_PATH} says otherwise) and compiles
-them, which takes several minutes. The library is written to a directory
-per package version under \code{tools::R_user_dir("CausalStructures", "data")},
-and libraries built for other versions are removed from there.
+The library is built by 'jlbind' (\code{\link[jlbind:install_backend]{jlbind::install_backend()}}), which
+compiles the Julia code of every installed package that uses it into one
+library, since an R process can run only one: CausalStructures and any
+such packages are built together. Julia downloads CausalStructures.jl and
+its dependencies into its package depot (\verb{~/.julia} unless
+\code{JULIA_DEPOT_PATH} says otherwise) and compiles them, which takes several
+minutes.
 
 By default the dependencies are the exact versions in the \code{Manifest.toml}
 shipped with this version of CausalStructures, which are the versions it
 was tested with. \code{update = TRUE} instead uses the newest versions the
 shipped \code{Project.toml} allows, e.g. to get a CausalStructures.jl bug fix
-before the next release of this package. \code{project} builds from your own
-Julia environment: start from a copy of
-\code{system.file("julia", "Project.toml", package = "CausalStructures")},
-keep its name, UUID and dependencies, and change e.g. the \verb{[compat]}
-bounds, or add a \verb{[sources]} section to use a development version of
-CausalStructures.jl.
+before the next release of this package.
 
 Julia can only be started once per R process, so a library that replaces
 one already loaded is used from the next R session on.

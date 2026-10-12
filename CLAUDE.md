@@ -9,28 +9,36 @@ code in this repository.
 [CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl) for
 representing, validating, and reasoning about causal graphs (DAG, UG, PDAG,
 CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). CausalStructures.jl is compiled with
-`juliac --trim=safe` into a shared library by `install_backend()`, and every
-user-facing R function is a single `.Call` into that library --- the actual
-algorithms live in the Julia package, not in this repo. There is no embedded
-Julia session at run time.
+`juliac --trim=safe` into a shared library by
+[jlbind](https://github.com/BjarkeHautop/jlbind) (`install_backend()` wraps
+`jlbind::install_backend()`), and every user-facing R function is a single
+`.Call` into that library --- the actual algorithms live in the Julia package,
+not in this repo. There is no embedded Julia session at run time.
 
 ## Common commands
 
 ```sh
-# Build the compiled library for development (needs Julia >= 1.13 on the PATH).
-# Do this once, and again after changing anything in inst/julia/; setup()
-# prefers a build in inst/csjl over the one install_backend() makes.
-julia --startup-file=no inst/julia/build.jl inst/csjl
+# Build the compiled library for development (needs Julia >= 1.13 on the PATH
+# and jlbind installed). Do this once, and again after changing anything in
+# inst/julia/; JLBIND_LIBRARY makes the package load it instead of the one
+# install_backend() makes.
+Rscript -e 'jlbind::build_library(".", "inst/csjl")'
+export JLBIND_LIBRARY=$PWD/inst/csjl/jlbind.so
 
 # ... against a local CausalStructures.jl checkout instead of the release
-CAUSALSTRUCTURES_JL_PATH=../CausalStructures.jl \
-  julia --startup-file=no inst/julia/build.jl inst/csjl
+Rscript -e 'jlbind::build_library(".", "inst/csjl", develop = "../CausalStructures.jl")'
 
 # ... with the newest dependency versions [compat] allows, ignoring the manifest
-julia --startup-file=no inst/julia/build.jl inst/csjl --update
+Rscript -e 'jlbind::build_library(".", "inst/csjl", update = TRUE)'
+
+# After adding, removing or changing the arguments of an @rcall declaration,
+# regenerate src/entrypoints.h
+Rscript -e 'jlbind::update_entrypoints()'
 
 # Update the shipped manifest (e.g. for a new CausalStructures.jl release);
-# resolve with the Julia version the package requires, then rebuild and test
+# resolve with the Julia version the package requires, then rebuild and test.
+# JLBind is not in the manifest (jlbind supplies it), so develop it into a
+# throwaway copy of the environment if Pkg asks for it.
 julia --startup-file=no --project=inst/julia -e 'import Pkg; Pkg.update()'
 
 # Run the full test suite
@@ -44,7 +52,7 @@ Rscript -e 'roxygen2::roxygenise()'
 
 # Full R CMD check. Installing does not build the library, so point the check
 # at a build (as CI does), or the tests and examples needing it are skipped.
-CAUSALSTRUCTURES_LIBRARY=$PWD/inst/csjl/csjl.so Rscript -e 'devtools::check()'
+JLBIND_LIBRARY=$PWD/inst/csjl/jlbind.so Rscript -e 'devtools::check()'
 
 # Re-knit README.md from README.Rmd after editing README.Rmd
 Rscript -e 'devtools::build_readme()'
@@ -65,129 +73,90 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 
 ## Architecture
 
-### Building the library (`install_backend()`, `inst/julia/`)
+### Building and loading the library (jlbind)
 
+The generic machinery lives in the jlbind R package (and its Julia package
+JLBind); see its `DESIGN.md`. In short:
+
+- An R process can run only one juliac library, so jlbind compiles the binding
+  packages of every installed package that uses it (a `Config/jlbind` field in
+  `DESCRIPTION`; here `julia`, i.e. `inst/julia`) into one library, with the
+  user's Julia, into `tools::R_user_dir("jlbind", "data")`. Installing or
+  updating any such package means rebuilding. `install_backend()` here just
+  calls `jlbind::install_backend()`.
 - Installing the package builds nothing, so it installs (and passes CRAN's
   checks) without Julia; then every function errors, `julia_ready()` is `FALSE`,
   and examples and tests skip. CRAN's policy forbids downloading software and
-  writing to the home directory (`~/.julia`) during installation, which an
-  install-time build needs; a function the user calls explicitly may.
-- `install_backend()` (`R/install.R`) finds Julia (`julia` argument, `$JULIA`,
-  else `julia` on the PATH), requires >= 1.13, asks for confirmation when
-  interactive, and runs the installed package's `julia/build.jl` in a child
-  process. It writes `csjl.so` (`.dylib` on macOS, `.dll` on Windows) to
-  `tools::R_user_dir("CausalStructures", "data")/csjl/<package version>/`, so a
-  library built for another version (whose entrypoints may not match
-  `src/entrypoints.h`) is never loaded; other versions' directories are pruned.
-  It builds into a temporary sibling directory and renames it into place (a
-  loaded DLL cannot be deleted on Windows but can be renamed), then loads it
-  with `setup()`, unless a library is already loaded: Julia can only start once
-  per process, so a rebuild is used from the next session.
-- `setup()` looks for the library in `CAUSALSTRUCTURES_LIBRARY`, then
-  `system.file("csjl")` (a development build in `inst/csjl`), then the
-  `install_backend()` directory. CI builds with `build.jl` directly and sets
-  `CAUSALSTRUCTURES_LIBRARY`.
-- `inst/julia/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
-  instantiates the binding project (`inst/julia/Project.toml`, CausalStructures
-  from the General registry, or `CAUSALSTRUCTURES_JL_PATH` via `Pkg.develop`) in
-  a scratch copy, then compiles it from a separate temporary environment (so
-  JuliaC is never compiled into the library) with JuliaC's recipe API: the
-  equivalent of `--output-lib --trim=safe --experimental --compile-ccallable`,
-  plus the C source `set_threads.c`, which the JuliaC CLI cannot add.
+  writing to the home directory (`~/.julia`) during installation.
+- `.onLoad` calls `jlbind::bind(pkgname)`, which loads the library (once per
+  process, setting the Julia thread count from `JULIA_NUM_THREADS` first) and
+  binds this package's routines to it, if the library was built from this
+  version of the package. `julia_ready()` is `jlbind::is_bound()`, `setup()` is
+  `jlbind::check_backend()` (an error saying why the library is unavailable).
+  `JLBIND_LIBRARY` overrides the library path; CI builds with
+  `jlbind::build_library()` and sets it.
 - `inst/julia/Manifest.toml` is committed and shipped, so a package version
-  always builds against the dependency versions it was tested with: under
+  builds against the dependency versions it was tested with: under
   `--trim=safe`, a dependency release that adds a dynamic call would otherwise
-  break every user's build at once. `install_backend(update = TRUE)`
-  (`--update`) resolves the newest versions `[compat]` allows instead, and
-  `install_backend(project = dir)` (`--project=dir`) builds from a user's own
-  `Project.toml`/`Manifest.toml` (same name, UUID and deps; e.g. a `[sources]`
-  entry for a development CausalStructures.jl). If the manifest fails to
-  instantiate (resolved with another Julia version), `build.jl` warns and
-  resolves from `[compat]`. Copies are `chmod`ed writable, since an installed
-  package's files may be read-only.
-- The library links against the runtime of the Julia that built it (its RUNPATH
-  points there), so nothing is bundled. If that Julia is removed (e.g. by a
-  juliaup update), loading fails and `setup()` tells the user to run
-  `install_backend(force = TRUE)`.
-- `install_backend()` unsets `LD_LIBRARY_PATH` for the build: R puts its own
-  library directories on it, which otherwise makes Julia's bundled tools (Pkg's
-  `zstd`) load the system libraries instead of Julia's.
-- A juliac library fixes its Julia options when compiled (one thread, Julia
-  signal handling off) and ignores `JULIA_NUM_THREADS`
-  ([JuliaC.jl#152](https://github.com/JuliaLang/JuliaC.jl/issues/152)).
-  `set_threads.c` (adapted from Ribasim) exports `csjl_set_julia_threads`, which
-  sets `jl_options` before Julia initializes; `setup()` calls it through the
-  shim's `C_csjl_set_threads` after `dyn.load()` and before the first
-  entrypoint, from `JULIA_NUM_THREADS` (a count or `"auto"`). More than one
-  thread turns on Julia's signal handling, which multi-threaded GC needs.
-- `inst/csjl/` is development build output: gitignored and in `.Rbuildignore`.
-- Windows: a DLL has no RUNPATH, so `build.jl` records Julia's `Sys.BINDIR` in
-  `julia_bindir` next to `csjl.dll` and `setup()` prepends it to the `PATH`
-  before `dyn.load()`. A `ccall` without a library only searches Julia's own
-  DLLs on Windows, so `rapi.jl` names every R symbol with `@R(sym)`, which adds
-  `"R.dll"` there (and `@r_global(sym)` for R's global SEXPs).
+  break every user's build at once. jlbind starts the combined build from it
+  (keeping its versions where the other packages' bounds allow, and reporting
+  any it could not); `install_backend(update = TRUE)` resolves the newest
+  versions `[compat]` allows instead.
+- The library links against the runtime of the Julia that built it, so if that
+  Julia is removed (e.g. by a juliaup update), loading fails and `setup()` says
+  to run `install_backend(force = TRUE)`.
+- `inst/csjl/` is the conventional development build output: gitignored and in
+  `.Rbuildignore`.
 
-### The binding layer (`inst/julia/src/`)
+### The binding package (`inst/julia/`)
 
 This is the code to read first for anything touching the R<->Julia boundary.
 
-- `rapi.jl` is generic: Julia calls R's C API directly (the library is loaded
-  into the R process, so `ccall(:Rf_allocVector, ...)` etc. resolve against
-  libR). It holds the `from_sexp`/`to_sexp` conversions, graphs as external
-  pointers (`GraphHandle`), the `csjl_error` error object, a preserved cache of
-  R strings per node name, and the `@rcall` macro.
-- `@rcall f(a::T, ...)::R` exports `csjl_r_f(a::SEXP, ...)::SEXP`: it converts
-  each argument with `from_sexp(T, a)`, calls `f`, and converts the result. A
-  return type of `GraphHandle`/`Vector{GraphHandle}` makes the result a new
-  `cgraph` (or a list of them); `SEXP` passes an R object built in place through
-  unchanged (`edges`, `edge_marks`, `simulate_data`).
+- `csjl.jl` (module `csjl`) uses JLBind: its `@rcall f(a::T, ...)::R` exports
+  `csjl_f(a::SEXP, ...)::SEXP`, converting each argument with `from_sexp(T, a)`,
+  calling `f`, and converting the result with `to_sexp`. `SEXP` passes an R
+  object built in place through unchanged (`edges`, `edge_marks`,
+  `simulate_data`, built with JLBind's `protect`, `alloc`, `mkchar`, ...). Julia
+  calls R's C API directly: the library is loaded into the R process.
+- A graph crosses into R by reference: `GraphRef = RRef{CausalGraph}`, an
+  external pointer of class `cgraph` (`JLBind.r_class`) to a graph in JLBind's
+  registry, released by its finalizer. A function receiving one takes
+  `@nospecialize(g::CausalGraph)`: a call with an abstractly typed argument
+  stays dynamic otherwise, which `--trim` rejects. Inside, it branches on the
+  concrete class with `@on "name" g (DAG, ADMG) body` (or `ALL`). List only the
+  classes the CausalStructures.jl function has methods for; other classes get a
+  clean "not supported for a <class>" error.
 - Errors never unwind through Julia frames: a Julia exception is caught in the
-  entrypoint and returned as a character vector with class `csjl_error`, which
-  the shim in `src/` raises. `_error_message` only reads the message of the
-  exception types CausalStructures throws, since rendering an arbitrary
-  exception is a dynamic call `--trim` rejects. R itself only longjmps out of
-  allocations, i.e. when out of memory.
-- `csjl.jl` is CausalStructures-specific: a registry of graphs keyed by an
-  integer handle, and one function plus one `@rcall` declaration per exported R
-  function. Graph functions take `h::Int64` and branch on the concrete class
-  with `@on "name" g (DAG, ADMG) body` (or `ALL`), because a graph read from the
-  registry is only known as `CausalGraph` and `--trim` rejects the dynamic
-  dispatch. List only the classes the CausalStructures.jl function has methods
-  for; other classes get a clean "not supported for a <class>" error.
-- `--trim=safe` pitfalls already hit here: splatting a vector into varargs (use
-  `_fold`), `nameof(typeof(g))` on an abstract graph (use `_class_name`), more
-  than two `Union{T,Nothing}` arguments in one call (take raw `SEXP` and convert
-  inside, as `generate_graph` does), and a type passed as a keyword argument
+  entrypoint and returned as a character vector with class `jlbind_error`, which
+  the shim in `src/` raises. Only the messages of common exception types
+  (`ArgumentError`, `ErrorException`, ...) are passed on, since rendering an
+  arbitrary exception is a dynamic call `--trim` rejects.
+- `--trim=safe` pitfalls already hit here: an abstractly typed argument without
+  `@nospecialize` (see above), splatting a vector into varargs (use `_fold`),
+  `nameof(typeof(g))` on an abstract graph (use `_class_name`), more than two
+  `Union{T,Nothing}` arguments in one call (take raw `SEXP` and convert inside,
+  as `generate_graph` does), and a type passed as a keyword argument
   (`class = T`, inlined with `@inline` in `_generate`).
 - Adding a wrapped function: write the Julia function in `csjl.jl`, add an
-  `@rcall` declaration, add `CSJL_ENTRY(name, nargs)` to `src/entrypoints.h`,
-  and call it from the R wrapper as `.Call(C_name, ...)`. Then rebuild the
-  library (and reload, which recompiles `src/`). A wrong `nargs` shows up as R's
-  "Incorrect number of arguments" error on the first call.
+  `@rcall` declaration, run `jlbind::update_entrypoints()`, and call it from the
+  R wrapper as `.Call(C_name, ...)`. Then rebuild the library (and reload, which
+  recompiles `src/`).
 
-### The registration shim (`src/`)
+### The registration shim (`src/`, generated by jlbind)
 
-- The package has its own small shared object, `CausalStructures.so`, loaded by
-  `useDynLib(CausalStructures, .registration = TRUE, .fixes = "C_")`.
-  `src/init.c` registers one `.Call` routine per line of `src/entrypoints.h` (an
-  X-macro list), each forwarding to the library's `csjl_r_<name>` through a
-  function pointer, plus `csjl_bind` and `csjl_set_threads`. A routine raises a
-  returned `csjl_error` as an R error itself, once the Julia call has returned,
-  so no R wrapper needs to check results.
-- The csjl library cannot be linked into it (it is built by `install_backend()`
-  against the user's Julia and loaded later by `setup()`), so `csjl_bind`
-  resolves every pointer with `R_FindSymbol` once the library is loaded. A
-  routine called before that raises an error instead of crashing.
+- `src/jlbind.c` (from `jlbind::use_jlbind()`) registers one `.Call` routine
+  `C_<name>` per entry of `src/entrypoints.h` (from
+  `jlbind::update_entrypoints()`), each forwarding to the library's
+  `csjl_<name>` through a function pointer that `jlbind::bind()` resolves once
+  the library is loaded. A routine called before that raises an error instead of
+  crashing; a returned `jlbind_error` is raised as an R error once the Julia
+  call has returned, so no R wrapper needs to check results.
 - This keeps every `.Call` in `R/` a registered routine of the package itself,
   so `R CMD check`'s foreign-function checks pass without workarounds.
 
-### The R side (`R/session.R`)
+### The R side
 
-- `setup()` (also run from `.onLoad`) `dyn.load()`s the library, sets the Julia
-  thread count (see above), and binds the shim's routines to it
-  (`.Call(C_csjl_bind, ...)`). Exported functions are a direct
-  `.Call(C_name, ...)`. The library path can be overridden with
-  `CAUSALSTRUCTURES_LIBRARY`.
+- Exported functions are a direct `.Call(C_name, ...)`.
 - Calls are microsecond-scale, so R-side overhead matters: avoid extra wrapper
   layers on the hot path, and `match.arg()` (about 3.5 µs) is skipped when the
   argument is missing (`x <- if (missing(x)) x[[1L]] else match.arg(x)`).

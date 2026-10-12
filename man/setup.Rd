@@ -2,7 +2,7 @@
 % Please edit documentation in R/session.R
 \name{setup}
 \alias{setup}
-\title{Load the compiled CausalStructures.jl library}
+\title{Check that the compiled CausalStructures.jl library is available}
 \usage{
 setup()
 }
@@ -10,9 +10,10 @@ setup()
 \code{NULL}, invisibly.
 }
 \description{
-Called automatically by the wrapper functions; call it yourself to pay
-the (small) library load cost up front. The library is compiled ahead of
-time, so there is no Julia session to start and nothing to precompile.
+The library is loaded with the package, by 'jlbind'; this raises an error
+saying why it is not available, if it is not: typically that it has not
+been built yet, or was built for another version of CausalStructures, in
+which case run \code{\link[=install_backend]{install_backend()}}.
 }
 \examples{
 if (julia_ready()) {

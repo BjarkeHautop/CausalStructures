@@ -21,6 +21,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Collate:
     'session.R'
+    'jlbind.R'
     'install.R'
     'dsl.R'
     'construction.R'
@@ -37,10 +38,9 @@ Depends:
     R (>= 4.0.0)
 Imports:
     grid,
-    parallel,
+    jlbind,
     Rdpack,
     stats,
-    tools,
     utils
 Suggests:
     bench,
@@ -52,6 +52,8 @@ Config/testthat/edition: 3
 RdMacros: Rdpack
 SystemRequirements: Julia (>= 1.13), needed to build the compiled library
     with install_backend()
+Config/jlbind: julia
+Remotes: BjarkeHautop/jlbind
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues

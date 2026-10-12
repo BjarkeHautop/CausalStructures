@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest,   r: 'release', library: 'csjl.so'}
-          - {os: windows-latest,  r: 'release', library: 'csjl.dll'}
+          - {os: ubuntu-latest,   r: 'release', library: 'jlbind.so'}
+          - {os: windows-latest,  r: 'release', library: 'jlbind.dll'}
           # What CRAN sees: no compiled library, so every example and test
           # needing it must skip.
           - {os: ubuntu-latest,   r: 'release', library: ''}
@@ -40,15 +40,6 @@ jobs:
       - uses: julia-actions/cache@v3
         if: matrix.config.library != ''
 
-      # The library that install_backend() would build, built from the sources
-      # and handed to the package through CAUSALSTRUCTURES_LIBRARY.
-      - name: Build the CausalStructures.jl library
-        if: matrix.config.library != ''
-        run: |
-          julia --startup-file=no inst/julia/build.jl "$RUNNER_TEMP/csjl"
-          echo "CAUSALSTRUCTURES_LIBRARY=$RUNNER_TEMP/csjl/${{ matrix.config.library }}" >> "$GITHUB_ENV"
-        shell: bash
-
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -60,6 +51,15 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+      # The library that install_backend() would build, built by jlbind from the
+      # sources and handed to the package through JLBIND_LIBRARY.
+      - name: Build the CausalStructures.jl library
+        if: matrix.config.library != ''
+        run: |
+          Rscript -e 'jlbind::build_library(".", file.path(Sys.getenv("RUNNER_TEMP"), "jlbind"))'
+          echo "JLBIND_LIBRARY=$RUNNER_TEMP/jlbind/${{ matrix.config.library }}" >> "$GITHUB_ENV"
+        shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
         with:
