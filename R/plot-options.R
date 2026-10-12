@@ -41,7 +41,11 @@ plot_default_options <- function() {
       col = "black",
       lwd = 1,
       arrow_size = 3,
-      circle_size = 1.5
+      circle_size = 1.5,
+      gap = 0,
+      label_col = "black",
+      label_fontsize = 9,
+      label_shift = 0.5
     ),
     label_style = list(col = "black", fontsize = 10),
     title_style = list(col = "black", fontsize = 14, fontface = "bold"),
@@ -81,17 +85,20 @@ plot_default_options <- function() {
 #' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier),
 #'   `radius` (mm, fixed override), `shape` (`"circle"`, `"square"`,
 #'   `"ellipse"`, or `"rect"`), `linestyle` (e.g. `"dashed"`)
-#' - `edge_style`: `col`, `lwd`, `fill` (arrowhead fill), `arrow_size` (mm),
-#'   `circle_size` (mm), `curvature` (signed fraction of edge length; unset by
-#'   default, so parallel edges between the same node pair fan out
-#'   automatically - see [plot.cgraph()])
+#' - `edge_style`: `col`, `lwd`, `lty`, `fill` (arrowhead fill), `arrow_size`
+#'   (mm), `circle_size` (mm), `gap` (mm), `curvature` (signed fraction of edge
+#'   length; unset by default, so parallel edges between the same node pair fan
+#'   out automatically - see [plot.cgraph()]), and the edge label fields
+#'   `label_col`, `label_fontsize`, `label_fontface`, `label_fontfamily`,
+#'   `label_shift`, `label_distance` (mm), `label_rotation` (degrees)
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
 #' - `title_style`: same fields as `label_style`
 #' - `tier_style`: `boxes`, `labels`, `fill`, `col`, `lwd`, `padding` (mm),
 #'   `label_style`
 #'
 #' See [plot.cgraph()] for the full description of each field. Per-type
-#' (`edge_style$directed`, ...), per-node/per-edge (`by_node`, `by_edge`), and
+#' (`edge_style$directed`, ...), per-node/per-edge (`by_node`, `by_edge`,
+#' `label_style$by_node`), and
 #' per-tier (`by_tier`) overrides stay `plot()`-call arguments only - they are
 #' not part of these global defaults.
 #'

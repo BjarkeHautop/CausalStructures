@@ -31,10 +31,12 @@ Fields, matching the corresponding \code{plot.cgraph()} argument:
 \item \code{node_style}: \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm), \code{size} (multiplier),
 \code{radius} (mm, fixed override), \code{shape} (\code{"circle"}, \code{"square"},
 \code{"ellipse"}, or \code{"rect"}), \code{linestyle} (e.g. \code{"dashed"})
-\item \code{edge_style}: \code{col}, \code{lwd}, \code{fill} (arrowhead fill), \code{arrow_size} (mm),
-\code{circle_size} (mm), \code{curvature} (signed fraction of edge length; unset by
-default, so parallel edges between the same node pair fan out
-automatically - see \code{\link[=plot.cgraph]{plot.cgraph()}})
+\item \code{edge_style}: \code{col}, \code{lwd}, \code{lty}, \code{fill} (arrowhead fill), \code{arrow_size}
+(mm), \code{circle_size} (mm), \code{gap} (mm), \code{curvature} (signed fraction of edge
+length; unset by default, so parallel edges between the same node pair fan
+out automatically - see \code{\link[=plot.cgraph]{plot.cgraph()}}), and the edge label fields
+\code{label_col}, \code{label_fontsize}, \code{label_fontface}, \code{label_fontfamily},
+\code{label_shift}, \code{label_distance} (mm), \code{label_rotation} (degrees)
 \item \code{label_style}: \code{col}, \code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}
 \item \code{title_style}: same fields as \code{label_style}
 \item \code{tier_style}: \code{boxes}, \code{labels}, \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm),
@@ -42,7 +44,8 @@ automatically - see \code{\link[=plot.cgraph]{plot.cgraph()}})
 }
 
 See \code{\link[=plot.cgraph]{plot.cgraph()}} for the full description of each field. Per-type
-(\code{edge_style$directed}, ...), per-node/per-edge (\code{by_node}, \code{by_edge}), and
+(\code{edge_style$directed}, ...), per-node/per-edge (\code{by_node}, \code{by_edge},
+\code{label_style$by_node}), and
 per-tier (\code{by_tier}) overrides stay \code{plot()}-call arguments only - they are
 not part of these global defaults.
 }

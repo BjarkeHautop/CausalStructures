@@ -142,6 +142,82 @@
 
 .NODE_SHAPES <- c("circle", "square", "ellipse", "rect")
 
+# Range check for a resolved numeric style value, mirroring
+# CausalStructures.jl's `_check_value`, e.g.
+# `.plot_check_value(r > 0, "node_style$radius", r, "node \"A\"", "positive")`.
+# A NULL value (unset) always passes.
+.plot_check_value <- function(value, ok, name, target, requirement) {
+  if (is.null(value) || isTRUE(ok(value))) {
+    return(invisible(value))
+  }
+  stop(
+    sprintf(
+      "`%s` must be %s, got %s for %s.",
+      name,
+      requirement,
+      format(value),
+      target
+    ),
+    call. = FALSE
+  )
+}
+
+.plot_check_node_style <- function(style, node_name) {
+  target <- sprintf("node \"%s\"", node_name)
+  positive <- function(v) is.numeric(v) && length(v) == 1 && v > 0
+  non_negative <- function(v) is.numeric(v) && length(v) == 1 && v >= 0
+  .plot_check_value(
+    style$radius,
+    positive,
+    "node_style$radius",
+    target,
+    "positive"
+  )
+  .plot_check_value(
+    style$padding,
+    non_negative,
+    "node_style$padding",
+    target,
+    "non-negative"
+  )
+  .plot_check_value(
+    style$lwd,
+    non_negative,
+    "node_style$lwd",
+    target,
+    "non-negative"
+  )
+  .plot_check_value(style$size, positive, "node_style$size", target, "positive")
+  invisible(style)
+}
+
+.plot_check_edge_style <- function(style, target) {
+  non_negative <- function(v) is.numeric(v) && length(v) == 1 && v >= 0
+  for (field in c(
+    "lwd",
+    "arrow_size",
+    "circle_size",
+    "gap",
+    "label_distance"
+  )) {
+    .plot_check_value(
+      style[[field]],
+      non_negative,
+      paste0("edge_style$", field),
+      target,
+      "non-negative"
+    )
+  }
+  .plot_check_value(
+    style$label_shift,
+    function(v) is.numeric(v) && length(v) == 1 && v >= 0 && v <= 1,
+    "edge_style$label_shift",
+    target,
+    "between 0 and 1"
+  )
+  invisible(style)
+}
+
 .plot_is_boxy <- function(shape) shape %in% c("square", "rect")
 
 .plot_shape_half_extents <- function(shape, label, label_style, padding_mm) {
@@ -207,6 +283,17 @@
     if (!is.null(style$linestyle) && is.null(style$lty)) {
       style$lty <- style$linestyle
     }
+    .plot_check_node_style(style, node_name)
+
+    # label_style$by_node overrides the label text style per node, like
+    # node_style$by_node does for the node itself.
+    node_label_style <- label_style
+    if (!is.null(label_style$by_node[[node_name]])) {
+      node_label_style <- utils::modifyList(
+        label_style,
+        label_style$by_node[[node_name]]
+      )
+    }
 
     shape <- style$shape %||% "circle"
     if (!shape %in% .NODE_SHAPES) {
@@ -224,7 +311,7 @@
     unscaled_extents <- if (!is.null(style$radius)) {
       c(style$radius, style$radius)
     } else {
-      .plot_shape_half_extents(shape, labels[i], label_style, padding_mm)
+      .plot_shape_half_extents(shape, labels[i], node_label_style, padding_mm)
     }
     half_extents <- unscaled_extents * style$size
 
@@ -261,7 +348,7 @@
       .plot_ellipse_grob(x, y, hw, hh, node_gpar, paste0("node.", i))
     }
 
-    label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
+    label_gpar <- do.call(grid::gpar, .plot_gpar_params(node_label_style))
     label_grobs[[i]] <- grid::textGrob(
       labels[i],
       x = x,
@@ -306,7 +393,11 @@
   name,
   obstacle_x = numeric(0),
   obstacle_y = numeric(0),
-  obstacle_r = numeric(0)
+  obstacle_r = numeric(0),
+  gap = 0,
+  path = NULL,
+  label = NULL,
+  label_style = list()
 ) {
   grid::gTree(
     x0 = x0,
@@ -326,6 +417,10 @@
     obstacle_x = obstacle_x,
     obstacle_y = obstacle_y,
     obstacle_r = obstacle_r,
+    gap = gap,
+    path = path,
+    label = label,
+    label_style = label_style,
     cl = "cs_edge_grob"
   )
 }
@@ -423,10 +518,12 @@ makeContent.cs_edge_grob <- function(x) {
       "mm",
       valueOnly = TRUE
     )
-    hw_from <- x$geom_from$hw + half_edge_lwd_mm
-    hh_from <- x$geom_from$hh + half_edge_lwd_mm
-    hw_to <- x$geom_to$hw + half_edge_lwd_mm
-    hh_to <- x$geom_to$hh + half_edge_lwd_mm
+    # The user's `gap` (mm) is added on top, at both ends.
+    gap_mm <- x$gap %||% 0
+    hw_from <- x$geom_from$hw + half_edge_lwd_mm + gap_mm
+    hh_from <- x$geom_from$hh + half_edge_lwd_mm + gap_mm
+    hw_to <- x$geom_to$hw + half_edge_lwd_mm + gap_mm
+    hh_to <- x$geom_to$hh + half_edge_lwd_mm + gap_mm
 
     r_from_mm <- .shape_boundary_distance(
       x$geom_from$shape,
@@ -474,8 +571,32 @@ makeContent.cs_edge_grob <- function(x) {
     c1x <- grid::convertX(x1_unit, "mm", valueOnly = TRUE)
     c1y <- grid::convertY(y1_unit, "mm", valueOnly = TRUE)
 
+    # Explicit waypoints (in layout coordinates) take precedence over every
+    # automatic route: a polyline from node center to node center through
+    # them, clipped to the two node boundaries.
+    if (!is.null(x$path)) {
+      waypoints_mm <- if (nrow(x$path) > 0) {
+        list(
+          x = grid::convertX(grid::unit(x$path[, 1], "native"), "mm", TRUE),
+          y = grid::convertY(grid::unit(x$path[, 2], "native"), "mm", TRUE)
+        )
+      } else {
+        list(x = numeric(0), y = numeric(0))
+      }
+      path <- .plot_clip_polyline(
+        c(c0x, waypoints_mm$x, c1x),
+        c(c0y, waypoints_mm$y, c1y),
+        x$geom_from$shape,
+        hw_from,
+        hh_from,
+        x$geom_to$shape,
+        hw_to,
+        hh_to
+      )
+    }
+
     curvature <- x$curvature
-    if (!is.null(curvature)) {
+    if (is.null(path) && !is.null(curvature)) {
       path <- bow_edge_path(
         c0x,
         c0y,
@@ -712,7 +833,79 @@ makeContent.cs_edge_grob <- function(x) {
     }
   }
 
+  if (length_mm > 0 && !is.null(x$label)) {
+    label_path <- if (is.null(path)) {
+      list(
+        x = grid::convertX(grid::unit.c(x0_adj, x1_adj), "mm", TRUE),
+        y = grid::convertY(grid::unit.c(y0_adj, y1_adj), "mm", TRUE)
+      )
+    } else {
+      path
+    }
+    grob_list <- grid::gList(
+      grob_list,
+      .plot_edge_label_grob(label_path, x$label, x$label_style)
+    )
+  }
+
   grid::setChildren(x, grob_list)
+}
+
+# Point (mm) at arc-length fraction `f` along a polyline.
+.plot_polyline_point <- function(px, py, f) {
+  seg <- sqrt(diff(px)^2 + diff(py)^2)
+  cum <- c(0, cumsum(seg))
+  s <- f * cum[length(cum)]
+  i <- min(max(which(cum <= s)), length(px) - 1L)
+  frac <- if (seg[i] > 0) (s - cum[i]) / seg[i] else 0
+  c(px[i] + frac * (px[i + 1] - px[i]), py[i] + frac * (py[i + 1] - py[i]))
+}
+
+# An edge's text label, mirroring CausalStructures.jl's Makie `plot()`: placed
+# at fraction `label_shift` along the drawn path and offset perpendicular to
+# its local tangent (to the left of the edge's direction) by
+# `label_distance` mm, which defaults to the label's own font size. The text
+# follows the edge's angle, turned to read upright, unless `label_rotation`
+# (degrees) fixes it.
+.plot_edge_label_grob <- function(path, label, style) {
+  shift <- style$shift %||% 0.5
+  mid <- .plot_polyline_point(path$x, path$y, shift)
+  ahead <- .plot_polyline_point(path$x, path$y, min(shift + 0.02, 1))
+  behind <- .plot_polyline_point(path$x, path$y, max(shift - 0.02, 0))
+  tangent <- ahead - behind
+  tangent <- tangent / max(sqrt(sum(tangent^2)), 1e-9)
+  perp <- c(-tangent[2], tangent[1])
+
+  fontsize <- style$fontsize %||% 9
+  distance_mm <- style$distance %||% (fontsize / 72.27 * 25.4)
+  pos <- mid + distance_mm * perp
+
+  rotation <- style$rotation
+  if (is.null(rotation)) {
+    rotation <- atan2(tangent[2], tangent[1]) * 180 / pi
+    if (rotation > 90) {
+      rotation <- rotation - 180
+    } else if (rotation < -90) {
+      rotation <- rotation + 180
+    }
+  }
+
+  gp <- Filter(
+    Negate(is.null),
+    list(
+      col = style$col,
+      fontsize = fontsize,
+      fontface = style$fontface,
+      fontfamily = style$fontfamily
+    )
+  )
+  grid::textGrob(
+    as.character(label),
+    x = grid::unit(pos[1], "mm"),
+    y = grid::unit(pos[2], "mm"),
+    rot = rotation,
+    gp = do.call(grid::gpar, gp)
+  )
 }
 
 #' @importFrom grid makeContent
@@ -795,10 +988,18 @@ makeContent.cs_graph_grob <- function(x) {
   # override > edge-type style > global style.
   override <- list()
 
+  # A pair entry names an unordered pair, so a `path` given under the reversed
+  # pair runs from `to` to `from` and is flipped to this edge's direction.
   if (!is.null(by_edge[[from_name]][[to_name]])) {
-    override <- utils::modifyList(override, by_edge[[from_name]][[to_name]])
+    override <- utils::modifyList(
+      override,
+      .plot_path_override(by_edge[[from_name]][[to_name]], reverse = FALSE)
+    )
   } else if (!is.null(by_edge[[to_name]][[from_name]])) {
-    override <- utils::modifyList(override, by_edge[[to_name]][[from_name]])
+    override <- utils::modifyList(
+      override,
+      .plot_path_override(by_edge[[to_name]][[from_name]], reverse = TRUE)
+    )
   }
 
   for (node_name in c(from_name, to_name)) {
@@ -814,10 +1015,15 @@ makeContent.cs_graph_grob <- function(x) {
   type_str <- unname(.edge_mark_types[
     paste(edges$src_mark[i], edges$dst_mark[i], sep = ".")
   ])
-  type_override <- by_edge[[from_name]][[to_name]][[".by_type"]][[
-    type_str
-  ]] %||%
-    by_edge[[to_name]][[from_name]][[".by_type"]][[type_str]]
+  type_override <- by_edge[[from_name]][[to_name]][[".by_type"]][[type_str]]
+  if (!is.null(type_override)) {
+    type_override <- .plot_path_override(type_override, reverse = FALSE)
+  } else {
+    type_override <- by_edge[[to_name]][[from_name]][[".by_type"]][[type_str]]
+    if (!is.null(type_override)) {
+      type_override <- .plot_path_override(type_override, reverse = TRUE)
+    }
+  }
   if (!is.null(type_override)) {
     override <- utils::modifyList(override, type_override)
   }
@@ -835,6 +1041,45 @@ makeContent.cs_graph_grob <- function(x) {
   }
 
   style
+}
+
+# Waypoints of an edge `path` as a k-by-2 numeric matrix, from a two-column
+# matrix, a data.frame with `x` and `y` columns, a list of `c(x, y)` points,
+# or a single `c(x, y)` point.
+.plot_waypoints <- function(path) {
+  if (is.null(path)) {
+    return(NULL)
+  }
+  if (is.data.frame(path)) {
+    path <- cbind(path$x, path$y)
+  } else if (is.list(path)) {
+    path <- do.call(rbind, lapply(path, as.numeric))
+  } else if (is.numeric(path) && is.null(dim(path))) {
+    path <- matrix(path, ncol = 2, byrow = TRUE)
+  }
+  if (!is.matrix(path) || !is.numeric(path) || ncol(path) != 2 || anyNA(path)) {
+    stop(
+      "An edge `path` must be a two-column matrix, a data.frame with `x` ",
+      "and `y` columns, or a list of c(x, y) points.",
+      call. = FALSE
+    )
+  }
+  unname(path)
+}
+
+# A by_edge override with its `path` (if any) normalized by
+# .plot_waypoints(), reversed when it was given for the reversed pair.
+.plot_path_override <- function(override, reverse) {
+  if (is.null(override$path)) {
+    return(override)
+  }
+  path <- .plot_waypoints(override$path)
+  override$path <- if (reverse) {
+    path[rev(seq_len(nrow(path))), , drop = FALSE]
+  } else {
+    path
+  }
+  override
 }
 
 # Assigns each edge a signed fan-out slot: 0 when it is the only edge on its
@@ -950,7 +1195,13 @@ makeContent.cs_graph_grob <- function(x) {
   list(x_range = x_range, y_range = y_range)
 }
 
-.plot_make_edges <- function(edges, coords, node_geom, edge_style) {
+.plot_make_edges <- function(
+  edges,
+  coords,
+  node_geom,
+  edge_style,
+  auto_paths = NULL
+) {
   n_edges <- nrow(edges)
   edge_grobs <- grid::gList()
   fan_slots <- .plot_edge_fan_slots(edges$from, edges$to)
@@ -966,6 +1217,15 @@ makeContent.cs_graph_grob <- function(x) {
     obstacle_idx <- setdiff(seq_len(nrow(coords)), c(from_idx, to_idx))
 
     style <- .plot_edge_style(edges, i, edge_style)
+    .plot_check_edge_style(
+      style,
+      sprintf(
+        "edge %s %s %s",
+        from_name,
+        .plot_edge_notation(edges, i),
+        to_name
+      )
+    )
 
     edge_gpar <- do.call(grid::gpar, .plot_gpar_params(style))
     arrow <- .plot_edge_arrow(
@@ -995,11 +1255,54 @@ makeContent.cs_graph_grob <- function(x) {
         node_geom[obstacle_idx],
         function(g) g$circumradius,
         numeric(1)
+      ),
+      gap = style$gap %||% 0,
+      path = .plot_waypoints(style$path) %||% auto_paths[[i]],
+      label = style$label,
+      label_style = list(
+        col = style$label_col,
+        fontsize = style$label_fontsize,
+        fontface = style$label_fontface,
+        fontfamily = style$label_fontfamily,
+        shift = style$label_shift,
+        distance = style$label_distance,
+        rotation = style$label_rotation
       )
     )
   }
 
   edge_grobs
+}
+
+# An edge's notation, e.g. "-->", for messages.
+.plot_edge_notation <- function(edges, i) {
+  unname(.edge_mark_types[
+    paste(edges$src_mark[i], edges$dst_mark[i], sep = ".")
+  ])
+}
+
+# Node positions and edge routes from Sugiyama.jl's layered layout. Each
+# route is a k-by-2 matrix of layout coordinates from the edge's source to
+# its destination, through Sugiyama's bend points. Node pairs with more than
+# one edge (e.g. an ADMG's X --> Y and X <-> Y) get no route, so they fan out
+# apart as usual instead of sharing one.
+.plot_sugiyama <- function(x, direction) {
+  res <- .Call(C_sugiyama_paths, x, direction)
+  edges <- .plot_edges(x)
+  lo <- pmin(edges$from, edges$to)
+  hi <- pmax(edges$from, edges$to)
+  key <- paste(lo, hi, sep = "\r")
+  routes <- lapply(res[[2L]], function(m) m[-c(1L, nrow(m)), , drop = FALSE])
+  routes[key %in% key[duplicated(key)]] <- list(NULL)
+  list(
+    coords = data.frame(
+      name = nodes(x),
+      x = res[[1L]][, 1L],
+      y = res[[1L]][, 2L],
+      stringsAsFactors = FALSE
+    ),
+    paths = routes
+  )
 }
 
 # Resolves a `tiers` argument to a 1-indexed tier number per node (NA for
@@ -1221,7 +1524,11 @@ makeContent.cs_graph_grob <- function(x) {
 #'   * `NULL` (default): [cgraph_layout()]'s own default - `"sugiyama"` for a
 #'     `DAG`, `"stress"` otherwise.
 #'   * A character string passed to [cgraph_layout()] as `method`
-#'     (`"sugiyama"`, `"stress"`, `"shell"`, `"squaregrid"`).
+#'     (`"sugiyama"`, `"stress"`, `"shell"`, `"squaregrid"`). With
+#'     `"sugiyama"` (also the `NULL` default for a `DAG`), each edge is also
+#'     drawn along Sugiyama.jl's own route through its bend points, as in
+#'     CausalStructures.jl; pass `cgraph_layout(x, "sugiyama")` instead to
+#'     use the Sugiyama positions with this function's own edge routing.
 #'   * A layout function, called with `x` and any `...`.
 #'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
 #'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
@@ -1263,6 +1570,21 @@ makeContent.cs_graph_grob <- function(x) {
 #'   in `by_edge` > node-wide settings in `by_edge` > edge-type settings >
 #'   global settings.
 #'
+#'   Also: `lty` (line style), `gap` (mm, default 0; extra space between each
+#'   end of the edge and the node border), `path` (explicit waypoints, in
+#'   layout coordinates, that the edge is drawn through as straight segments
+#'   from its source to its destination, overriding every automatic route: a
+#'   two-column matrix, a `data.frame` with `x`/`y` columns, or a list of
+#'   `c(x, y)` points; set it per edge in `by_edge`, where a path given under
+#'   the reversed pair runs from `to` to `from`), and an edge label: `label`
+#'   (text, unset by default), `label_col`, `label_fontsize` (default 9),
+#'   `label_fontface`, `label_fontfamily`, `label_shift` (position along the
+#'   edge, from 0 at the source to 1 at the destination; default 0.5),
+#'   `label_distance` (mm from the edge, to its left; defaults to the label's
+#'   font size) and `label_rotation` (degrees; by default the label follows
+#'   the edge's angle, turned to read upright). Like every other field, these
+#'   can be set globally, per edge type, or per edge in `by_edge`.
+#'
 #'   `by_edge`'s pair-level entries (`by_edge[[from]][[to]]`) apply to every
 #'   edge between that pair, which can't tell apart e.g. an ADMG's parallel
 #'   `X --> Y` and `X <-> Y`. To style one exact edge type between a pair,
@@ -1271,8 +1593,9 @@ makeContent.cs_graph_grob <- function(x) {
 #'   `by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col =
 #'   "red"), "<->" = list(col = "blue")))))`. This tier takes precedence
 #'   over the plain pair-level entry.
-#' @param label_style List of label styling parameters: `col`, `fontsize`,
-#'   `fontface`, `fontfamily`, `cex`.
+#' @param label_style List of node label styling parameters: `col`,
+#'   `fontsize`, `fontface`, `fontfamily`, `cex`, and `by_node` (named list of
+#'   per-node overrides, as in `node_style`).
 #' @param labels Optional named character vector or list overriding the text
 #'   drawn in each node (e.g. `c(X = "Exposure", Y = "Outcome")`), while
 #'   `edge_style`/`by_node`/`by_edge` etc. keep using the graph's actual
@@ -1371,6 +1694,7 @@ plot.cgraph <- function(
   )
 
   dots <- list(...)
+  auto_paths <- NULL
 
   if (
     !is.null(dots$tiers) &&
@@ -1385,7 +1709,22 @@ plot.cgraph <- function(
       .plot_tier_index(dots$tiers, graph_node_names)
     )
   } else if (is.null(layout) || is.character(layout)) {
-    coords <- cgraph_layout(x, method = layout, ...)
+    method <- layout %||%
+      if (.Call(C_is_dag_type, x)) "sugiyama" else "stress"
+    method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
+    if (method == "sugiyama") {
+      # Unlike cgraph_layout(), which only returns positions, this also routes
+      # each edge through Sugiyama's own bend points.
+      direction <- match.arg(
+        dots$direction %||% "right",
+        c("right", "down", "up", "left")
+      )
+      sugiyama <- .plot_sugiyama(x, direction)
+      coords <- sugiyama$coords
+      auto_paths <- sugiyama$paths
+    } else {
+      coords <- cgraph_layout(x, method = method, ...)
+    }
   } else if (is.function(layout)) {
     coords <- layout(x, ...)
   } else if (is.data.frame(layout)) {
@@ -1478,8 +1817,20 @@ plot.cgraph <- function(
   }
   edges <- .plot_edges(x)
 
-  x_range <- range(coords$x)
-  y_range <- range(coords$y)
+  # Explicit and Sugiyama-routed edge paths can leave the nodes' bounding box,
+  # so their waypoints count towards the plotted range too.
+  path_x <- coords$x
+  path_y <- coords$y
+  for (i in seq_len(nrow(edges))) {
+    path <- .plot_waypoints(
+      .plot_edge_style(edges, i, styles$edge_style)$path
+    ) %||%
+      auto_paths[[i]]
+    path_x <- c(path_x, path[, 1])
+    path_y <- c(path_y, path[, 2])
+  }
+  x_range <- range(path_x)
+  y_range <- range(path_y)
   if (x_range[1] == x_range[2]) {
     x_range <- x_range + c(-1, 1)
   }
@@ -1497,7 +1848,8 @@ plot.cgraph <- function(
     edges,
     coords,
     nodes_res$node_geom,
-    styles$edge_style
+    styles$edge_style,
+    auto_paths
   )
 
   tier_box_grobs <- NULL

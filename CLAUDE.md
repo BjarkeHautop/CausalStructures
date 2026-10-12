@@ -225,11 +225,14 @@ data from a graph.
   [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) directly on the
   adjacency matrix (every edge as `src -> dst`, so any class works) rather than
   through CausalStructures.jl's `layout()`, whose `Val(method)` dispatch and
-  forwarded `kwargs...` `--trim` rejects. `"stress"`, `"shell"` and
-  `"squaregrid"` are plain R: NetworkLayout.jl does not compile under `--trim`,
-  and causal graphs are small enough that dense-matrix R code is fast. Stress
-  starts from classical MDS (`stats::cmdscale()`), so it needs no RNG and is
-  deterministic.
+  forwarded `kwargs...` `--trim` rejects. `plot()` uses the `sugiyama_paths`
+  entrypoint instead (Sugiyama.jl's `sugiyama_paths`), which also returns each
+  edge's route through its bend points, drawn as an explicit edge `path` as in
+  CausalStructures.jl; node pairs with parallel edges get no route, so they
+  still fan out. `"stress"`, `"shell"` and `"squaregrid"` are plain R:
+  NetworkLayout.jl does not compile under `--trim`, and causal graphs are small
+  enough that dense-matrix R code is fast. Stress starts from classical MDS
+  (`stats::cmdscale()`), so it needs no RNG and is deterministic.
 - The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather

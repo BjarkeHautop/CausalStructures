@@ -29,7 +29,11 @@
 \item \code{NULL} (default): \code{\link[=cgraph_layout]{cgraph_layout()}}'s own default - \code{"sugiyama"} for a
 \code{DAG}, \code{"stress"} otherwise.
 \item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
-(\code{"sugiyama"}, \code{"stress"}, \code{"shell"}, \code{"squaregrid"}).
+(\code{"sugiyama"}, \code{"stress"}, \code{"shell"}, \code{"squaregrid"}). With
+\code{"sugiyama"} (also the \code{NULL} default for a \code{DAG}), each edge is also
+drawn along Sugiyama.jl's own route through its bend points, as in
+CausalStructures.jl; pass \code{cgraph_layout(x, "sugiyama")} instead to
+use the Sugiyama positions with this function's own edge routing.
 \item A layout function, called with \code{x} and any \code{...}.
 \item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
 \item A named list keyed by node name, each element a length-2 \code{c(x, y)},
@@ -74,6 +78,21 @@ name(s)). Style precedence (highest to lowest): specific edge settings
 in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type settings >
 global settings.
 
+Also: \code{lty} (line style), \code{gap} (mm, default 0; extra space between each
+end of the edge and the node border), \code{path} (explicit waypoints, in
+layout coordinates, that the edge is drawn through as straight segments
+from its source to its destination, overriding every automatic route: a
+two-column matrix, a \code{data.frame} with \code{x}/\code{y} columns, or a list of
+\code{c(x, y)} points; set it per edge in \code{by_edge}, where a path given under
+the reversed pair runs from \code{to} to \code{from}), and an edge label: \code{label}
+(text, unset by default), \code{label_col}, \code{label_fontsize} (default 9),
+\code{label_fontface}, \code{label_fontfamily}, \code{label_shift} (position along the
+edge, from 0 at the source to 1 at the destination; default 0.5),
+\code{label_distance} (mm from the edge, to its left; defaults to the label's
+font size) and \code{label_rotation} (degrees; by default the label follows
+the edge's angle, turned to read upright). Like every other field, these
+can be set globally, per edge type, or per edge in \code{by_edge}.
+
 \code{by_edge}'s pair-level entries (\code{by_edge[[from]][[to]]}) apply to every
 edge between that pair, which can't tell apart e.g. an ADMG's parallel
 \verb{X --> Y} and \verb{X <-> Y}. To style one exact edge type between a pair,
@@ -82,8 +101,9 @@ the edge's notation (\code{"-->"}, \code{"<->"}, \code{"o-o"}, ...; see \code{\l
 \code{by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col = "red"), "<->" = list(col = "blue")))))}. This tier takes precedence
 over the plain pair-level entry.}
 
-\item{label_style}{List of label styling parameters: \code{col}, \code{fontsize},
-\code{fontface}, \code{fontfamily}, \code{cex}.}
+\item{label_style}{List of node label styling parameters: \code{col},
+\code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}, and \code{by_node} (named list of
+per-node overrides, as in \code{node_style}).}
 
 \item{labels}{Optional named character vector or list overriding the text
 drawn in each node (e.g. \code{c(X = "Exposure", Y = "Outcome")}), while

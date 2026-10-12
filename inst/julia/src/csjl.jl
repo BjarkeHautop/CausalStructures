@@ -644,6 +644,29 @@ end
 # one row per node in `nodes()` order. Every edge counts as pointing from `src`
 # to `dst`; Sugiyama breaks any cycles itself, so this works for every class.
 function sugiyama_layout(h::Int64, direction::Symbol)
+    ns, es, idx, A = _sugiyama_adjacency(h)
+    return _points_matrix(Sugiyama.sugiyama(A; direction = direction))
+end
+
+# Like sugiyama_layout, plus each edge's route through Sugiyama's dummy nodes:
+# a list of the n-by-2 position matrix and, per edge in `g.edges` order (the
+# order of edge_marks), a k-by-2 matrix of its polyline from the source's
+# position through any bend points to the destination's.
+function sugiyama_paths(h::Int64, direction::Symbol)
+    ns, es, idx, A = _sugiyama_adjacency(h)
+    pts, paths = Sugiyama.sugiyama_paths(A; direction = direction)
+    out = _protect(_alloc(VECSXP, 2))
+    _set_vector_elt(out, 0, _points_matrix(pts))
+    routes = _alloc(VECSXP, length(es))
+    _set_vector_elt(out, 1, routes)
+    for (k, e) in enumerate(es)
+        _set_vector_elt(routes, k - 1, _points_matrix(paths[(idx[e.src], idx[e.dst])]))
+    end
+    _unprotect(1)
+    return out
+end
+
+function _sugiyama_adjacency(h::Int64)
     g = _graph(h)
     ns = @on "sugiyama_layout" g ALL CS.nodes(g)
     es = @on "sugiyama_layout" g ALL g.edges
@@ -653,14 +676,18 @@ function sugiyama_layout(h::Int64, direction::Symbol)
     for e in es
         A[idx[e.src], idx[e.dst]] = 1
     end
-    pts = Sugiyama.sugiyama(A; direction = direction)
-    out = _protect(_alloc_matrix(REALSXP, n, 2))
+    return ns, es, idx, A
+end
+
+# Points as an n-by-2 numeric matrix of x and y coordinates.
+function _points_matrix(pts)
+    n = length(pts)
+    out = _alloc_matrix(REALSXP, n, 2)
     p = _real_ptr(out)
     for (i, pt) in enumerate(pts)
         unsafe_store!(p, Float64(pt[1]), i)
         unsafe_store!(p, Float64(pt[2]), n + i)
     end
-    _unprotect(1)
     return out
 end
 
@@ -777,5 +804,6 @@ end
 )::SEXP
 
 @rcall sugiyama_layout(h::GraphHandle, direction::Symbol)::SEXP
+@rcall sugiyama_paths(h::GraphHandle, direction::Symbol)::SEXP
 
 end # module

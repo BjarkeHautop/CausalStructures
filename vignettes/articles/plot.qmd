@@ -171,6 +171,19 @@ plot(dag, layout = positions)
 ```
 :::
 
+::: {.callout-tip title="Sugiyama positions without Sugiyama routing"}
+Sugiyama.jl implements its own routing using dummy nodes. If you prefer the
+automatic Bezier-curve routing used by `plot()`, you can compute the Sugiyama
+positions with `cgraph_layout()` and pass those instead:
+
+```{r}
+#| label: sugiyama-positions
+
+dag_layered <- cgraph("A --> X, A --> B, X --> Y, B --> Y, A --> Y")
+plot(dag_layered, layout = cgraph_layout(dag_layered, "sugiyama"))
+```
+:::
+
 ## Styling nodes
 
 `node_style$by_node` is a named list of per-node overrides, keyed by node name.
@@ -281,7 +294,9 @@ this order:
   | `fill`        | `NULL` (the edge's `col`) | arrowhead fill color                       |
   | `lwd`         | `1`                       | line width                                 |
   | `lty`         | solid                     | line style                                 |
+  | `gap`         | `0`                       | gap (mm) at edge ends                      |
   | `curvature`   | `NULL`                    | how far the edge bows                      |
+  | `path`        | `NULL`                    | explicit waypoints for an edge's route     |
   | `arrow_size`  | `3`                       | length (mm) of arrowhead triangles         |
   | `circle_size` | `1.5`                     | radius (mm) of open-circle (`o`) endpoints |
 
@@ -318,6 +333,15 @@ edges:
 #| label: edge-lty
 
 plot(admg, edge_style = list(bidirected = list(lty = "dashed")))
+```
+
+If you prefer some space between each end of an edge and the node border, you
+can set `gap`:
+
+```{r}
+#| label: edge-gap
+
+plot(dag, edge_style = list(gap = 1))
 ```
 
 ### Targeting specific edges
@@ -396,11 +420,31 @@ plot(
 )
 ```
 
+### Explicit edge paths
+
+Edges are normally drawn as straight lines unless automatic routing is needed.
+If you want to control the path yourself, you can set `path` and provide
+intermediate points for the edge, in the coordinates of the layout. For example,
+the edge `K --> Y` below is drawn through the point `(0.5, -0.25)`:
+
+```{r}
+#| label: edge-path
+
+positions <- cgraph_layout(dag, method = "stress")
+
+plot(
+  dag,
+  layout = positions,
+  edge_style = list(by_edge = list(K = list(Y = list(path = c(0.5, -0.25)))))
+)
+```
+
 ## Labels and titles
 
 ### Labels
 
-`label_style` styles the label text of every node.
+`label_style$by_node` overrides the node label fields per node, like [node
+styling](#styling-nodes).
 
   | Argument / field         | Default   | Controls                |
   | ------------------------ | --------- | ----------------------- |
@@ -427,12 +471,82 @@ plot(
 )
 ```
 
-You can use `label_style` to style the label text:
+You can use `col` and `fontsize` to style the label text:
 
 ```{r}
 #| label: label-style
 
-plot(dag, label_style = list(col = "#DC143C", fontsize = 14))
+plot(
+  dag,
+  label_style = list(fontsize = 13, by_node = list(A = list(col = "#DC143C")))
+)
+```
+
+### Edge labels
+
+Edge label fields are part of `edge_style`, so they use the same levels as [edge
+styling](#styling-edges).
+
+  | Field              | Default   | Controls                                                                  |
+  | ------------------ | --------- | ------------------------------------------------------------------------- |
+  | `label`            | `NULL`    | text drawn along the edge                                                 |
+  | `label_col`        | `"black"` | edge label text color                                                     |
+  | `label_fontsize`   | `9`       | edge label font size                                                      |
+  | `label_fontface`   | `"plain"` | edge label font face                                                      |
+  | `label_fontfamily` | `""`      | edge label font family                                                    |
+  | `label_shift`      | `0.5`     | position along the edge, 0 (source) to 1 (destination)                    |
+  | `label_distance`   | `NULL`    | perpendicular gap (mm) from the edge; `NULL` scales with `label_fontsize` |
+  | `label_rotation`   | `NULL`    | text angle in degrees; `NULL` follows the edge's own angle                |
+
+Let's add a label to the edge `K --> Y`:
+
+```{r}
+#| label: edge-label
+
+plot(
+  dag,
+  edge_style = list(by_edge = list(K = list(Y = list(label = "hello"))))
+)
+```
+
+By default, the label follows the edge's angle. You can use `label_shift` and
+`label_distance` to move it along or away from the edge:
+
+```{r}
+#| label: edge-label-shift
+
+plot(
+  dag,
+  edge_style = list(
+    label_shift = 0.75,
+    label_distance = 4,
+    by_edge = list(K = list(Y = list(label = "hi")))
+  )
+)
+```
+
+If an edge is steep or curved, following its angle can make the label hard to
+read. You can use `label_rotation` to give it a fixed angle instead:
+
+```{r}
+#| label: edge-label-rotation
+
+plot(
+  dag,
+  edge_style = list(
+    by_edge = list(
+      A = list(
+        X = list(
+          label = "steep",
+          label_rotation = 0,
+          label_distance = 6,
+          label_col = "#DC143C"
+        )
+      ),
+      K = list(Y = list(label = "follows"))
+    )
+  )
+)
 ```
 
 ### Titles
@@ -562,7 +676,12 @@ plot(
   edge_style = list(
     col = "darkslategray",
     partially_directed = list(col = "royalblue", lty = "dashed"),
-    by_edge = list(K = list(Y = list(curvature = 0.3)))
+    by_edge = list(
+      K = list(Y = list(curvature = 0.3), X = list(label = "cool"))
+    )
+  ),
+  label_style = list(
+    by_node = list(X = list(col = "navy"), Y = list(col = "saddlebrown"))
   ),
   main = "A cool PAG",
   title_style = list(fontsize = 18, col = "navy")

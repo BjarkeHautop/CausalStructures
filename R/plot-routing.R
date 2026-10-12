@@ -306,3 +306,60 @@ route_edge_path <- function(
     n
   )
 }
+
+# Clips a polyline (mm) that starts at the source node's center and ends at
+# the destination node's center to the two node boundaries, mirroring
+# CausalStructures.jl's `_clip_edge_path`: the first segment that leaves the
+# source is cut where it crosses the source's boundary, and the last segment
+# that enters the destination where it crosses the destination's. Returns
+# NULL when the nodes cover the whole polyline.
+.plot_clip_polyline <- function(px, py, shape0, hw0, hh0, shape1, hw1, hh1) {
+  n <- length(px)
+  if (n < 2) {
+    return(NULL)
+  }
+  frac0 <- function(x, y) .radial_fraction(x, y, px[1], py[1], shape0, hw0, hh0)
+  frac1 <- function(x, y) .radial_fraction(x, y, px[n], py[n], shape1, hw1, hh1)
+  along <- function(i, j, u) {
+    c(px[i] + u * (px[j] - px[i]), py[i] + u * (py[j] - py[i]))
+  }
+
+  start_i <- 0L
+  for (i in seq_len(n - 1L)) {
+    if (frac0(px[i + 1L], py[i + 1L]) < 1) {
+      next
+    }
+    u <- if (frac0(px[i], py[i]) >= 1) {
+      0
+    } else {
+      .bisect_u(function(u) do.call(frac0, as.list(along(i, i + 1L, u))), TRUE)
+    }
+    start_i <- i
+    start <- along(i, i + 1L, u)
+    break
+  }
+  if (start_i == 0L) {
+    return(NULL)
+  }
+
+  end_i <- 0L
+  for (i in rev(seq_len(n - 1L) + 1L)) {
+    if (frac1(px[i - 1L], py[i - 1L]) < 1) {
+      next
+    }
+    u <- if (frac1(px[i], py[i]) >= 1) {
+      1
+    } else {
+      .bisect_u(function(u) do.call(frac1, as.list(along(i - 1L, i, u))), FALSE)
+    }
+    end_i <- i - 1L
+    end <- along(i - 1L, i, u)
+    break
+  }
+  if (end_i == 0L) {
+    return(NULL)
+  }
+
+  keep <- if (end_i > start_i) seq.int(start_i + 1L, end_i) else integer(0)
+  list(x = c(start[1], px[keep], end[1]), y = c(start[2], py[keep], end[2]))
+}

@@ -366,3 +366,192 @@ test_that("shell and squaregrid place nodes in nodes() order", {
   expect_equal(grid$x, c(0, 1, 0, 1))
   expect_equal(grid$y, c(0, 0, -1, -1))
 })
+
+# The text grobs drawn for edge `i` of the plot on the current device; edge
+# content is only built at draw time, so the display list is forced first.
+drawn_edge_texts <- function(i) {
+  grid::grid.force()
+  e <- grid::grid.get(paste0("edge.", i), grep = TRUE, global = TRUE)
+  if (is.list(e) && !inherits(e, "grob")) {
+    e <- e[[1L]]
+  }
+  Filter(function(k) inherits(k, "text"), e$children)
+}
+
+test_that("edge_style label draws a label on the edges it is set for", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  g <- cgraph("A --> B, B --> C")
+  plot(
+    g,
+    edge_style = list(
+      label_col = "navy",
+      by_edge = list(A = list(B = list(label = "hello", label_shift = 0.25)))
+    )
+  )
+  texts <- drawn_edge_texts(1)
+  expect_length(texts, 1)
+  expect_identical(texts[[1]]$label, "hello")
+  expect_identical(texts[[1]]$gp$col, "navy")
+  expect_length(drawn_edge_texts(2), 0)
+
+  # A fixed rotation, in degrees.
+  plot(g, edge_style = list(label = "x", label_rotation = 30))
+  expect_equal(drawn_edge_texts(1)[[1]]$rot, 30)
+})
+
+test_that("edge labels follow the edge's angle and read upright", {
+  path <- list(x = c(10, 0), y = c(10, 0))
+  grob <- .plot_edge_label_grob(path, "lbl", list(fontsize = 9))
+  # The edge points down-left (-135 degrees), so the text is turned to 45.
+  expect_equal(grob$rot, 45)
+})
+
+test_that("edge_style gap and label fields are validated", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  expect_error(
+    plot(test_dag(), edge_style = list(gap = -1)),
+    "`edge_style\\$gap` must be non-negative"
+  )
+  expect_error(
+    plot(test_dag(), edge_style = list(label = "x", label_shift = 2)),
+    "`edge_style\\$label_shift` must be between 0 and 1"
+  )
+  expect_error(
+    plot(test_dag(), edge_style = list(arrow_size = -1)),
+    "`edge_style\\$arrow_size` must be non-negative"
+  )
+  expect_error(
+    plot(test_dag(), node_style = list(radius = 0)),
+    "`node_style\\$radius` must be positive"
+  )
+  expect_error(
+    plot(test_dag(), node_style = list(by_node = list(X = list(padding = -1)))),
+    "`node_style\\$padding` must be non-negative, got -1 for node \"X\""
+  )
+  expect_no_error(plot(test_dag(), edge_style = list(gap = 2)))
+})
+
+test_that("label_style by_node styles single node labels", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  p <- plot(
+    test_dag(),
+    label_style = list(col = "black", by_node = list(A = list(col = "red")))
+  )
+  label_cols <- vapply(
+    Filter(
+      function(g) grepl("^label", g$name),
+      p$grob$children$cs.graph$children$node_gtree$children
+    ),
+    function(g) g$gp$col,
+    character(1)
+  )
+  expect_identical(unname(label_cols[nodes(test_dag()) == "A"]), "red")
+  expect_true(all(label_cols[nodes(test_dag()) != "A"] == "black"))
+})
+
+test_that(".plot_waypoints accepts matrices, data.frames, and point lists", {
+  expected <- matrix(c(0, 1, 2, 3), ncol = 2, byrow = TRUE)
+  expect_identical(.plot_waypoints(expected), expected)
+  expect_identical(.plot_waypoints(list(c(0, 1), c(2, 3))), expected)
+  expect_identical(
+    .plot_waypoints(data.frame(x = c(0, 2), y = c(1, 3))),
+    expected
+  )
+  expect_identical(.plot_waypoints(c(0, 1)), matrix(c(0, 1), ncol = 2))
+  expect_error(.plot_waypoints("a"), "two-column matrix")
+})
+
+test_that("a path set for the reversed node pair is flipped", {
+  skip_if_no_julia()
+  g <- cgraph("A --> B")
+  edges <- .plot_edges(g)
+  path <- list(c(0, 1), c(2, 3))
+  forward <- .plot_make_styles(
+    list(),
+    list(by_edge = list(A = list(B = list(path = path)))),
+    list(),
+    list(),
+    list()
+  )
+  reversed <- .plot_make_styles(
+    list(),
+    list(by_edge = list(B = list(A = list(path = rev(path))))),
+    list(),
+    list(),
+    list()
+  )
+  expect_identical(
+    .plot_edge_style(edges, 1, forward$edge_style)$path,
+    .plot_edge_style(edges, 1, reversed$edge_style)$path
+  )
+})
+
+test_that(".plot_clip_polyline clips a path at both node boundaries", {
+  # From a circle of radius 1 at (0, 0) up through (0, 5) to a circle of
+  # radius 1 at (5, 5).
+  clipped <- .plot_clip_polyline(
+    c(0, 0, 5),
+    c(0, 5, 5),
+    "circle",
+    1,
+    1,
+    "circle",
+    1,
+    1
+  )
+  expect_equal(clipped$x, c(0, 0, 4), tolerance = 1e-6)
+  expect_equal(clipped$y, c(1, 5, 5), tolerance = 1e-6)
+  # Overlapping nodes leave nothing to draw.
+  expect_null(.plot_clip_polyline(
+    c(0, 0.5),
+    c(0, 0),
+    "circle",
+    1,
+    1,
+    "circle",
+    1,
+    1
+  ))
+})
+
+test_that("explicit edge paths draw and widen the plotted range", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  g <- cgraph("A --> B")
+  p <- plot(
+    g,
+    layout = list(A = c(0, 0), B = c(1, 0)),
+    edge_style = list(by_edge = list(A = list(B = list(path = c(0.5, 2)))))
+  )
+  expect_identical(p$grob$children$cs.graph$cs_y_range, c(0, 2))
+})
+
+test_that("sugiyama routes long edges through bend points", {
+  skip_if_no_julia()
+  g <- cgraph("A --> X, X --> Y, A --> Y")
+  routed <- .plot_sugiyama(g, "right")
+  edges <- .plot_edges(g)
+  long <- which(edges$from == "A" & edges$to == "Y")
+  expect_gt(nrow(routed$paths[[long]]), 0)
+  expect_identical(nrow(routed$paths[[which(edges$to == "X")]]), 0L)
+  expect_identical(routed$coords$name, nodes(g))
+
+  # Parallel edges between one pair keep fanning out instead.
+  admg <- cgraph("X --> Y, X <-> Y", class = "ADMG")
+  expect_true(all(vapply(.plot_sugiyama(admg, "right")$paths, is.null, NA)))
+
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  expect_no_error(plot(g, layout = "sugiyama", direction = "down"))
+})
