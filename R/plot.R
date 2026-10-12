@@ -11,7 +11,7 @@
 # draws an arrowhead at that end, a "Circle" mark draws a small open circle,
 # and "Tail" draws nothing (a plain line end).
 #
-# Style defaults (node/edge/label/title/tier) are read from plot_options()
+# Style defaults (node/edge/label/title) are read from plot_options()
 # (plot-options.R) in .plot_make_styles() below, so they can be overridden
 # globally as well as per-call.
 
@@ -77,8 +77,7 @@
   node_style,
   edge_style,
   label_style,
-  title_style,
-  tier_style
+  title_style
 ) {
   # Global defaults come from plot_options() (plot-options.R), so
   # plot_options(node_style = list(fill = "lightblue")) et al. apply to every
@@ -90,7 +89,6 @@
   edge_defaults <- opts$edge_style
   label_defaults <- opts$label_style
   title_defaults <- opts$title_style
-  tier_defaults <- opts$tier_style
 
   by_node <- node_style$by_node %||% list()
   node_style$by_node <- NULL
@@ -119,9 +117,6 @@
     )
   }
 
-  by_tier <- tier_style$by_tier %||% list()
-  tier_style$by_tier <- NULL
-
   list(
     node_style = list(
       global = utils::modifyList(node_defaults, node_style),
@@ -132,11 +127,7 @@
       by_edge = by_edge
     ),
     label_style = utils::modifyList(label_defaults, label_style),
-    title_style = utils::modifyList(title_defaults, title_style),
-    tier_style = list(
-      global = utils::modifyList(tier_defaults, tier_style),
-      by_tier = by_tier
-    )
+    title_style = utils::modifyList(title_defaults, title_style)
   )
 }
 
@@ -1305,215 +1296,10 @@ makeContent.cs_graph_grob <- function(x) {
   )
 }
 
-# Resolves a `tiers` argument to a 1-indexed tier number per node (NA for
-# nodes `tiers` doesn't mention) plus tier names, if the input format
-# supplies them. Accepts:
-#   * A named list of node-name vectors, e.g. list(exposures = c("A", "B"),
-#     outcome = "Y") - tier order is list order, names become tier_names.
-#   * A named numeric vector, e.g. c(A = 1, B = 1, Y = 2) - tiers are ordered
-#     by ascending value, re-indexed to consecutive integers; no tier names.
-#   * A data.frame with `name` and `tier` columns.
-.plot_tier_index <- function(tiers, node_names) {
-  assignments <- rep(NA_integer_, length(node_names))
-  names(assignments) <- node_names
-  tier_names <- NULL
-
-  if (is.data.frame(tiers)) {
-    matched <- as.character(tiers$name) %in% node_names
-    assignments[as.character(tiers$name[matched])] <- as.integer(tiers$tier[
-      matched
-    ])
-  } else if (is.list(tiers)) {
-    for (i in seq_along(tiers)) {
-      tier_nodes <- intersect(as.character(tiers[[i]]), node_names)
-      assignments[tier_nodes] <- i
-    }
-    if (!is.null(names(tiers)) && any(names(tiers) != "")) {
-      tier_names <- names(tiers)
-    }
-  } else if (is.numeric(tiers) && !is.null(names(tiers))) {
-    matched <- intersect(names(tiers), node_names)
-    assignments[matched] <- as.integer(tiers[matched])
-  } else {
-    stop(
-      "`tiers` must be a named list of node vectors, a named numeric ",
-      "vector, or a data.frame with `name`/`tier` columns",
-      call. = FALSE
-    )
-  }
-
-  tier_values <- sort(unique(assignments[!is.na(assignments)]))
-  tier_index <- match(assignments, tier_values)
-  names(tier_index) <- node_names
-
-  list(index = tier_index, n_tiers = length(tier_values), names = tier_names)
-}
-
-# Arranges nodes into left-to-right columns by tier (tier 1 leftmost),
-# spread evenly top-to-bottom within a column, so tier boxes actually
-# enclose a coherent group instead of a decorative outline drawn over
-# wherever an edge-based layout happened to scatter them. Nodes `tiers`
-# doesn't mention are collected into one trailing column of their own so
-# every node still gets a position.
-.plot_tiered_layout <- function(node_names, tier_info) {
-  tier_index <- tier_info$index
-  n_tiers <- tier_info$n_tiers
-
-  unassigned <- is.na(tier_index)
-  if (any(unassigned)) {
-    tier_index[unassigned] <- n_tiers + 1L
-    n_tiers <- n_tiers + 1L
-  }
-
-  x <- numeric(length(node_names))
-  y <- numeric(length(node_names))
-  for (i in seq_len(n_tiers)) {
-    idx <- which(tier_index == i)
-    n_in_tier <- length(idx)
-    x[idx] <- i
-    y[idx] <- rev(seq_len(n_in_tier)) - (n_in_tier + 1) / 2
-  }
-
-  data.frame(name = node_names, x = x, y = y, stringsAsFactors = FALSE)
-}
-
-# Tier box/label geometry (x_min/x_max/y_min/y_max below) is built from
-# grid::grobX/grobY on each tier's circle grobs, which stay lazy/symbolic
-# until actually drawn - by then these grobs are children of graph_grob
-# (vp = graph_vp), so "native" resolves against its xscale/yscale correctly.
-# Don't reuse this pattern to size graph_vp itself (see the vp-sizing calc in
-# plot.cgraph): that would need grobX/Y resolved *before* graph_vp's own
-# native scale exists to define it, which resolves against whatever
-# viewport happens to be active instead and produces garbage offsets.
-.plot_make_tiers <- function(
-  circle_grobs,
-  tier_info,
-  tier_style,
-  default_label_style
-) {
-  tier_index <- tier_info$index
-  n_tiers <- tier_info$n_tiers
-  tier_names <- tier_info$names
-
-  if (n_tiers == 0) {
-    return(list(box_grobs = NULL, label_grobs = NULL))
-  }
-
-  global <- tier_style$global
-  by_tier <- tier_style$by_tier
-  do_boxes <- isTRUE(global$boxes)
-  do_labels <- global$labels
-
-  tier_labels <- NULL
-  if (isTRUE(do_labels)) {
-    if (!is.null(tier_names) && length(tier_names) >= n_tiers) {
-      tier_labels <- tier_names[seq_len(n_tiers)]
-    }
-  } else if (is.character(do_labels)) {
-    tier_labels <- rep_len(do_labels, n_tiers)
-  }
-
-  box_grobs <- grid::gList()
-  label_grobs <- grid::gList()
-  has_box <- FALSE
-  has_label <- FALSE
-  label_gap <- grid::unit(3, "mm")
-
-  for (i in seq_len(n_tiers)) {
-    ind <- which(tier_index == i)
-    if (length(ind) == 0) {
-      next
-    }
-    circle_grobs_i <- circle_grobs[ind]
-
-    style <- global
-    tier_name_i <- if (!is.null(tier_names) && i <= length(tier_names)) {
-      tier_names[i]
-    } else {
-      NULL
-    }
-    override <- by_tier[[as.character(i)]]
-    if (!is.null(tier_name_i) && !is.null(by_tier[[tier_name_i]])) {
-      override <- utils::modifyList(
-        override %||% list(),
-        by_tier[[tier_name_i]]
-      )
-    }
-    if (!is.null(override)) {
-      style <- utils::modifyList(style, override)
-    }
-
-    padding <- grid::unit(style$padding %||% 4, "mm")
-    x_min <- min(grid::grobX(circle_grobs_i, "west")) - padding
-    x_max <- max(grid::grobX(circle_grobs_i, "east")) + padding
-    y_min <- min(grid::grobY(circle_grobs_i, "south")) - padding
-    y_max <- max(grid::grobY(circle_grobs_i, "north")) + padding
-    y_mid <- (y_min + y_max) / 2
-    w <- x_max - x_min
-    h <- y_max - y_min
-
-    if (do_boxes) {
-      has_box <- TRUE
-      box_grobs[[length(box_grobs) + 1]] <- grid::rectGrob(
-        x = x_min,
-        y = y_mid,
-        width = w,
-        height = h,
-        just = c("left", "center"),
-        gp = do.call(grid::gpar, .plot_gpar_params(style)),
-        name = paste0("tier_box_", i)
-      )
-    }
-
-    if (
-      !is.null(tier_labels) &&
-        i <= length(tier_labels) &&
-        !is.na(tier_labels[i]) &&
-        tier_labels[i] != ""
-    ) {
-      label_style <- utils::modifyList(
-        default_label_style,
-        style$label_style %||% list()
-      )
-      label_gpar <- do.call(grid::gpar, .plot_gpar_params(label_style))
-
-      # Wide boxes read as horizontal bands (label above); tall boxes read
-      # as vertical bands (label to the right) - inferred from the box's own
-      # shape rather than a separate orientation argument.
-      wide <- grid::convertWidth(w, "mm", valueOnly = TRUE) >=
-        grid::convertHeight(h, "mm", valueOnly = TRUE)
-      if (wide) {
-        label_x <- (x_min + x_max) / 2
-        label_y <- y_max + label_gap
-        label_just <- c("center", "bottom")
-      } else {
-        label_x <- x_max + label_gap
-        label_y <- y_mid
-        label_just <- c("left", "center")
-      }
-
-      has_label <- TRUE
-      label_grobs[[length(label_grobs) + 1]] <- grid::textGrob(
-        label = tier_labels[i],
-        x = label_x,
-        y = label_y,
-        just = label_just,
-        gp = label_gpar,
-        name = paste0("tier_label_", i)
-      )
-    }
-  }
-
-  list(
-    box_grobs = if (has_box) box_grobs else NULL,
-    label_grobs = if (has_label) label_grobs else NULL
-  )
-}
-
 #' Plot a causal graph
 #'
-#' Plot method for `cgraph`. `node_style`, `edge_style`, `label_style`,
-#' `title_style`, and `tier_style` each default to the corresponding entry
+#' Plot method for `cgraph`. `node_style`, `edge_style`, `label_style`, and
+#' `title_style` each default to the corresponding entry
 #' from [plot_options()] (which itself defaults to
 #' [plot_default_options()]) - set those globally with `plot_options()` to
 #' avoid repeating the same style lists at every call site; arguments passed
@@ -1602,16 +1388,6 @@ makeContent.cs_graph_grob <- function(x) {
 #'   node names. A node missing from `labels` falls back to a `"default"`
 #'   entry if present, else its own name. `NULL` (default) shows every
 #'   node's own name, as before. Embedded `\n` gives a multi-line label.
-#' @param tier_style List of tier box styling parameters, used only when
-#'   `...` includes `tiers` (see below). Fields: `boxes` (logical, default
-#'   `TRUE`; draw a box behind each tier's nodes), `labels` (logical or
-#'   character vector; `TRUE` uses the names from a named-list `tiers`,
-#'   a character vector supplies custom labels one per tier, `FALSE`/default
-#'   shows no labels), `fill`, `col` (box border), `lwd`, `padding` (mm,
-#'   default 4), `label_style` (list with `col`, `fontsize`, `fontface`, ...,
-#'   applied to tier labels), and `by_tier` (named list keyed by tier name or
-#'   1-based index, e.g. `by_tier = list(exposures = list(fill =
-#'   "lightblue"))` or `by_tier = list("1" = list(fill = "lightblue"))`).
 #' @param main Optional plot title.
 #' @param title_style List of title styling parameters (same fields as
 #'   `label_style`).
@@ -1624,15 +1400,6 @@ makeContent.cs_graph_grob <- function(x) {
 #' @param newpage If `TRUE` (default), call [grid::grid.newpage()] before
 #'   drawing.
 #' @param ... Passed to `layout` when it is a character string or function.
-#'   Also where tier boxes are triggered from: pass `tiers` as a named list
-#'   of node-name vectors (list order is tier order, names become tier
-#'   labels), a named numeric vector (one tier number per node), or a
-#'   data.frame with `name`/`tier` columns. Nodes `tiers` doesn't mention get
-#'   no box. Passing `tiers` also arranges the nodes into tiers - left to
-#'   right, in tier order - overriding `layout` when it's a string or
-#'   function (an explicit pre-computed `layout` data.frame is left as-is).
-#'   Box/label display itself still requires `tier_style$boxes` or
-#'   `tier_style$labels` to be truthy (default: `boxes` on, `labels` off).
 #'
 #' @returns A `cgraph_plot` object, invisibly. Drawn immediately as a side
 #'   effect; re-drawn if printed or passed to `plot()` again.
@@ -1678,7 +1445,6 @@ plot.cgraph <- function(
   edge_style = list(),
   label_style = list(),
   labels = NULL,
-  tier_style = list(),
   main = NULL,
   title_style = list(),
   asp = NA,
@@ -1696,19 +1462,7 @@ plot.cgraph <- function(
   dots <- list(...)
   auto_paths <- NULL
 
-  if (
-    !is.null(dots$tiers) &&
-      (is.null(layout) || is.character(layout) || is.function(layout))
-  ) {
-    # tiers implies a tiered arrangement - overrides the layout method
-    # (string, NULL default, or function), but not an explicit pre-computed
-    # data.frame of coordinates, which is left alone below.
-    graph_node_names <- nodes(x)
-    coords <- .plot_tiered_layout(
-      graph_node_names,
-      .plot_tier_index(dots$tiers, graph_node_names)
-    )
-  } else if (is.null(layout) || is.character(layout)) {
+  if (is.null(layout) || is.character(layout)) {
     method <- layout %||%
       if (.Call(C_is_dag_type, x)) "sugiyama" else "stress"
     method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
@@ -1789,8 +1543,7 @@ plot.cgraph <- function(
     node_style,
     edge_style,
     label_style,
-    title_style,
-    tier_style
+    title_style
   )
 
   node_labels <- if (is.null(labels)) {
@@ -1852,50 +1605,16 @@ plot.cgraph <- function(
     auto_paths
   )
 
-  tier_box_grobs <- NULL
-  tier_label_grobs <- NULL
-  tier_global <- styles$tier_style$global
-  if (
-    !is.null(dots$tiers) &&
-      (isTRUE(tier_global$boxes) ||
-        isTRUE(tier_global$labels) ||
-        is.character(tier_global$labels))
-  ) {
-    tier_info <- .plot_tier_index(dots$tiers, coords$name)
-    tiers_res <- .plot_make_tiers(
-      nodes_res$circle_grobs,
-      tier_info,
-      styles$tier_style,
-      styles$label_style
-    )
-    tier_box_grobs <- tiers_res$box_grobs
-    tier_label_grobs <- tiers_res$label_grobs
-  }
-
   # Shrink from [0, 1] x [0, 1] npc by the largest node circle's radius so no
   # node gets clipped at the plot edge. grobWidth()/grobHeight() (size-only)
   # rather than grobX()/grobY() (position) avoid circularity: the latter
   # would need graph_vp's own native scale resolved before it exists.
-  margin_x <- grid::unit(0, "mm")
-  margin_y <- grid::unit(0, "mm")
-  if (!is.null(tier_box_grobs) || !is.null(tier_label_grobs)) {
-    tier_padding <- grid::unit(2 * (tier_global$padding %||% 4), "mm")
-    margin_x <- tier_padding
-    margin_y <- tier_padding
-    if (!is.null(tier_label_grobs)) {
-      margin_x <- margin_x + max(grid::grobWidth(tier_label_grobs))
-      margin_y <- margin_y + max(grid::grobHeight(tier_label_grobs))
-    }
-  }
-
   vp_x <- grid::unit(0.5, "npc")
   vp_y <- grid::unit(0.5, "npc")
   vp_width <- grid::unit(1, "npc") -
-    max(grid::grobWidth(nodes_res$circle_grobs)) -
-    margin_x
+    max(grid::grobWidth(nodes_res$circle_grobs))
   vp_height <- grid::unit(1, "npc") -
-    max(grid::grobHeight(nodes_res$circle_grobs)) -
-    margin_y
+    max(grid::grobHeight(nodes_res$circle_grobs))
 
   if (!is.null(asp) && !is.na(asp) && is.numeric(asp) && asp > 0) {
     data_width <- diff(x_range)
@@ -1956,14 +1675,7 @@ plot.cgraph <- function(
     name = "node_gtree"
   )
 
-  graph_children <- grid::gList()
-  if (!is.null(tier_box_grobs)) {
-    graph_children <- grid::gList(graph_children, tier_box_grobs)
-  }
-  if (!is.null(tier_label_grobs)) {
-    graph_children <- grid::gList(graph_children, tier_label_grobs)
-  }
-  graph_children <- grid::gList(graph_children, edge_grobs, node_gtree)
+  graph_children <- grid::gList(edge_grobs, node_gtree)
 
   graph_grob <- grid::gTree(
     children = graph_children,

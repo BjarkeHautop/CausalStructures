@@ -20,7 +20,7 @@ invisibly. When getting, the requested options.
 }
 \description{
 Configure package-wide defaults for \code{\link[=plot.cgraph]{plot.cgraph()}}'s \code{node_style},
-\code{edge_style}, \code{label_style}, \code{title_style}, and \code{tier_style} arguments, so
+\code{edge_style}, \code{label_style}, and \code{title_style} arguments, so
 every plot picks them up without repeating the same style lists at every
 call site. Arguments passed directly to \code{plot()} still take precedence
 over these global defaults.
@@ -39,15 +39,12 @@ out automatically - see \code{\link[=plot.cgraph]{plot.cgraph()}}), and the edge
 \code{label_shift}, \code{label_distance} (mm), \code{label_rotation} (degrees)
 \item \code{label_style}: \code{col}, \code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}
 \item \code{title_style}: same fields as \code{label_style}
-\item \code{tier_style}: \code{boxes}, \code{labels}, \code{fill}, \code{col}, \code{lwd}, \code{padding} (mm),
-\code{label_style}
 }
 
 See \code{\link[=plot.cgraph]{plot.cgraph()}} for the full description of each field. Per-type
-(\code{edge_style$directed}, ...), per-node/per-edge (\code{by_node}, \code{by_edge},
-\code{label_style$by_node}), and
-per-tier (\code{by_tier}) overrides stay \code{plot()}-call arguments only - they are
-not part of these global defaults.
+(\code{edge_style$directed}, ...) and per-node/per-edge (\code{by_node}, \code{by_edge},
+\code{label_style$by_node}) overrides stay \code{plot()}-call arguments only - they
+are not part of these global defaults.
 }
 \examples{
 # Query all current plot options
@@ -72,8 +69,8 @@ plot_options(
 plot_options(plot_default_options())
 }
 \seealso{
-\code{\link[=plot.cgraph]{plot.cgraph()}} for per-plot style arguments and per-node/edge/
-tier overrides, \code{\link[=plot_default_options]{plot_default_options()}} to inspect or reset to the
+\code{\link[=plot.cgraph]{plot.cgraph()}} for per-plot style arguments and per-node/edge
+overrides, \code{\link[=plot_default_options]{plot_default_options()}} to inspect or reset to the
 built-in defaults.
 
 Other plotting:

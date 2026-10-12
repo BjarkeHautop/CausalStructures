@@ -166,7 +166,7 @@ adjust a few nodes:
 #| label: layout-tweak
 
 positions <- cgraph_layout(dag, method = "stress")
-positions[positions$name == "A", c("x", "y")] <- c(0, 2)
+positions[positions$name == "G", c("x", "y")] <- c(1, 1.5)
 plot(dag, layout = positions)
 ```
 :::
@@ -620,31 +620,6 @@ grid::popViewport()
 grid::pushViewport(grid::viewport(layout.pos.col = 2))
 plot(admg, newpage = FALSE, node_style = list(fill = "salmon"))
 grid::popViewport()
-```
-
-## Tiers
-
-Pass `tiers` (via `...`) to arrange nodes into left-to-right columns instead of
-using `layout`: a named list of node-name vectors (list order is tier order,
-names become tier labels), a named numeric vector (one tier number per node), or
-a `data.frame` with `name`/`tier` columns. `tier_style` controls the boxes drawn
-behind each tier: `boxes` (default `TRUE`), `labels` (logical or character
-vector; `TRUE` uses the tier names), `fill`, `col`, `lwd`, `padding` (mm),
-`label_style`, and `by_tier` (per-tier overrides keyed by tier name or 1-based
-index).
-
-```{r}
-#| label: tiers
-
-plot(
-  dag,
-  tiers = list(
-    exposure = "A",
-    mediators = c("X", "K", "D"),
-    outcome = c("Y", "H")
-  ),
-  tier_style = list(labels = TRUE)
-)
 ```
 
 ## Combining options

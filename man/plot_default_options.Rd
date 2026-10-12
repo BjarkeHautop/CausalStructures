@@ -7,8 +7,8 @@
 plot_default_options()
 }
 \value{
-A list with \code{node_style}, \code{edge_style}, \code{label_style},
-\code{title_style}, and \code{tier_style} components - see \code{\link[=plot.cgraph]{plot.cgraph()}} for
+A list with \code{node_style}, \code{edge_style}, \code{label_style}, and
+\code{title_style} components - see \code{\link[=plot.cgraph]{plot.cgraph()}} for
 their fields.
 }
 \description{

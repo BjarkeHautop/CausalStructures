@@ -179,7 +179,6 @@ test_that("edge_style styles the three partial-mark edge types independently", {
       partial = list(col = "green")
     ),
     list(),
-    list(),
     list()
   )
   expect_equal(styles$edge_style$types$partially_directed$col, "red")
@@ -290,7 +289,7 @@ test_that("by_edge .by_type disambiguates parallel edges of different types", {
   expect_no_error(plot(admg, edge_style = by_type_style))
 
   edges <- .plot_edges(admg)
-  styles <- .plot_make_styles(list(), by_type_style, list(), list(), list())
+  styles <- .plot_make_styles(list(), by_type_style, list(), list())
   s1 <- .plot_edge_style(edges, 1, styles$edge_style)
   s2 <- .plot_edge_style(edges, 2, styles$edge_style)
   expect_false(identical(s1$col, s2$col))
@@ -479,13 +478,11 @@ test_that("a path set for the reversed node pair is flipped", {
     list(),
     list(by_edge = list(A = list(B = list(path = path)))),
     list(),
-    list(),
     list()
   )
   reversed <- .plot_make_styles(
     list(),
     list(by_edge = list(B = list(A = list(path = rev(path))))),
-    list(),
     list(),
     list()
   )

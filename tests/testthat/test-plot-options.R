@@ -63,14 +63,13 @@ test_that("plot.cgraph picks up global plot_options() defaults", {
     edge_style = list(col = "gray40")
   )
 
-  styles <- .plot_make_styles(list(), list(), list(), list(), list())
+  styles <- .plot_make_styles(list(), list(), list(), list())
   expect_equal(styles$node_style$global$fill, "lightblue")
   expect_equal(styles$edge_style$types$directed$col, "gray40")
 
   # An explicit plot() argument still overrides the global default.
   styles_override <- .plot_make_styles(
     list(fill = "gold"),
-    list(),
     list(),
     list(),
     list()

@@ -14,8 +14,8 @@
 #' customization. Useful for resetting after calling [plot_options()], or as
 #' a base to build a custom style set from with [utils::modifyList()].
 #'
-#' @return A list with `node_style`, `edge_style`, `label_style`,
-#'   `title_style`, and `tier_style` components - see [plot.cgraph()] for
+#' @return A list with `node_style`, `edge_style`, `label_style`, and
+#'   `title_style` components - see [plot.cgraph()] for
 #'   their fields.
 #'
 #' @seealso [plot_options()] for getting and setting these globally.
@@ -48,23 +48,14 @@ plot_default_options <- function() {
       label_shift = 0.5
     ),
     label_style = list(col = "black", fontsize = 10),
-    title_style = list(col = "black", fontsize = 14, fontface = "bold"),
-    tier_style = list(
-      boxes = TRUE,
-      labels = FALSE,
-      fill = "lightsteelblue",
-      col = "transparent",
-      lwd = 1,
-      padding = 4,
-      label_style = list()
-    )
+    title_style = list(col = "black", fontsize = 14, fontface = "bold")
   )
 }
 
 #' Get or set global default plot styles
 #'
 #' Configure package-wide defaults for [plot.cgraph()]'s `node_style`,
-#' `edge_style`, `label_style`, `title_style`, and `tier_style` arguments, so
+#' `edge_style`, `label_style`, and `title_style` arguments, so
 #' every plot picks them up without repeating the same style lists at every
 #' call site. Arguments passed directly to `plot()` still take precedence
 #' over these global defaults.
@@ -93,17 +84,14 @@ plot_default_options <- function() {
 #'   `label_shift`, `label_distance` (mm), `label_rotation` (degrees)
 #' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
 #' - `title_style`: same fields as `label_style`
-#' - `tier_style`: `boxes`, `labels`, `fill`, `col`, `lwd`, `padding` (mm),
-#'   `label_style`
 #'
 #' See [plot.cgraph()] for the full description of each field. Per-type
-#' (`edge_style$directed`, ...), per-node/per-edge (`by_node`, `by_edge`,
-#' `label_style$by_node`), and
-#' per-tier (`by_tier`) overrides stay `plot()`-call arguments only - they are
-#' not part of these global defaults.
+#' (`edge_style$directed`, ...) and per-node/per-edge (`by_node`, `by_edge`,
+#' `label_style$by_node`) overrides stay `plot()`-call arguments only - they
+#' are not part of these global defaults.
 #'
-#' @seealso [plot.cgraph()] for per-plot style arguments and per-node/edge/
-#'   tier overrides, [plot_default_options()] to inspect or reset to the
+#' @seealso [plot.cgraph()] for per-plot style arguments and per-node/edge
+#'   overrides, [plot_default_options()] to inspect or reset to the
 #'   built-in defaults.
 #' @family plotting
 #' @export

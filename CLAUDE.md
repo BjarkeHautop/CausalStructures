@@ -240,9 +240,9 @@ data from a graph.
   is bespoke to this package.
 - `plot_options()`/`plot_default_options()` (`R/plot-options.R`) is a dedicated
   get/set/reset accessor for plot styling defaults (`node_style`, `edge_style`,
-  `label_style`, `title_style`, `tier_style`), deliberately kept separate from
-  base `options()` since it's a nested graphics-parameter list rather than a
-  flat behavioral toggle.
+  `label_style`, `title_style`), deliberately kept separate from base
+  `options()` since it's a nested graphics-parameter list rather than a flat
+  behavioral toggle.
 
 ### Warmup (`R/warmup.R`)
 

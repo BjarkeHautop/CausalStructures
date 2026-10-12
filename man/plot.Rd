@@ -11,7 +11,6 @@
   edge_style = list(),
   label_style = list(),
   labels = NULL,
-  tier_style = list(),
   main = NULL,
   title_style = list(),
   asp = NA,
@@ -112,16 +111,6 @@ node names. A node missing from \code{labels} falls back to a \code{"default"}
 entry if present, else its own name. \code{NULL} (default) shows every
 node's own name, as before. Embedded \verb{\\n} gives a multi-line label.}
 
-\item{tier_style}{List of tier box styling parameters, used only when
-\code{...} includes \code{tiers} (see below). Fields: \code{boxes} (logical, default
-\code{TRUE}; draw a box behind each tier's nodes), \code{labels} (logical or
-character vector; \code{TRUE} uses the names from a named-list \code{tiers},
-a character vector supplies custom labels one per tier, \code{FALSE}/default
-shows no labels), \code{fill}, \code{col} (box border), \code{lwd}, \code{padding} (mm,
-default 4), \code{label_style} (list with \code{col}, \code{fontsize}, \code{fontface}, ...,
-applied to tier labels), and \code{by_tier} (named list keyed by tier name or
-1-based index, e.g. \code{by_tier = list(exposures = list(fill = "lightblue"))} or \code{by_tier = list("1" = list(fill = "lightblue"))}).}
-
 \item{main}{Optional plot title.}
 
 \item{title_style}{List of title styling parameters (same fields as
@@ -139,24 +128,15 @@ space; \code{asp = 1} makes one x-unit equal one y-unit.}
 \item{newpage}{If \code{TRUE} (default), call \code{\link[grid:grid.newpage]{grid::grid.newpage()}} before
 drawing.}
 
-\item{...}{Passed to \code{layout} when it is a character string or function.
-Also where tier boxes are triggered from: pass \code{tiers} as a named list
-of node-name vectors (list order is tier order, names become tier
-labels), a named numeric vector (one tier number per node), or a
-data.frame with \code{name}/\code{tier} columns. Nodes \code{tiers} doesn't mention get
-no box. Passing \code{tiers} also arranges the nodes into tiers - left to
-right, in tier order - overriding \code{layout} when it's a string or
-function (an explicit pre-computed \code{layout} data.frame is left as-is).
-Box/label display itself still requires \code{tier_style$boxes} or
-\code{tier_style$labels} to be truthy (default: \code{boxes} on, \code{labels} off).}
+\item{...}{Passed to \code{layout} when it is a character string or function.}
 }
 \value{
 A \code{cgraph_plot} object, invisibly. Drawn immediately as a side
 effect; re-drawn if printed or passed to \code{plot()} again.
 }
 \description{
-Plot method for \code{cgraph}. \code{node_style}, \code{edge_style}, \code{label_style},
-\code{title_style}, and \code{tier_style} each default to the corresponding entry
+Plot method for \code{cgraph}. \code{node_style}, \code{edge_style}, \code{label_style}, and
+\code{title_style} each default to the corresponding entry
 from \code{\link[=plot_options]{plot_options()}} (which itself defaults to
 \code{\link[=plot_default_options]{plot_default_options()}}) - set those globally with \code{plot_options()} to
 avoid repeating the same style lists at every call site; arguments passed
