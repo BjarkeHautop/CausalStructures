@@ -16,12 +16,6 @@ are built on these primitive operations, so their performance depends directly
 on the efficiency of these basic queries.
 
 ```{r}
-#| include: false
-
-options(CausalStructures.auto_install = TRUE)
-```
-
-```{r}
 #| label: setup
 
 library(CausalStructures)
@@ -189,8 +183,9 @@ for (k in c(3, 4, 5)) {
 ```
 
 `count_dags()`, `enumerate_dags()`, `enumerate_mags()`, and the whole
-`all_*_sets()` family all parallelize their search across Julia's threads
-automatically once the problem is large enough to benefit.
+`all_*_sets()` family parallelize their search across Julia threads once the
+problem is large enough to benefit, when `JULIA_NUM_THREADS` is set before
+loading the package.
 
 ## Comparison against other R packages:
 

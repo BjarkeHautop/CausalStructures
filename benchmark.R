@@ -1,5 +1,5 @@
-# Benchmarks every CausalStructures wrapper (CausalStructures.jl via JuliaCall)
-# against its caugi counterpart, using bench::mark().
+# Benchmarks every CausalStructures wrapper (CausalStructures.jl compiled into
+# a shared library) against its caugi counterpart, using bench::mark().
 #
 # caugi doesn't cover every CausalStructures operation.
 #   exogenous_nodes()      -> caugi::exogenous()
@@ -10,8 +10,8 @@
 # enumeration, possible_ancestors/possible_descendants, has_edge, reclass)
 # are left out of the comparison.
 
-# If GC is triggered it happens in Julia and thus bench::mark() can't
-# filter it. So we only report median.
+# Garbage collection inside the Julia library is invisible to bench::mark(),
+# which can't filter it, so we only report the median.
 
 pkgload::load_all(".", quiet = TRUE)
 warmup()
@@ -20,38 +20,19 @@ n <- 1000L
 p <- 0.25
 
 # --- Graph conversion --------------------------------
-JuliaCall::julia_command(
-  '
-begin
-  _CausalStructures_bench_class(g) = string(nameof(typeof(g)))
-  _CausalStructures_bench_edges_typed(g) =
-      join((join([String(e.src), _CausalStructures_CS._edge_display(e), String(e.dst)], "\x1f")
-            for e in _CausalStructures_CS.edges(g)), "\x1e")
-end
-'
-)
-.bench_class <- function(g) {
-  JuliaCall::julia_call("_CausalStructures_bench_class", g)
-}
-.bench_edges_typed <- function(g) {
-  JuliaCall::julia_call("_CausalStructures_bench_edges_typed", g)
-}
-
-to_caugi <- function(graph) {
-  cls <- .bench_class(graph)
+# The benchmark graphs are DAGs; edges() already gives caugi's edge notation.
+to_caugi <- function(graph, class = "DAG") {
   ns <- nodes(graph)
-  raw <- .bench_edges_typed(graph)
-  if (identical(raw, "")) {
-    return(caugi::build(caugi::caugi(nodes = ns, class = cls)))
+  ed <- edges(graph)
+  if (nrow(ed) == 0) {
+    return(caugi::build(caugi::caugi(nodes = ns, class = class)))
   }
-  tokens <- strsplit(chartr("\x1f", "\x1e", raw), "\x1e", fixed = TRUE)[[1]]
-  m <- matrix(tokens, ncol = 3, byrow = TRUE)
   caugi::build(caugi::caugi(
-    from = m[, 1],
-    edge = m[, 2],
-    to = m[, 3],
+    from = ed$from,
+    edge = ed$type,
+    to = ed$to,
     nodes = ns,
-    class = cls
+    class = class
   ))
 }
 

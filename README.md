@@ -22,13 +22,19 @@ Install CausalStructures from GitHub:
 pak::pak("BjarkeHautop/CausalStructures")
 ```
 
-CausalStructures requires [Julia](https://julialang.org/) (\>= 1.10) See
-[here](https://julialang.org/downloads/) for the recommended way to
-install Julia. Alternatively Julia can be installed via
-`JuliaCall::install_julia()`.
+Installing CausalStructures requires [Julia](https://julialang.org/)
+(\>= 1.13); see [here](https://julialang.org/install/) for the
+recommended way to install it. During installation, CausalStructures.jl
+is compiled with that Julia into a shared library the R package calls
+directly, so there is no Julia session to start when you use the
+package. The first installation takes a few minutes while Julia
+downloads and compiles the dependencies. Set the `JULIA` environment
+variable to the path of a `julia` binary to use a Julia other than the
+one on the `PATH`.
 
-You can then run `CausalStructures::setup()` to download the Julia
-packages needed.
+The compiled library uses the runtime of the Julia that built it, so
+reinstall CausalStructures if that Julia is removed (for example by a
+`juliaup` update).
 
 ## Graph types
 
@@ -71,8 +77,8 @@ cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 #>     A --> X, A --> Y, X --> M, M --> Y
 ```
 
-You can then run a number of queries, transformations, and plot the
-causal graph:
+You can then run a number of queries and transformations on the causal
+graph:
 
 ``` r
 parents(dag, "Y")
@@ -86,10 +92,7 @@ cpdag
 #>   nodes: A, M, X, Y
 #>   edges:
 #>     A --- X, M --- X, M --> Y, A --> Y
-plot(cpdag)
 ```
-
-<img src="man/figures/README-queries-1.png" alt="" width="100%" />
 
 See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/)
 for the full documentation.
@@ -98,9 +101,12 @@ for the full documentation.
 
 Some algorithms (`all_backdoor_sets()`, `all_adjustment_sets()`,
 `all_frontdoor_sets()`, `all_iv_sets()`, `enumerate_dags()`,
-`count_dags()`) can use multiple threads. To do so you need to set the
-`JULIA_NUM_THREADS` environment variable *before* calling any function:
+`count_dags()`) can use multiple threads. To do so, set the
+`JULIA_NUM_THREADS` environment variable (a number, or `"auto"` for one
+per core) *before* loading the package, for example in your `.Renviron`
+file or with
 
 ``` r
 Sys.setenv(JULIA_NUM_THREADS = "4")
+library(CausalStructures)
 ```

@@ -2,7 +2,7 @@
 % Please edit documentation in R/session.R
 \name{julia_ready}
 \alias{julia_ready}
-\title{Is Julia ready to use, with no setup needed?}
+\title{Is the compiled CausalStructures.jl library available?}
 \usage{
 julia_ready()
 }
@@ -10,7 +10,5 @@ julia_ready()
 A logical scalar.
 }
 \description{
-Checks that the \code{julia} binary is on the \code{PATH} and that \code{\link[=setup]{setup()}} can
-complete without erroring - in particular, without needing to install
-Julia package dependencies.
+Is the compiled CausalStructures.jl library available?
 }

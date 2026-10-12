@@ -7,12 +7,6 @@ knitr:
 ---
 
 ```{r}
-#| include: false
-
-options(CausalStructures.auto_install = TRUE)
-```
-
-```{r}
 #| label: setup
 
 library(CausalStructures)

@@ -8,19 +8,20 @@
 }
 \details{
 \describe{
-\item{\code{CausalStructures.auto_install}}{Logical, default \code{FALSE}. When
-\code{\link[=setup]{setup()}} needs to install or update Julia package dependencies and R
-is running non-interactively, this must be set to \code{TRUE} beforehand
-for it to proceed automatically - otherwise it errors with
-instructions. Ignored interactively, where you're prompted instead.}
-\item{\code{CausalStructures.verbose_errors}}{Logical, default \code{FALSE}.
-Errors raised inside Julia are cleaned to just the underlying error
-message by default; set to \code{TRUE} to see the full Julia stacktrace
-instead.}
 \item{\code{CausalStructures.open}}{Logical, default \code{TRUE}. Default for the
 \code{open} argument of \code{\link[=ancestors]{ancestors()}}, \code{\link[=descendants]{descendants()}},
 \code{\link[=possible_ancestors]{possible_ancestors()}}, \code{\link[=possible_descendants]{possible_descendants()}}, \code{\link[=anteriors]{anteriors()}}, and
 \code{\link[=posteriors]{posteriors()}}: \code{TRUE} (open definition) excludes the query node
 itself from the result, \code{FALSE} (closed definition) includes it.}
 }
+
+The number of Julia threads is read from the \code{JULIA_NUM_THREADS}
+environment variable (a number or \code{"auto"}) when the package is loaded, so
+set it before \code{library(CausalStructures)}. More than one thread also turns
+on Julia's signal handling in the R process, which Julia's garbage collector
+needs for multi-threading.
+
+The compiled library is looked up in the \code{CAUSALSTRUCTURES_LIBRARY}
+environment variable first (a path to the \code{csjl} shared library), then in
+the installed package's \code{csjl} directory, where installation builds it.
 }

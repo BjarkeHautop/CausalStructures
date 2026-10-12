@@ -1,11 +1,12 @@
-#' Warm up Julia's JIT compiler
+#' Call every wrapper once
 #'
-#' Calls every exported wrapper once on small graphs. Julia
-#' compiles each method the first time it's called for a given combination
-#' of argument types.
+#' Calls every exported wrapper once on small graphs, as a quick check that
+#' the compiled library works. The library is compiled ahead of time, so
+#' there is nothing to warm up: the first call to a function is as fast as
+#' any other.
 #'
 #' Calls [setup()] itself, so it can be used standalone right after
-#' attaching the package to pay all cost upfront.
+#' attaching the package.
 #'
 #' @return `NULL`, invisibly.
 #' @export

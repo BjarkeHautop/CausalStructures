@@ -28,6 +28,7 @@ Collate:
     'warmup.R'
 Imports:
     grid,
+    parallel,
     Rdpack,
     utils
 Suggests:
@@ -38,6 +39,7 @@ Suggests:
     withr
 Config/testthat/edition: 3
 RdMacros: Rdpack
+SystemRequirements: Julia (>= 1.13), needed at install time
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues

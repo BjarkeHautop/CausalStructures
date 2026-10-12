@@ -6,48 +6,49 @@ code in this repository.
 ## What this is
 
 `CausalStructures` is an R package that binds to the Julia package
-[CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl) via
-`JuliaCall`, for representing, validating, and reasoning about causal graphs
-(DAG, UG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). Almost every
-user-facing R function is a thin wrapper that marshals arguments to Julia, calls
-into `CausalStructures.jl`, and unmarshals the result --- the actual algorithms
-live in the Julia package, not in this repo.
+[CausalStructures.jl](https://github.com/BjarkeHautop/CausalStructures.jl) for
+representing, validating, and reasoning about causal graphs (DAG, UG, PDAG,
+CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). CausalStructures.jl is compiled with
+`juliac --trim=safe` into a shared library when the package is installed, and
+every user-facing R function is a single `.Call` into that library --- the
+actual algorithms live in the Julia package, not in this repo. There is no
+embedded Julia session at run time.
 
 ## Common commands
 
-```r
-# Load package for interactive dev
-pkgload::load_all(".")
+```sh
+# Build the compiled library for development (needs Julia >= 1.13 on the PATH).
+# pkgload::load_all() does not run `configure`, so do this once, and again
+# after changing anything in tools/csjl/.
+julia --startup-file=no tools/csjl/build.jl inst/csjl
+
+# ... against a local CausalStructures.jl checkout instead of the release
+CAUSALSTRUCTURES_JL_PATH=../CausalStructures.jl \
+  julia --startup-file=no tools/csjl/build.jl inst/csjl
 
 # Run the full test suite
-Rscript - e
-'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
+Rscript -e 'pkgload::load_all("."); testthat::test_dir("tests/testthat")'
 
 # Run a single test file
-Rscript - e
-'pkgload::load_all("."); testthat::test_file("tests/testthat/test-julia.R")'
+Rscript -e 'pkgload::load_all("."); testthat::test_file("tests/testthat/test-julia.R")'
 
 # Regenerate roxygen docs (NAMESPACE + man/) after touching R/ or roxygen comments
-Rscript - e
-'roxygen2::roxygenise()'
+Rscript -e 'roxygen2::roxygenise()'
 
-# Full R CMD check (mirrors CI)
-Rscript - e
-'devtools::check()'
+# Full R CMD check (mirrors CI; builds the library via `configure`)
+Rscript -e 'devtools::check()'
 
 # Re-knit README.md from README.Rmd after editing README.Rmd
-Rscript - e
-'devtools::build_readme()'
+Rscript -e 'devtools::build_readme()'
 
 # Build pkgdown site locally
-Rscript - e
-'pkgdown::build_site(devel = TRUE)'
+Rscript -e 'pkgdown::build_site(devel = TRUE)'
 ```
 
-Tests that need a working Julia install call `skip_if_no_julia()` (see
-`tests/testthat/helper-julia.R`) and are skipped otherwise --- `julia_ready()`
-also runs `setup()` as a side effect the first time it's called, which can be
-slow (Julia package precompilation).
+Tests that need the compiled library call `skip_if_no_julia()` (see
+`tests/testthat/helper-julia.R`) and are skipped otherwise. `julia_ready()`
+checks that the library loads. The plotting tests are skipped unconditionally
+(`skip_if_no_layout()`): see Plotting below.
 
 Pre-commit hooks (`.pre-commit-config.yaml`) enforce: `air` formatting,
 `jarl`/`panache` linting, README.md being newer than README.Rmd, and roxygen
@@ -57,61 +58,86 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 
 ## Architecture
 
-### The Julia bridge (`R/session.R`)
+### Building the library at install time (`configure`, `tools/csjl/`)
 
-This is the file to read first for anything touching the R↔Julia boundary.
+- `configure` finds Julia (`$JULIA`, else `julia` on the PATH), requires Julia
+  >= 1.13, and runs `tools/csjl/build.jl inst/csjl`. `R CMD INSTALL` then
+  installs `inst/csjl/csjl.so` (`.dylib` on macOS) with the package. `tools/`
+  ships in the source tarball but is not installed.
+- `tools/csjl/build.jl` mirrors CausalStructures.jl's own `trim-check`: it
+  instantiates the binding project (`tools/csjl/Project.toml`, CausalStructures
+  from the General registry, or `CAUSALSTRUCTURES_JL_PATH` via `Pkg.develop`) in
+  a scratch copy, then compiles it from a separate temporary environment (so
+  JuliaC is never compiled into the library) with JuliaC's recipe API: the
+  equivalent of `--output-lib --trim=safe --experimental --compile-ccallable`,
+  plus the C source `set_threads.c`, which the JuliaC CLI cannot add.
+- The library links against the runtime of the Julia that built it (its RUNPATH
+  points there), so nothing is bundled. If that Julia is removed (e.g. by a
+  juliaup update), loading fails and `setup()` tells the user to reinstall.
+- `configure` unsets `LD_LIBRARY_PATH`: R puts its own library directories on
+  it, which otherwise makes Julia's bundled tools (Pkg's `zstd`) load the system
+  libraries instead of Julia's.
+- A juliac library fixes its Julia options when compiled (one thread, Julia
+  signal handling off) and ignores `JULIA_NUM_THREADS`
+  ([JuliaC.jl#152](https://github.com/JuliaLang/JuliaC.jl/issues/152)).
+  `set_threads.c` (adapted from Ribasim) exports `csjl_set_julia_threads`, which
+  sets `jl_options` before Julia initializes; `setup()` calls it with `.C()`
+  after `dyn.load()` and before the first entrypoint, from `JULIA_NUM_THREADS`
+  (a count or `"auto"`). More than one thread turns on Julia's signal handling,
+  which multi-threaded GC needs.
+- `inst/csjl/` is build output: gitignored and in `.Rbuildignore`.
+- Windows has no `configure.win` yet, so the library is not built there.
 
-- `setup()` lazily starts an embedded Julia session (via
-  `JuliaCall::julia_setup()`), activates the Julia project shipped in `inst/`
-  (`Project.toml` + `Manifest.toml`), installs/updates Julia deps if needed, and
-  defines a block of Julia helper functions (`.helper_defs`) that get `eval`'d
-  once. It's a do-once guard (`.cs$ready`) --- there's no teardown/restart,
-  since JuliaCall doesn't support one and if the embedded Julia dies, so does R.
-- Every exported R function that touches Julia goes through `fn(name)`, which
-  calls `setup()` then looks up a caller closure in the `.cs` environment. Two
-  families of wrapper are registered at setup time:
-  - **`.helpers`**: functions with a hand-written `_CausalStructures_<name>`
-    Julia wrapper in `.helper_defs`, needed to convert R args (character
-    vectors) to Julia `Symbol`s/kwargs and coerce results back to plain,
-    JuliaCall-auto-convertible types (`Vector{String}`, `Matrix`, scalars).
-  - **`.passthrough`**: predicates and simple graph transforms called directly
-    against `CausalStructures.<name>` with no wrapper needed (graph proxy in,
-    `Bool` or graph proxy out).
-- Adding a new wrapped Julia function means: add a `_CausalStructures_<name>`
-  definition to `.helper_defs` (or just the bare name to `.passthrough` if no
-  marshaling is needed), add the name to `.helpers`/`.passthrough`, and add the
-  calling R function elsewhere in `R/` that invokes `fn("name")(...)`.
-- **Nested "list of sets" results** (e.g. `all_backdoor_sets()`,
-  `possible_optimal_adjustment_sets()`) don't auto-convert
-  (`Vector{Vector{String}}` isn't a JuliaCall-native type), so they're joined
-  into a single marker-delimited string Julia-side (`_CausalStructures_sets()`
-  and friends, using `\x01`/`\x1e`/ `\x1f`/`\x1d` marker bytes) and split back
-  apart R-side (`split_sets()`, `split_opt_sets()`, `split_sets_of_sets()` at
-  the bottom of `session.R`). Read the comment block at the top of `session.R`
-  before changing this convention --- the marker-byte scheme exists specifically
-  to make empty sets and `nothing`/`NULL` entries round-trip correctly through
-  `strsplit()`.
-- Errors raised inside Julia are cleaned to just the underlying message by
-  `wrap_errors()`/ `clean_error()` (set
-  `options(CausalStructures.verbose_errors = TRUE)` to see the full Julia
-  stacktrace).
-- `julia_ready()` is the check-only counterpart to `setup()` --- used in
-  examples/tests to skip cleanly when Julia isn't available, without erroring.
+### The binding layer (`tools/csjl/src/`)
 
-### The Julia project shipped in `inst/`
+This is the code to read first for anything touching the R<->Julia boundary.
 
-`inst/Project.toml` pins `CausalStructures.jl` (from the Julia General registry)
-plus `NetworkLayout`, `Sugiyama`, `Random`, `Suppressor`. `inst/Manifest.toml`
-is gitignored on purpose (see `.gitignore`) so that patch releases of pinned
-deps get picked up automatically on `Pkg.instantiate()` rather than being frozen
-at whatever was resolved at commit time; only the `[compat]` bound in
-`Project.toml` is version-controlled.
+- `rapi.jl` is generic: Julia calls R's C API directly (the library is loaded
+  into the R process, so `ccall(:Rf_allocVector, ...)` etc. resolve against
+  libR). It holds the `from_sexp`/`to_sexp` conversions, graphs as external
+  pointers (`GraphHandle`), the `csjl_error` error object, a preserved cache of
+  R strings per node name, and the `@rcall` macro.
+- `@rcall f(a::T, ...)::R` exports `csjl_r_f(a::SEXP, ...)::SEXP`: it converts
+  each argument with `from_sexp(T, a)`, calls `f`, and converts the result. A
+  return type of `GraphHandle`/`Vector{GraphHandle}` makes the result a new
+  `cgraph` (or a list of them); `SEXP` passes an R object built in place through
+  unchanged (`edges`, `edge_marks`, `simulate_data`).
+- Errors never unwind through Julia frames: a Julia exception is caught in the
+  entrypoint and returned as a character vector with class `csjl_error`, which R
+  raises. `_error_message` only reads the message of the exception types
+  CausalStructures throws, since rendering an arbitrary exception is a dynamic
+  call `--trim` rejects. R itself only longjmps out of allocations, i.e. when
+  out of memory.
+- `csjl.jl` is CausalStructures-specific: a registry of graphs keyed by an
+  integer handle, and one function plus one `@rcall` declaration per exported R
+  function. Graph functions take `h::Int64` and branch on the concrete class
+  with `@on "name" g (DAG, ADMG) body` (or `ALL`), because a graph read from the
+  registry is only known as `CausalGraph` and `--trim` rejects the dynamic
+  dispatch. List only the classes the CausalStructures.jl function has methods
+  for; other classes get a clean "not supported for a <class>" error.
+- `--trim=safe` pitfalls already hit here: splatting a vector into varargs (use
+  `_fold`), `nameof(typeof(g))` on an abstract graph (use `_class_name`), more
+  than two `Union{T,Nothing}` arguments in one call (take raw `SEXP` and convert
+  inside, as `generate_graph` does), and a type passed as a keyword argument
+  (`class = T`, inlined with `@inline` in `_generate`).
+- Adding a wrapped function: write the Julia function in `csjl.jl`, add an
+  `@rcall` declaration, add its name to `.entrypoints` in `R/session.R`, and
+  call it from the R wrapper as `.check(.Call(.sym$name, ...))`. Then rebuild
+  the library.
 
-Installing Julia deps is never silent: `ensure_instantiated()` prompts
-interactively, and non-interactively requires
-`options(CausalStructures.auto_install = TRUE)` to proceed (otherwise it errors
-with instructions) --- see the `CausalStructures_options` help topic in
-`session.R` for all package-level options.
+### The R side (`R/session.R`)
+
+- `setup()` (also run from `.onLoad`) `dyn.load()`s the library, sets the Julia
+  thread count (see above), and resolves every name in `.entrypoints` to
+  `.sym$<name>` once. Exported functions are a direct
+  `.check(.Call(.sym$name, ...))`; `.check()` raises a returned `csjl_error`.
+  The library path can be overridden with `CAUSALSTRUCTURES_LIBRARY`.
+- Calls are microsecond-scale, so R-side overhead matters: avoid extra wrapper
+  layers on the hot path, and `match.arg()` (about 3.5 µs) is skipped when the
+  argument is missing (`x <- if (missing(x)) x[[1L]] else match.arg(x)`).
+- Node sets go in and come out as character vectors. Results with no set come
+  back as `NULL`; nested results (`all_backdoor_sets()`,
+  `possible_joint_parent_sets()`, ...) come back as R lists built library-side.
 
 ### The edge-operator DSL (`R/dsl.R`, `R/construction.R`)
 
@@ -128,19 +154,20 @@ Note the custom-operator precedence gotcha documented at the top of `dsl.R`:
 
 ### Graph objects
 
-A causal graph is a Julia proxy object (`JuliaObject`) tagged with an R S3 class
-`"cgraph"` (`.tag_cgraph()` in `session.R`). Query functions (`R/queries.R`,
-`R/identification.R`) call through to Julia and return plain R vectors/data
-frames; transform functions (`R/transform.R`) return new tagged graph proxies.
-`R/data.R` covers simulating data from a graph.
+A causal graph is an R external pointer with S3 class `"cgraph"`, created by the
+library: its address is the graph's registry handle, and a C finalizer releases
+the library's copy when R collects it (the release is deferred to the next graph
+store, since a finalizer can run mid-call). Query functions (`R/queries.R`,
+`R/identification.R`) return plain R vectors, lists and data frames; transform
+functions (`R/transform.R`) return new `cgraph`s. `R/data.R` covers simulating
+data from a graph.
 
 ### Plotting (`R/plot.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
 
-- `cgraph_layout()` (`R/layout.R`) delegates node-coordinate computation to
-  `CausalStructures.jl`'s own `layout()` Julia-side (which wraps
-  `NetworkLayout.jl` and `Sugiyama.jl`); it defaults to `"sugiyama"` for graphs
-  constructed/reclassed as `DAG` and `"stress"` otherwise, based on the graph's
-  actual class rather than its edge structure.
+- Plotting is currently unavailable: `cgraph_layout()` needs
+  CausalStructures.jl's NetworkLayout/Sugiyama extensions, and those packages do
+  not compile under `juliac --trim`, so the library has no layout algorithms and
+  `fn("layout")` errors.
 - The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather
@@ -154,13 +181,12 @@ frames; transform functions (`R/transform.R`) return new tagged graph proxies.
 
 ### Warmup (`R/warmup.R`)
 
-`warmup()` calls every exported wrapper once on small graphs to force Julia's
-JIT to compile each method up front, since Julia compiles per argument-type
-combination on first call. Update it when adding a new exported function so its
-first real call isn't the slow one.
+`warmup()` calls every exported wrapper once on small graphs. The library is
+compiled ahead of time, so there is no JIT to warm up; it now serves as a quick
+smoke test of the whole API.
 
 ## File organization
 
 `DESCRIPTION`'s `Collate:` field defines load order (`session.R` first, since
-everything else calls `fn()`/`setup()`); keep new files added to `R/` there if
+everything else uses `.sym`/`.check()`); keep new files added to `R/` there if
 load order matters.

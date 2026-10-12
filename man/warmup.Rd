@@ -2,7 +2,7 @@
 % Please edit documentation in R/warmup.R
 \name{warmup}
 \alias{warmup}
-\title{Warm up Julia's JIT compiler}
+\title{Call every wrapper once}
 \usage{
 warmup()
 }
@@ -10,13 +10,14 @@ warmup()
 \code{NULL}, invisibly.
 }
 \description{
-Calls every exported wrapper once on small graphs. Julia
-compiles each method the first time it's called for a given combination
-of argument types.
+Calls every exported wrapper once on small graphs, as a quick check that
+the compiled library works. The library is compiled ahead of time, so
+there is nothing to warm up: the first call to a function is as fast as
+any other.
 }
 \details{
 Calls \code{\link[=setup]{setup()}} itself, so it can be used standalone right after
-attaching the package to pay all cost upfront.
+attaching the package.
 }
 \examples{
 if (julia_ready()) {

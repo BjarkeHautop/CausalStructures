@@ -2,10 +2,9 @@
 #
 # A dedicated get/set/reset accessor for plot()'s style defaults, modeled on
 # caugi::caugi_options() (see inst/COPYRIGHTS for attribution) but scoped to
-# plotting only - the package's other settings (auto_install,
-# verbose_errors, ...; see CausalStructures_options) stay on base
-# options()/getOption(), since those are flat behavioral toggles rather than
-# nested graphics-parameter lists.
+# plotting only - the package's other settings (see CausalStructures_options)
+# stay on base options()/getOption(), since those are flat behavioral toggles
+# rather than nested graphics-parameter lists.
 
 .cs_plot_env <- new.env(parent = emptyenv())
 

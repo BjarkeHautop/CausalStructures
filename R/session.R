@@ -1,8 +1,9 @@
 # Design notes:
-# - CausalStructures.jl is compiled ahead of time with juliac into the `csjl`
-#   shared library (built from `jlbuild/`, bundled with its Julia runtime in
-#   `inst/csjl`). setup() loads it with dyn.load(); there is no Julia session
-#   to start and nothing to precompile.
+# - CausalStructures.jl is compiled with juliac into the `csjl` shared library
+#   when the package is installed (`configure` runs `tools/csjl/build.jl` with
+#   the user's Julia), and the library links against that Julia's runtime.
+#   setup() loads it with dyn.load(); there is no Julia session to start and
+#   nothing to precompile.
 # - Each library entrypoint `csjl_r_<name>` takes and returns R objects and
 #   converts them itself through R's C API, so a call is a single `.Call`.
 #   A failure inside the library comes back as a `csjl_error` object and is
@@ -29,9 +30,15 @@
 #'     itself from the result, `FALSE` (closed definition) includes it.}
 #' }
 #'
+#' The number of Julia threads is read from the `JULIA_NUM_THREADS`
+#' environment variable (a number or `"auto"`) when the package is loaded, so
+#' set it before `library(CausalStructures)`. More than one thread also turns
+#' on Julia's signal handling in the R process, which Julia's garbage collector
+#' needs for multi-threading.
+#'
 #' The compiled library is looked up in the `CAUSALSTRUCTURES_LIBRARY`
-#' environment variable first (a path to `csjl.so`), then in the installed
-#' package's `csjl/lib` directory.
+#' environment variable first (a path to the `csjl` shared library), then in
+#' the installed package's `csjl` directory, where installation builds it.
 #'
 #' @name CausalStructures_options
 NULL
@@ -41,8 +48,8 @@ NULL
   if (nzchar(override)) {
     return(override)
   }
-  file <- paste0("csjl", .Platform$dynlib.ext)
-  system.file("csjl", "lib", file, package = "CausalStructures")
+  ext <- if (Sys.info()[["sysname"]] == "Darwin") ".dylib" else ".so"
+  system.file("csjl", paste0("csjl", ext), package = "CausalStructures")
 }
 
 #' Is the compiled CausalStructures.jl library available?
@@ -78,17 +85,73 @@ setup <- function() {
   path <- .library_path()
   if (!nzchar(path) || !file.exists(path)) {
     stop(
-      "The compiled CausalStructures.jl library was not found. Build it ",
-      "with `julia jlbuild/build.jl`, or set CAUSALSTRUCTURES_LIBRARY.",
+      "The compiled CausalStructures.jl library was not found. Reinstall ",
+      "the package, or for development build it with ",
+      "`julia tools/csjl/build.jl inst/csjl`.",
       call. = FALSE
     )
   }
-  dll <- dyn.load(path, local = TRUE, now = TRUE)
+  # The library links against the Julia that built it, so it stops loading
+  # if that Julia is removed (e.g. by a juliaup update).
+  dll <- tryCatch(
+    dyn.load(path, local = TRUE, now = TRUE),
+    error = function(e) {
+      stop(
+        "The compiled CausalStructures.jl library could not be loaded; the ",
+        "Julia it was built with may have been removed or updated. ",
+        "Reinstall CausalStructures to rebuild it.\n",
+        conditionMessage(e),
+        call. = FALSE
+      )
+    }
+  )
+  # Must run before the first entrypoint call, which initializes Julia.
+  threads <- .julia_threads()
+  if (threads > 1L) {
+    res <- .C(
+      getNativeSymbolInfo("csjl_set_julia_threads", dll),
+      threads = threads,
+      status = integer(1)
+    )
+    if (res$status != 0L) {
+      warning(
+        "Could not set ",
+        threads,
+        " Julia threads; using one.",
+        call. = FALSE
+      )
+    }
+  }
   for (name in .entrypoints) {
     .sym[[name]] <- getNativeSymbolInfo(paste0("csjl_r_", name), dll)
   }
   .cs$ready <- TRUE
   invisible(NULL)
+}
+
+# The Julia thread count from JULIA_NUM_THREADS: a count or "auto". A juliac
+# library ignores the variable itself, so setup() passes it on. Anything after
+# a comma (the interactive threadpool) is ignored.
+.julia_threads <- function() {
+  value <- sub(",.*", "", Sys.getenv("JULIA_NUM_THREADS", unset = ""))
+  if (!nzchar(value)) {
+    return(1L)
+  }
+  n <- if (value == "auto") {
+    parallel::detectCores()
+  } else {
+    suppressWarnings(as.integer(value))
+  }
+  if (is.na(n) || n < 1L) {
+    warning(
+      "Ignoring JULIA_NUM_THREADS = \"",
+      value,
+      "\"; using one Julia thread.",
+      call. = FALSE
+    )
+    return(1L)
+  }
+  n
 }
 
 # Calls with no library entrypoint.
