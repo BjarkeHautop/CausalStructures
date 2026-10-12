@@ -19,7 +19,7 @@
 # opposed to edges(), which collapses the two marks into a single `type`
 # notation column, e.g. "-->").
 .plot_edges <- function(cg) {
-  mat <- .check(.Call(C_edge_marks, cg))
+  mat <- .Call(C_edge_marks, cg)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],

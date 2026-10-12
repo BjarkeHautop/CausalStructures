@@ -53,7 +53,7 @@ cgraph_layout <- function(x, method = NULL, ...) {
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
   method <- method %||%
-    if (.check(.Call(C_is_dag_type, x))) "sugiyama" else "stress"
+    if (.Call(C_is_dag_type, x)) "sugiyama" else "stress"
   method <- match.arg(
     method,
     c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "sugiyama")

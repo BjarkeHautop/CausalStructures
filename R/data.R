@@ -46,7 +46,7 @@ simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  mat <- .check(.Call(
+  mat <- .Call(
     C_simulate_data,
     cg,
     n,
@@ -54,7 +54,7 @@ simulate_data <- function(
     standardize,
     as.numeric(coef_range),
     error_sd
-  ))
+  )
   df <- as.data.frame(mat)
   names(df) <- nodes(cg)
   df

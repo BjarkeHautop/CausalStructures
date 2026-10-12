@@ -42,8 +42,20 @@ typedef void (*csjl_threads_fn)(int *, int *);
 
 static void not_bound(void)
 {
-    Rf_error("The compiled CausalStructures.jl library is not loaded; "
-             "run setup() for details.");
+    Rf_errorcall(R_NilValue,
+                 "The compiled CausalStructures.jl library is not loaded; "
+                 "run setup() for details.");
+}
+
+/* The library never raises an R error itself, since R's error longjmp would
+ * unwind through Julia frames. It returns a failure as a character vector
+ * with class `csjl_error` (the only character result that carries a class),
+ * which is raised here, after the Julia call has returned. */
+static SEXP checked(SEXP res)
+{
+    if (TYPEOF(res) == STRSXP && Rf_isObject(res))
+        Rf_errorcall(R_NilValue, "%s", CHAR(STRING_ELT(res, 0)));
+    return res;
 }
 
 /* The registered routines. */
@@ -52,7 +64,7 @@ static void not_bound(void)
     {                                                                          \
         if (fn_##name == NULL)                                                 \
             not_bound();                                                       \
-        return fn_##name(ARGS_##n);                                            \
+        return checked(fn_##name(ARGS_##n));                                   \
     }
 #include "entrypoints.h"
 #undef CSJL_ENTRY

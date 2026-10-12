@@ -103,11 +103,11 @@ This is the code to read first for anything touching the R<->Julia boundary.
   `cgraph` (or a list of them); `SEXP` passes an R object built in place through
   unchanged (`edges`, `edge_marks`, `simulate_data`).
 - Errors never unwind through Julia frames: a Julia exception is caught in the
-  entrypoint and returned as a character vector with class `csjl_error`, which R
-  raises. `_error_message` only reads the message of the exception types
-  CausalStructures throws, since rendering an arbitrary exception is a dynamic
-  call `--trim` rejects. R itself only longjmps out of allocations, i.e. when
-  out of memory.
+  entrypoint and returned as a character vector with class `csjl_error`, which
+  the shim in `src/` raises. `_error_message` only reads the message of the
+  exception types CausalStructures throws, since rendering an arbitrary
+  exception is a dynamic call `--trim` rejects. R itself only longjmps out of
+  allocations, i.e. when out of memory.
 - `csjl.jl` is CausalStructures-specific: a registry of graphs keyed by an
   integer handle, and one function plus one `@rcall` declaration per exported R
   function. Graph functions take `h::Int64` and branch on the concrete class
@@ -122,9 +122,9 @@ This is the code to read first for anything touching the R<->Julia boundary.
   (`class = T`, inlined with `@inline` in `_generate`).
 - Adding a wrapped function: write the Julia function in `csjl.jl`, add an
   `@rcall` declaration, add `CSJL_ENTRY(name, nargs)` to `src/entrypoints.h`,
-  and call it from the R wrapper as `.check(.Call(C_name, ...))`. Then rebuild
-  the library (and reload, which recompiles `src/`). A wrong `nargs` shows up as
-  R's "Incorrect number of arguments" error on the first call.
+  and call it from the R wrapper as `.Call(C_name, ...)`. Then rebuild the
+  library (and reload, which recompiles `src/`). A wrong `nargs` shows up as R's
+  "Incorrect number of arguments" error on the first call.
 
 ### The registration shim (`src/`)
 
@@ -132,7 +132,9 @@ This is the code to read first for anything touching the R<->Julia boundary.
   `useDynLib(CausalStructures, .registration = TRUE, .fixes = "C_")`.
   `src/init.c` registers one `.Call` routine per line of `src/entrypoints.h` (an
   X-macro list), each forwarding to the library's `csjl_r_<name>` through a
-  function pointer, plus `csjl_bind` and `csjl_set_threads`.
+  function pointer, plus `csjl_bind` and `csjl_set_threads`. A routine raises a
+  returned `csjl_error` as an R error itself, once the Julia call has returned,
+  so no R wrapper needs to check results.
 - The csjl library cannot be linked into it (it is built at install time against
   the user's Julia and loaded later by `setup()`), so `csjl_bind` resolves every
   pointer with `R_FindSymbol` once the library is loaded. A routine called
@@ -145,8 +147,8 @@ This is the code to read first for anything touching the R<->Julia boundary.
 - `setup()` (also run from `.onLoad`) `dyn.load()`s the library, sets the Julia
   thread count (see above), and binds the shim's routines to it
   (`.Call(C_csjl_bind, ...)`). Exported functions are a direct
-  `.check(.Call(C_name, ...))`; `.check()` raises a returned `csjl_error`. The
-  library path can be overridden with `CAUSALSTRUCTURES_LIBRARY`.
+  `.Call(C_name, ...)`. The library path can be overridden with
+  `CAUSALSTRUCTURES_LIBRARY`.
 - Calls are microsecond-scale, so R-side overhead matters: avoid extra wrapper
   layers on the hot path, and `match.arg()` (about 3.5 µs) is skipped when the
   argument is missing (`x <- if (missing(x)) x[[1L]] else match.arg(x)`).
@@ -202,6 +204,5 @@ smoke test of the whole API.
 
 ## File organization
 
-`DESCRIPTION`'s `Collate:` field defines load order (`session.R` first, since
-everything else uses `.check()`); keep new files added to `R/` there if load
-order matters.
+`DESCRIPTION`'s `Collate:` field defines load order (`session.R` first); keep
+new files added to `R/` there if load order matters.

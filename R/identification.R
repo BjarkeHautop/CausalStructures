@@ -31,13 +31,13 @@
 #'   )
 #' }
 d_separated <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_d_separated,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 #' Test m-separation
@@ -68,13 +68,13 @@ d_separated <- function(cg, x, y, given = character()) {
 #'   m_separated(pag, "A", "C")
 #' }
 m_separated <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_m_separated,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 #' Find a minimal separator
@@ -117,14 +117,14 @@ minimal_separator <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .check(.Call(
+  .Call(
     C_minimal_separator,
     cg,
     as.character(x),
     as.character(y),
     as.character(include),
     restrict_arg
-  ))
+  )
 }
 
 # --- Causal identification ---------------------------------------------------
@@ -206,7 +206,7 @@ adjustment_set <- function(
   type = c("optimal", "parents", "backdoor")
 ) {
   type <- if (missing(type)) type[[1L]] else match.arg(type)
-  .check(.Call(C_adjustment_set, cg, as.character(x), as.character(y), type))
+  .Call(C_adjustment_set, cg, as.character(x), as.character(y), type)
 }
 
 #' Find a frontdoor adjustment set
@@ -246,14 +246,14 @@ frontdoor_set <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .check(.Call(
+  .Call(
     C_frontdoor_set,
     cg,
     as.character(x),
     as.character(y),
     as.character(include),
     restrict_arg
-  ))
+  )
 }
 
 #' Validate a backdoor adjustment set
@@ -277,13 +277,13 @@ frontdoor_set <- function(
 #'   )
 #' }
 is_valid_backdoor <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_is_valid_backdoor,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 #' Enumerate backdoor adjustment sets
@@ -305,14 +305,14 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #'   all_backdoor_sets(dag, "X", "Y")
 #' }
 all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  .check(.Call(
+  .Call(
     C_all_backdoor_sets,
     cg,
     as.character(x),
     as.character(y),
     minimal,
     max_size
-  ))
+  )
 }
 
 #' Enumerate frontdoor adjustment sets
@@ -343,14 +343,14 @@ all_frontdoor_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .check(.Call(
+  .Call(
     C_all_frontdoor_sets,
     cg,
     as.character(x),
     as.character(y),
     as.character(include),
     restrict_arg
-  ))
+  )
 }
 
 #' Validate an adjustment set
@@ -380,13 +380,13 @@ all_frontdoor_sets <- function(
 #'   )
 #' }
 is_valid_adjustment <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_is_valid_adjustment,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 #' Enumerate all valid adjustment sets
@@ -409,14 +409,14 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'   all_adjustment_sets(admg, "X", "Y")
 #' }
 all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  .check(.Call(
+  .Call(
     C_all_adjustment_sets,
     cg,
     as.character(x),
     as.character(y),
     minimal,
     max_size
-  ))
+  )
 }
 
 #' Validate a frontdoor criterion set
@@ -443,13 +443,13 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 #'   )
 #' }
 is_valid_frontdoor <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_is_valid_frontdoor,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 #' Validate instrumental variables
@@ -476,7 +476,7 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #'   )
 #' }
 is_valid_iv <- function(cg, x, y, z = character()) {
-  .check(.Call(C_is_valid_iv, cg, x, as.character(y), as.character(z)))
+  .Call(C_is_valid_iv, cg, x, as.character(y), as.character(z))
 }
 
 #' Enumerate all valid instrumental variable sets
@@ -499,7 +499,7 @@ is_valid_iv <- function(cg, x, y, z = character()) {
 #'   all_iv_sets(dag, "X", "Y")
 #' }
 all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  .check(.Call(C_all_iv_sets, cg, x, as.character(y), minimal, max_size))
+  .Call(C_all_iv_sets, cg, x, as.character(y), minimal, max_size)
 }
 
 # --- Equivalence classes and counts ------------------------------------------
@@ -538,12 +538,12 @@ NULL
 
 #' @rdname equivalence
 #' @export
-count_dags <- function(cg) .check(.Call(C_count_dags, cg))
+count_dags <- function(cg) .Call(C_count_dags, cg)
 
 #' @rdname equivalence
 #' @export
 enumerate_dags <- function(cg) {
-  .check(.Call(C_enumerate_dags, cg))
+  .Call(C_enumerate_dags, cg)
 }
 
 #' Test whether two graphs are Markov equivalent
@@ -576,7 +576,7 @@ enumerate_dags <- function(cg) {
 #'   )
 #' }
 markov_equivalent <- function(g1, g2) {
-  .check(.Call(C_markov_equivalent, g1, g2))
+  .Call(C_markov_equivalent, g1, g2)
 }
 
 #' Enumerate MAGs in a PAG equivalence class
@@ -597,7 +597,7 @@ markov_equivalent <- function(g1, g2) {
 #'   length(enumerate_mags(pag))
 #' }
 enumerate_mags <- function(cg) {
-  .check(.Call(C_enumerate_mags, cg))
+  .Call(C_enumerate_mags, cg)
 }
 
 # --- Symbolic identification (ID/IDC) ----------------------------------------
@@ -664,19 +664,19 @@ NULL
 #' @rdname id
 #' @export
 id <- function(cg, x, y) {
-  .check(.Call(C_id, cg, as.character(x), as.character(y)))
+  .Call(C_id, cg, as.character(x), as.character(y))
 }
 
 #' @rdname id
 #' @export
 idc <- function(cg, x, y, given = character()) {
-  .check(.Call(
+  .Call(
     C_idc,
     cg,
     as.character(x),
     as.character(y),
     as.character(given)
-  ))
+  )
 }
 
 # --- Generalized backdoor criterion and local IDA ----------------------------
@@ -700,7 +700,7 @@ idc <- function(cg, x, y, given = character()) {
 #'   sort(backdoor_set(cpdag, "X", "Y"))
 #' }
 backdoor_set <- function(cg, x, y) {
-  .check(.Call(C_backdoor_set, cg, x, y))
+  .Call(C_backdoor_set, cg, x, y)
 }
 
 #' Find every possible D-SEP set
@@ -727,7 +727,7 @@ backdoor_set <- function(cg, x, y) {
 #'   )
 #' }
 possible_d_sep <- function(cg, x, y) {
-  .check(.Call(C_possible_d_sep, cg, x, as.character(y)))
+  .Call(C_possible_d_sep, cg, x, as.character(y))
 }
 
 #' Enumerate possible parent sets (local IDA)
@@ -754,7 +754,7 @@ possible_d_sep <- function(cg, x, y) {
 #'   possible_parent_sets(cpdag, "X1")
 #' }
 possible_parent_sets <- function(cg, x) {
-  .check(.Call(C_possible_parent_sets, cg, x))
+  .Call(C_possible_parent_sets, cg, x)
 }
 
 #' Enumerate possible joint parent sets (joint-IDA)
@@ -786,7 +786,7 @@ possible_parent_sets <- function(cg, x) {
 #'   possible_joint_parent_sets(cpdag, c("X1", "X2"))
 #' }
 possible_joint_parent_sets <- function(cg, xs) {
-  .check(.Call(C_possible_joint_parent_sets, cg, as.character(xs)))
+  .Call(C_possible_joint_parent_sets, cg, as.character(xs))
 }
 
 #' Enumerate possible optimal adjustment sets (O-set-based IDA)
@@ -825,7 +825,7 @@ possible_joint_parent_sets <- function(cg, xs) {
 #'   )
 #' }
 possible_optimal_adjustment_sets <- function(cg, x, y) {
-  .check(.Call(C_possible_optimal_adjustment_sets, cg, x, y))
+  .Call(C_possible_optimal_adjustment_sets, cg, x, y)
 }
 
 # --- PAGcauses and local MAG structures ---------------------------------------
@@ -859,7 +859,7 @@ possible_optimal_adjustment_sets <- function(cg, x, y) {
 #'   possible_local_structures(pag, "X")
 #' }
 possible_local_structures <- function(cg, x) {
-  .check(.Call(C_possible_local_structures, cg, x))
+  .Call(C_possible_local_structures, cg, x)
 }
 
 #' Build the maximal local MAG for a local structure
@@ -894,7 +894,7 @@ possible_local_structures <- function(cg, x) {
 #'   maximal_local_mag(pag, "X", "A")
 #' }
 maximal_local_mag <- function(cg, x, c) {
-  .check(.Call(C_maximal_local_mag, cg, x, as.character(c)))
+  .Call(C_maximal_local_mag, cg, x, as.character(c))
 }
 
 #' Find every possible causal effect in a PAG (PAGcauses)
@@ -928,5 +928,5 @@ maximal_local_mag <- function(cg, x, c) {
 #'   pagcauses(pag, "X", "Y")
 #' }
 pagcauses <- function(cg, x, y) {
-  .check(.Call(C_pagcauses, cg, x, y))
+  .Call(C_pagcauses, cg, x, y)
 }

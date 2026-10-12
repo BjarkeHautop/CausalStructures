@@ -13,9 +13,9 @@
 #   with class `cgraph` and a finalizer that releases the library's copy.
 # - Every exported function is a single `.Call(C_<name>, ...)` on a routine
 #   registered by the package's own shared object (src/init.c), which
-#   forwards to the library's `csjl_r_<name>`; setup() binds those once the
-#   library is loaded. `.check()` raises a returned error. Graphs go to the
-#   library as `cgraph`s, node sets as character vectors.
+#   forwards to the library's `csjl_r_<name>` and raises a returned error;
+#   setup() binds those once the library is loaded. Graphs go to the library
+#   as `cgraph`s, node sets as character vectors.
 
 .cs <- new.env(parent = emptyenv())
 
@@ -167,17 +167,6 @@ fn <- function(name) {
 # A seed for the library's RNG, or `NULL` for an unseeded one.
 make_rng <- function(seed) {
   if (is.null(seed)) NULL else as.numeric(seed)
-}
-
-# --- Calls -------------------------------------------------------------------
-
-# A library failure is returned as a classed character vector, the only
-# character result that carries a class.
-.check <- function(res) {
-  if (is.character(res) && is.object(res)) {
-    stop(res[[1L]], call. = FALSE)
-  }
-  res
 }
 
 .onLoad <- function(libname, pkgname) {
