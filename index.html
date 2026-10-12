@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>What the Package Does (One Line, Title Case) • testpkg</title>
+<title>Representing and Reasoning About Causal Graphs • CausalStructures</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="What the Package Does (One Line, Title Case)">
-<meta name="description" content="What the package does (one paragraph).">
-<meta property="og:description" content="What the package does (one paragraph).">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Representing and Reasoning About Causal Graphs">
+<meta name="description" content="Represent, validate, and reason about causal graphs, including directed acyclic graphs (DAGs), partially directed graphs (PDAGs, CPDAGs, MPDAGs), acyclic directed mixed graphs (ADMGs), and ancestral graphs (AGs, MAGs, PAGs). Provides graph queries, transformations, adjustment set and identification algorithms, and data simulation. The algorithms are implemented in the Julia package CausalStructures.jl, which this package provides a wrapper for.">
+<meta property="og:description" content="Represent, validate, and reason about causal graphs, including directed acyclic graphs (DAGs), partially directed graphs (PDAGs, CPDAGs, MPDAGs), acyclic directed mixed graphs (ADMGs), and ancestral graphs (AGs, MAGs, PAGs). Provides graph queries, transformations, adjustment set and identification algorithms, and data simulation. The algorithms are implemented in the Julia package CausalStructures.jl, which this package provides a wrapper for.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="index.html">testpkg</a>
+    <a class="navbar-brand me-2" href="index.html">CausalStructures</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
 
@@ -32,12 +32,18 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/plot.html">Plotting Causal Graphs</a></li>
+  </ul>
+</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BjarkeHautop/testpkg/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BjarkeHautop/CausalStructures/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -46,46 +52,86 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="testpkg">testpkg<a class="anchor" aria-label="anchor" href="#testpkg"></a>
+<div class="page-header"><h1 id="causalstructures">CausalStructures<a class="anchor" aria-label="anchor" href="#causalstructures"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of testpkg is to …</p>
+<p>CausalStructures is an R binding to the Julia package <a href="https://github.com/BjarkeHautop/CausalStructures.jl" class="external-link">CausalStructures.jl</a>, for representing, validating, and reasoning about causal graphs</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of testpkg like so:</p>
+<p>Install CausalStructures from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"BjarkeHautop/CausalStructures"</span><span class="op">)</span></span></code></pre></div>
+<p>CausalStructures needs <a href="https://julialang.org/" class="external-link">Julia</a> (&gt;= 1.13); see <a href="https://julialang.org/install/" class="external-link uri">https://julialang.org/install/</a> for the recommended way to install Julia. Once the package is installed, build the compiled CausalStructures.jl library it calls with</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">CausalStructures</span><span class="fu">::</span><span class="fu"><a href="reference/install_backend.html">install_backend</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>This takes a few minutes while Julia downloads and compiles the dependencies, and only needs to be done once per version of CausalStructures. Pass <code>julia = "/path/to/julia"</code> (or set the <code>JULIA</code> environment variable) to use a Julia other than the one on the <code>PATH</code>.</p>
+<p>The compiled library uses the runtime of the Julia that built it, so run <code>install_backend(force = TRUE)</code> again if that Julia is removed (for example by a <code>juliaup</code> update).</p>
+</div>
+<div class="section level2">
+<h2 id="graph-types">Graph types<a class="anchor" aria-label="anchor" href="#graph-types"></a>
+</h2>
+<p>The following graph types are supported, shown here following the abstract type hierarchy from CausalStructures.jl:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>CausalGraph</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>├─ DAG            Directed Acyclic Graph</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>├─ UG             Undirected Graph</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>├─ AbstractPDAG   All Partially Directed Acyclic Graphs</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>│  ├─ PDAG        Partially Directed Acyclic Graph</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>│  ├─ CPDAG       Completed Partially Directed Acyclic Graph</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>│  └─ MPDAG       Maximally Oriented Partially Directed Acyclic Graph</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>├─ ADMG           Acyclic Directed Mixed Graph</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>├─ AbstractAG     All Ancestral Graphs</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>│  ├─ AG          Ancestral Graph</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>│  └─ MAG         Maximal Ancestral Graph</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>├─ PAG            Partial Ancestral Graph</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>└─ UNKNOWN        No structural constraints</span></code></pre></div>
+<p>Each graph class encodes structural constraints, such as no cycles, closed under Meek’s rules, etc., and these constraints are verified on construction.</p>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/testpkg" class="external-link">testpkg</a></span><span class="op">)</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
-<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      speed           dist       </span></span>
-<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
-<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
-<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
-<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
-<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date. <code>devtools::build_readme()</code> is handy for this.</p>
-<p>You can also embed plots, for example:</p>
-<p><img src="reference/figures/README-pressure-1.png" alt="" width="100%"></p>
-<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub and CRAN.</p>
+<p>First, we define a causal graph using the <code><a href="reference/cgraph.html">cgraph()</a></code> function. <code>cgraph("A --&gt; X + Y, X --&gt; M --&gt; Y")</code></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/CausalStructures" class="external-link">CausalStructures</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cgraph.html">cgraph</a></span><span class="op">(</span><span class="st">"A --&gt; X + Y, X --&gt; M --&gt; Y"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Alternatively, wrap the edges in %...%, and then not use a string:</span></span>
+<span><span class="fu"><a href="reference/cgraph.html">cgraph</a></span><span class="op">(</span><span class="va">A</span> <span class="op"><a href="reference/edge-operators.html">%--&gt;%</a></span> <span class="va">X</span> <span class="op">+</span> <span class="va">Y</span>, <span class="va">X</span> <span class="op"><a href="reference/edge-operators.html">%--&gt;%</a></span> <span class="va">M</span> <span class="op"><a href="reference/edge-operators.html">%--&gt;%</a></span> <span class="va">Y</span><span class="op">)</span></span>
+<span><span class="co">#&gt; DAG with 4 nodes and 4 edges:</span></span>
+<span><span class="co">#&gt;   nodes: A, M, X, Y</span></span>
+<span><span class="co">#&gt;   edges:</span></span>
+<span><span class="co">#&gt;     A --&gt; X, A --&gt; Y, X --&gt; M, M --&gt; Y</span></span></code></pre></div>
+<p>You can then run a number of queries and transformations on the causal graph:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/node-queries.html">parents</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"Y"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "A" "M"</span></span>
+<span><span class="fu"><a href="reference/adjustment_set.html">adjustment_set</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "A"</span></span>
+<span></span>
+<span><span class="va">cpdag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dag_to_cpdag.html">dag_to_cpdag</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
+<span><span class="va">cpdag</span></span>
+<span><span class="co">#&gt; CPDAG with 4 nodes and 4 edges:</span></span>
+<span><span class="co">#&gt;   nodes: A, M, X, Y</span></span>
+<span><span class="co">#&gt;   edges:</span></span>
+<span><span class="co">#&gt;     A --- X, M --- X, M --&gt; Y, A --&gt; Y</span></span></code></pre></div>
+<p>See the <a href="https://bjarkehautop.github.io/CausalStructures/">pkgdown site</a> for the full documentation.</p>
+</div>
+<div class="section level2">
+<h2 id="multi-threading">Multi-threading<a class="anchor" aria-label="anchor" href="#multi-threading"></a>
+</h2>
+<p>Some algorithms (<code><a href="reference/all_backdoor_sets.html">all_backdoor_sets()</a></code>, <code><a href="reference/all_adjustment_sets.html">all_adjustment_sets()</a></code>, <code><a href="reference/all_frontdoor_sets.html">all_frontdoor_sets()</a></code>, <code><a href="reference/all_iv_sets.html">all_iv_sets()</a></code>, <code><a href="reference/equivalence.html">enumerate_dags()</a></code>, <code><a href="reference/equivalence.html">count_dags()</a></code>) can use multiple threads. To do so, set the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) <em>before</em> loading the package, for example in your <code>.Renviron</code> file or with</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>JULIA_NUM_THREADS <span class="op">=</span> <span class="st">"4"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/CausalStructures" class="external-link">CausalStructures</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/BjarkeHautop/testpkg/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/BjarkeHautop/testpkg/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/BjarkeHautop/CausalStructures/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/BjarkeHautop/CausalStructures/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -101,7 +147,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing testpkg</a></li>
+<li><a href="authors.html#citation">Citing CausalStructures</a></li>
 </ul>
 </div>
 
@@ -109,14 +155,15 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Bjarke Hautop Kristensen <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://app.codecov.io/gh/BjarkeHautop/testpkg" class="external-link"><img src="https://codecov.io/gh/BjarkeHautop/testpkg/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/BjarkeHautop/testpkg/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/BjarkeHautop/CausalStructures" class="external-link"><img src="https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 
@@ -129,7 +176,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer>

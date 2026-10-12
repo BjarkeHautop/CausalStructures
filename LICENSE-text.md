@@ -1,4 +1,4 @@
 # License
 
     YEAR: 2026
-    COPYRIGHT HOLDER: testpkg authors
+    COPYRIGHT HOLDER: CausalStructures authors
