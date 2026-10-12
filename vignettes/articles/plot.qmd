@@ -31,7 +31,8 @@ plot(unknown)
 
 ## Layouts
 
-`layout` controls node placement and defaults to `"stress"`.
+`layout` controls node placement and defaults to `"sugiyama"` for DAGs, and
+"stress" otherwise.
 
 ```{r}
 #| label: layout-spring
@@ -44,7 +45,7 @@ dag <- cgraph(
   D %-->% Y + G,
   Y %-->% H
 )
-plot(dag, layout = "spring")
+plot(dag, layout = "sugiyama")
 ```
 
 `layout` can be:
@@ -66,7 +67,7 @@ the underlying algorithm:
 ```{r}
 #| label: layout-args
 
-plot(dag, layout = "spring", seed = 1405, iterations = 500)
+plot(dag, layout = "stress", seed = 1405, iterations = 500)
 ```
 
 `layout` also accepts a pre-computed `data.frame` of `name`/`x`/`y` coordinates,
@@ -91,7 +92,7 @@ manually tweak a few nodes:
 ```{r}
 #| label: layout-tweak
 
-positions <- cgraph_layout(dag, method = "spring")
+positions <- cgraph_layout(dag, method = "shell")
 positions[positions$name == "A", c("x", "y")] <- c(0, 2)
 plot(dag, layout = positions)
 ```
