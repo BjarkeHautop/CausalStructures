@@ -37,11 +37,11 @@ NULL
 
 #' @rdname node-queries
 #' @export
-parents <- node_query("parents")
+parents <- function(cg, node) .check(.Call(C_parents, cg, node))
 
 #' @rdname node-queries
 #' @export
-children <- node_query("children")
+children <- function(cg, node) .check(.Call(C_children, cg, node))
 
 #' @rdname node-queries
 #' @export
@@ -50,7 +50,7 @@ ancestors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$ancestors, cg, node, open))
+  .check(.Call(C_ancestors, cg, node, open))
 }
 
 #' @rdname node-queries
@@ -60,12 +60,12 @@ descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$descendants, cg, node, open))
+  .check(.Call(C_descendants, cg, node, open))
 }
 
 #' @rdname node-queries
 #' @export
-spouses <- node_query("spouses")
+spouses <- function(cg, node) .check(.Call(C_spouses, cg, node))
 
 #' Markov blanket of a node
 #'
@@ -97,7 +97,7 @@ spouses <- node_query("spouses")
 #'     blanket_of_c = markov_blanket(dag, "C")
 #'   )
 #' }
-markov_blanket <- node_query("markov_blanket")
+markov_blanket <- function(cg, node) .check(.Call(C_markov_blanket, cg, node))
 
 #' Neighbors of a node
 #'
@@ -130,7 +130,7 @@ neighbors <- function(
   mode = c("all", "in", "out", "undirected", "bidirected")
 ) {
   mode <- if (missing(mode)) mode[[1L]] else match.arg(mode)
-  .check(.Call(.sym$neighbors, cg, node, mode))
+  .check(.Call(C_neighbors, cg, node, mode))
 }
 
 #' Possible-ancestor/descendant node-set queries
@@ -173,7 +173,7 @@ possible_ancestors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$possible_ancestors, cg, node, open))
+  .check(.Call(C_possible_ancestors, cg, node, open))
 }
 
 #' @rdname possible-queries
@@ -183,7 +183,7 @@ possible_descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$possible_descendants, cg, node, open))
+  .check(.Call(C_possible_descendants, cg, node, open))
 }
 
 #' Anterior/posterior node-set queries
@@ -220,7 +220,7 @@ anteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$anteriors, cg, node, open))
+  .check(.Call(C_anteriors, cg, node, open))
 }
 
 #' @rdname anteriors
@@ -230,7 +230,7 @@ posteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .check(.Call(.sym$posteriors, cg, node, open))
+  .check(.Call(C_posteriors, cg, node, open))
 }
 
 
@@ -262,44 +262,44 @@ NULL
 
 #' @rdname predicates
 #' @export
-is_dag <- graph_fn("is_dag")
+is_dag <- function(cg) .check(.Call(C_is_dag, cg))
 
 #' @rdname predicates
 #' @export
-is_pdag <- graph_fn("is_pdag")
+is_pdag <- function(cg) .check(.Call(C_is_pdag, cg))
 
 #' @rdname predicates
 #' @export
-is_cpdag <- graph_fn("is_cpdag")
+is_cpdag <- function(cg) .check(.Call(C_is_cpdag, cg))
 
 #' @rdname predicates
 #' @export
-is_mpdag <- graph_fn("is_mpdag")
+is_mpdag <- function(cg) .check(.Call(C_is_mpdag, cg))
 
 #' @rdname predicates
 #' @export
-is_ug <- graph_fn("is_ug")
+is_ug <- function(cg) .check(.Call(C_is_ug, cg))
 
 #' @rdname predicates
 #' @export
-is_admg <- graph_fn("is_admg")
+is_admg <- function(cg) .check(.Call(C_is_admg, cg))
 
 #' @rdname predicates
 #' @export
-is_ag <- graph_fn("is_ag")
+is_ag <- function(cg) .check(.Call(C_is_ag, cg))
 
 #' @rdname predicates
 #' @export
-is_mag <- graph_fn("is_mag")
+is_mag <- function(cg) .check(.Call(C_is_mag, cg))
 
 #' @rdname predicates
 #' @export
-is_pag <- graph_fn("is_pag")
+is_pag <- function(cg) .check(.Call(C_is_pag, cg))
 
 #' @rdname predicates
 #' @export
-is_simple <- graph_fn("is_simple")
+is_simple <- function(cg) .check(.Call(C_is_simple, cg))
 
 #' @rdname predicates
 #' @export
-is_acyclic <- graph_fn("is_acyclic")
+is_acyclic <- function(cg) .check(.Call(C_is_acyclic, cg))

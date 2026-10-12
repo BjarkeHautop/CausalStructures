@@ -47,7 +47,7 @@ simulate_data <- function(
   seed = NULL
 ) {
   mat <- .check(.Call(
-    .sym$simulate_data,
+    C_simulate_data,
     cg,
     n,
     make_rng(seed),

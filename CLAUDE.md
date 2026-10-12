@@ -81,10 +81,10 @@ docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
   signal handling off) and ignores `JULIA_NUM_THREADS`
   ([JuliaC.jl#152](https://github.com/JuliaLang/JuliaC.jl/issues/152)).
   `set_threads.c` (adapted from Ribasim) exports `csjl_set_julia_threads`, which
-  sets `jl_options` before Julia initializes; `setup()` calls it with `.C()`
-  after `dyn.load()` and before the first entrypoint, from `JULIA_NUM_THREADS`
-  (a count or `"auto"`). More than one thread turns on Julia's signal handling,
-  which multi-threaded GC needs.
+  sets `jl_options` before Julia initializes; `setup()` calls it through the
+  shim's `C_csjl_set_threads` after `dyn.load()` and before the first
+  entrypoint, from `JULIA_NUM_THREADS` (a count or `"auto"`). More than one
+  thread turns on Julia's signal handling, which multi-threaded GC needs.
 - `inst/csjl/` is build output: gitignored and in `.Rbuildignore`.
 - Windows has no `configure.win` yet, so the library is not built there.
 
@@ -121,17 +121,32 @@ This is the code to read first for anything touching the R<->Julia boundary.
   inside, as `generate_graph` does), and a type passed as a keyword argument
   (`class = T`, inlined with `@inline` in `_generate`).
 - Adding a wrapped function: write the Julia function in `csjl.jl`, add an
-  `@rcall` declaration, add its name to `.entrypoints` in `R/session.R`, and
-  call it from the R wrapper as `.check(.Call(.sym$name, ...))`. Then rebuild
-  the library.
+  `@rcall` declaration, add `CSJL_ENTRY(name, nargs)` to `src/entrypoints.h`,
+  and call it from the R wrapper as `.check(.Call(C_name, ...))`. Then rebuild
+  the library (and reload, which recompiles `src/`). A wrong `nargs` shows up as
+  R's "Incorrect number of arguments" error on the first call.
+
+### The registration shim (`src/`)
+
+- The package has its own small shared object, `CausalStructures.so`, loaded by
+  `useDynLib(CausalStructures, .registration = TRUE, .fixes = "C_")`.
+  `src/init.c` registers one `.Call` routine per line of `src/entrypoints.h` (an
+  X-macro list), each forwarding to the library's `csjl_r_<name>` through a
+  function pointer, plus `csjl_bind` and `csjl_set_threads`.
+- The csjl library cannot be linked into it (it is built at install time against
+  the user's Julia and loaded later by `setup()`), so `csjl_bind` resolves every
+  pointer with `R_FindSymbol` once the library is loaded. A routine called
+  before that raises an error instead of crashing.
+- This keeps every `.Call` in `R/` a registered routine of the package itself,
+  so `R CMD check`'s foreign-function checks pass without workarounds.
 
 ### The R side (`R/session.R`)
 
 - `setup()` (also run from `.onLoad`) `dyn.load()`s the library, sets the Julia
-  thread count (see above), and resolves every name in `.entrypoints` to
-  `.sym$<name>` once. Exported functions are a direct
-  `.check(.Call(.sym$name, ...))`; `.check()` raises a returned `csjl_error`.
-  The library path can be overridden with `CAUSALSTRUCTURES_LIBRARY`.
+  thread count (see above), and binds the shim's routines to it
+  (`.Call(C_csjl_bind, ...)`). Exported functions are a direct
+  `.check(.Call(C_name, ...))`; `.check()` raises a returned `csjl_error`. The
+  library path can be overridden with `CAUSALSTRUCTURES_LIBRARY`.
 - Calls are microsecond-scale, so R-side overhead matters: avoid extra wrapper
   layers on the hot path, and `match.arg()` (about 3.5 µs) is skipped when the
   argument is missing (`x <- if (missing(x)) x[[1L]] else match.arg(x)`).
@@ -188,5 +203,5 @@ smoke test of the whole API.
 ## File organization
 
 `DESCRIPTION`'s `Collate:` field defines load order (`session.R` first, since
-everything else uses `.sym`/`.check()`); keep new files added to `R/` there if
-load order matters.
+everything else uses `.check()`); keep new files added to `R/` there if load
+order matters.

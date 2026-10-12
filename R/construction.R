@@ -48,12 +48,12 @@ cgraph <- function(
   )
 ) {
   class <- if (missing(class)) class[[1L]] else match.arg(class)
-  .check(.Call(.sym$cgraph, .dots_or_spec(substitute(list(...)), spec), class))
+  .check(.Call(C_cgraph, .dots_or_spec(substitute(list(...)), spec), class))
 }
 
 #' @export
 print.cgraph <- function(x, ...) {
-  cat(sub("^CausalStructures\\.", "", .check(.Call(.sym$graph_string, x))))
+  cat(sub("^CausalStructures\\.", "", .check(.Call(C_graph_string, x))))
   invisible(x)
 }
 
@@ -125,7 +125,7 @@ generate_graph <- function(
 ) {
   class <- if (missing(class)) class[[1L]] else match.arg(class)
   .check(.Call(
-    .sym$generate_graph,
+    C_generate_graph,
     as.integer(n),
     m,
     p,
@@ -156,7 +156,7 @@ generate_graph <- function(
 #'   dag
 #' }
 uniform_dag <- function(n, seed = NULL) {
-  .check(.Call(.sym$uniform_dag, as.integer(n), make_rng(seed)))
+  .check(.Call(C_uniform_dag, as.integer(n), make_rng(seed)))
 }
 
 # --- Graph-level queries -----------------------------------------------------
@@ -199,13 +199,13 @@ NULL
 #' @rdname graph-queries
 #' @export
 nodes <- function(cg) {
-  .check(.Call(.sym$nodes, cg))
+  .check(.Call(C_nodes, cg))
 }
 
 #' @rdname graph-queries
 #' @export
 topological_sort <- function(cg) {
-  .check(.Call(.sym$topological_sort, cg))
+  .check(.Call(C_topological_sort, cg))
 }
 
 #' @rdname graph-queries
@@ -213,7 +213,7 @@ topological_sort <- function(cg) {
 #'   a node incident to any undirected edge is not considered exogenous.
 #' @export
 exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
-  .check(.Call(.sym$exogenous_nodes, cg, undirected_as_parents))
+  .check(.Call(C_exogenous_nodes, cg, undirected_as_parents))
 }
 
 #' Test whether two nodes are adjacent
@@ -236,7 +236,7 @@ exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #'   )
 #' }
 has_edge <- function(cg, x, y) {
-  .check(.Call(.sym$has_edge, cg, x, y))
+  .check(.Call(C_has_edge, cg, x, y))
 }
 
 # Maps a (src_end, dst_end) mark pair (as returned by the Julia
@@ -272,5 +272,5 @@ has_edge <- function(cg, x, y) {
 #'   edges(pag)
 #' }
 edges <- function(cg) {
-  .check(.Call(.sym$edges, cg))
+  .check(.Call(C_edges, cg))
 }

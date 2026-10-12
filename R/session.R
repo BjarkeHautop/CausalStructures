@@ -11,10 +11,11 @@
 # - A graph cannot cross into R as a value, so it lives in a registry in the
 #   library and R holds an external pointer to it, created by the library
 #   with class `cgraph` and a finalizer that releases the library's copy.
-# - Every exported function is a single `.Call` on a native symbol resolved
-#   once at load (`.sym`), checked by `.check()`, which raises a returned
-#   error. Graphs go to the library as `cgraph`s, node sets as character
-#   vectors.
+# - Every exported function is a single `.Call(C_<name>, ...)` on a routine
+#   registered by the package's own shared object (src/init.c), which
+#   forwards to the library's `csjl_r_<name>`; setup() binds those once the
+#   library is loaded. `.check()` raises a returned error. Graphs go to the
+#   library as `cgraph`s, node sets as character vectors.
 
 .cs <- new.env(parent = emptyenv())
 
@@ -108,12 +109,8 @@ setup <- function() {
   # Must run before the first entrypoint call, which initializes Julia.
   threads <- .julia_threads()
   if (threads > 1L) {
-    res <- .C(
-      getNativeSymbolInfo("csjl_set_julia_threads", dll),
-      threads = threads,
-      status = integer(1)
-    )
-    if (res$status != 0L) {
+    status <- .Call(C_csjl_set_threads, dll[["name"]], threads)
+    if (status != 0L) {
       warning(
         "Could not set ",
         threads,
@@ -122,9 +119,7 @@ setup <- function() {
       )
     }
   }
-  for (name in .entrypoints) {
-    .sym[[name]] <- getNativeSymbolInfo(paste0("csjl_r_", name), dll)
-  }
+  .Call(C_csjl_bind, dll[["name"]])
   .cs$ready <- TRUE
   invisible(NULL)
 }
@@ -176,9 +171,6 @@ make_rng <- function(seed) {
 
 # --- Calls -------------------------------------------------------------------
 
-# Native symbols of the library entrypoints, filled by setup().
-.sym <- new.env(parent = emptyenv())
-
 # A library failure is returned as a classed character vector, the only
 # character result that carries a class.
 .check <- function(res) {
@@ -192,105 +184,6 @@ make_rng <- function(seed) {
   tryCatch(setup(), error = function(e) NULL)
 }
 
-# Library entrypoints, each exported as `csjl_r_<name>`.
-.entrypoints <- c(
-  "graph_count",
-  "cgraph",
-  "graph_string",
-  "generate_graph",
-  "uniform_dag",
-  "nodes",
-  "edge_marks",
-  "edges",
-  "topological_sort",
-  "exogenous_nodes",
-  "has_edge",
-  "parents",
-  "children",
-  "spouses",
-  "markov_blanket",
-  "neighbors",
-  "ancestors",
-  "descendants",
-  "anteriors",
-  "posteriors",
-  "possible_ancestors",
-  "possible_descendants",
-  "is_dag",
-  "is_pdag",
-  "is_cpdag",
-  "is_mpdag",
-  "is_ug",
-  "is_admg",
-  "is_ag",
-  "is_mag",
-  "is_pag",
-  "is_simple",
-  "is_acyclic",
-  "is_dag_type",
-  "markov_equivalent",
-  "d_separated",
-  "m_separated",
-  "minimal_separator",
-  "possible_d_sep",
-  "adjustment_set",
-  "backdoor_set",
-  "frontdoor_set",
-  "all_frontdoor_sets",
-  "is_valid_backdoor",
-  "all_backdoor_sets",
-  "is_valid_adjustment",
-  "all_adjustment_sets",
-  "is_valid_frontdoor",
-  "is_valid_iv",
-  "all_iv_sets",
-  "id",
-  "idc",
-  "possible_parent_sets",
-  "possible_joint_parent_sets",
-  "possible_optimal_adjustment_sets",
-  "possible_local_structures",
-  "pagcauses",
-  "count_dags",
-  "enumerate_dags",
-  "enumerate_mags",
-  "skeleton",
-  "moralize",
-  "dag_to_cpdag",
-  "dag_from_pdag",
-  "dag_to_mpdag",
-  "ag_to_mag",
-  "mag_to_pag",
-  "mag_from_pag",
-  "meek_closure",
-  "subgraph",
-  "latent_project",
-  "exogenize",
-  "normalize_latent_structure",
-  "condition_marginalize",
-  "maximal_local_mag",
-  "reclass",
-  "add_edges",
-  "remove_edges",
-  "add_nodes",
-  "remove_nodes",
-  "simulate_data"
-)
-
-# --- Wrapper factories -------------------------------------------------------
-
-node_query <- function(name) {
-  force(name)
-  function(cg, node) .check(.Call(.sym[[name]], cg, node))
-}
-
-graph_fn <- function(name) {
-  force(name)
-  function(cg) .check(.Call(.sym[[name]], cg))
-}
-
-cgraph_fn <- graph_fn
-
-
 #' @importFrom Rdpack reprompt
+#' @useDynLib CausalStructures, .registration = TRUE, .fixes = "C_"
 NULL

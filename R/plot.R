@@ -19,7 +19,7 @@
 # opposed to edges(), which collapses the two marks into a single `type`
 # notation column, e.g. "-->").
 .plot_edges <- function(cg) {
-  mat <- .check(.Call(.sym$edge_marks, cg))
+  mat <- .check(.Call(C_edge_marks, cg))
   data.frame(
     from = mat[, 1],
     to = mat[, 2],
@@ -1316,12 +1316,12 @@ makeContent.cs_graph_grob <- function(x) {
 #'   effect; re-drawn if printed or passed to `plot()` again.
 #'
 #' @examples
-#' if (julia_ready()) {
+#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(dag, main = "A DAG")
 #' }
 #' # Style nodes and edges globally, plus per-node/per-edge overrides.
-#' if (julia_ready()) {
+#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(
 #'     dag,
@@ -1339,7 +1339,7 @@ makeContent.cs_graph_grob <- function(x) {
 #'   )
 #' }
 #' # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-#' if (julia_ready()) {
+#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(
 #'     dag,

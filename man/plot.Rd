@@ -144,12 +144,12 @@ avoid repeating the same style lists at every call site; arguments passed
 here still take precedence.
 }
 \examples{
-if (julia_ready()) {
+if (FALSE) { # plotting needs layout algorithms, not in the library yet
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(dag, main = "A DAG")
 }
 # Style nodes and edges globally, plus per-node/per-edge overrides.
-if (julia_ready()) {
+if (FALSE) { # plotting needs layout algorithms, not in the library yet
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(
     dag,
@@ -167,7 +167,7 @@ if (julia_ready()) {
   )
 }
 # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-if (julia_ready()) {
+if (FALSE) { # plotting needs layout algorithms, not in the library yet
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(
     dag,

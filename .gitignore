@@ -16,3 +16,6 @@ README.html
 .claude/
 *.pdf
 /inst/csjl/
+/src/*.o
+/src/*.so
+/src/*.dll

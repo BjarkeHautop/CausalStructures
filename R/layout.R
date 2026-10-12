@@ -39,12 +39,12 @@
 #' @family plotting
 #' @export
 #' @examples
-#' if (julia_ready()) {
+#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cgraph_layout(dag)
 #' }
 #'
-#' if (julia_ready()) {
+#' if (FALSE) { # plotting needs layout algorithms, not in the library yet
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   cgraph_layout(dag, method = "spring")
 #' }
@@ -53,7 +53,7 @@ cgraph_layout <- function(x, method = NULL, ...) {
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
   method <- method %||%
-    if (.check(.Call(.sym$is_dag_type, x))) "sugiyama" else "stress"
+    if (.check(.Call(C_is_dag_type, x))) "sugiyama" else "stress"
   method <- match.arg(
     method,
     c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "sugiyama")

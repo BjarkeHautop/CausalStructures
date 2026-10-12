@@ -2,9 +2,9 @@
  * Set the Julia thread count before the runtime initializes.
  *
  * A juliac library fixes its options when it is compiled (one thread, Julia
- * signal handling off) and ignores JULIA_NUM_THREADS, so R calls this with
- * .C() right after loading the library and before the first entrypoint, which
- * is what initializes Julia. Adapted from Ribasim's set_julia_threads.c; see
+ * signal handling off) and ignores JULIA_NUM_THREADS, so the R package calls
+ * this (through its C_csjl_set_threads) right after loading the library and
+ * before the first entrypoint, which is what initializes Julia. Adapted from Ribasim's set_julia_threads.c; see
  * https://github.com/JuliaLang/JuliaC.jl/issues/152.
  *
  * `status` is set to 0 on success, 1 if Julia is already initialized, and 2
