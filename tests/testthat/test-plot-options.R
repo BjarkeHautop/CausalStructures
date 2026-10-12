@@ -53,6 +53,7 @@ test_that("plot_options(plot_default_options()) resets to defaults", {
 })
 
 test_that("plot.cgraph picks up global plot_options() defaults", {
+  skip_if_no_layout()
   skip_if_no_julia()
   withr::defer(plot_options(plot_default_options()))
   grDevices::pdf(NULL)

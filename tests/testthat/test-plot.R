@@ -1,3 +1,5 @@
+skip_if_no_layout()
+
 test_that("plot.cgraph draws with the default layout", {
   skip_if_no_julia()
   grDevices::pdf(NULL)

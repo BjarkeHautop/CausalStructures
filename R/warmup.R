@@ -106,8 +106,7 @@ warmup <- function() {
     markov_equivalent(dag, dag),
     enumerate_mags(pag),
 
-    # --- Data generation / layout --------------------------------------------
-    simulate_data(dag, 5, seed = 1L),
-    cgraph_layout(dag)
+    # --- Data generation --------------------------------------------
+    simulate_data(dag, 5, seed = 1L)
   ))
 }

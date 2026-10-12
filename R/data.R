@@ -46,14 +46,15 @@ simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  mat <- fn("simulate_data")(
+  mat <- .check(.Call(
+    .sym$simulate_data,
     cg,
     n,
     make_rng(seed),
     standardize,
-    coef_range,
+    as.numeric(coef_range),
     error_sd
-  )
+  ))
   df <- as.data.frame(mat)
   names(df) <- nodes(cg)
   df

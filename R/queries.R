@@ -50,7 +50,7 @@ ancestors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("ancestors")(cg, node, open)
+  .check(.Call(.sym$ancestors, cg, node, open))
 }
 
 #' @rdname node-queries
@@ -60,7 +60,7 @@ descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("descendants")(cg, node, open)
+  .check(.Call(.sym$descendants, cg, node, open))
 }
 
 #' @rdname node-queries
@@ -129,8 +129,8 @@ neighbors <- function(
   node,
   mode = c("all", "in", "out", "undirected", "bidirected")
 ) {
-  mode <- match.arg(mode)
-  fn("neighbors")(cg, node, mode)
+  mode <- if (missing(mode)) mode[[1L]] else match.arg(mode)
+  .check(.Call(.sym$neighbors, cg, node, mode))
 }
 
 #' Possible-ancestor/descendant node-set queries
@@ -173,7 +173,7 @@ possible_ancestors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("possible_ancestors")(cg, node, open)
+  .check(.Call(.sym$possible_ancestors, cg, node, open))
 }
 
 #' @rdname possible-queries
@@ -183,7 +183,7 @@ possible_descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("possible_descendants")(cg, node, open)
+  .check(.Call(.sym$possible_descendants, cg, node, open))
 }
 
 #' Anterior/posterior node-set queries
@@ -220,7 +220,7 @@ anteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("anteriors")(cg, node, open)
+  .check(.Call(.sym$anteriors, cg, node, open))
 }
 
 #' @rdname anteriors
@@ -230,7 +230,7 @@ posteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  fn("posteriors")(cg, node, open)
+  .check(.Call(.sym$posteriors, cg, node, open))
 }
 
 

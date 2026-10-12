@@ -10,7 +10,7 @@ test_that("warmup works", {
 test_that("construction works", {
   skip_if_no_julia()
   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
-  expect_s3_class(dag, "JuliaObject")
+  expect_s3_class(dag, "cgraph")
 
   mag <- cgraph(A %<->% B, C %-->% B %-->% D, class = "MAG")
   expect_true(is_mag(mag))
@@ -65,20 +65,12 @@ test_that("invalid graphs error on construction", {
   expect_error(cgraph(A %-->% B %-->% C %-->% A), "cycle")
 })
 
-test_that("Julia errors are cleaned unless CausalStructures.verbose_errors is set", {
+test_that("library errors carry just the underlying message", {
   skip_if_no_julia()
   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
 
-  withr::local_options(CausalStructures.verbose_errors = FALSE)
   err <- tryCatch(ancestors(dag, "NOT_A_NODE"), error = function(e) e)
-  expect_match(conditionMessage(err), "Unknown node: NOT_A_NODE", fixed = TRUE)
-  expect_false(grepl("Stacktrace", conditionMessage(err), fixed = TRUE))
-
-  withr::local_options(CausalStructures.verbose_errors = TRUE)
-  err_verbose <- tryCatch(ancestors(dag, "NOT_A_NODE"), error = function(e) {
-    e
-  })
-  expect_match(conditionMessage(err_verbose), "Stacktrace", fixed = TRUE)
+  expect_identical(conditionMessage(err), "Unknown node: NOT_A_NODE")
 })
 
 test_that("graph-level queries work", {
@@ -353,8 +345,8 @@ test_that("equivalence class analysis works", {
   expect_true(count > 0)
 
   dags <- enumerate_dags(cp)
-  expect_s3_class(dags, "JuliaObject")
-  # Julia vector contains the enumerated DAGs
+  expect_length(dags, count)
+  expect_true(all(vapply(dags, is_dag, logical(1))))
 })
 
 test_that("MAG enumeration works", {
@@ -362,7 +354,8 @@ test_that("MAG enumeration works", {
 
   pag <- cgraph(A %o->% B, C %o->% B, class = "PAG")
   mags <- enumerate_mags(pag)
-  expect_s3_class(mags, "JuliaObject")
+  expect_true(length(mags) > 0)
+  expect_true(all(vapply(mags, is_mag, logical(1))))
 })
 
 test_that("data simulation works", {

@@ -52,7 +52,8 @@ cgraph_layout <- function(x, method = NULL, ...) {
   if (!inherits(x, "cgraph")) {
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
-  method <- method %||% if (fn("is_dag_type")(x)) "sugiyama" else "stress"
+  method <- method %||%
+    if (.check(.Call(.sym$is_dag_type, x))) "sugiyama" else "stress"
   method <- match.arg(
     method,
     c("stress", "spring", "sfdp", "spectral", "shell", "squaregrid", "sugiyama")

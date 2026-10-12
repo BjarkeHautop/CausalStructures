@@ -21,4 +21,4 @@
 ^vignettes/articles/*_files$
 ^vignettes/articles$
 ^vignettes/
-^inst/Manifest\.toml$
+^inst/Manifest\.toml$^jlbuild$

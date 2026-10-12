@@ -105,7 +105,7 @@ dag_from_pdag <- cgraph_fn("dag_from_pdag")
 #'   meek_closure(pdag)
 #' }
 meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
-  .tag_cgraph(fn("meek_closure")(cg, check_cycles, r4))
+  .check(.Call(.sym$meek_closure, cg, check_cycles, r4))
 }
 
 #' Convert a DAG to its MPDAG
@@ -206,7 +206,7 @@ mag_from_pag <- cgraph_fn("mag_from_pag")
 #'   subgraph(dag, c("A", "B"))
 #' }
 subgraph <- function(cg, nodes) {
-  .tag_cgraph(fn("subgraph")(cg, as.character(nodes)))
+  .check(.Call(.sym$subgraph, cg, as.character(nodes)))
 }
 
 #' Project out latent variables
@@ -224,7 +224,7 @@ subgraph <- function(cg, nodes) {
 #'   latent_project(dag, "U")
 #' }
 latent_project <- function(cg, latents) {
-  .tag_cgraph(fn("latent_project")(cg, as.character(latents)))
+  .check(.Call(.sym$latent_project, cg, as.character(latents)))
 }
 
 #' Make nodes exogenous
@@ -243,7 +243,7 @@ latent_project <- function(cg, latents) {
 #'   exogenize(dag, "M")
 #' }
 exogenize <- function(cg, nodes) {
-  .tag_cgraph(fn("exogenize")(cg, as.character(nodes)))
+  .check(.Call(.sym$exogenize, cg, as.character(nodes)))
 }
 
 #' Normalize latent structure
@@ -264,7 +264,7 @@ exogenize <- function(cg, nodes) {
 #'   normalize_latent_structure(dag, "U")
 #' }
 normalize_latent_structure <- function(cg, latents) {
-  .tag_cgraph(fn("normalize_latent_structure")(cg, as.character(latents)))
+  .check(.Call(.sym$normalize_latent_structure, cg, as.character(latents)))
 }
 
 #' Condition and marginalize a graph
@@ -290,7 +290,8 @@ condition_marginalize <- function(
   cond_vars = character(),
   marg_vars = character()
 ) {
-  .tag_cgraph(fn("condition_marginalize")(
+  .check(.Call(
+    .sym$condition_marginalize,
     cg,
     as.character(cond_vars),
     as.character(marg_vars)
@@ -328,13 +329,14 @@ NULL
 #' @rdname edge-mutation
 #' @export
 add_edges <- function(cg, ..., spec = NULL) {
-  .tag_cgraph(fn("add_edges")(cg, .dots_or_spec(substitute(list(...)), spec)))
+  .check(.Call(.sym$add_edges, cg, .dots_or_spec(substitute(list(...)), spec)))
 }
 
 #' @rdname edge-mutation
 #' @export
 remove_edges <- function(cg, ..., spec = NULL) {
-  .tag_cgraph(fn("remove_edges")(
+  .check(.Call(
+    .sym$remove_edges,
     cg,
     .dots_or_spec(substitute(list(...)), spec)
   ))
@@ -364,13 +366,13 @@ NULL
 #' @rdname node-mutation
 #' @export
 add_nodes <- function(cg, nodes) {
-  .tag_cgraph(fn("add_nodes")(cg, as.character(nodes)))
+  .check(.Call(.sym$add_nodes, cg, as.character(nodes)))
 }
 
 #' @rdname node-mutation
 #' @export
 remove_nodes <- function(cg, nodes) {
-  .tag_cgraph(fn("remove_nodes")(cg, as.character(nodes)))
+  .check(.Call(.sym$remove_nodes, cg, as.character(nodes)))
 }
 
 #' Reclassify a graph
@@ -406,6 +408,6 @@ reclass <- function(
     "UNKNOWN"
   )
 ) {
-  class <- match.arg(class)
-  .tag_cgraph(fn("reclass")(cg, class))
+  class <- if (missing(class)) class[[1L]] else match.arg(class)
+  .check(.Call(.sym$reclass, cg, class))
 }
