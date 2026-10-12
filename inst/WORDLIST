@@ -1,10 +1,12 @@
 ADMG
 ADMG's
 ADMGs
+AGs
 Bezier
 Bidirected
 CMD
 CPDAG
+CPDAGs
 CSR
 Chickering's
 Codecov
@@ -18,6 +20,7 @@ Kuipers
 MAGs
 MEC
 MPDAG
+MPDAGs
 Meek's
 Meek’s
 Moffa
@@ -26,6 +29,7 @@ PAG
 PAGcauses
 PAGs
 PDAG
+PDAGs
 Reingold
 Rényi
 Shpitser

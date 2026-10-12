@@ -1,5 +1,5 @@
 Package: CausalStructures
-Title: What the Package Does (One Line, Title Case)
+Title: Representing and Reasoning About Causal Graphs
 Version: 0.0.0.9000
 Authors@R: c(
     person("Bjarke Hautop", "Kristensen", , "bjarke.hautop@gmail.com", role = c("aut", "cre")),
@@ -8,7 +8,13 @@ Authors@R: c(
     person("Johan", "Larsson", role = "ctb",
            comment = c(ORCID = "0000-0002-4029-5945", note = "Author of adapted plotting code from caugi"))
     )
-Description: What the package does (one paragraph).
+Description: Represent, validate, and reason about causal graphs, including
+    directed acyclic graphs (DAGs), partially directed graphs (PDAGs, CPDAGs,
+    MPDAGs), acyclic directed mixed graphs (ADMGs), and ancestral graphs (AGs,
+    MAGs, PAGs). Provides graph queries, transformations, adjustment set and
+    identification algorithms, and data simulation. The algorithms are
+    implemented in the 'Julia' package 'CausalStructures.jl', which this package
+    provides a wrapper for.
 License: MIT + file LICENSE
 Copyright: file inst/COPYRIGHTS
 Encoding: UTF-8
