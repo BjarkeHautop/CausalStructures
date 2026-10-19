@@ -19,7 +19,7 @@
 # opposed to edges(), which collapses the two marks into a single `type`
 # notation column, e.g. "-->").
 .plot_edges <- function(cg) {
-  mat <- .Call(C_edge_marks, cg)
+  mat <- .Call(C_jl_edge_marks, cg)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],
@@ -1278,7 +1278,7 @@ makeContent.cs_graph_grob <- function(x) {
 # one edge (e.g. an ADMG's X --> Y and X <-> Y) get no route, so they fan out
 # apart as usual instead of sharing one.
 .plot_sugiyama <- function(x, direction) {
-  res <- .Call(C_sugiyama_paths, x, direction)
+  res <- .Call(C_jl_sugiyama_paths, x, direction)
   edges <- .plot_edges(x)
   lo <- pmin(edges$from, edges$to)
   hi <- pmax(edges$from, edges$to)
@@ -1464,7 +1464,7 @@ plot.cgraph <- function(
 
   if (is.null(layout) || is.character(layout)) {
     method <- layout %||%
-      if (.Call(C_is_dag_type, x)) "sugiyama" else "stress"
+      if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
     method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
     if (method == "sugiyama") {
       # Unlike cgraph_layout(), which only returns positions, this also routes

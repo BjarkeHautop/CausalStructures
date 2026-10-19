@@ -22,6 +22,7 @@ Roxygen: list(markdown = TRUE)
 Collate:
     'session.R'
     'jlbind.R'
+    'jlbind-wrappers.R'
     'install.R'
     'dsl.R'
     'construction.R'

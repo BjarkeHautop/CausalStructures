@@ -54,7 +54,7 @@ cgraph_layout <- function(
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
   method <- method %||%
-    if (.Call(C_is_dag_type, x)) "sugiyama" else "stress"
+    if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
   method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
 
   nm <- nodes(x)
@@ -65,7 +65,7 @@ cgraph_layout <- function(
 
   coords <- switch(
     method,
-    sugiyama = .Call(C_sugiyama_layout, x, match.arg(direction)),
+    sugiyama = .Call(C_jl_sugiyama_layout, x, match.arg(direction)),
     stress = .layout_stress(.graph_distances(x, nm)),
     shell = .layout_shell(n),
     squaregrid = .layout_squaregrid(n)

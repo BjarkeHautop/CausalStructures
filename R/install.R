@@ -5,7 +5,7 @@
 #' installing or updating CausalStructures, and again (with `force = TRUE`) if
 #' the Julia it was built with is removed, for example by a `juliaup` update.
 #'
-#' The library is built by 'jlbind' ([jlbind::install_backend()]), which
+#' The library is built by 'jlbind' ([jlbind::install_library()]), which
 #' compiles the Julia code of every installed package that uses it into one
 #' library, since an R process can run only one: CausalStructures and any
 #' such packages are built together. Julia downloads CausalStructures.jl and
@@ -25,9 +25,13 @@
 #' Julia can only be started once per R process, so a library that replaces
 #' one already loaded is used from the next R session on.
 #'
-#' @inheritParams jlbind::install_backend
+#' @inheritParams jlbind::install_library
+#' @param update If `TRUE`, ignore the shipped `Manifest.toml` and use the
+#'   newest dependency versions the shipped `Project.toml` allows (jlbind's
+#'   `versions = "compat"`). Always rebuilds.
 #'
-#' @return The path to the library, invisibly.
+#' @return The path to the library (invisibly), or `NULL` if nothing was
+#'   built.
 #' @export
 #' @examples
 #' \dontrun{
@@ -46,11 +50,11 @@ install_backend <- function(
   update = FALSE,
   develop = NULL
 ) {
-  jlbind::install_backend(
+  jlbind::install_library(
     julia = julia,
     ask = ask,
     force = force,
-    update = update,
+    versions = if (isTRUE(update)) "compat" else "manifest",
     develop = develop
   )
 }

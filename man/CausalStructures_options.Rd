@@ -21,6 +21,8 @@ Julia through 'jlbind'. The number of Julia threads is read from the
 \code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"}) when that
 library is loaded, so set it before loading the package. The library is
 looked up in the \code{JLBIND_LIBRARY} environment variable first (a path to a
-library built with \code{\link[jlbind:build_library]{jlbind::build_library()}}), then where
+library built with \code{\link[jlbind:build_library]{jlbind::build_library()}}), then, when the package is
+loaded with \code{pkgload::load_all()}, in \verb{.jlbind/} in its sources (where
+\code{jlbind::build_library()} writes by default), then where
 \code{\link[=install_backend]{install_backend()}} builds it.
 }

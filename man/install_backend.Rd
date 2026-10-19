@@ -13,23 +13,24 @@ install_backend(
 )
 }
 \arguments{
-\item{julia}{Path to the \code{julia} binary to build with. Defaults to the
-\code{JULIA} environment variable, else \code{julia} on the \code{PATH}.}
+\item{julia}{Path to the \code{julia} executable. By default, the \code{JULIA}
+environment variable, or \code{julia} on the \code{PATH}.}
 
-\item{ask}{Ask for confirmation before building? Defaults to
-\code{\link[=interactive]{interactive()}}.}
+\item{ask}{If \code{TRUE}, ask before building. Defaults to \code{\link[=interactive]{interactive()}}.}
 
-\item{force}{Rebuild even if the library is up to date with the installed
-packages? Implied by \code{update} and \code{develop}.}
+\item{force}{If \code{TRUE}, rebuild even if the library is up to date. Always on
+with \code{versions = "compat"} or \code{develop}.}
 
-\item{update}{Use the newest dependency versions the packages allow
-instead of those in their \code{Manifest.toml}s?}
+\item{update}{If \code{TRUE}, ignore the shipped \code{Manifest.toml} and use the
+newest dependency versions the shipped \code{Project.toml} allows (jlbind's
+\code{versions = "compat"}). Always rebuilds.}
 
-\item{develop}{Paths to local Julia packages to build with in place of
-their registered releases.}
+\item{develop}{Paths to local Julia packages to use instead of their released
+versions.}
 }
 \value{
-The path to the library, invisibly.
+The path to the library (invisibly), or \code{NULL} if nothing was
+built.
 }
 \description{
 Compiles CausalStructures.jl with your Julia (>= 1.13) into the shared
@@ -38,7 +39,7 @@ installing or updating CausalStructures, and again (with \code{force = TRUE}) if
 the Julia it was built with is removed, for example by a \code{juliaup} update.
 }
 \details{
-The library is built by 'jlbind' (\code{\link[jlbind:install_backend]{jlbind::install_backend()}}), which
+The library is built by 'jlbind' (\code{\link[jlbind:install_library]{jlbind::install_library()}}), which
 compiles the Julia code of every installed package that uses it into one
 library, since an R process can run only one: CausalStructures and any
 such packages are built together. Julia downloads CausalStructures.jl and

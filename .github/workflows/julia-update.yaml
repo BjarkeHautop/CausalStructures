@@ -49,7 +49,7 @@ jobs:
       # JLBIND_LIBRARY.
       - name: Build the CausalStructures.jl library
         run: |
-          Rscript -e 'jlbind::build_library(".", file.path(Sys.getenv("RUNNER_TEMP"), "jlbind"), update = TRUE)'
+          Rscript -e 'jlbind::build_library(".", file.path(Sys.getenv("RUNNER_TEMP"), "jlbind"), versions = "compat")'
           echo "JLBIND_LIBRARY=$RUNNER_TEMP/jlbind/jlbind.so" >> "$GITHUB_ENV"
         shell: bash
 
