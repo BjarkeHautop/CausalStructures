@@ -8,6 +8,7 @@ cgraph_layout(
   x,
   method = NULL,
   direction = c("right", "down", "up", "left"),
+  seed = 1L,
   ...
 )
 }
@@ -21,13 +22,19 @@ cgraph_layout(
 Every edge is layered from its first to its second node (\verb{A --> B}
 puts \code{A} before \code{B}), and any cycles are broken, so it works for every
 graph class.
-\item \code{"stress"}: stress majorization (Gansner, Koren and North, 2005),
-starting from classical multidimensional scaling. A good
-general-purpose choice - well-spaced and deterministic for a given
-graph.
+\item \code{"stress"}: stress majorization (Gansner, Koren and North, 2005).
+A good general-purpose choice.
+\item \code{"spring"}: Fruchterman-Reingold force-directed layout.
+\item \code{"sfdp"}: scalable force-directed placement (Hu, 2005).
+\item \code{"spectral"}: spectral layout, from eigenvectors of the graph
+Laplacian.
 \item \code{"shell"}: nodes evenly spaced on a circle, in \code{\link[=nodes]{nodes()}} order.
 \item \code{"squaregrid"}: nodes on a square grid, row by row in \code{\link[=nodes]{nodes()}} order.
 }
+
+Every method except \code{"sugiyama"} is from
+\href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} and
+ignores edge direction.
 
 Defaults (\code{NULL}) to \code{"sugiyama"} when \code{x} was constructed (or
 \code{\link[=reclass]{reclass()}}ed) as a \code{DAG}, \code{"stress"} otherwise. This checks \code{x}'s
@@ -36,6 +43,9 @@ with only directed, acyclic edges still defaults to \code{"stress"}.}
 
 \item{direction}{For \code{"sugiyama"}, which way the layers flow: \code{"right"}
 (the default, as in CausalStructures.jl), \code{"down"}, \code{"up"} or \code{"left"}.}
+
+\item{seed}{For \code{"stress"}, \code{"spring"} and \code{"sfdp"}, the seed of the random
+initial positions. The layout is the same for the same seed.}
 
 \item{...}{Ignored, so that \code{\link[=plot.cgraph]{plot.cgraph()}} can pass its \code{...} through.}
 }

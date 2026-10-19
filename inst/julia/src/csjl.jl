@@ -19,6 +19,7 @@ module csjl
 import CausalStructures as CS
 using CausalStructures:
     CausalGraph, CausalEdge, DAG, UG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN
+import NetworkLayout
 import Random
 import Sugiyama
 
@@ -606,6 +607,30 @@ function _sugiyama_adjacency(@nospecialize(g::CausalGraph))
     return ns, es, idx, A
 end
 
+# Node positions from NetworkLayout.jl, as for sugiyama_layout, with every edge
+# linking its two nodes regardless of direction (as in CausalStructures.jl's
+# NetworkLayoutExt). The random layouts get an explicit RNG: their default,
+# `DEFAULT_RNG[](seed)`, constructs a type only known at run time, which
+# `--trim` rejects.
+function jl_network_layout(@nospecialize(g::CausalGraph), method::Symbol, seed::Int64)
+    ns, es, idx, A = _sugiyama_adjacency(g)
+    U = Float64.((A .+ A') .> 0)
+    if method === :stress
+        return _points_matrix(NetworkLayout.stress(U; rng = Random.MersenneTwister(seed)))
+    elseif method === :spring
+        return _points_matrix(NetworkLayout.spring(U; rng = Random.MersenneTwister(seed)))
+    elseif method === :sfdp
+        return _points_matrix(NetworkLayout.sfdp(U; rng = Random.MersenneTwister(seed)))
+    elseif method === :spectral
+        return _points_matrix(NetworkLayout.spectral(U))
+    elseif method === :shell
+        return _points_matrix(NetworkLayout.shell(U))
+    elseif method === :squaregrid
+        return _points_matrix(NetworkLayout.squaregrid(U))
+    end
+    throw(ArgumentError("unknown layout method " * String(method)))
+end
+
 # Points as an n-by-2 numeric matrix of x and y coordinates.
 function _points_matrix(pts)
     n = length(pts)
@@ -731,6 +756,7 @@ end
 )::SEXP
 
 @rcall jl_sugiyama_layout(g::GraphRef, direction::Symbol)::SEXP
+@rcall jl_network_layout(g::GraphRef, method::Symbol, seed::Int64)::SEXP
 @rcall jl_sugiyama_paths(g::GraphRef, direction::Symbol)::SEXP
 
 end # module

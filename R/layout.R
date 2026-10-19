@@ -1,13 +1,22 @@
 # --- Plot layouts -------------------------------------------------------
 #
-# `"sugiyama"` is computed by the compiled library (Sugiyama.jl); the other
-# methods are small enough to implement here in R. Causal graphs are small,
-# so plain dense-matrix code is fast enough.
+# Every method is computed by the compiled library: `"sugiyama"` by
+# Sugiyama.jl, the others by NetworkLayout.jl.
 # The grid-graphics rendering in this file's companion
 # (causal-structures-plot.R) is adapted from caugi's plotting code
 # (R/plot-core.R, R/plot-grobs.R).
 
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+.layout_methods <- c(
+  "sugiyama",
+  "stress",
+  "spring",
+  "sfdp",
+  "spectral",
+  "shell",
+  "squaregrid"
+)
 
 #' Compute a graph layout
 #'
@@ -20,12 +29,18 @@
 #'     Every edge is layered from its first to its second node (`A --> B`
 #'     puts `A` before `B`), and any cycles are broken, so it works for every
 #'     graph class.
-#'   * `"stress"`: stress majorization (Gansner, Koren and North, 2005),
-#'     starting from classical multidimensional scaling. A good
-#'     general-purpose choice - well-spaced and deterministic for a given
-#'     graph.
+#'   * `"stress"`: stress majorization (Gansner, Koren and North, 2005).
+#'     A good general-purpose choice.
+#'   * `"spring"`: Fruchterman-Reingold force-directed layout.
+#'   * `"sfdp"`: scalable force-directed placement (Hu, 2005).
+#'   * `"spectral"`: spectral layout, from eigenvectors of the graph
+#'     Laplacian.
 #'   * `"shell"`: nodes evenly spaced on a circle, in [nodes()] order.
 #'   * `"squaregrid"`: nodes on a square grid, row by row in [nodes()] order.
+#'
+#'   Every method except `"sugiyama"` is from
+#'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) and
+#'   ignores edge direction.
 #'
 #'   Defaults (`NULL`) to `"sugiyama"` when `x` was constructed (or
 #'   [reclass()]ed) as a `DAG`, `"stress"` otherwise. This checks `x`'s
@@ -33,6 +48,8 @@
 #'   with only directed, acyclic edges still defaults to `"stress"`.
 #' @param direction For `"sugiyama"`, which way the layers flow: `"right"`
 #'   (the default, as in CausalStructures.jl), `"down"`, `"up"` or `"left"`.
+#' @param seed For `"stress"`, `"spring"` and `"sfdp"`, the seed of the random
+#'   initial positions. The layout is the same for the same seed.
 #' @param ... Ignored, so that [plot.cgraph()] can pass its `...` through.
 #' @return A `data.frame` with columns `name`, `x`, and `y`.
 #'
@@ -48,6 +65,7 @@ cgraph_layout <- function(
   x,
   method = NULL,
   direction = c("right", "down", "up", "left"),
+  seed = 1L,
   ...
 ) {
   if (!inherits(x, "cgraph")) {
@@ -55,7 +73,7 @@ cgraph_layout <- function(
   }
   method <- method %||%
     if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
-  method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
+  method <- match.arg(method, .layout_methods)
 
   nm <- nodes(x)
   n <- length(nm)
@@ -63,13 +81,11 @@ cgraph_layout <- function(
     return(data.frame(name = character(), x = numeric(), y = numeric()))
   }
 
-  coords <- switch(
-    method,
-    sugiyama = .Call(C_jl_sugiyama_layout, x, match.arg(direction)),
-    stress = .layout_stress(.graph_distances(x, nm)),
-    shell = .layout_shell(n),
-    squaregrid = .layout_squaregrid(n)
-  )
+  coords <- if (method == "sugiyama") {
+    .Call(C_jl_sugiyama_layout, x, match.arg(direction))
+  } else {
+    .Call(C_jl_network_layout, x, method, as.integer(seed))
+  }
 
   data.frame(
     name = nm,
@@ -77,98 +93,4 @@ cgraph_layout <- function(
     y = coords[, 2],
     stringsAsFactors = FALSE
   )
-}
-
-# Shortest-path distances between the nodes `nm` of `x`, ignoring edge
-# direction (Floyd-Warshall). Unreachable pairs are `Inf`.
-.graph_distances <- function(x, nm) {
-  n <- length(nm)
-  d <- matrix(Inf, n, n)
-  diag(d) <- 0
-  e <- edges(x)
-  if (nrow(e) > 0) {
-    ij <- cbind(match(e$from, nm), match(e$to, nm))
-    ij <- ij[ij[, 1] != ij[, 2], , drop = FALSE]
-    d[ij] <- 1
-    d[ij[, 2:1, drop = FALSE]] <- 1
-  }
-  for (k in seq_len(n)) {
-    d <- pmin(d, outer(d[, k], d[k, ], `+`))
-  }
-  d
-}
-
-# Stress majorization (SMACOF) of the distance matrix `d`, as in Gansner,
-# Koren and North (2005, doi:10.1007/978-3-540-31843-9_25), starting from
-# classical multidimensional scaling so the result is deterministic.
-.layout_stress <- function(d, maxit = 500L, reltol = 1e-5) {
-  n <- nrow(d)
-  if (n == 1L) {
-    return(matrix(0, 1L, 2L))
-  }
-
-  # Pairs in different components are placed a little further apart than the
-  # largest distance within a component.
-  if (any(is.infinite(d))) {
-    finite <- d[is.finite(d)]
-    maxd <- max(1, finite)
-    ncomp <- length(unique(apply(is.finite(d), 1L, which.max)))
-    d[is.infinite(d)] <- maxd * ncomp^(1 / 3)
-  }
-
-  w <- d^-2
-  diag(w) <- 0
-  lw <- diag(rowSums(w)) - w
-  # Lw is a connected graph's Laplacian, so its pseudo-inverse is
-  # (Lw + J/n)^-1 - J/n.
-  j <- matrix(1 / n, n, n)
-  lw_pinv <- solve(lw + j) - j
-
-  pos <- .classical_mds(d)
-  stress <- function(pos) {
-    dist <- as.matrix(stats::dist(pos))
-    sum(w * (dist - d)^2) / 2
-  }
-  old <- stress(pos)
-  for (it in seq_len(maxit)) {
-    dist <- as.matrix(stats::dist(pos))
-    b <- ifelse(dist > 0, -w * d / dist, 0)
-    diag(b) <- -rowSums(b)
-    pos <- lw_pinv %*% (b %*% pos)
-    new <- stress(pos)
-    if (abs(old - new) < reltol * new) {
-      break
-    }
-    old <- new
-  }
-  pos
-}
-
-# Classical MDS coordinates in two dimensions. A dimension MDS cannot fill
-# (e.g. a path, which is collinear) gets a small deterministic offset, so
-# stress majorization is not stuck in a line.
-.classical_mds <- function(d) {
-  n <- nrow(d)
-  pos <- suppressWarnings(stats::cmdscale(d, k = min(2L, n - 1L)))
-  pos <- matrix(pos, nrow = n)
-  pad <- 0.01 * max(d) * sin(seq_len(n))
-  while (ncol(pos) < 2L) {
-    pos <- cbind(pos, pad)
-  }
-  unname(pos)
-}
-
-.layout_shell <- function(n) {
-  if (n == 1L) {
-    return(matrix(0, 1L, 2L))
-  }
-  # Start at the top and go clockwise.
-  theta <- pi / 2 - 2 * pi * (seq_len(n) - 1) / n
-  cbind(cos(theta), sin(theta))
-}
-
-.layout_squaregrid <- function(n) {
-  cols <- ceiling(sqrt(n))
-  i <- seq_len(n) - 1
-  cbind(i %% cols, -(i %/% cols))
 }

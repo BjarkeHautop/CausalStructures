@@ -198,18 +198,23 @@ data from a graph.
 ### Plotting (`R/plot.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
 
 - `cgraph_layout()` (`R/layout.R`) computes node positions. `"sugiyama"` is the
-  library's `sugiyama_layout` entrypoint, which calls
+  library's `jl_sugiyama_layout` entrypoint, which calls
   [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) directly on the
   adjacency matrix (every edge as `src -> dst`, so any class works) rather than
   through CausalStructures.jl's `layout()`, whose `Val(method)` dispatch and
-  forwarded `kwargs...` `--trim` rejects. `plot()` uses the `sugiyama_paths`
+  forwarded `kwargs...` `--trim` rejects. `plot()` uses the `jl_sugiyama_paths`
   entrypoint instead (Sugiyama.jl's `sugiyama_paths`), which also returns each
   edge's route through its bend points, drawn as an explicit edge `path` as in
   CausalStructures.jl; node pairs with parallel edges get no route, so they
-  still fan out. `"stress"`, `"shell"` and `"squaregrid"` are plain R:
-  NetworkLayout.jl does not compile under `--trim`, and causal graphs are small
-  enough that dense-matrix R code is fast. Stress starts from classical MDS
-  (`stats::cmdscale()`), so it needs no RNG and is deterministic.
+  still fan out. The other methods (`"stress"`, `"spring"`, `"sfdp"`,
+  `"spectral"`, `"shell"`, `"squaregrid"`, as in CausalStructures.jl) are the
+  `jl_network_layout` entrypoint, calling
+  [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) on the
+  undirected adjacency matrix. Released NetworkLayout.jl does not compile under
+  `--trim`, so `inst/julia/Project.toml` takes it from the `trim-compat` branch
+  of BjarkeHautop/NetworkLayout.jl (`[sources]`, pinned in the manifest). The
+  random layouts get an explicit `MersenneTwister(seed)`: NetworkLayout's
+  default RNG is a type only known at run time.
 - The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather

@@ -28,7 +28,8 @@
 \item \code{NULL} (default): \code{\link[=cgraph_layout]{cgraph_layout()}}'s own default - \code{"sugiyama"} for a
 \code{DAG}, \code{"stress"} otherwise.
 \item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
-(\code{"sugiyama"}, \code{"stress"}, \code{"shell"}, \code{"squaregrid"}). With
+(\code{"sugiyama"}, \code{"stress"}, \code{"spring"}, \code{"sfdp"}, \code{"spectral"},
+\code{"shell"}, \code{"squaregrid"}). With
 \code{"sugiyama"} (also the \code{NULL} default for a \code{DAG}), each edge is also
 drawn along Sugiyama.jl's own route through its bend points, as in
 CausalStructures.jl; pass \code{cgraph_layout(x, "sugiyama")} instead to

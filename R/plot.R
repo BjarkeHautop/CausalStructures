@@ -1310,7 +1310,8 @@ makeContent.cs_graph_grob <- function(x) {
 #'   * `NULL` (default): [cgraph_layout()]'s own default - `"sugiyama"` for a
 #'     `DAG`, `"stress"` otherwise.
 #'   * A character string passed to [cgraph_layout()] as `method`
-#'     (`"sugiyama"`, `"stress"`, `"shell"`, `"squaregrid"`). With
+#'     (`"sugiyama"`, `"stress"`, `"spring"`, `"sfdp"`, `"spectral"`,
+#'     `"shell"`, `"squaregrid"`). With
 #'     `"sugiyama"` (also the `NULL` default for a `DAG`), each edge is also
 #'     drawn along Sugiyama.jl's own route through its bend points, as in
 #'     CausalStructures.jl; pass `cgraph_layout(x, "sugiyama")` instead to
@@ -1465,7 +1466,7 @@ plot.cgraph <- function(
   if (is.null(layout) || is.character(layout)) {
     method <- layout %||%
       if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
-    method <- match.arg(method, c("sugiyama", "stress", "shell", "squaregrid"))
+    method <- match.arg(method, .layout_methods)
     if (method == "sugiyama") {
       # Unlike cgraph_layout(), which only returns positions, this also routes
       # each edge through Sugiyama's own bend points.

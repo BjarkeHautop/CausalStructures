@@ -116,15 +116,22 @@ plot(dag, layout = "stress")
 ```
 
 You can use these names for the built-in layouts. `"sugiyama"` comes from
-[Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl), while the others are
-implemented in R; see `?cgraph_layout` for details:
+[Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl), while the others
+come from [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl),
+as in CausalStructures.jl; see `?cgraph_layout` for details:
 
-  | `layout`       | Algorithm                       |
-  | -------------- | ------------------------------- |
-  | `"sugiyama"`   | Sugiyama (layered) layout       |
-  | `"stress"`     | Stress majorization             |
-  | `"shell"`      | Nodes evenly spaced on a circle |
-  | `"squaregrid"` | Square grid                     |
+  | `layout`       | Algorithm                           |
+  | -------------- | ----------------------------------- |
+  | `"sugiyama"`   | Sugiyama (layered) layout           |
+  | `"stress"`     | Stress majorization                 |
+  | `"spring"`     | Fruchterman-Reingold force-directed |
+  | `"sfdp"`       | Scalable force-directed placement   |
+  | `"spectral"`   | Spectral layout                     |
+  | `"shell"`      | Nodes evenly spaced on a circle     |
+  | `"squaregrid"` | Square grid                         |
+
+`"stress"`, `"spring"` and `"sfdp"` start from random positions; `seed` (default
+`1`) makes them reproducible.
 
 For `"sugiyama"`, `direction` (`"right"`, the default, `"down"`, `"up"`, or
 `"left"`) sets which way the layers flow:

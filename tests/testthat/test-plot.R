@@ -8,7 +8,15 @@ test_that("plot.cgraph draws with the default layout", {
 
 test_that("cgraph_layout works for every layout method", {
   skip_if_no_julia()
-  methods <- c("sugiyama", "stress", "shell", "squaregrid")
+  methods <- c(
+    "sugiyama",
+    "stress",
+    "spring",
+    "sfdp",
+    "spectral",
+    "shell",
+    "squaregrid"
+  )
 
   for (m in methods) {
     coords <- cgraph_layout(test_dag(), method = m)
@@ -24,7 +32,15 @@ test_that("plot.cgraph draws with every layout method", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  methods <- c("sugiyama", "stress", "shell", "squaregrid")
+  methods <- c(
+    "sugiyama",
+    "stress",
+    "spring",
+    "sfdp",
+    "spectral",
+    "shell",
+    "squaregrid"
+  )
   for (m in methods) {
     expect_no_error(plot(test_dag(), layout = m))
   }
@@ -321,12 +337,22 @@ test_that("sugiyama works for graphs that are not DAGs", {
   }
 })
 
-test_that("stress is deterministic and handles awkward graphs", {
+test_that("the random layouts are deterministic for a given seed", {
   skip_if_no_julia()
-  expect_identical(
-    cgraph_layout(test_dag(), method = "stress"),
-    cgraph_layout(test_dag(), method = "stress")
-  )
+  for (m in c("stress", "spring", "sfdp")) {
+    expect_identical(
+      cgraph_layout(test_dag(), method = m),
+      cgraph_layout(test_dag(), method = m)
+    )
+    expect_false(identical(
+      cgraph_layout(test_dag(), method = m, seed = 1),
+      cgraph_layout(test_dag(), method = m, seed = 2)
+    ))
+  }
+})
+
+test_that("stress handles awkward graphs", {
+  skip_if_no_julia()
 
   graphs <- list(
     single = cgraph("A", class = "UG"),
@@ -344,16 +370,6 @@ test_that("stress is deterministic and handles awkward graphs", {
       expect_gt(min(stats::dist(coords[, c("x", "y")])), 1e-3)
     }
   }
-})
-
-test_that("stress places adjacent nodes about one unit apart", {
-  skip_if_no_julia()
-  g <- cgraph("A --- B, B --- C, C --- D, D --- A", class = "UG")
-  coords <- cgraph_layout(g, method = "stress")
-  d <- as.matrix(stats::dist(coords[, c("x", "y")]))
-  dimnames(d) <- list(coords$name, coords$name)
-  expect_equal(d["A", "B"], 1, tolerance = 0.1)
-  expect_equal(d["A", "C"], sqrt(2), tolerance = 0.1)
 })
 
 test_that("shell and squaregrid place nodes in nodes() order", {

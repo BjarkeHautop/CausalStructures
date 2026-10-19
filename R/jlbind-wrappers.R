@@ -126,6 +126,9 @@ jl_simulate_data <- function(g, n, seed, standardize, coef_range, error_sd) {
 jl_sugiyama_layout <- function(g, direction) {
   .Call(C_jl_sugiyama_layout, g, direction)
 }
+jl_network_layout <- function(g, method, seed) {
+  .Call(C_jl_network_layout, g, method, seed)
+}
 jl_sugiyama_paths <- function(g, direction) {
   .Call(C_jl_sugiyama_paths, g, direction)
 }

@@ -92,4 +92,5 @@
     JLBIND_ENTRY(jl_remove_nodes, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_simulate_data, 6, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5, SEXP a6), (a1, a2, a3, a4, a5, a6)) \
     JLBIND_ENTRY(jl_sugiyama_layout, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(jl_network_layout, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_sugiyama_paths, 2, (SEXP a1, SEXP a2), (a1, a2))
