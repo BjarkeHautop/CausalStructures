@@ -57,5 +57,5 @@ Remotes: BjarkeHautop/jlbind
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues
-Config/Needs/website: quarto
+Config/Needs/website: altdoc, BjarkeHautop/altdown, quarto
 Config/roxygen2/version: 8.1.0

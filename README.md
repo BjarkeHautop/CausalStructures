@@ -98,8 +98,9 @@ cpdag
 #>     A --- X, M --- X, M --> Y, A --> Y
 ```
 
-See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/)
-for the full documentation.
+See the [documentation
+site](https://bjarkehautop.github.io/CausalStructures/) for the full
+documentation.
 
 ## Multi-threading
 

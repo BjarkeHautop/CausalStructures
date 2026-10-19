@@ -106,8 +106,8 @@ cpdag <- dag_to_cpdag(dag)
 cpdag
 ```
 
-See the [pkgdown site](https://bjarkehautop.github.io/CausalStructures/) for the
-full documentation.
+See the [documentation site](https://bjarkehautop.github.io/CausalStructures/)
+for the full documentation.
 
 ## Multi-threading
 

@@ -58,8 +58,11 @@ JLBIND_LIBRARY=$PWD/.jlbind/jlbind.so Rscript -e 'devtools::check()'
 # Re-knit README.md from README.Rmd after editing README.Rmd
 Rscript -e 'devtools::build_readme()'
 
-# Build pkgdown site locally
-Rscript -e 'pkgdown::build_site(devel = TRUE)'
+# Build the documentation site locally into docs/ (altdown, an altdoc/Quarto
+# theme styled like pkgdown; function groups live in altdoc/altdown.yml), then
+# preview it
+Rscript -e 'altdown::build_site(freeze = FALSE)'
+Rscript -e 'altdoc::preview_docs()'
 ```
 
 Tests that need the compiled library call `skip_if_no_julia()` (see
