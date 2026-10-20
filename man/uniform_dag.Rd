@@ -17,8 +17,8 @@ A Julia proxy object representing the graph.
 \description{
 Generates a random \link[=cgraph]{DAG} on \code{n} observed nodes named
 \verb{V1, ..., Vn}, sampled uniformly at random from the space of all labelled
-DAGs on \code{n} nodes, using the recursive-enumeration algorithm of Kuipers &
-Moffa (2015).
+DAGs on \code{n} nodes. It uses the recursive-enumeration algorithm of
+Kuipers & Moffa (2015).
 }
 \details{
 Unlike \code{\link[=generate_graph]{generate_graph()}}, which samples edges independently (uniform over

@@ -18,7 +18,8 @@ names.}
 \code{TRUE} if the configuration satisfies the frontdoor criterion.
 }
 \description{
-\code{given} is a valid front-door set if (1) it intercepts every directed path
+Tests whether \code{given} is a valid front-door set for the effect of \code{x} on
+\code{y}. It is if (1) it intercepts every directed path
 from \code{x} to \code{y}, (2) there is no unblocked backdoor path from \code{x} to any
 node in \code{given}, and (3) for every node in \code{given}, all backdoor paths to
 \code{y} are blocked by \code{x} together with the rest of \code{given}. When these hold,

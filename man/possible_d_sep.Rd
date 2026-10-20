@@ -17,10 +17,10 @@ possible_d_sep(cg, x, y)
 Sorted character vector of node names.
 }
 \description{
-Returns D-SEP(x, y, cg): every vertex other than \code{x} for which there is a
-collider path between \code{x} and the vertex in \code{cg} on which every vertex,
-including the vertex itself, is an ancestor of \code{x} or of some member of
-\code{y}. This is the plain graph-level primitive that \code{\link[=backdoor_set]{backdoor_set()}} (for
+Returns D-SEP(x, y, cg). It contains every vertex other than \code{x} for which
+there is a collider path between \code{x} and the vertex in \code{cg} on which every
+vertex, including the vertex itself, is an ancestor of \code{x} or of some
+member of \code{y}. This is the plain graph-level primitive that \code{\link[=backdoor_set]{backdoor_set()}} (for
 MAG/PAG) uses internally to build its generalized back-door set.
 }
 \examples{

@@ -14,7 +14,7 @@ A Julia proxy list of MAGs in the equivalence class.
 }
 \description{
 Enumerates all Markov equivalent MAGs in the equivalence class
-represented by a PAG (Partial Ancestral Graph): each circle endpoint of
+represented by a PAG (Partial Ancestral Graph). Each circle endpoint of
 the PAG is independently resolved to a tail or an arrowhead, keeping only
 assignments that validate as a MAG and map back to the same PAG under
 \code{\link[=mag_to_pag]{mag_to_pag()}}. For a single representative instead of the whole

@@ -10,10 +10,10 @@ setup()
 \code{NULL}, invisibly.
 }
 \description{
-The library is loaded with the package, by 'jlbind'; this raises an error
-saying why it is not available, if it is not: typically that it has not
-been built yet, or was built for another version of CausalStructures, in
-which case run \code{\link[=install_backend]{install_backend()}}.
+Raises an error saying why the library is not available, if it is not.
+The library is loaded with the package, by 'jlbind', so this is typically
+because it has not been built yet, or was built for another version of
+CausalStructures, in which case run \code{\link[=install_backend]{install_backend()}}.
 }
 \examples{
 if (julia_ready()) {

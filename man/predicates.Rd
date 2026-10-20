@@ -44,10 +44,10 @@ is_acyclic(cg)
 A logical scalar.
 }
 \description{
-Test which class a graph belongs to (\code{is_dag()}, \code{is_pdag()},
-\code{is_cpdag()}, \code{is_mpdag()}, \code{is_ug()}, \code{is_admg()},
-\code{is_ag()}, \code{is_mag()}, \code{is_pag()}) or structural properties
-(\code{is_simple()}, \code{is_acyclic()}).
+Test which class a graph belongs to, or its structural properties.
+The class predicates are \code{is_dag()}, \code{is_pdag()}, \code{is_cpdag()},
+\code{is_mpdag()}, \code{is_ug()}, \code{is_admg()}, \code{is_ag()}, \code{is_mag()} and
+\code{is_pag()}; the structural ones are \code{is_simple()} and \code{is_acyclic()}.
 }
 \details{
 These test the actual edge structure of \code{cg}, independent of the

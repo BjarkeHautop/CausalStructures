@@ -14,7 +14,7 @@ A \code{PAG} graph proxy.
 }
 \description{
 Returns the PAG representing the Markov equivalence class of the MAG
-\code{cg}: same skeleton, with each endpoint kept as an arrowhead or tail only
+\code{cg}. It has the same skeleton, with each endpoint kept as an arrowhead or tail only
 if that mark is shared by every MAG in the class (a circle mark
 otherwise). Starts from the skeleton with all-circle marks, orients
 unshielded colliders as they appear in \code{cg}, then applies Zhang's

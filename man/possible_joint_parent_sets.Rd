@@ -19,7 +19,7 @@ orientation, each containing one parent set per node of \code{xs}.
 }
 \description{
 Generalizes \code{\link[=possible_parent_sets]{possible_parent_sets()}} from a single intervention node to a
-set \code{xs} of simultaneous interventions: every undirected edge incident to
+set \code{xs} of simultaneous interventions. Every undirected edge incident to
 at least one node of \code{xs} is jointly reoriented, keeping only orientations
 that introduce no new v-structure and remain acyclic. Each returned entry
 is a list of parent sets in the same order as \code{xs} (entry \code{i} gives a

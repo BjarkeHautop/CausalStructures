@@ -20,7 +20,7 @@ is_valid_iv(cg, x, y, z = character())
 }
 \description{
 Tests whether a set of variables are valid instruments for identifying
-the causal effect of exposure \code{x} on outcome \code{y}: every node in \code{z} must
+the causal effect of exposure \code{x} on outcome \code{y}. Every node in \code{z} must
 be d-/m-separated from \code{y} given \code{x} in the graph obtained by deleting
 \code{x}'s incoming edges (exclusion restriction), and at least one node in
 \code{z} must be d-/m-connected to \code{x} (relevance).

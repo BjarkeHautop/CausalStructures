@@ -18,7 +18,7 @@ A Julia proxy object representing the resulting \code{"UNKNOWN"} graph.
 }
 \description{
 Returns the maximal local MAG for the local structure \code{c} at \code{x} in the
-PAG \code{cg}: \code{cg} with a bidirected edge from \code{x} to every node in \code{c} and a
+PAG \code{cg}. This is \code{cg} with a bidirected edge from \code{x} to every node in \code{c} and a
 directed edge from \code{x} to every other circle-marked neighbor, treated as
 local background knowledge and closed under the corresponding rule set.
 \code{c} should be a valid local structure, i.e. an entry of

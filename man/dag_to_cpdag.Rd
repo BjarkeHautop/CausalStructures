@@ -14,7 +14,7 @@ A \code{CPDAG} graph proxy.
 }
 \description{
 Returns the CPDAG representing the Markov equivalence class (MEC) of the
-DAG \code{cg}: unshielded colliders (v-structures) determine which edges are
+DAG \code{cg}. Unshielded colliders (v-structures) determine which edges are
 compelled, an initial PDAG is built from the skeleton with those
 orientations, and \code{\link[=meek_closure]{meek_closure()}} propagates the rest.
 }

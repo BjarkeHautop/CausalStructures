@@ -135,9 +135,9 @@ neighbors <- function(
 
 #' Possible-ancestor/descendant node-set queries
 #'
-#' `possible_ancestors()` finds every node `V` for which some DAG (for a
-#' PDAG-family `cg`) or MAG (for a PAG `cg`) in the equivalence class
-#' represented by `cg` has `V` as an ancestor of `node`: nodes reachable
+#' `possible_ancestors()` finds every node `V` that is an ancestor of `node`
+#' in some DAG (for a PDAG-family `cg`) or MAG (for a PAG `cg`) in the
+#' equivalence class represented by `cg`. These are the nodes reachable
 #' from `node` by a *possibly directed* path, one on which no edge is
 #' compelled in the direction away from `node` (traversing an undirected
 #' edge, or a directed/circle edge oriented, or possibly orientable, toward
@@ -238,10 +238,10 @@ posteriors <- function(
 
 #' Graph class predicates
 #'
-#' Test which class a graph belongs to (`is_dag()`, `is_pdag()`,
-#' `is_cpdag()`, `is_mpdag()`, `is_ug()`, `is_admg()`,
-#' `is_ag()`, `is_mag()`, `is_pag()`) or structural properties
-#' (`is_simple()`, `is_acyclic()`).
+#' Test which class a graph belongs to, or its structural properties.
+#' The class predicates are `is_dag()`, `is_pdag()`, `is_cpdag()`,
+#' `is_mpdag()`, `is_ug()`, `is_admg()`, `is_ag()`, `is_mag()` and
+#' `is_pag()`; the structural ones are `is_simple()` and `is_acyclic()`.
 #'
 #' These test the actual edge structure of `cg`, independent of the
 #' `class` it has.

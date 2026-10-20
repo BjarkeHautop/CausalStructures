@@ -55,9 +55,9 @@ plot_default_options <- function() {
 #' Get or set global default plot styles
 #'
 #' Configure package-wide defaults for [plot.cgraph()]'s `node_style`,
-#' `edge_style`, `label_style`, and `title_style` arguments, so
-#' every plot picks them up without repeating the same style lists at every
-#' call site. Arguments passed directly to `plot()` still take precedence
+#' `edge_style`, `label_style`, and `title_style` arguments. Every plot
+#' picks them up, without repeating the same style lists at every call
+#' site. Arguments passed directly to `plot()` still take precedence
 #' over these global defaults.
 #'
 #' @param ... Named values to update options with (merged into the existing

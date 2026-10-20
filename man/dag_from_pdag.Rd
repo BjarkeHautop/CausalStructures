@@ -15,9 +15,9 @@ A \code{DAG} graph proxy.
 }
 \description{
 Orients every undirected edge of the PDAG-family graph \code{cg}, using the
-Dor-Tarsi algorithm: repeatedly find a sink node (no directed children,
-whose undirected neighbors form a clique), orient all its undirected
-edges toward it, and remove it. Errors if no valid DAG extension exists.
+Dor-Tarsi algorithm. It repeatedly finds a sink node (no directed children,
+whose undirected neighbors form a clique), orients all its undirected
+edges toward it, and removes it. Errors if no valid DAG extension exists.
 }
 \examples{
 if (julia_ready()) {

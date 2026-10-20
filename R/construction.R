@@ -139,8 +139,8 @@ generate_graph <- function(
 #'
 #' Generates a random [DAG][cgraph()] on `n` observed nodes named
 #' `V1, ..., Vn`, sampled uniformly at random from the space of all labelled
-#' DAGs on `n` nodes, using the recursive-enumeration algorithm of Kuipers &
-#' Moffa (2015).
+#' DAGs on `n` nodes. It uses the recursive-enumeration algorithm of
+#' Kuipers & Moffa (2015).
 #'
 #' Unlike [generate_graph()], which samples edges independently (uniform over
 #' graphs of a given size/density but *not* uniform over the space of DAGs),

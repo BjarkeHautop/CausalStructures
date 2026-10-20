@@ -34,7 +34,7 @@ named and ordered as in \code{\link[=nodes]{nodes()}}.
 }
 \description{
 Simulates observational data from a linear Gaussian structural causal
-model over \code{cg}: each node is a linear function of its parents plus
+model over \code{cg}. Each node is a linear function of its parents plus
 independent Gaussian noise with standard deviation \code{error_sd}, with edge
 coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE}
 (default), each variable is standardized to zero mean and unit variance.

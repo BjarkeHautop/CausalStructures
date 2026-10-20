@@ -23,9 +23,9 @@ exclude \code{node} itself from the result; if \code{FALSE}, include it.}
 Sorted character vector of node names.
 }
 \description{
-\code{possible_ancestors()} finds every node \code{V} for which some DAG (for a
-PDAG-family \code{cg}) or MAG (for a PAG \code{cg}) in the equivalence class
-represented by \code{cg} has \code{V} as an ancestor of \code{node}: nodes reachable
+\code{possible_ancestors()} finds every node \code{V} that is an ancestor of \code{node}
+in some DAG (for a PDAG-family \code{cg}) or MAG (for a PAG \code{cg}) in the
+equivalence class represented by \code{cg}. These are the nodes reachable
 from \code{node} by a \emph{possibly directed} path, one on which no edge is
 compelled in the direction away from \code{node} (traversing an undirected
 edge, or a directed/circle edge oriented, or possibly orientable, toward

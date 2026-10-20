@@ -3,7 +3,7 @@
 #' Simulate data from a DAG
 #'
 #' Simulates observational data from a linear Gaussian structural causal
-#' model over `cg`: each node is a linear function of its parents plus
+#' model over `cg`. Each node is a linear function of its parents plus
 #' independent Gaussian noise with standard deviation `error_sd`, with edge
 #' coefficients drawn uniformly from `coef_range`. If `standardize = TRUE`
 #' (default), each variable is standardized to zero mean and unit variance.

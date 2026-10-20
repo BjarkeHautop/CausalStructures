@@ -27,7 +27,7 @@ exists.
 \description{
 Returns a set \code{Z} with \verb{include ⊆ Z ⊆ restrict} satisfying all three
 front-door conditions (Algorithm 1 of the reference below) for the causal
-effect of \code{x} on \code{y}; validate a candidate set directly with
+effect of \code{x} on \code{y}. Validate a candidate set directly with
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.
 }
 \examples{

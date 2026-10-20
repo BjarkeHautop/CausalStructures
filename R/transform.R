@@ -2,10 +2,10 @@
 
 #' Drop edge marks to an undirected graph
 #'
-#' Returns the skeleton of `cg`: the undirected graph obtained by replacing
-#' every directed or partially-directed edge with an undirected edge (a
+#' Returns the skeleton of `cg`, the undirected graph obtained by replacing
+#' every directed or partially-directed edge with an undirected edge. A
 #' node pair keeps a single edge regardless of how many marked edges
-#' connected it).
+#' connected it.
 #'
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
@@ -40,7 +40,7 @@ moralize <- function(cg) .Call(C_jl_moralize, cg)
 #' Convert a DAG to its CPDAG
 #'
 #' Returns the CPDAG representing the Markov equivalence class (MEC) of the
-#' DAG `cg`: unshielded colliders (v-structures) determine which edges are
+#' DAG `cg`. Unshielded colliders (v-structures) determine which edges are
 #' compelled, an initial PDAG is built from the skeleton with those
 #' orientations, and [meek_closure()] propagates the rest.
 #'
@@ -57,9 +57,9 @@ dag_to_cpdag <- function(cg) .Call(C_jl_dag_to_cpdag, cg)
 #' Extend a PDAG to a consistent DAG
 #'
 #' Orients every undirected edge of the PDAG-family graph `cg`, using the
-#' Dor-Tarsi algorithm: repeatedly find a sink node (no directed children,
-#' whose undirected neighbors form a clique), orient all its undirected
-#' edges toward it, and remove it. Errors if no valid DAG extension exists.
+#' Dor-Tarsi algorithm. It repeatedly finds a sink node (no directed children,
+#' whose undirected neighbors form a clique), orients all its undirected
+#' edges toward it, and removes it. Errors if no valid DAG extension exists.
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
@@ -148,7 +148,7 @@ ag_to_mag <- function(cg) .Call(C_jl_ag_to_mag, cg)
 #' Map a MAG to its PAG equivalence class
 #'
 #' Returns the PAG representing the Markov equivalence class of the MAG
-#' `cg`: same skeleton, with each endpoint kept as an arrowhead or tail only
+#' `cg`. It has the same skeleton, with each endpoint kept as an arrowhead or tail only
 #' if that mark is shared by every MAG in the class (a circle mark
 #' otherwise). Starts from the skeleton with all-circle marks, orients
 #' unshielded colliders as they appear in `cg`, then applies Zhang's
@@ -249,7 +249,7 @@ exogenize <- function(cg, nodes) {
 #' Normalize latent structure
 #'
 #' Simplifies the latent nodes of `cg` while preserving the induced
-#' marginal model over the observed variables (Evans 2016, Lemmas 1-3):
+#' marginal model over the observed variables (Evans 2016, Lemmas 1-3). It
 #' exogenizes each latent node, then drops latent nodes with at most one
 #' active child or whose child set is a strict subset of another latent
 #' node's child set.

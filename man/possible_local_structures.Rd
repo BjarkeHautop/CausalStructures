@@ -15,7 +15,7 @@ possible_local_structures(cg, x)
 List of character vectors, one per valid local structure.
 }
 \description{
-Returns every valid local structure at \code{x} in the PAG \code{cg}: each entry is
+Returns every valid local structure at \code{x} in the PAG \code{cg}. Each entry is
 a subset of \code{x}'s circle-marked neighbors for which a MAG consistent with
 \code{cg} exists with a bidirected edge to every node in the subset and a
 directed edge away from \code{x} to every other circle-marked neighbor. Pair an

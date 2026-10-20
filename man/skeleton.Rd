@@ -14,10 +14,10 @@ skeleton(cg)
 A \code{UG} graph proxy.
 }
 \description{
-Returns the skeleton of \code{cg}: the undirected graph obtained by replacing
-every directed or partially-directed edge with an undirected edge (a
+Returns the skeleton of \code{cg}, the undirected graph obtained by replacing
+every directed or partially-directed edge with an undirected edge. A
 node pair keeps a single edge regardless of how many marked edges
-connected it).
+connected it.
 }
 \examples{
 if (julia_ready()) {

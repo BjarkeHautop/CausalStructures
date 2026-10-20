@@ -16,7 +16,7 @@ A Julia proxy object representing the resulting DAG.
 }
 \description{
 Simplifies the latent nodes of \code{cg} while preserving the induced
-marginal model over the observed variables (Evans 2016, Lemmas 1-3):
+marginal model over the observed variables (Evans 2016, Lemmas 1-3). It
 exogenizes each latent node, then drops latent nodes with at most one
 active child or whose child set is a strict subset of another latent
 node's child set.

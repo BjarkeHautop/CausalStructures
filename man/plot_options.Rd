@@ -20,9 +20,9 @@ invisibly. When getting, the requested options.
 }
 \description{
 Configure package-wide defaults for \code{\link[=plot.cgraph]{plot.cgraph()}}'s \code{node_style},
-\code{edge_style}, \code{label_style}, and \code{title_style} arguments, so
-every plot picks them up without repeating the same style lists at every
-call site. Arguments passed directly to \code{plot()} still take precedence
+\code{edge_style}, \code{label_style}, and \code{title_style} arguments. Every plot
+picks them up, without repeating the same style lists at every call
+site. Arguments passed directly to \code{plot()} still take precedence
 over these global defaults.
 }
 \details{

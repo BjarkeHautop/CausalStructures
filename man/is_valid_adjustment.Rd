@@ -21,7 +21,7 @@ identifying the causal effect of \code{x} on \code{y}.
 }
 \description{
 Tests the Generalized Adjustment Criterion, which covers DAGs, ADMGs,
-PDAG-family graphs, MAG-family graphs, and PAGs alike: \code{given} must
+PDAG-family graphs, MAG-family graphs, and PAGs alike. \code{given} must
 contain no forbidden node (a descendant of a proper causal node between
 \code{x} and \code{y}, or \code{x} itself), and must m-separate \code{x} from \code{y} in the
 proper backdoor graph.

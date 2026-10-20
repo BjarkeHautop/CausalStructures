@@ -20,7 +20,7 @@ the two \emph{sets} are separated).}
 }
 \description{
 Two nodes are d-separated given a conditioning set \code{given} if every path
-between them is blocked: a path is blocked if it contains either a
+between them is blocked. A path is blocked if it contains either a
 non-collider node in \code{given}, or a collider node (and all its descendants)
 not in \code{given}.
 }

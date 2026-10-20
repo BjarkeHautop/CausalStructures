@@ -25,7 +25,7 @@ exists.
 }
 \description{
 Finds a minimal d-separator (DAG, PDAG classes) or m-separator
-(ADMG, ancestral-graph classes, PAG) between \code{x} and \code{y}: no proper subset
+(ADMG, ancestral-graph classes, PAG) between \code{x} and \code{y}. No proper subset
 (excluding forced \code{include} nodes) of the returned set still separates
 them.
 }

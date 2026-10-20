@@ -24,9 +24,9 @@ A character scalar with the rendered formula, or \code{NULL} if the
 effect is not identifiable.
 }
 \description{
-\code{id()} returns the interventional distribution \code{P(y | do(x))}, rendered as
-a formula in terms of the observational distribution (Shpitser & Pearl's
-ID algorithm), or \code{NULL} if the effect is not identifiable. \code{idc()}
+\code{id()} returns the interventional distribution \code{P(y | do(x))} as a
+formula in terms of the observational distribution, or \code{NULL} if the
+effect is not identifiable. It implements Shpitser & Pearl's ID algorithm. \code{idc()}
 additionally conditions on \code{given} (the IDC algorithm), reducing to \code{id()}
 when \code{given} is empty.
 }

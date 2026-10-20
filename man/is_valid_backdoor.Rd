@@ -18,9 +18,10 @@ names.}
 \code{TRUE} if \code{given} satisfies the backdoor criterion.
 }
 \description{
-\code{given} is a valid backdoor set if (1) no node in \code{given} is a descendant
-of \code{x}, and (2) \code{given} blocks every backdoor path from \code{x} to \code{y} (every
-parent of \code{x} is d-separated from \code{y} given \code{given} together with \code{x}).
+Tests whether \code{given} is a valid backdoor set for the effect of \code{x} on
+\code{y}. It is if (1) no node in \code{given} is a descendant of \code{x}, and (2)
+\code{given} blocks every backdoor path from \code{x} to \code{y} (every parent of \code{x} is
+d-separated from \code{y} given \code{given} together with \code{x}).
 }
 \examples{
 if (julia_ready()) {

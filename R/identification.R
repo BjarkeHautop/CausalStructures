@@ -3,7 +3,7 @@
 #' Test d-separation
 #'
 #' Two nodes are d-separated given a conditioning set `given` if every path
-#' between them is blocked: a path is blocked if it contains either a
+#' between them is blocked. A path is blocked if it contains either a
 #' non-collider node in `given`, or a collider node (and all its descendants)
 #' not in `given`.
 #'
@@ -80,7 +80,7 @@ m_separated <- function(cg, x, y, given = character()) {
 #' Find a minimal separator
 #'
 #' Finds a minimal d-separator (DAG, PDAG classes) or m-separator
-#' (ADMG, ancestral-graph classes, PAG) between `x` and `y`: no proper subset
+#' (ADMG, ancestral-graph classes, PAG) between `x` and `y`. No proper subset
 #' (excluding forced `include` nodes) of the returned set still separates
 #' them.
 #'
@@ -213,7 +213,7 @@ adjustment_set <- function(
 #'
 #' Returns a set `Z` with `include ⊆ Z ⊆ restrict` satisfying all three
 #' front-door conditions (Algorithm 1 of the reference below) for the causal
-#' effect of `x` on `y`; validate a candidate set directly with
+#' effect of `x` on `y`. Validate a candidate set directly with
 #' [is_valid_frontdoor()].
 #'
 #' @param cg A DAG or ADMG created with [cgraph()]. For an ADMG, the backdoor
@@ -258,9 +258,10 @@ frontdoor_set <- function(
 
 #' Validate a backdoor adjustment set
 #'
-#' `given` is a valid backdoor set if (1) no node in `given` is a descendant
-#' of `x`, and (2) `given` blocks every backdoor path from `x` to `y` (every
-#' parent of `x` is d-separated from `y` given `given` together with `x`).
+#' Tests whether `given` is a valid backdoor set for the effect of `x` on
+#' `y`. It is if (1) no node in `given` is a descendant of `x`, and (2)
+#' `given` blocks every backdoor path from `x` to `y` (every parent of `x` is
+#' d-separated from `y` given `given` together with `x`).
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Exposure and outcome node name, or character vector of node
@@ -356,7 +357,7 @@ all_frontdoor_sets <- function(
 #' Validate an adjustment set
 #'
 #' Tests the Generalized Adjustment Criterion, which covers DAGs, ADMGs,
-#' PDAG-family graphs, MAG-family graphs, and PAGs alike: `given` must
+#' PDAG-family graphs, MAG-family graphs, and PAGs alike. `given` must
 #' contain no forbidden node (a descendant of a proper causal node between
 #' `x` and `y`, or `x` itself), and must m-separate `x` from `y` in the
 #' proper backdoor graph.
@@ -421,7 +422,8 @@ all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
 
 #' Validate a frontdoor criterion set
 #'
-#' `given` is a valid front-door set if (1) it intercepts every directed path
+#' Tests whether `given` is a valid front-door set for the effect of `x` on
+#' `y`. It is if (1) it intercepts every directed path
 #' from `x` to `y`, (2) there is no unblocked backdoor path from `x` to any
 #' node in `given`, and (3) for every node in `given`, all backdoor paths to
 #' `y` are blocked by `x` together with the rest of `given`. When these hold,
@@ -455,7 +457,7 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' Validate instrumental variables
 #'
 #' Tests whether a set of variables are valid instruments for identifying
-#' the causal effect of exposure `x` on outcome `y`: every node in `z` must
+#' the causal effect of exposure `x` on outcome `y`. Every node in `z` must
 #' be d-/m-separated from `y` given `x` in the graph obtained by deleting
 #' `x`'s incoming edges (exclusion restriction), and at least one node in
 #' `z` must be d-/m-connected to `x` (relevance).
@@ -582,7 +584,7 @@ markov_equivalent <- function(g1, g2) {
 #' Enumerate MAGs in a PAG equivalence class
 #'
 #' Enumerates all Markov equivalent MAGs in the equivalence class
-#' represented by a PAG (Partial Ancestral Graph): each circle endpoint of
+#' represented by a PAG (Partial Ancestral Graph). Each circle endpoint of
 #' the PAG is independently resolved to a tail or an arrowhead, keeping only
 #' assignments that validate as a MAG and map back to the same PAG under
 #' [mag_to_pag()]. For a single representative instead of the whole
@@ -604,9 +606,9 @@ enumerate_mags <- function(cg) {
 
 #' Identify an interventional distribution
 #'
-#' `id()` returns the interventional distribution `P(y | do(x))`, rendered as
-#' a formula in terms of the observational distribution (Shpitser & Pearl's
-#' ID algorithm), or `NULL` if the effect is not identifiable. `idc()`
+#' `id()` returns the interventional distribution `P(y | do(x))` as a
+#' formula in terms of the observational distribution, or `NULL` if the
+#' effect is not identifiable. It implements Shpitser & Pearl's ID algorithm. `idc()`
 #' additionally conditions on `given` (the IDC algorithm), reducing to `id()`
 #' when `given` is empty.
 #'
@@ -705,10 +707,10 @@ backdoor_set <- function(cg, x, y) {
 
 #' Find every possible D-SEP set
 #'
-#' Returns D-SEP(x, y, cg): every vertex other than `x` for which there is a
-#' collider path between `x` and the vertex in `cg` on which every vertex,
-#' including the vertex itself, is an ancestor of `x` or of some member of
-#' `y`. This is the plain graph-level primitive that [backdoor_set()] (for
+#' Returns D-SEP(x, y, cg). It contains every vertex other than `x` for which
+#' there is a collider path between `x` and the vertex in `cg` on which every
+#' vertex, including the vertex itself, is an ancestor of `x` or of some
+#' member of `y`. This is the plain graph-level primitive that [backdoor_set()] (for
 #' MAG/PAG) uses internally to build its generalized back-door set.
 #'
 #' @param cg An AG-family (AG, MAG) or PAG graph created with [cgraph()].
@@ -760,7 +762,7 @@ possible_parent_sets <- function(cg, x) {
 #' Enumerate possible joint parent sets (joint-IDA)
 #'
 #' Generalizes [possible_parent_sets()] from a single intervention node to a
-#' set `xs` of simultaneous interventions: every undirected edge incident to
+#' set `xs` of simultaneous interventions. Every undirected edge incident to
 #' at least one node of `xs` is jointly reoriented, keeping only orientations
 #' that introduce no new v-structure and remain acyclic. Each returned entry
 #' is a list of parent sets in the same order as `xs` (entry `i` gives a
@@ -832,7 +834,7 @@ possible_optimal_adjustment_sets <- function(cg, x, y) {
 
 #' Enumerate valid local structures at a node of a PAG
 #'
-#' Returns every valid local structure at `x` in the PAG `cg`: each entry is
+#' Returns every valid local structure at `x` in the PAG `cg`. Each entry is
 #' a subset of `x`'s circle-marked neighbors for which a MAG consistent with
 #' `cg` exists with a bidirected edge to every node in the subset and a
 #' directed edge away from `x` to every other circle-marked neighbor. Pair an
@@ -865,7 +867,7 @@ possible_local_structures <- function(cg, x) {
 #' Build the maximal local MAG for a local structure
 #'
 #' Returns the maximal local MAG for the local structure `c` at `x` in the
-#' PAG `cg`: `cg` with a bidirected edge from `x` to every node in `c` and a
+#' PAG `cg`. This is `cg` with a bidirected edge from `x` to every node in `c` and a
 #' directed edge from `x` to every other circle-marked neighbor, treated as
 #' local background knowledge and closed under the corresponding rule set.
 #' `c` should be a valid local structure, i.e. an entry of
@@ -900,9 +902,9 @@ maximal_local_mag <- function(cg, x, c) {
 #' Find every possible causal effect in a PAG (PAGcauses)
 #'
 #' Returns every valid adjustment set relative to `(x, y)` in some MAG
-#' consistent with the PAG `cg`: the set of possible causal effects of `x` on
-#' `y` identifiable via covariate adjustment, found without enumerating MAGs
-#' (PAGcauses, Algorithm 1). If `x` is not a possible ancestor of `y`,
+#' consistent with the PAG `cg`, i.e. the possible causal effects of `x` on
+#' `y` identifiable via covariate adjustment. It does so without enumerating
+#' MAGs (PAGcauses, Algorithm 1). If `x` is not a possible ancestor of `y`,
 #' returns an empty list (no causal effect). If the causal effect is already
 #' identifiable directly in `cg` ([backdoor_set()]), returns that single set.
 #' Otherwise, this searches every valid local structure at `x`

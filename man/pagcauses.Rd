@@ -17,9 +17,9 @@ causal effect on \code{y}).
 }
 \description{
 Returns every valid adjustment set relative to \verb{(x, y)} in some MAG
-consistent with the PAG \code{cg}: the set of possible causal effects of \code{x} on
-\code{y} identifiable via covariate adjustment, found without enumerating MAGs
-(PAGcauses, Algorithm 1). If \code{x} is not a possible ancestor of \code{y},
+consistent with the PAG \code{cg}, i.e. the possible causal effects of \code{x} on
+\code{y} identifiable via covariate adjustment. It does so without enumerating
+MAGs (PAGcauses, Algorithm 1). If \code{x} is not a possible ancestor of \code{y},
 returns an empty list (no causal effect). If the causal effect is already
 identifiable directly in \code{cg} (\code{\link[=backdoor_set]{backdoor_set()}}), returns that single set.
 Otherwise, this searches every valid local structure at \code{x}
