@@ -30,6 +30,7 @@ jl_possible_ancestors <- function(g, node, open) {
 jl_possible_descendants <- function(g, node, open) {
   .Call(C_jl_possible_descendants, g, node, open)
 }
+jl_districts <- function(g) .Call(C_jl_districts, g)
 jl_is_dag <- function(g) .Call(C_jl_is_dag, g)
 jl_is_pdag <- function(g) .Call(C_jl_is_pdag, g)
 jl_is_cpdag <- function(g) .Call(C_jl_is_cpdag, g)
@@ -42,6 +43,7 @@ jl_is_pag <- function(g) .Call(C_jl_is_pag, g)
 jl_is_simple <- function(g) .Call(C_jl_is_simple, g)
 jl_is_acyclic <- function(g) .Call(C_jl_is_acyclic, g)
 jl_is_dag_type <- function(g) .Call(C_jl_is_dag_type, g)
+jl_graph_equal <- function(g1, g2) .Call(C_jl_graph_equal, g1, g2)
 jl_markov_equivalent <- function(g1, g2) .Call(C_jl_markov_equivalent, g1, g2)
 jl_d_separated <- function(g, x, y, z) .Call(C_jl_d_separated, g, x, y, z)
 jl_m_separated <- function(g, x, y, z) .Call(C_jl_m_separated, g, x, y, z)
@@ -49,10 +51,12 @@ jl_minimal_separator <- function(g, x, y, include, restrict) {
   .Call(C_jl_minimal_separator, g, x, y, include, restrict)
 }
 jl_possible_d_sep <- function(g, x, y) .Call(C_jl_possible_d_sep, g, x, y)
-jl_adjustment_set <- function(g, x, y, type) {
-  .Call(C_jl_adjustment_set, g, x, y, type)
+jl_adjustment_set <- function(g, x, y, type, include, restrict) {
+  .Call(C_jl_adjustment_set, g, x, y, type, include, restrict)
 }
-jl_backdoor_set <- function(g, x, y) .Call(C_jl_backdoor_set, g, x, y)
+jl_backdoor_set <- function(g, x, y, include, restrict) {
+  .Call(C_jl_backdoor_set, g, x, y, include, restrict)
+}
 jl_frontdoor_set <- function(g, x, y, include, restrict) {
   .Call(C_jl_frontdoor_set, g, x, y, include, restrict)
 }
@@ -62,24 +66,29 @@ jl_all_frontdoor_sets <- function(g, x, y, include, restrict) {
 jl_is_valid_backdoor <- function(g, x, y, z) {
   .Call(C_jl_is_valid_backdoor, g, x, y, z)
 }
-jl_all_backdoor_sets <- function(g, x, y, minimal, max_size) {
-  .Call(C_jl_all_backdoor_sets, g, x, y, minimal, max_size)
+jl_all_backdoor_sets <- function(g, x, y, minimal, max_size, include, restrict) {
+  .Call(C_jl_all_backdoor_sets, g, x, y, minimal, max_size, include, restrict)
 }
 jl_is_valid_adjustment <- function(g, x, y, z) {
   .Call(C_jl_is_valid_adjustment, g, x, y, z)
 }
-jl_all_adjustment_sets <- function(g, x, y, minimal, max_size) {
-  .Call(C_jl_all_adjustment_sets, g, x, y, minimal, max_size)
+jl_all_adjustment_sets <- function(g, x, y, minimal, max_size, include, restrict) {
+  .Call(C_jl_all_adjustment_sets, g, x, y, minimal, max_size, include, restrict)
 }
 jl_is_valid_frontdoor <- function(g, x, y, z) {
   .Call(C_jl_is_valid_frontdoor, g, x, y, z)
 }
-jl_is_valid_iv <- function(g, x, y, z) .Call(C_jl_is_valid_iv, g, x, y, z)
-jl_all_iv_sets <- function(g, x, y, minimal, max_size) {
-  .Call(C_jl_all_iv_sets, g, x, y, minimal, max_size)
+jl_is_valid_iv <- function(g, x, y, z, given) {
+  .Call(C_jl_is_valid_iv, g, x, y, z, given)
 }
+jl_all_iv_sets <- function(g, x, y, given, minimal, max_size, include, restrict) {
+  .Call(C_jl_all_iv_sets, g, x, y, given, minimal, max_size, include, restrict)
+}
+jl_iv_set <- function(g, x, y, restrict) .Call(C_jl_iv_set, g, x, y, restrict)
 jl_id <- function(g, x, y) .Call(C_jl_id, g, x, y)
 jl_idc <- function(g, x, y, given) .Call(C_jl_idc, g, x, y, given)
+jl_idp <- function(g, x, y) .Call(C_jl_idp, g, x, y)
+jl_cidp <- function(g, x, y, given) .Call(C_jl_cidp, g, x, y, given)
 jl_possible_parent_sets <- function(g, x) .Call(C_jl_possible_parent_sets, g, x)
 jl_possible_joint_parent_sets <- function(g, xs) {
   .Call(C_jl_possible_joint_parent_sets, g, xs)
@@ -93,7 +102,9 @@ jl_possible_local_structures <- function(g, x) {
 jl_pagcauses <- function(g, x, y) .Call(C_jl_pagcauses, g, x, y)
 jl_count_dags <- function(g) .Call(C_jl_count_dags, g)
 jl_enumerate_dags <- function(g) .Call(C_jl_enumerate_dags, g)
-jl_enumerate_mags <- function(g) .Call(C_jl_enumerate_mags, g)
+jl_enumerate_mags <- function(g, selection_bias) {
+  .Call(C_jl_enumerate_mags, g, selection_bias)
+}
 jl_skeleton <- function(g) .Call(C_jl_skeleton, g)
 jl_moralize <- function(g) .Call(C_jl_moralize, g)
 jl_dag_to_cpdag <- function(g) .Call(C_jl_dag_to_cpdag, g)
@@ -115,13 +126,33 @@ jl_condition_marginalize <- function(g, given, index) {
   .Call(C_jl_condition_marginalize, g, given, index)
 }
 jl_maximal_local_mag <- function(g, x, c) .Call(C_jl_maximal_local_mag, g, x, c)
+jl_apply_background_knowledge <- function(g, spec) {
+  .Call(C_jl_apply_background_knowledge, g, spec)
+}
 jl_reclass <- function(g, class) .Call(C_jl_reclass, g, class)
 jl_add_edges <- function(g, spec) .Call(C_jl_add_edges, g, spec)
 jl_remove_edges <- function(g, spec) .Call(C_jl_remove_edges, g, spec)
 jl_add_nodes <- function(g, nodes) .Call(C_jl_add_nodes, g, nodes)
 jl_remove_nodes <- function(g, nodes) .Call(C_jl_remove_nodes, g, nodes)
-jl_simulate_data <- function(g, n, seed, standardize, coef_range, error_sd) {
-  .Call(C_jl_simulate_data, g, n, seed, standardize, coef_range, error_sd)
+jl_simulate_data <- function(g, n, seed, standardize, coef_range, random_sign, error_sd) {
+  .Call(C_jl_simulate_data, g, n, seed, standardize, coef_range, random_sign, error_sd)
+}
+jl_hd <- function(g1, g2, normalized) .Call(C_jl_hd, g1, g2, normalized)
+jl_shd <- function(g1, g2, normalized) .Call(C_jl_shd, g1, g2, normalized)
+jl_aid <- function(g1, g2, type, normalized) {
+  .Call(C_jl_aid, g1, g2, type, normalized)
+}
+jl_separation_distance <- function(g1, g2, strategy, mb_enhanced, symmetric, normalized) {
+  .Call(C_jl_separation_distance, g1, g2, strategy, mb_enhanced, symmetric, normalized)
+}
+jl_sc_metric <- function(g1, g2, max_order) {
+  .Call(C_jl_sc_metric, g1, g2, max_order)
+}
+jl_markov_metric <- function(g1, g2, max_order) {
+  .Call(C_jl_markov_metric, g1, g2, max_order)
+}
+jl_faithfulness_metric <- function(g1, g2, max_order) {
+  .Call(C_jl_faithfulness_metric, g1, g2, max_order)
 }
 jl_sugiyama_layout <- function(g, direction) {
   .Call(C_jl_sugiyama_layout, g, direction)

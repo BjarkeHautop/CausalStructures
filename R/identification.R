@@ -167,6 +167,11 @@ minimal_separator <- function(
 #' @param type Adjustment set type: `"optimal"` (default), `"parents"`, or
 #'   `"backdoor"`. Ignored for ADMG, MAG-family, and PAG graphs; `"backdoor"`
 #'   is not supported for PDAG-family graphs.
+#' @param include Character vector of nodes forced into the set.
+#' @param restrict Character vector of candidate nodes the set is drawn from.
+#'   `NULL` (default) allows every node except `x` and `y`. `include` and
+#'   `restrict` need `type = "backdoor"` for a DAG, and are not supported for
+#'   PDAG-family graphs.
 #' @return Character vector with a valid adjustment set, or `NULL` if none
 #'   exists.
 #' @references
@@ -199,14 +204,31 @@ minimal_separator <- function(
 #'   mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
 #'   adjustment_set(mag, "X", "Y") # A; type is ignored
 #' }
+#'
+#' if (julia_ready()) {
+#'   # Only some nodes are observed
+#'   dag <- cgraph(A %-->% B %-->% X + Y, A %-->% Y, X %-->% Y)
+#'   adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
+#' }
 adjustment_set <- function(
   cg,
   x,
   y,
-  type = c("optimal", "parents", "backdoor")
+  type = c("optimal", "parents", "backdoor"),
+  include = character(),
+  restrict = NULL
 ) {
   type <- if (missing(type)) type[[1L]] else match.arg(type)
-  .Call(C_jl_adjustment_set, cg, as.character(x), as.character(y), type)
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  .Call(
+    C_jl_adjustment_set,
+    cg,
+    as.character(x),
+    as.character(y),
+    type,
+    as.character(include),
+    restrict_arg
+  )
 }
 
 #' Find a frontdoor adjustment set
@@ -298,6 +320,9 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #'   names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
+#' @param include Character vector of nodes forced into every set.
+#' @param restrict Character vector of candidate nodes sets are drawn from.
+#'   `NULL` (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
@@ -305,14 +330,25 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
 #'   all_backdoor_sets(dag, "X", "Y")
 #' }
-all_backdoor_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
+all_backdoor_sets <- function(
+  cg,
+  x,
+  y,
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   .Call(
     C_jl_all_backdoor_sets,
     cg,
     as.character(x),
     as.character(y),
     minimal,
-    max_size
+    max_size,
+    as.character(include),
+    restrict_arg
   )
 }
 
@@ -402,6 +438,9 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'   names.
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum adjustment set size to consider.
+#' @param include Character vector of nodes forced into every set.
+#' @param restrict Character vector of candidate nodes sets are drawn from.
+#'   `NULL` (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
@@ -409,14 +448,25 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
 #'   all_adjustment_sets(admg, "X", "Y")
 #' }
-all_adjustment_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
+all_adjustment_sets <- function(
+  cg,
+  x,
+  y,
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   .Call(
     C_jl_all_adjustment_sets,
     cg,
     as.character(x),
     as.character(y),
     minimal,
-    max_size
+    max_size,
+    as.character(include),
+    restrict_arg
   )
 }
 
@@ -457,15 +507,19 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #' Validate instrumental variables
 #'
 #' Tests whether a set of variables are valid instruments for identifying
-#' the causal effect of exposure `x` on outcome `y`. Every node in `z` must
-#' be d-/m-separated from `y` given `x` in the graph obtained by deleting
-#' `x`'s incoming edges (exclusion restriction), and at least one node in
-#' `z` must be d-/m-connected to `x` (relevance).
+#' the causal effect of exposure `x` on outcome `y`, conditionally on
+#' `given`. Every node in `z` must be d-/m-separated from `y` given `given`
+#' in the graph obtained by removing the first edge of every causal path from
+#' `x` to `y` (exclusion restriction), and at least one node in `z` must be
+#' d-/m-connected to `x` given `given` (relevance). `given` must contain no
+#' descendant of `x` or `y`.
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x Exposure node name.
 #' @param y Outcome node name, or character vector of node names.
 #' @param z Character vector of instrument node names.
+#' @param given Character vector of node names the instruments are
+#'   conditionally valid given (may be empty).
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
 #' @examples
@@ -477,20 +531,42 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #'     u = is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
 #'   )
 #' }
-is_valid_iv <- function(cg, x, y, z = character()) {
-  .Call(C_jl_is_valid_iv, cg, x, as.character(y), as.character(z))
+#'
+#' if (julia_ready()) {
+#'   # W confounds Z and Y, so Z is an instrument only given W
+#'   dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+#'   list(
+#'     unconditional = is_valid_iv(dag, "X", "Y", "Z"),
+#'     given_w = is_valid_iv(dag, "X", "Y", "Z", given = "W")
+#'   )
+#' }
+is_valid_iv <- function(cg, x, y, z = character(), given = character()) {
+  .Call(
+    C_jl_is_valid_iv,
+    cg,
+    x,
+    as.character(y),
+    as.character(z),
+    as.character(given)
+  )
 }
 
 #' Enumerate all valid instrumental variable sets
 #'
 #' Finds all minimal (or all) sets of valid instruments for identifying
-#' the causal effect of `x` on `y`; see [is_valid_iv()].
+#' the causal effect of `x` on `y`, conditionally on `given`; see
+#' [is_valid_iv()]. To also search for the conditioning set, use [iv_set()].
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x Exposure node name.
 #' @param y Outcome node name, or character vector of node names.
+#' @param given Character vector of node names the instruments are
+#'   conditionally valid given (may be empty).
 #' @param minimal If `TRUE` (default), return only minimal sets.
 #' @param max_size Maximum number of instruments to consider.
+#' @param include Character vector of nodes forced into every set.
+#' @param restrict Character vector of candidate instruments. `NULL`
+#'   (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
 #' @examples
@@ -500,8 +576,62 @@ is_valid_iv <- function(cg, x, y, z = character()) {
 #'   )
 #'   all_iv_sets(dag, "X", "Y")
 #' }
-all_iv_sets <- function(cg, x, y, minimal = TRUE, max_size = 3) {
-  .Call(C_jl_all_iv_sets, cg, x, as.character(y), minimal, max_size)
+all_iv_sets <- function(
+  cg,
+  x,
+  y,
+  given = character(),
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  .Call(
+    C_jl_all_iv_sets,
+    cg,
+    x,
+    as.character(y),
+    as.character(given),
+    minimal,
+    max_size,
+    as.character(include),
+    restrict_arg
+  )
+}
+
+#' Find an instrument and its conditioning set
+#'
+#' Finds an instrument `z` for the causal effect of `x` on `y`, together with
+#' a conditioning set `given` that makes it valid (see [is_valid_iv()]). For
+#' each candidate instrument, `given` is a separator of `y` and the instrument
+#' in the graph with the first edge of every causal path from `x` to `y`
+#' removed, chosen nearest to `y`. The pair with the smallest `given` is
+#' returned, so an unconditional instrument is preferred.
+#'
+#' @param cg A DAG or ADMG created with [cgraph()].
+#' @param x Exposure node name.
+#' @param y Outcome node name, or character vector of node names.
+#' @param restrict Character vector of the nodes allowed in `z` and `given`,
+#'   e.g. the observed ones. `NULL` (default) allows every node.
+#' @return A list with character vectors `z` and `given`, or `NULL` if no
+#'   instrument exists.
+#' @references
+#' \insertRef{vanderzander2015efficiently}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+#'   iv_set(dag, "X", "Y")
+#' }
+#'
+#' if (julia_ready()) {
+#'   # Without W observed, there is no instrument
+#'   is.null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
+#' }
+iv_set <- function(cg, x, y, restrict = NULL) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  .Call(C_jl_iv_set, cg, x, as.character(y), restrict_arg)
 }
 
 # --- Equivalence classes and counts ------------------------------------------
@@ -591,15 +721,20 @@ markov_equivalent <- function(g1, g2) {
 #' class, use [mag_from_pag()].
 #'
 #' @param cg A PAG (partially ancestral graph) created with [cgraph()].
+#' @param selection_bias If `FALSE`, return only the MAGs without undirected
+#'   edges (i.e. without selection bias), pruning the others from the search.
 #' @return A list of `cgraph`s (MAGs) in the equivalence class.
 #' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
-#'   length(enumerate_mags(pag))
+#'   list(
+#'     all = length(enumerate_mags(pag)),
+#'     no_selection_bias = length(enumerate_mags(pag, selection_bias = FALSE))
+#'   )
 #' }
-enumerate_mags <- function(cg) {
-  .Call(C_jl_enumerate_mags, cg)
+enumerate_mags <- function(cg, selection_bias = TRUE) {
+  .Call(C_jl_enumerate_mags, cg, selection_bias)
 }
 
 # --- Symbolic identification (ID/IDC) ----------------------------------------
@@ -681,6 +816,57 @@ idc <- function(cg, x, y, given = character()) {
   )
 }
 
+#' Identify an interventional distribution from a PAG
+#'
+#' `idp()` decides whether `P(y | do(x))` is identifiable from a PAG, i.e. in
+#' every MAG of its Markov equivalence class, and if so returns it as a
+#' formula in terms of the observational distribution, or `NULL` if it is
+#' not identifiable. It implements the IDP algorithm, the PAG analogue of
+#' [id()]. `cidp()` additionally conditions on `given` (the CIDP algorithm,
+#' the analogue of [idc()]), reducing to `idp()` when `given` is empty.
+#'
+#' @param cg A PAG created with [cgraph()], without selection bias
+#'   (undirected edges).
+#' @param x,y Intervention (exposure) and outcome node name, or character
+#'   vector of node names. Must be disjoint from each other (and from
+#'   `given`, for `cidp()`).
+#' @param given Character vector of node names to additionally condition on
+#'   (`cidp()` only).
+#' @return A character scalar with the rendered formula, or `NULL` if the
+#'   effect is not identifiable.
+#' @references
+#' \insertRef{jaber2022causal}{CausalStructures}
+#' @name idp
+#' @examples
+#' if (julia_ready()) {
+#'   mag <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+#'   pag <- mag_to_pag(mag)
+#'   idp(pag, "X", "Y")
+#' }
+#'
+#' if (julia_ready()) {
+#'   cidp(pag, "X", "Y", given = "A")
+#' }
+NULL
+
+#' @rdname idp
+#' @export
+idp <- function(cg, x, y) {
+  .Call(C_jl_idp, cg, as.character(x), as.character(y))
+}
+
+#' @rdname idp
+#' @export
+cidp <- function(cg, x, y, given = character()) {
+  .Call(
+    C_jl_cidp,
+    cg,
+    as.character(x),
+    as.character(y),
+    as.character(given)
+  )
+}
+
 # --- Generalized backdoor criterion and local IDA ----------------------------
 
 #' Find a generalized backdoor set
@@ -688,8 +874,13 @@ idc <- function(cg, x, y, given = character()) {
 #' Returns a generalized back-door set relative to `(x, y)` in `cg` using the
 #' Generalized Backdoor Criterion (GBC), or `NULL` if none exists.
 #'
-#' @param cg A DAG, CPDAG, MAG, or PAG graph created with [cgraph()].
+#' @param cg A DAG, CPDAG, ADMG, MAG, or PAG graph created with [cgraph()].
 #' @param x,y Exposure and outcome node names.
+#' @param include Character vector of nodes forced into the set (DAG and
+#'   ADMG only).
+#' @param restrict Character vector of candidate nodes the set is drawn from
+#'   (DAG and ADMG only). `NULL` (default) allows every node except `x` and
+#'   `y`.
 #' @return Character vector with a generalized back-door set, or `NULL` if
 #'   none exists.
 #' @references
@@ -701,8 +892,16 @@ idc <- function(cg, x, y, given = character()) {
 #'   cpdag <- cgraph(A %-->% X, C %-->% X, X %-->% Y, class = "CPDAG")
 #'   sort(backdoor_set(cpdag, "X", "Y"))
 #' }
-backdoor_set <- function(cg, x, y) {
-  .Call(C_jl_backdoor_set, cg, x, y)
+backdoor_set <- function(cg, x, y, include = character(), restrict = NULL) {
+  restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
+  .Call(
+    C_jl_backdoor_set,
+    cg,
+    x,
+    y,
+    as.character(include),
+    restrict_arg
+  )
 }
 
 #' Find every possible D-SEP set

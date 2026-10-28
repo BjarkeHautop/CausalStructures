@@ -125,6 +125,42 @@ meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
 #' }
 dag_to_mpdag <- function(cg) .Call(C_jl_dag_to_mpdag, cg)
 
+#' Apply background knowledge to a PDAG
+#'
+#' Orients `cg` according to background knowledge about direct causes:
+#' required edges (`A %-->% B`, `A` must directly cause `B`) and forbidden
+#' ones (`A %!-->% B`, `A` must not). Requiring `A --> B` orients `A --- B`
+#' that way, and forbidding it orients `A --- B` as `B --> A`; after each,
+#' Meek's rules propagate the orientations it implies. Background knowledge
+#' only orients edges, so it errors when it would add or remove one: a
+#' required edge between non-adjacent nodes or against an orientation `cg`
+#' (or an earlier item) already has, or a forbidden edge `cg` already has.
+#'
+#' @param cg A PDAG-family graph (PDAG, CPDAG, MPDAG) created with [cgraph()].
+#' @param ... Required (`%-->%`, `%<--%`) and forbidden (`%!-->%`,
+#'   `%!<--%`) edges; see [edge-operators]. Mutually exclusive with `spec`.
+#' @param spec Background knowledge as a string, e.g. `"A --> B, C !--> D"`,
+#'   for programmatic use. Mutually exclusive with `...`.
+#' @return A `cgraph` of class `MPDAG`.
+#' @references
+#' \insertRef{meek1995causal}{CausalStructures}
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
+#'   list(
+#'     required = apply_background_knowledge(cpdag, A %-->% B),
+#'     forbidden = apply_background_knowledge(cpdag, C %!-->% B)
+#'   )
+#' }
+apply_background_knowledge <- function(cg, ..., spec = NULL) {
+  .Call(
+    C_jl_apply_background_knowledge,
+    cg,
+    .dots_or_spec(substitute(list(...)), spec)
+  )
+}
+
 #' Convert an AG to a Markov equivalent MAG
 #'
 #' Adds an edge between every pair of non-adjacent nodes in the AG `cg` that
@@ -269,32 +305,32 @@ normalize_latent_structure <- function(cg, latents) {
 
 #' Condition and marginalize a graph
 #'
-#' Removes `cond_vars` and `marg_vars` from `cg`, returning the AG over
-#' the remaining nodes that represents the graphical effect of conditioning
-#' on `cond_vars` and marginalizing out `marg_vars`. At least one of the two
-#' must be non-empty, and they must be disjoint.
+#' Removes `given` and `index` from `cg`, returning the AG over the
+#' remaining nodes that represents the graphical effect of conditioning on
+#' `given` and marginalizing out `index`. At least one of the two must be
+#' non-empty, and they must be disjoint.
 #'
 #' @param cg A DAG, ADMG, or AG-family (AG, MAG) graph created with
 #'   [cgraph()].
-#' @param cond_vars Character vector of node names to condition on.
-#' @param marg_vars Character vector of node names to marginalize out.
+#' @param given Character vector of node names to condition on.
+#' @param index Character vector of node names to marginalize out.
 #' @return A `cgraph` of class `AG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
-#'   condition_marginalize(dag, marg_vars = "U")
+#'   condition_marginalize(dag, index = "U")
 #' }
 condition_marginalize <- function(
   cg,
-  cond_vars = character(),
-  marg_vars = character()
+  given = character(),
+  index = character()
 ) {
   .Call(
     C_jl_condition_marginalize,
     cg,
-    as.character(cond_vars),
-    as.character(marg_vars)
+    as.character(given),
+    as.character(index)
   )
 }
 

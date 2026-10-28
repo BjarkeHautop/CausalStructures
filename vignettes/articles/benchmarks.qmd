@@ -1,0 +1,220 @@
+---
+title: "Benchmarks"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+bibliography: references.bib
+---
+
+Every graph in CausalStructures precomputes and stores each node's parents,
+children, spouses, and neighbors directly, so `parents()`, `children()`,
+`spouses()`, and `neighbors()` are effectively $O(1)$ lookups rather than scans
+over the whole edge set. Many higher-level algorithms, including
+`d_separated()`/`m_separated()`, `minimal_separator()`, and adjustment-set
+search, are built on these primitive operations, so their performance depends
+directly on the efficiency of these basic queries.
+
+Every function is a single call into the compiled CausalStructures.jl library,
+so there is no Julia session to start and nothing to warm up: the first call is
+as fast as any other.
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+
+# The median time of each expression. Memory allocated inside the library, and
+# its garbage collection, is invisible to bench, so only the time is shown.
+timings <- function(..., iterations = 200) {
+  b <- bench::mark(..., iterations = iterations, check = FALSE)
+  data.frame(expression = names(b$expression), median = format(b$median))
+}
+```
+
+## Queries stay fast as graphs grow
+
+Single-hop queries such as `children()` are just slice lookups, so their runtime
+is essentially unchanged whether the graph has 100 nodes or 10,000:
+
+```{r}
+graphs <- lapply(c(100, 1000, 10000), \(n) {
+  generate_graph(n, p = 5 / n, seed = 1)
+})
+timings(
+  "n = 100" = children(graphs[[1]], "V50"),
+  "n = 1,000" = children(graphs[[2]], "V500"),
+  "n = 10,000" = children(graphs[[3]], "V5000")
+)
+```
+
+These primitives keep more involved queries fast too, on graphs with hundreds of
+nodes and across graph classes:
+
+```{r}
+dag <- generate_graph(500, p = 0.1, seed = 1)
+mag <- generate_graph(500, p = 0.01, class = "MAG", latents = 20, seed = 1)
+x <- "V10"
+y <- "V290"
+
+timings(
+  "d_separated (DAG)" = d_separated(dag, x, y),
+  "m_separated (MAG)" = m_separated(mag, x, y),
+  "topological_sort" = topological_sort(dag),
+  "minimal_separator" = minimal_separator(dag, x, y),
+  "markov_blanket" = markov_blanket(dag, x)
+)
+```
+
+## Searching for adjustment sets
+
+`all_backdoor_sets()`, `all_adjustment_sets()`, `all_iv_sets()`, and
+`all_frontdoor_sets()` search subsets of the candidate universe up to
+`max_size`, checking each one against the relevant validity criterion.
+Consequently, the runtime grows exponentially with `max_size`:
+
+```{r}
+admg <- generate_graph(35, p = 0.15, class = "ADMG", latents = 8, seed = 1)
+x <- "V3"
+y <- "V33"
+
+sizes <- 2:4
+n_sets <- vapply(
+  sizes,
+  \(ms) length(all_adjustment_sets(admg, x, y, minimal = FALSE, max_size = ms)),
+  integer(1)
+)
+cbind(
+  timings(
+    "max_size = 2" = all_adjustment_sets(
+      admg,
+      x,
+      y,
+      minimal = FALSE,
+      max_size = 2
+    ),
+    "max_size = 3" = all_adjustment_sets(
+      admg,
+      x,
+      y,
+      minimal = FALSE,
+      max_size = 3
+    ),
+    "max_size = 4" = all_adjustment_sets(
+      admg,
+      x,
+      y,
+      minimal = FALSE,
+      max_size = 4
+    ),
+    iterations = 20
+  ),
+  sets = n_sets
+)
+```
+
+## Expensive algorithms
+
+Here we will show the performance of some of the most expensive algorithms.
+
+### Exact uniform DAG sampling
+
+`generate_graph()` uses an Erdős--Rényi model: it samples each edge
+independently, which is cheap regardless of `n` but is not uniform over the
+space of DAGs. `uniform_dag()` instead draws exactly uniformly from all labeled
+DAGs on `n` nodes using the recursive enumeration algorithm of
+@kuipers2015uniform:
+
+```{r}
+timings(
+  "n = 10" = uniform_dag(10, seed = 1),
+  "n = 20" = uniform_dag(20, seed = 1),
+  "n = 40" = uniform_dag(40, seed = 1),
+  iterations = 20
+)
+```
+
+### Markov equivalence class enumeration
+
+`count_dags()` and `enumerate_dags()` operate on a CPDAG, PDAG, or MPDAG by
+considering every DAG in its Markov equivalence class. The size of that class
+grows combinatorially with the number of undirected edges. For example, a clique
+on $k$ nodes has $k!$ consistent orientations, so the class can grow very large
+very quickly:
+
+```{r}
+# A PDAG whose k nodes are all joined by undirected edges
+clique <- function(k) {
+  pairs <- utils::combn(paste0("V", seq_len(k)), 2)
+  cgraph(
+    spec = paste(pairs[1, ], "---", pairs[2, ], collapse = ", "),
+    class = "PDAG"
+  )
+}
+cliques <- lapply(c(5, 7, 8), clique)
+vapply(cliques, count_dags, numeric(1))
+
+timings(
+  "count_dags, k = 5" = count_dags(cliques[[1]]),
+  "count_dags, k = 7" = count_dags(cliques[[2]]),
+  "count_dags, k = 8" = count_dags(cliques[[3]]),
+  "enumerate_dags, k = 5" = enumerate_dags(cliques[[1]]),
+  "enumerate_dags, k = 7" = enumerate_dags(cliques[[2]]),
+  "enumerate_dags, k = 8" = enumerate_dags(cliques[[3]]),
+  iterations = 5
+)
+```
+
+`enumerate_dags()` must materialize every DAG rather than simply count them, so
+it is slower and uses more memory than `count_dags()`, as the numbers above
+show. In R, every DAG it returns is also a `cgraph`, so keep the class small, or
+use `count_dags()` first to check its size.
+
+### MAG equivalence class enumeration
+
+`enumerate_mags()` is the PAG/MAG counterpart to `enumerate_dags()`. While
+`enumerate_dags()` is fairly efficient via Chickering's recursive pruning,
+`enumerate_mags()` simply brute-forces every tail/arrowhead assignment for each
+circle endpoint in the PAG ($2^k$ candidates for $k$ circle endpoints), and
+keeps the candidates that are valid MAGs with the given PAG as their equivalence
+class. Thus, it's considerably more expensive than
+`count_dags()`/`enumerate_dags()`:
+
+```{r}
+# A PAG whose k nodes are all joined by o-o edges
+circle_clique <- function(k) {
+  pairs <- utils::combn(paste0("V", seq_len(k)), 2)
+  cgraph(
+    spec = paste(pairs[1, ], "o-o", pairs[2, ], collapse = ", "),
+    class = "PAG"
+  )
+}
+pags <- lapply(3:4, circle_clique)
+vapply(pags, \(pag) length(enumerate_mags(pag)), integer(1))
+
+timings(
+  "k = 3" = enumerate_mags(pags[[1]]),
+  "k = 4" = enumerate_mags(pags[[2]]),
+  iterations = 5
+)
+```
+
+With one more node, `k = 5`, the class has 4,457 MAGs among $2^{20}$ candidates,
+and `enumerate_mags()` takes tens of seconds.
+
+::: {.callout-tip title="Parallel search"}
+`count_dags()`, `enumerate_dags()`, `enumerate_mags()`, `pagcauses()`, and the
+whole `all_*_sets()` family[^1] parallelize their search across the library's
+threads automatically once the problem is large enough to benefit. The library
+runs with one thread unless the `JULIA_NUM_THREADS` environment variable (a
+number, or `"auto"` for one per core) is set before the package is loaded, e.g.
+in your `.Renviron`.
+
+[^1]: Except for `all_iv_sets()`, since the candidate check for IV is a trivial
+    lookup, and thus not worth it.
+:::
+
+## References
+
+::: {#refs}
+:::

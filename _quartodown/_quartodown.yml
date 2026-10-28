@@ -12,6 +12,7 @@ navbar:
         - articles/causal-identification
         - articles/pag-causal-effects
         - articles/plot
+        - articles/benchmarks
     - news
 
 # Groups the function reference index, in the same shape as pkgdown's
@@ -22,6 +23,7 @@ reference:
     contents:
       - cgraph
       - edge-operators
+      - cgraph-equality
 
   - title: "Graph queries"
     desc: "Whole-graph queries: nodes, edges, and adjacency."
@@ -39,6 +41,7 @@ reference:
       - possible-queries
       - anteriors
       - possible_d_sep
+      - districts
 
   - title: "Graph class predicates"
     desc: "Test structural properties of a graph."
@@ -53,6 +56,7 @@ reference:
       - dag_to_cpdag
       - dag_from_pdag
       - meek_closure
+      - apply_background_knowledge
       - dag_to_mpdag
       - ag_to_mag
       - mag_to_pag
@@ -86,8 +90,10 @@ reference:
       - is_valid_frontdoor
       - is_valid_iv
       - all_iv_sets
+      - iv_set
       - backdoor_set
       - id
+      - idp
 
   - title: "Local IDA"
     desc: "Local structure-learning identification (IDA and its variants)."
@@ -105,6 +111,14 @@ reference:
       - equivalence
       - markov_equivalent
       - enumerate_mags
+
+  - title: "Metrics"
+    desc: "Compare two graphs, e.g. a learned graph with the true one."
+    contents:
+      - hamming
+      - aid
+      - separation_distance
+      - sc-metrics
 
   - title: "Generation and simulation"
     contents:

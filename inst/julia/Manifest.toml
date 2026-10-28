@@ -138,6 +138,13 @@ version = "1.11.0"
 deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
+[[deps.StableRNGs]]
+version = "1.1.0"
+deps = ["Random"]
+registries = "General"
+git-tree-sha1 = "448c4447d4e21ad257d862afec062b66d4f639eb"
+uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
+
 [[deps.Pkg]]
 version = "1.13.0"
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "Zstd_jll", "p7zip_jll"]
@@ -178,7 +185,7 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[deps.csjl]]
 path = "."
 version = "0.1.0"
-deps = ["CausalStructures", "JLBind", "NetworkLayout", "Random", "Sugiyama"]
+deps = ["CausalStructures", "JLBind", "NetworkLayout", "StableRNGs", "Sugiyama"]
 uuid = "5b7847be-0a43-48f2-a83d-4b9045fd9db0"
 
 [[deps.UUIDs]]
@@ -237,10 +244,10 @@ deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[deps.CausalStructures]]
-version = "1.1.0"
+version = "1.1.1"
 deps = ["Preferences", "Random", "Statistics"]
 registries = "General"
-git-tree-sha1 = "68fe3377de64f0f031a47605f8b8f9c5b9883225"
+git-tree-sha1 = "5deb805c7f9ebeb2b0655a947cad1258fa32fa01"
 uuid = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"
 
     [deps.CausalStructures.weakdeps]

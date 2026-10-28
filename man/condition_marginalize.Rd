@@ -4,28 +4,28 @@
 \alias{condition_marginalize}
 \title{Condition and marginalize a graph}
 \usage{
-condition_marginalize(cg, cond_vars = character(), marg_vars = character())
+condition_marginalize(cg, given = character(), index = character())
 }
 \arguments{
 \item{cg}{A DAG, ADMG, or AG-family (AG, MAG) graph created with
 \code{\link[=cgraph]{cgraph()}}.}
 
-\item{cond_vars}{Character vector of node names to condition on.}
+\item{given}{Character vector of node names to condition on.}
 
-\item{marg_vars}{Character vector of node names to marginalize out.}
+\item{index}{Character vector of node names to marginalize out.}
 }
 \value{
 A \code{cgraph} of class \code{AG}.
 }
 \description{
-Removes \code{cond_vars} and \code{marg_vars} from \code{cg}, returning the AG over
-the remaining nodes that represents the graphical effect of conditioning
-on \code{cond_vars} and marginalizing out \code{marg_vars}. At least one of the two
-must be non-empty, and they must be disjoint.
+Removes \code{given} and \code{index} from \code{cg}, returning the AG over the
+remaining nodes that represents the graphical effect of conditioning on
+\code{given} and marginalizing out \code{index}. At least one of the two must be
+non-empty, and they must be disjoint.
 }
 \examples{
 if (julia_ready()) {
   dag <- cgraph(A \%-->\% M, M \%-->\% Y, U \%-->\% A, U \%-->\% Y)
-  condition_marginalize(dag, marg_vars = "U")
+  condition_marginalize(dag, index = "U")
 }
 }

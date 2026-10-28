@@ -4,7 +4,15 @@
 \alias{all_backdoor_sets}
 \title{Enumerate backdoor adjustment sets}
 \usage{
-all_backdoor_sets(cg, x, y, minimal = TRUE, max_size = 3)
+all_backdoor_sets(
+  cg,
+  x,
+  y,
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+)
 }
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
@@ -15,6 +23,11 @@ names.}
 \item{minimal}{If \code{TRUE} (default), return only minimal sets.}
 
 \item{max_size}{Maximum adjustment set size to consider.}
+
+\item{include}{Character vector of nodes forced into every set.}
+
+\item{restrict}{Character vector of candidate nodes sets are drawn from.
+\code{NULL} (default) allows every node except \code{x} and \code{y}.}
 }
 \value{
 List of character vectors (empty list if none exist).

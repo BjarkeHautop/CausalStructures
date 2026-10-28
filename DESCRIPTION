@@ -30,6 +30,7 @@ Collate:
     'identification.R'
     'queries.R'
     'transform.R'
+    'metrics.R'
     'layout.R'
     'plot-options.R'
     'plot-routing.R'

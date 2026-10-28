@@ -145,6 +145,40 @@ gives `{B}`. The result is returned as an `UNKNOWN` graph rather than a MAG,
 since local background knowledge about one node need not resolve every circle in
 the graph.
 
+## General identification
+
+The methods above are each sufficient, not necessary: an effect can be
+identifiable even when no adjustment set exists. `idp()` and `cidp()` implement
+the IDP/CIDP algorithms of @jaber2022causal, the PAG analogues of `id()` and
+`idc()` (see [General
+identification](causal-identification.qmd#general-identification)): they decide
+identifiability of $P(y \mid do(x))$ and $P(y \mid do(x), z)$ from a PAG and,
+when identifiable, return the estimand.
+
+Consider a MAG where `A` confounds `X`, `B --> X`, and `X` causes `Y`, and view
+its Markov equivalence class:
+
+```{r}
+#| fig-height: 3
+
+mag3 <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+pag3 <- mag_to_pag(mag3)
+plot(pag3)
+```
+
+We can then check whether the effect of `X` on `Y` is identifiable with `idp()`:
+
+```{r}
+idp(pag3, "X", "Y")
+```
+
+The effect is identifiable, and conditioning on `A` also identifies the
+conditional effect:
+
+```{r}
+cidp(pag3, "X", "Y", given = "A")
+```
+
 ## References
 
 ::: {#refs}

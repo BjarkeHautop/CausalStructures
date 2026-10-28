@@ -4,7 +4,16 @@
 \alias{all_iv_sets}
 \title{Enumerate all valid instrumental variable sets}
 \usage{
-all_iv_sets(cg, x, y, minimal = TRUE, max_size = 3)
+all_iv_sets(
+  cg,
+  x,
+  y,
+  given = character(),
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+)
 }
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
@@ -13,16 +22,25 @@ all_iv_sets(cg, x, y, minimal = TRUE, max_size = 3)
 
 \item{y}{Outcome node name, or character vector of node names.}
 
+\item{given}{Character vector of node names the instruments are
+conditionally valid given (may be empty).}
+
 \item{minimal}{If \code{TRUE} (default), return only minimal sets.}
 
 \item{max_size}{Maximum number of instruments to consider.}
+
+\item{include}{Character vector of nodes forced into every set.}
+
+\item{restrict}{Character vector of candidate instruments. \code{NULL}
+(default) allows every node except \code{x} and \code{y}.}
 }
 \value{
 List of character vectors (empty list if none exist).
 }
 \description{
 Finds all minimal (or all) sets of valid instruments for identifying
-the causal effect of \code{x} on \code{y}; see \code{\link[=is_valid_iv]{is_valid_iv()}}.
+the causal effect of \code{x} on \code{y}, conditionally on \code{given}; see
+\code{\link[=is_valid_iv]{is_valid_iv()}}. To also search for the conditioning set, use \code{\link[=iv_set]{iv_set()}}.
 }
 \examples{
 if (julia_ready()) {

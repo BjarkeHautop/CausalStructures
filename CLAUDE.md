@@ -38,8 +38,12 @@ Rscript -e 'jlbind::update_entrypoints()'
 
 # Update the shipped manifest (e.g. for a new CausalStructures.jl release);
 # resolve with the Julia version the package requires, then rebuild and test.
-# JLBind is not in the manifest (jlbind supplies it), so develop it into a
-# throwaway copy of the environment if Pkg asks for it.
+# JLBind is not in the manifest (jlbind supplies it), and Pkg refuses to
+# resolve (or develop JLBind into) an environment whose manifest lacks one of
+# its deps. For a release that changes no dependencies, edit its
+# [[deps.CausalStructures]] entry directly instead: `version`, and
+# `git-tree-sha1` from the General registry's Versions.toml (equal to
+# `git rev-parse v<version>^{tree}` in CausalStructures.jl).
 julia --startup-file=no --project=inst/julia -e 'import Pkg; Pkg.update()'
 
 # Run the full test suite
@@ -146,6 +150,14 @@ This is the code to read first for anything touching the R<->Julia boundary.
   `Union{T,Nothing}` arguments in one call (take raw `SEXP` and convert inside,
   as `jl_generate_graph` does), and a type passed as a keyword argument
   (`class = T`, inlined with `@inline` in `_generate`).
+- A function of two graphs narrows both, nesting `@on`
+  (`@on "f" g1 (DAG,   PDAG) @on "f" g2 (DAG, PDAG) body`); keep the pairs few,
+  since each is compiled. `hd`/`shd` only read edges, so they compare both
+  graphs as `UNKNOWN` (one specialization), and the s/c-metrics pair classes
+  only within the same separation notion (`@on_same_separation`).
+- A trim failure inside CausalStructures.jl itself (e.g. a boxed captured
+  variable) is fixed there, with the call added to its `trim-check/entry.jl`,
+  which only catches what it calls (keyword forms included).
 - Adding a wrapped function: write the Julia function `jl_name` in `csjl.jl`,
   add an `@rcall` declaration, run `jlbind::update_entrypoints()`, and call it
   from the R wrapper as `.Call(C_jl_name, ...)`. Then rebuild the library (and
@@ -215,8 +227,9 @@ data from a graph.
   undirected adjacency matrix. Released NetworkLayout.jl does not compile under
   `--trim`, so `inst/julia/Project.toml` takes it from the `trim-compat` branch
   of BjarkeHautop/NetworkLayout.jl (`[sources]`, pinned in the manifest). The
-  random layouts get an explicit `MersenneTwister(seed)`: NetworkLayout's
-  default RNG is a type only known at run time.
+  random layouts get an explicit `StableRNG(seed)`: NetworkLayout's default RNG
+  is a type only known at run time. Every seeded function uses `StableRNG`
+  (`_rng`), so a seed gives the same result on every Julia version.
 - The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather

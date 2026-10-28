@@ -4,7 +4,7 @@
 \alias{is_valid_iv}
 \title{Validate instrumental variables}
 \usage{
-is_valid_iv(cg, x, y, z = character())
+is_valid_iv(cg, x, y, z = character(), given = character())
 }
 \arguments{
 \item{cg}{A DAG or ADMG created with \code{\link[=cgraph]{cgraph()}}.}
@@ -14,16 +14,21 @@ is_valid_iv(cg, x, y, z = character())
 \item{y}{Outcome node name, or character vector of node names.}
 
 \item{z}{Character vector of instrument node names.}
+
+\item{given}{Character vector of node names the instruments are
+conditionally valid given (may be empty).}
 }
 \value{
 \code{TRUE} if \code{z} satisfies the instrumental variable criterion.
 }
 \description{
 Tests whether a set of variables are valid instruments for identifying
-the causal effect of exposure \code{x} on outcome \code{y}. Every node in \code{z} must
-be d-/m-separated from \code{y} given \code{x} in the graph obtained by deleting
-\code{x}'s incoming edges (exclusion restriction), and at least one node in
-\code{z} must be d-/m-connected to \code{x} (relevance).
+the causal effect of exposure \code{x} on outcome \code{y}, conditionally on
+\code{given}. Every node in \code{z} must be d-/m-separated from \code{y} given \code{given}
+in the graph obtained by removing the first edge of every causal path from
+\code{x} to \code{y} (exclusion restriction), and at least one node in \code{z} must be
+d-/m-connected to \code{x} given \code{given} (relevance). \code{given} must contain no
+descendant of \code{x} or \code{y}.
 }
 \examples{
 if (julia_ready()) {
@@ -32,6 +37,15 @@ if (julia_ready()) {
   list(
     z = is_valid_iv(dag, "X", "Y", "Z"), # Z is a valid instrument
     u = is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
+  )
+}
+
+if (julia_ready()) {
+  # W confounds Z and Y, so Z is an instrument only given W
+  dag <- cgraph(W \%-->\% Z + Y, Z \%-->\% X \%-->\% Y, U \%-->\% X + Y)
+  list(
+    unconditional = is_valid_iv(dag, "X", "Y", "Z"),
+    given_w = is_valid_iv(dag, "X", "Y", "Z", given = "W")
   )
 }
 }

@@ -9,6 +9,7 @@ simulate_data(
   n,
   standardize = TRUE,
   coef_range = c(-1, 1),
+  random_sign = FALSE,
   error_sd = 1,
   seed = NULL
 )
@@ -24,7 +25,13 @@ mean and unit variance.}
 \item{coef_range}{Length-2 numeric vector giving the range edge
 coefficients are drawn uniformly from.}
 
-\item{error_sd}{Standard deviation of each node's Gaussian noise term.}
+\item{random_sign}{If \code{TRUE}, draw each coefficient's magnitude from
+\code{coef_range} and its sign independently at random, instead of drawing
+the signed coefficient from \code{coef_range}.}
+
+\item{error_sd}{Standard deviation of each node's Gaussian noise term, or
+a length-2 range each node's standard deviation is drawn uniformly
+from.}
 
 \item{seed}{Optional integer seed for reproducibility.}
 }
@@ -38,6 +45,12 @@ model over \code{cg}. Each node is a linear function of its parents plus
 independent Gaussian noise with standard deviation \code{error_sd}, with edge
 coefficients drawn uniformly from \code{coef_range}. If \code{standardize = TRUE}
 (default), each variable is standardized to zero mean and unit variance.
+}
+\details{
+A sign-symmetric coefficient range such as \code{c(-1, 1)} puts many
+coefficients near zero, i.e. near-unfaithful edges. To keep every edge's
+coefficient away from zero, use a positive range with \code{random_sign = TRUE},
+e.g. \code{coef_range = c(0.5, 2)}.
 }
 \examples{
 if (julia_ready()) {
@@ -53,7 +66,8 @@ if (julia_ready()) {
     n = 100,
     standardize = FALSE,
     coef_range = c(0.5, 2),
-    error_sd = 0.1,
+    random_sign = TRUE,
+    error_sd = c(0.5, 1.5),
     seed = 1405
   )
   head(data2)

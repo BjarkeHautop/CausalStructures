@@ -4,10 +4,13 @@
 \alias{enumerate_mags}
 \title{Enumerate MAGs in a PAG equivalence class}
 \usage{
-enumerate_mags(cg)
+enumerate_mags(cg, selection_bias = TRUE)
 }
 \arguments{
 \item{cg}{A PAG (partially ancestral graph) created with \code{\link[=cgraph]{cgraph()}}.}
+
+\item{selection_bias}{If \code{FALSE}, return only the MAGs without undirected
+edges (i.e. without selection bias), pruning the others from the search.}
 }
 \value{
 A list of \code{cgraph}s (MAGs) in the equivalence class.
@@ -23,6 +26,9 @@ class, use \code{\link[=mag_from_pag]{mag_from_pag()}}.
 \examples{
 if (julia_ready()) {
   pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
-  length(enumerate_mags(pag))
+  list(
+    all = length(enumerate_mags(pag)),
+    no_selection_bias = length(enumerate_mags(pag, selection_bias = FALSE))
+  )
 }
 }

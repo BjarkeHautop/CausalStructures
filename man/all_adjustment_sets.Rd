@@ -4,7 +4,15 @@
 \alias{all_adjustment_sets}
 \title{Enumerate all valid adjustment sets}
 \usage{
-all_adjustment_sets(cg, x, y, minimal = TRUE, max_size = 3)
+all_adjustment_sets(
+  cg,
+  x,
+  y,
+  minimal = TRUE,
+  max_size = 3,
+  include = character(),
+  restrict = NULL
+)
 }
 \arguments{
 \item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
@@ -16,6 +24,11 @@ names.}
 \item{minimal}{If \code{TRUE} (default), return only minimal sets.}
 
 \item{max_size}{Maximum adjustment set size to consider.}
+
+\item{include}{Character vector of nodes forced into every set.}
+
+\item{restrict}{Character vector of candidate nodes sets are drawn from.
+\code{NULL} (default) allows every node except \code{x} and \code{y}.}
 }
 \value{
 List of character vectors (empty list if none exist).

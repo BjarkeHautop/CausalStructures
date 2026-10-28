@@ -139,6 +139,24 @@ affect `Y` through `X`:
 is_valid_iv(dag3, "X", "Y", "Z")
 ```
 
+An instrument may also only be valid conditionally on a set of variables. Here
+`W` confounds `Z` and `Y`, so `Z` is an instrument only once we condition on
+`W`:
+
+```{r}
+dag5 <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+is_valid_iv(dag5, "X", "Y", "Z")
+is_valid_iv(dag5, "X", "Y", "Z", given = "W")
+```
+
+`iv_set()` searches for an instrument together with a conditioning set that
+makes it valid, and `restrict` limits both to the observed variables:
+
+```{r}
+iv_set(dag5, "X", "Y")
+is.null(iv_set(dag5, "X", "Y", restrict = c("Z", "X", "Y")))
+```
+
 ## ADMG adjustment
 
 In an ADMG (acyclic directed mixed graph), bidirected edges `<->` represent

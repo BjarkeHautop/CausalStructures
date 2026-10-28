@@ -11,6 +11,8 @@
 \alias{\%o--\%}
 \alias{\%--o\%}
 \alias{\%o-o\%}
+\alias{\%!-->\%}
+\alias{\%!<--\%}
 \title{Edge specification operators}
 \usage{
 lhs \%-->\% rhs
@@ -30,6 +32,10 @@ lhs \%o--\% rhs
 lhs \%--o\% rhs
 
 lhs \%o-o\% rhs
+
+lhs \%!-->\% rhs
+
+lhs \%!<--\% rhs
 }
 \arguments{
 \item{lhs, rhs}{Node name(s): a bare symbol, a string, or a \code{+}-combination
@@ -39,8 +45,8 @@ or \code{c()} of either.}
 Not meaningful on its own; see the Description.
 }
 \description{
-Infix operators used inside \code{\link[=cgraph]{cgraph()}}, \code{\link[=add_edges]{add_edges()}}, and
-\code{\link[=remove_edges]{remove_edges()}} to specify edges, e.g. \code{A \%-->\% X + Y}. Multiple edges
+Infix operators used inside \code{\link[=cgraph]{cgraph()}}, \code{\link[=add_edges]{add_edges()}},
+\code{\link[=remove_edges]{remove_edges()}}, and \code{\link[=apply_background_knowledge]{apply_background_knowledge()}} to specify edges, e.g. \code{A \%-->\% X + Y}. Multiple edges
 fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} means \verb{A --> X} and \verb{A --> Y}; chaining connects consecutive nodes pairwise, so \code{X \%-->\% M \%-->\% Y} means \verb{X --> M} and \verb{M --> Y}.
 }
 \details{
@@ -57,6 +63,10 @@ fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} mea
    \verb{\%o-o\%} \tab partial (both ends circle) \cr
 }
 
+
+\code{\link[=apply_background_knowledge]{apply_background_knowledge()}} also takes \verb{\%!-->\%} (\verb{src --> dst} is
+forbidden) and \verb{\%!<--\%} (\verb{dst --> src} is forbidden), where \verb{\%-->\%} and
+\verb{\%<--\%} mean a required edge.
 
 These operators only make sense inside the \code{...} of \code{cgraph()},
 \code{add_edges()}, or \code{remove_edges()}, which capture their arguments

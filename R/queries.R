@@ -186,6 +186,22 @@ possible_descendants <- function(
   .Call(C_jl_possible_descendants, cg, node, open)
 }
 
+#' Districts of a mixed graph
+#'
+#' Returns the districts (c-components) of `cg`: the connected components of
+#' its bidirected part, i.e. the sets of nodes joined by paths of `<->`
+#' edges. A node with no bidirected edges is a district of its own.
+#'
+#' @param cg An ADMG or AG-family (AG, MAG) graph created with [cgraph()].
+#' @return A list of sorted character vectors, one per district.
+#' @export
+#' @examples
+#' if (julia_ready()) {
+#'   admg <- cgraph(A %<->% B, B %<->% C, C %-->% D, class = "ADMG")
+#'   districts(admg)
+#' }
+districts <- function(cg) .Call(C_jl_districts, cg)
+
 #' Anterior/posterior node-set queries
 #'
 #' `anteriors()` finds every node from which `node` is reachable by

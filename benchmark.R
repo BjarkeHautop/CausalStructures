@@ -241,8 +241,8 @@ results <- rbind(
   ),
   run(
     "condition_marginalize (4-node graph)",
-    function() condition_marginalize(jdag_small, marg_vars = "M"),
-    function() caugi::condition_marginalize(cdag_small, marg_vars = "M")
+    function() condition_marginalize(jdag_small, index = "M"),
+    function() caugi::condition_marginalize(cdag_small, index = "M")
   ),
 
   # --- Separation --------------------------------------------------------

@@ -20,7 +20,9 @@
   `%<-o%` = "<-o",
   `%o--%` = "o--",
   `%--o%` = "--o",
-  `%o-o%` = "o-o"
+  `%o-o%` = "o-o",
+  `%!-->%` = "!-->",
+  `%!<--%` = "!<--"
 )
 
 .is_edge_call <- function(expr) {
@@ -262,8 +264,8 @@
 
 #' Edge specification operators
 #'
-#' Infix operators used inside [cgraph()], [add_edges()], and
-#' [remove_edges()] to specify edges, e.g. `A %-->% X + Y`. Multiple edges
+#' Infix operators used inside [cgraph()], [add_edges()],
+#' [remove_edges()], and [apply_background_knowledge()] to specify edges, e.g. `A %-->% X + Y`. Multiple edges
 #' fan out from (or into) a single marker with `+`: `A %-->% X + Y` means `A
 #' --> X` and `A --> Y`; chaining connects consecutive nodes pairwise, so `X
 #' %-->% M %-->% Y` means `X --> M` and `M --> Y`.
@@ -279,6 +281,10 @@
 #' | `%o--%`   | partially undirected, `src o-- dst` |
 #' | `%--o%`   | partially undirected, `dst o-- src` |
 #' | `%o-o%`   | partial (both ends circle)      |
+#'
+#' [apply_background_knowledge()] also takes `%!-->%` (`src --> dst` is
+#' forbidden) and `%!<--%` (`dst --> src` is forbidden), where `%-->%` and
+#' `%<--%` mean a required edge.
 #'
 #' These operators only make sense inside the `...` of `cgraph()`,
 #' `add_edges()`, or `remove_edges()`, which capture their arguments
@@ -323,3 +329,9 @@ NULL
 
 #' @rdname edge-operators
 `%o-o%` <- function(lhs, rhs) .stmt_dsl(sys.call())
+
+#' @rdname edge-operators
+`%!-->%` <- function(lhs, rhs) .stmt_dsl(sys.call())
+
+#' @rdname edge-operators
+`%!<--%` <- function(lhs, rhs) .stmt_dsl(sys.call())

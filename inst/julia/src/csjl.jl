@@ -20,7 +20,7 @@ import CausalStructures as CS
 using CausalStructures:
     CausalGraph, CausalEdge, DAG, UG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN
 import NetworkLayout
-import Random
+using StableRNGs: StableRNG
 import Sugiyama
 
 using JLBind
@@ -101,8 +101,10 @@ _sets(sets)::Vector{SymSet} = SymSet[_set(s) for s in sets]
 _opt_sets(sets)::Vector{Union{Nothing,SymSet}} =
     Union{Nothing,SymSet}[s === nothing ? nothing : _set(s) for s in sets]
 
+# StableRNG streams are the same on every Julia version, so a seed gives the same
+# result whichever Julia built the library.
 _rng(seed::Union{Int64,Nothing}) =
-    seed === nothing ? Random.Xoshiro() : Random.Xoshiro(seed)
+    StableRNG(seed === nothing ? rand(UInt64) : seed)
 
 function _spec_edges(spec::String)
     es = CausalEdge[]
@@ -134,7 +136,7 @@ end
 # A type passed as a keyword is stored as `DataType` in the keyword NamedTuple,
 # so the keyword wrapper is inlined here, where `T` is still a constant.
 function _generate(
-    rng::Random.Xoshiro,
+    rng::StableRNG,
     n::Int64,
     m::Union{Nothing,Int64},
     p::Union{Nothing,Float64},
@@ -294,6 +296,10 @@ function jl_possible_descendants(@nospecialize(g::CausalGraph), node::Symbol, op
     )
 end
 
+function jl_districts(@nospecialize(g::CausalGraph))
+    _sets(sort!([_set(d) for d in @on "districts" g (ADMG, AG, MAG) CS.districts(g)]))
+end
+
 # --- Predicates --------------------------------------------------------------
 
 for f in (
@@ -306,6 +312,14 @@ for f in (
 end
 
 jl_is_dag_type(@nospecialize(g::CausalGraph)) = g isa DAG
+
+# Structural equality: same class, nodes and edges. `g2` is narrowed to the
+# class of `g1`, so only like pairs are compared.
+_same(g1::T, @nospecialize(g2::CausalGraph)) where {T<:CausalGraph} = g2 isa T && g1 == g2::T
+
+function jl_graph_equal(@nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph))
+    @on "==" g1 ALL _same(g1, g2)
+end
 
 function jl_markov_equivalent(@nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph))
     g1 isa DAG && g2 isa DAG && return CS.markov_equivalent(g1, g2)
@@ -337,18 +351,43 @@ end
 
 # --- Identification ----------------------------------------------------------
 
-function jl_adjustment_set(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet, type::Symbol)
-    if g isa DAG || g isa CS.AbstractPDAG
-        @on "adjustment_set" g (DAG, PDAG, CPDAG, MPDAG) _opt(
+# `include` and `restrict` are not keywords of every method, so the classes
+# without them reject them here.
+function _unconstrained(fname::String, class::String, include::SymSet, restrict)
+    isempty(include) && restrict === nothing && return nothing
+    throw(ArgumentError(fname * "() takes no include or restrict for a " * class))
+end
+
+function jl_adjustment_set(
+    @nospecialize(g::CausalGraph), x::SymSet, y::SymSet, type::Symbol,
+    include::SymSet, restrict::Union{Nothing,SymSet},
+)
+    if g isa DAG
+        _opt(CS.adjustment_set(g::DAG, x, y; type = type, include = include, restrict = restrict))
+    elseif g isa CS.AbstractPDAG
+        _unconstrained("adjustment_set", _class_name(g), include, restrict)
+        @on "adjustment_set" g (PDAG, CPDAG, MPDAG) _opt(
             CS.adjustment_set(g, x, y; type = type),
         )
     else
-        @on "adjustment_set" g (ADMG, AG, MAG, PAG) _opt(CS.adjustment_set(g, x, y))
+        @on "adjustment_set" g (ADMG, AG, MAG, PAG) _opt(
+            CS.adjustment_set(g, x, y; include = include, restrict = restrict),
+        )
     end
 end
 
-function jl_backdoor_set(@nospecialize(g::CausalGraph), x::Symbol, y::Symbol)
-    @on "backdoor_set" g (DAG, CPDAG, ADMG, MAG, PAG) _opt(CS.backdoor_set(g, x, y))
+function jl_backdoor_set(
+    @nospecialize(g::CausalGraph), x::Symbol, y::Symbol,
+    include::SymSet, restrict::Union{Nothing,SymSet},
+)
+    if g isa DAG || g isa ADMG
+        @on "backdoor_set" g (DAG, ADMG) _opt(
+            CS.backdoor_set(g, x, y; include = include, restrict = restrict),
+        )
+    else
+        _unconstrained("backdoor_set", _class_name(g), include, restrict)
+        @on "backdoor_set" g (CPDAG, MAG, PAG) _opt(CS.backdoor_set(g, x, y))
+    end
 end
 
 function jl_frontdoor_set(
@@ -371,9 +410,15 @@ function jl_is_valid_backdoor(@nospecialize(g::CausalGraph), x::SymSet, y::SymSe
     @on "is_valid_backdoor" g (DAG, ADMG) CS.is_valid_backdoor(g, x, y, z)
 end
 
-function jl_all_backdoor_sets(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet, minimal::Bool, max_size::Int64)
+function jl_all_backdoor_sets(
+    @nospecialize(g::CausalGraph), x::SymSet, y::SymSet, minimal::Bool, max_size::Int64,
+    include::SymSet, restrict::Union{Nothing,SymSet},
+)
     @on "all_backdoor_sets" g (DAG, ADMG) _sets(
-        CS.all_backdoor_sets(g, x, y; minimal = minimal, max_size = max_size),
+        CS.all_backdoor_sets(
+            g, x, y;
+            minimal = minimal, max_size = max_size, include = include, restrict = restrict,
+        ),
     )
 end
 
@@ -385,9 +430,13 @@ end
 
 function jl_all_adjustment_sets(
     @nospecialize(g::CausalGraph), x::SymSet, y::SymSet, minimal::Bool, max_size::Int64,
+    include::SymSet, restrict::Union{Nothing,SymSet},
 )
     @on "all_adjustment_sets" g (DAG, PDAG, CPDAG, MPDAG, ADMG, AG, MAG, PAG) _sets(
-        CS.all_adjustment_sets(g, x, y; minimal = minimal, max_size = max_size),
+        CS.all_adjustment_sets(
+            g, x, y;
+            minimal = minimal, max_size = max_size, include = include, restrict = restrict,
+        ),
     )
 end
 
@@ -395,14 +444,32 @@ function jl_is_valid_frontdoor(@nospecialize(g::CausalGraph), x::SymSet, y::SymS
     @on "is_valid_frontdoor" g (DAG, ADMG) CS.is_valid_frontdoor(g, x, y, z)
 end
 
-function jl_is_valid_iv(@nospecialize(g::CausalGraph), x::Symbol, y::SymSet, z::SymSet)
-    @on "is_valid_iv" g (DAG, ADMG) CS.is_valid_iv(g, x, y, z)
+function jl_is_valid_iv(
+    @nospecialize(g::CausalGraph), x::Symbol, y::SymSet, z::SymSet, given::SymSet,
+)
+    @on "is_valid_iv" g (DAG, ADMG) CS.is_valid_iv(g, x, y, z, given)
 end
 
-function jl_all_iv_sets(@nospecialize(g::CausalGraph), x::Symbol, y::SymSet, minimal::Bool, max_size::Int64)
+function jl_all_iv_sets(
+    @nospecialize(g::CausalGraph), x::Symbol, y::SymSet, given::SymSet, minimal::Bool,
+    max_size::Int64, include::SymSet, restrict::Union{Nothing,SymSet},
+)
     @on "all_iv_sets" g (DAG, ADMG) _sets(
-        CS.all_iv_sets(g, x, y; minimal = minimal, max_size = max_size),
+        CS.all_iv_sets(
+            g, x, y, given;
+            minimal = minimal, max_size = max_size, include = include, restrict = restrict,
+        ),
     )
+end
+
+# An instrument and the conditioning set making it valid, as a list named `z`
+# and `given` (the R name of CausalStructures.jl's `w`).
+function jl_iv_set(
+    @nospecialize(g::CausalGraph), x::Symbol, y::SymSet, restrict::Union{Nothing,SymSet},
+)
+    r = @on "iv_set" g (DAG, ADMG) CS.iv_set(g, x, y; restrict = restrict)
+    r === nothing && return nothing
+    return (z = _set(r.z), given = _set(r.w))
 end
 
 function jl_id(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet)
@@ -412,6 +479,16 @@ end
 
 function jl_idc(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet, given::SymSet)
     r = @on "idc" g (DAG, ADMG) CS.idc(g, x, y; given = given)
+    return r === nothing ? nothing : string(r)
+end
+
+function jl_idp(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet)
+    r = @on "idp" g (PAG,) CS.idp(g, x, y)
+    return r === nothing ? nothing : string(r)
+end
+
+function jl_cidp(@nospecialize(g::CausalGraph), x::SymSet, y::SymSet, given::SymSet)
+    r = @on "cidp" g (PAG,) CS.cidp(g, x, y; given = given)
     return r === nothing ? nothing : string(r)
 end
 
@@ -450,8 +527,10 @@ function jl_enumerate_dags(@nospecialize(g::CausalGraph))
     @on "enumerate_dags" g (PDAG, CPDAG, MPDAG) CausalGraph[d for d in CS.enumerate_dags(g)]
 end
 
-function jl_enumerate_mags(@nospecialize(g::CausalGraph))
-    @on "enumerate_mags" g (PAG,) CausalGraph[d for d in CS.enumerate_mags(g)]
+function jl_enumerate_mags(@nospecialize(g::CausalGraph), selection_bias::Bool)
+    @on "enumerate_mags" g (PAG,) CausalGraph[
+        d for d in CS.enumerate_mags(g; selection_bias = selection_bias)
+    ]
 end
 
 # --- Transformations ---------------------------------------------------------
@@ -503,6 +582,11 @@ function jl_maximal_local_mag(@nospecialize(g::CausalGraph), x::Symbol, c::SymSe
     @on "maximal_local_mag" g (PAG,) CS.maximal_local_mag(g, x, c)
 end
 
+function jl_apply_background_knowledge(@nospecialize(g::CausalGraph), spec::String)
+    bk = CS.BackgroundKnowledge(spec)
+    @on "apply_background_knowledge" g (PDAG, CPDAG, MPDAG) CS.apply_background_knowledge(g, bk)
+end
+
 function jl_reclass(@nospecialize(g::CausalGraph), class::String)
     @on "reclass" g ALL @class class T ALL CS.reclass(g, T)
 end
@@ -546,16 +630,28 @@ function jl_simulate_data(
     seed::Union{Nothing,Int64},
     standardize::Bool,
     coef_range::Vector{Float64},
-    error_sd::Float64,
+    random_sign::Bool,
+    error_sd::Vector{Float64},
 )
     length(coef_range) == 2 || throw(ArgumentError("coef_range must have length 2"))
-    coef_lo, coef_hi = coef_range[1], coef_range[2]
+    coef = (coef_range[1], coef_range[2])
     g isa DAG || _unsupported("simulate_data", _class_name(g))
-    d = CS.simulate_data(
-        _rng(seed), g::DAG;
-        samples = n, standardize = standardize,
-        coef_range = (coef_lo, coef_hi), error_sd = error_sd,
-    )
+    # `error_sd` is one standard deviation, or the range each node's is drawn from.
+    d = if length(error_sd) == 1
+        CS.simulate_data(
+            _rng(seed), g::DAG;
+            samples = n, standardize = standardize, coef_range = coef,
+            random_sign = random_sign, error_sd = error_sd[1],
+        )
+    elseif length(error_sd) == 2
+        CS.simulate_data(
+            _rng(seed), g::DAG;
+            samples = n, standardize = standardize, coef_range = coef,
+            random_sign = random_sign, error_sd = (error_sd[1], error_sd[2]),
+        )
+    else
+        throw(ArgumentError("error_sd must have length 1 or 2"))
+    end
     ns = (g::DAG).backend.nodes
     out = protect(_alloc_matrix(REALSXP, n, length(ns)))
     p = real_ptr(out)
@@ -565,6 +661,98 @@ function jl_simulate_data(
     end
     unprotect(1)
     return out
+end
+
+# --- Metrics -----------------------------------------------------------------
+
+# hd and shd only read the node set and edge marks, so both graphs are compared
+# as UNKNOWN: one specialization rather than one per pair of classes.
+_as_unknown(@nospecialize(g::CausalGraph)) = @on "hd" g ALL CS.reclass(g, UNKNOWN)
+
+function jl_hd(@nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph), normalized::Bool)
+    Float64(CS.hd(_as_unknown(g1), _as_unknown(g2); normalized = normalized))
+end
+
+function jl_shd(@nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph), normalized::Bool)
+    Float64(CS.shd(_as_unknown(g1), _as_unknown(g2); normalized = normalized))
+end
+
+function jl_aid(
+    @nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph), type::Symbol, normalized::Bool,
+)
+    @on "aid" g1 (DAG, PDAG, CPDAG, MPDAG) @on "aid" g2 (DAG, PDAG, CPDAG, MPDAG) Float64(
+        CS.aid(g1, g2; type = type, normalized = normalized),
+    )
+end
+
+# Both graphs must be of the same class (any AG with any AG, any PDAG with any
+# PDAG); `strategy` is a keyword of the DAG method only.
+function jl_separation_distance(
+    @nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph),
+    strategy::Union{Nothing,Symbol}, mb_enhanced::Bool, symmetric::Bool, normalized::Bool,
+)
+    if g1 isa DAG && g2 isa DAG
+        return Float64(
+            CS.separation_distance(
+                g1::DAG, g2::DAG;
+                strategy = strategy === nothing ? :parents : strategy,
+                mb_enhanced = mb_enhanced, symmetric = symmetric, normalized = normalized,
+            ),
+        )
+    end
+    strategy === nothing ||
+        throw(ArgumentError("separation_distance() takes a strategy only for two DAGs"))
+    if g1 isa CS.AbstractAG && g2 isa CS.AbstractAG
+        @on "separation_distance" g1 (AG, MAG) @on "separation_distance" g2 (AG, MAG) Float64(
+            CS.separation_distance(
+                g1, g2; mb_enhanced = mb_enhanced, symmetric = symmetric, normalized = normalized,
+            ),
+        )
+    elseif g1 isa CS.AbstractPDAG && g2 isa CS.AbstractPDAG
+        @on "separation_distance" g1 (PDAG, CPDAG, MPDAG) @on "separation_distance" g2 (
+            PDAG, CPDAG, MPDAG,
+        ) Float64(
+            CS.separation_distance(
+                g1, g2; mb_enhanced = mb_enhanced, symmetric = symmetric, normalized = normalized,
+            ),
+        )
+    elseif g1 isa PAG && g2 isa PAG
+        Float64(
+            CS.separation_distance(
+                g1::PAG, g2::PAG; mb_enhanced = mb_enhanced, symmetric = symmetric, normalized = normalized,
+            ),
+        )
+    else
+        throw(
+            ArgumentError(
+                "separation_distance() needs two graphs of the same class, got a " *
+                _class_name(g1) * " and a " * _class_name(g2),
+            ),
+        )
+    end
+end
+
+# The s/c-metrics compare two graphs with the same separation notion: both
+# d-separation (DAG and PDAGs) or both m-separation (ADMG, AGs and PAG).
+macro on_same_separation(fname, g1, g2, body)
+    d = :(DAG, PDAG, CPDAG, MPDAG)
+    m = :(ADMG, AG, MAG, PAG)
+    return esc(quote
+        if $g1 isa DAG || $g1 isa CS.AbstractPDAG
+            @on $fname $g1 $d @on $fname $g2 $d $body
+        else
+            @on $fname $g1 $m @on $fname $g2 $m $body
+        end
+    end)
+end
+
+for f in (:sc_metric, :markov_metric, :faithfulness_metric)
+    @eval function $(Symbol(:jl_, f))(
+        @nospecialize(g1::CausalGraph), @nospecialize(g2::CausalGraph),
+        max_order::Union{Nothing,Int64},
+    )
+        @on_same_separation $(String(f)) g1 g2 CS.$f(g1, g2; max_order = max_order)
+    end
 end
 
 # --- Layout ------------------------------------------------------------------
@@ -616,11 +804,11 @@ function jl_network_layout(@nospecialize(g::CausalGraph), method::Symbol, seed::
     ns, es, idx, A = _sugiyama_adjacency(g)
     U = Float64.((A .+ A') .> 0)
     if method === :stress
-        return _points_matrix(NetworkLayout.stress(U; rng = Random.MersenneTwister(seed)))
+        return _points_matrix(NetworkLayout.stress(U; rng = StableRNG(seed)))
     elseif method === :spring
-        return _points_matrix(NetworkLayout.spring(U; rng = Random.MersenneTwister(seed)))
+        return _points_matrix(NetworkLayout.spring(U; rng = StableRNG(seed)))
     elseif method === :sfdp
-        return _points_matrix(NetworkLayout.sfdp(U; rng = Random.MersenneTwister(seed)))
+        return _points_matrix(NetworkLayout.sfdp(U; rng = StableRNG(seed)))
     elseif method === :spectral
         return _points_matrix(NetworkLayout.spectral(U))
     elseif method === :shell
@@ -671,6 +859,7 @@ end
 @rcall jl_posteriors(g::GraphRef, node::Symbol, open::Bool)::SymSet
 @rcall jl_possible_ancestors(g::GraphRef, node::Symbol, open::Bool)::SymSet
 @rcall jl_possible_descendants(g::GraphRef, node::Symbol, open::Bool)::SymSet
+@rcall jl_districts(g::GraphRef)::Vector{SymSet}
 
 @rcall jl_is_dag(g::GraphRef)::Bool
 @rcall jl_is_pdag(g::GraphRef)::Bool
@@ -684,6 +873,7 @@ end
 @rcall jl_is_simple(g::GraphRef)::Bool
 @rcall jl_is_acyclic(g::GraphRef)::Bool
 @rcall jl_is_dag_type(g::GraphRef)::Bool
+@rcall jl_graph_equal(g1::GraphRef, g2::GraphRef)::Bool
 @rcall jl_markov_equivalent(g1::GraphRef, g2::GraphRef)::Bool
 
 @rcall jl_d_separated(g::GraphRef, x::SymSet, y::SymSet, z::SymSet)::Bool
@@ -693,8 +883,13 @@ end
 )::Union{Nothing,SymSet}
 @rcall jl_possible_d_sep(g::GraphRef, x::Symbol, y::SymSet)::SymSet
 
-@rcall jl_adjustment_set(g::GraphRef, x::SymSet, y::SymSet, type::Symbol)::Union{Nothing,SymSet}
-@rcall jl_backdoor_set(g::GraphRef, x::Symbol, y::Symbol)::Union{Nothing,SymSet}
+@rcall jl_adjustment_set(
+    g::GraphRef, x::SymSet, y::SymSet, type::Symbol, include::SymSet,
+    restrict::Union{Nothing,SymSet},
+)::Union{Nothing,SymSet}
+@rcall jl_backdoor_set(
+    g::GraphRef, x::Symbol, y::Symbol, include::SymSet, restrict::Union{Nothing,SymSet},
+)::Union{Nothing,SymSet}
 @rcall jl_frontdoor_set(
     g::GraphRef, x::SymSet, y::SymSet, include::SymSet, restrict::Union{Nothing,SymSet},
 )::Union{Nothing,SymSet}
@@ -703,19 +898,27 @@ end
 )::Vector{SymSet}
 @rcall jl_is_valid_backdoor(g::GraphRef, x::SymSet, y::SymSet, z::SymSet)::Bool
 @rcall jl_all_backdoor_sets(
-    g::GraphRef, x::SymSet, y::SymSet, minimal::Bool, max_size::Int64,
+    g::GraphRef, x::SymSet, y::SymSet, minimal::Bool, max_size::Int64, include::SymSet,
+    restrict::Union{Nothing,SymSet},
 )::Vector{SymSet}
 @rcall jl_is_valid_adjustment(g::GraphRef, x::SymSet, y::SymSet, z::SymSet)::Bool
 @rcall jl_all_adjustment_sets(
-    g::GraphRef, x::SymSet, y::SymSet, minimal::Bool, max_size::Int64,
+    g::GraphRef, x::SymSet, y::SymSet, minimal::Bool, max_size::Int64, include::SymSet,
+    restrict::Union{Nothing,SymSet},
 )::Vector{SymSet}
 @rcall jl_is_valid_frontdoor(g::GraphRef, x::SymSet, y::SymSet, z::SymSet)::Bool
-@rcall jl_is_valid_iv(g::GraphRef, x::Symbol, y::SymSet, z::SymSet)::Bool
+@rcall jl_is_valid_iv(g::GraphRef, x::Symbol, y::SymSet, z::SymSet, given::SymSet)::Bool
 @rcall jl_all_iv_sets(
-    g::GraphRef, x::Symbol, y::SymSet, minimal::Bool, max_size::Int64,
+    g::GraphRef, x::Symbol, y::SymSet, given::SymSet, minimal::Bool, max_size::Int64,
+    include::SymSet, restrict::Union{Nothing,SymSet},
 )::Vector{SymSet}
+@rcall jl_iv_set(
+    g::GraphRef, x::Symbol, y::SymSet, restrict::Union{Nothing,SymSet},
+)::Union{Nothing,@NamedTuple{z::SymSet, given::SymSet}}
 @rcall jl_id(g::GraphRef, x::SymSet, y::SymSet)::Union{Nothing,String}
 @rcall jl_idc(g::GraphRef, x::SymSet, y::SymSet, given::SymSet)::Union{Nothing,String}
+@rcall jl_idp(g::GraphRef, x::SymSet, y::SymSet)::Union{Nothing,String}
+@rcall jl_cidp(g::GraphRef, x::SymSet, y::SymSet, given::SymSet)::Union{Nothing,String}
 @rcall jl_possible_parent_sets(g::GraphRef, x::Symbol)::Vector{SymSet}
 @rcall jl_possible_joint_parent_sets(g::GraphRef, xs::SymSet)::Vector{Vector{SymSet}}
 @rcall jl_possible_optimal_adjustment_sets(
@@ -726,7 +929,7 @@ end
 
 @rcall jl_count_dags(g::GraphRef)::Union{Int32,Float64}
 @rcall jl_enumerate_dags(g::GraphRef)::Vector{GraphRef}
-@rcall jl_enumerate_mags(g::GraphRef)::Vector{GraphRef}
+@rcall jl_enumerate_mags(g::GraphRef, selection_bias::Bool)::Vector{GraphRef}
 
 @rcall jl_skeleton(g::GraphRef)::GraphRef
 @rcall jl_moralize(g::GraphRef)::GraphRef
@@ -743,6 +946,7 @@ end
 @rcall jl_normalize_latent_structure(g::GraphRef, latents::SymSet)::GraphRef
 @rcall jl_condition_marginalize(g::GraphRef, given::SymSet, index::SymSet)::GraphRef
 @rcall jl_maximal_local_mag(g::GraphRef, x::Symbol, c::SymSet)::GraphRef
+@rcall jl_apply_background_knowledge(g::GraphRef, spec::String)::GraphRef
 @rcall jl_reclass(g::GraphRef, class::String)::GraphRef
 
 @rcall jl_add_edges(g::GraphRef, spec::String)::GraphRef
@@ -752,8 +956,21 @@ end
 
 @rcall jl_simulate_data(
     g::GraphRef, n::Int64, seed::Union{Nothing,Int64}, standardize::Bool,
-    coef_range::Vector{Float64}, error_sd::Float64,
+    coef_range::Vector{Float64}, random_sign::Bool, error_sd::Vector{Float64},
 )::SEXP
+
+@rcall jl_hd(g1::GraphRef, g2::GraphRef, normalized::Bool)::Float64
+@rcall jl_shd(g1::GraphRef, g2::GraphRef, normalized::Bool)::Float64
+@rcall jl_aid(g1::GraphRef, g2::GraphRef, type::Symbol, normalized::Bool)::Float64
+@rcall jl_separation_distance(
+    g1::GraphRef, g2::GraphRef, strategy::Union{Nothing,Symbol}, mb_enhanced::Bool,
+    symmetric::Bool, normalized::Bool,
+)::Float64
+@rcall jl_sc_metric(g1::GraphRef, g2::GraphRef, max_order::Union{Nothing,Int64})::Float64
+@rcall jl_markov_metric(g1::GraphRef, g2::GraphRef, max_order::Union{Nothing,Int64})::Float64
+@rcall jl_faithfulness_metric(
+    g1::GraphRef, g2::GraphRef, max_order::Union{Nothing,Int64},
+)::Float64
 
 @rcall jl_sugiyama_layout(g::GraphRef, direction::Symbol)::SEXP
 @rcall jl_network_layout(g::GraphRef, method::Symbol, seed::Int64)::SEXP

@@ -4,7 +4,14 @@
 \alias{adjustment_set}
 \title{Find an adjustment set}
 \usage{
-adjustment_set(cg, x, y, type = c("optimal", "parents", "backdoor"))
+adjustment_set(
+  cg,
+  x,
+  y,
+  type = c("optimal", "parents", "backdoor"),
+  include = character(),
+  restrict = NULL
+)
 }
 \arguments{
 \item{cg}{A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), AG-family (AG,
@@ -17,6 +24,13 @@ outcomes).}
 \item{type}{Adjustment set type: \code{"optimal"} (default), \code{"parents"}, or
 \code{"backdoor"}. Ignored for ADMG, MAG-family, and PAG graphs; \code{"backdoor"}
 is not supported for PDAG-family graphs.}
+
+\item{include}{Character vector of nodes forced into the set.}
+
+\item{restrict}{Character vector of candidate nodes the set is drawn from.
+\code{NULL} (default) allows every node except \code{x} and \code{y}. \code{include} and
+\code{restrict} need \code{type = "backdoor"} for a DAG, and are not supported for
+PDAG-family graphs.}
 }
 \value{
 Character vector with a valid adjustment set, or \code{NULL} if none
@@ -75,6 +89,12 @@ if (julia_ready()) {
 if (julia_ready()) {
   mag <- cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
   adjustment_set(mag, "X", "Y") # A; type is ignored
+}
+
+if (julia_ready()) {
+  # Only some nodes are observed
+  dag <- cgraph(A \%-->\% B \%-->\% X + Y, A \%-->\% Y, X \%-->\% Y)
+  adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
 }
 }
 \references{

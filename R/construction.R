@@ -51,6 +51,32 @@ cgraph <- function(
   .Call(C_jl_cgraph, .dots_or_spec(substitute(list(...)), spec), class)
 }
 
+#' Compare two graphs
+#'
+#' Two graphs are equal if they have the same class, the same nodes and the
+#' same edges, regardless of the order they were added in. Use
+#' [markov_equivalent()] to compare equivalence classes instead.
+#'
+#' @param e1,e2 Graphs created with [cgraph()].
+#' @return A logical scalar.
+#' @name cgraph-equality
+#' @examples
+#' if (julia_ready()) {
+#'   g1 <- cgraph(A %-->% B, B %-->% C)
+#'   g2 <- cgraph(B %-->% C, A %-->% B)
+#'   g3 <- reclass(g1, "UNKNOWN")
+#'   list(same = g1 == g2, other_class = g1 == g3)
+#' }
+NULL
+
+#' @rdname cgraph-equality
+#' @export
+`==.cgraph` <- function(e1, e2) .Call(C_jl_graph_equal, e1, e2)
+
+#' @rdname cgraph-equality
+#' @export
+`!=.cgraph` <- function(e1, e2) !.Call(C_jl_graph_equal, e1, e2)
+
 #' @export
 print.cgraph <- function(x, ...) {
   cat(sub("^CausalStructures\\.", "", .Call(C_jl_graph_string, x)))

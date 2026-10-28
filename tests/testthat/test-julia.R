@@ -61,7 +61,7 @@ test_that("every exported wrapper runs", {
     latent_project(dag, "M"),
     exogenize(dag, "M"),
     normalize_latent_structure(dag, "M"),
-    condition_marginalize(dag, marg_vars = "M"),
+    condition_marginalize(dag, index = "M"),
 
     # --- Mutation --------------------------------------------------------------
     add_edges(dag, spec = "A --> M"),
@@ -96,7 +96,22 @@ test_that("every exported wrapper runs", {
 
     # --- Layout ---------------------------------------------------------------
     cgraph_layout(dag),
-    cgraph_layout(pag, method = "sugiyama")
+    cgraph_layout(pag, method = "sugiyama"),
+
+    # --- Added in CausalStructures.jl 1.0-1.1 ---------------------------------
+    districts(admg),
+    dag == dag,
+    apply_background_knowledge(cpdag, A %-->% B),
+    iv_set(dag, "X", "Y"),
+    idp(mag_to_pag(mag), "X", "Y"),
+    cidp(mag_to_pag(mag), "X", "Y"),
+    hd(dag, dag),
+    shd(dag, dag),
+    aid(dag, dag),
+    separation_distance(dag, dag),
+    sc_metric(dag, dag),
+    markov_metric(dag, dag),
+    faithfulness_metric(dag, dag)
   ))
 })
 
@@ -304,7 +319,7 @@ test_that("latent variable transforms work", {
   expect_true(has_edge(result, "A", "X"))
   expect_true(has_edge(result, "A", "Y"))
 
-  ag <- condition_marginalize(dag, cond_vars = "U")
+  ag <- condition_marginalize(dag, given = "U")
   expect_setequal(nodes(ag), c("X", "Y"))
 })
 
@@ -484,7 +499,7 @@ test_that("anteriors/posteriors and condition_marginalize accept ADMG", {
   expect_identical(anteriors(admg, "Y"), c("A", "X"))
 
   admg2 <- cgraph(A %-->% X, X %<->% Y, class = "ADMG")
-  ag <- condition_marginalize(admg2, marg_vars = "X")
+  ag <- condition_marginalize(admg2, index = "X")
   expect_s3_class(ag, "cgraph")
 })
 
@@ -590,4 +605,151 @@ test_that("cgraph_layout no longer accepts the removed circle method", {
   skip_if_no_julia()
   dag <- cgraph(A %-->% B, B %-->% C)
   expect_error(cgraph_layout(dag, method = "circle"))
+})
+
+test_that("include and restrict constrain adjustment and backdoor sets", {
+  skip_if_no_julia()
+  dag <- cgraph(A %-->% B %-->% X + Y, A %-->% Y, X %-->% Y)
+  expect_equal(
+    adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B")),
+    "B"
+  )
+  expect_true(all(
+    vapply(
+      all_adjustment_sets(dag, "X", "Y", include = "A"),
+      `%in%`,
+      NA,
+      x = "A"
+    )
+  ))
+  expect_true(all(
+    vapply(all_backdoor_sets(dag, "X", "Y", include = "A"), `%in%`, NA, x = "A")
+  ))
+  expect_equal(backdoor_set(dag, "X", "Y", restrict = "B"), "B")
+  expect_error(adjustment_set(dag, "X", "Y", include = "A"), "type = :backdoor")
+
+  cpdag <- dag_to_cpdag(dag)
+  expect_error(adjustment_set(cpdag, "X", "Y", include = "A"), "no include")
+  expect_error(backdoor_set(cpdag, "X", "Y", restrict = "B"), "no include")
+})
+
+test_that("instruments can be conditional", {
+  skip_if_no_julia()
+  dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+  expect_false(is_valid_iv(dag, "X", "Y", "Z"))
+  expect_true(is_valid_iv(dag, "X", "Y", "Z", given = "W"))
+  expect_true("Z" %in% unlist(all_iv_sets(dag, "X", "Y", given = "W")))
+  expect_equal(iv_set(dag, "X", "Y"), list(z = "Z", given = "W"))
+  expect_null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
+
+  dag2 <- cgraph(Z %-->% X %-->% Y, U %-->% X + Y)
+  expect_equal(iv_set(dag2, "X", "Y"), list(z = "Z", given = character()))
+})
+
+test_that("idp and cidp identify effects from a PAG", {
+  skip_if_no_julia()
+  mag <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+  pag <- mag_to_pag(mag)
+  expect_type(idp(pag, "X", "Y"), "character")
+  expect_type(cidp(pag, "X", "Y", given = "A"), "character")
+  expect_error(idp(mag, "X", "Y"), "not supported for a MAG")
+})
+
+test_that("districts, equality and background knowledge work", {
+  skip_if_no_julia()
+  admg <- cgraph(A %<->% B, B %<->% C, C %-->% D, class = "ADMG")
+  expect_equal(districts(admg), list(c("A", "B", "C"), "D"))
+
+  g1 <- cgraph(A %-->% B, B %-->% C)
+  expect_true(g1 == cgraph(B %-->% C, A %-->% B))
+  expect_false(g1 == reclass(g1, "UNKNOWN"))
+  expect_true(g1 != cgraph(A %-->% B))
+
+  cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
+  expect_true(
+    apply_background_knowledge(cpdag, C %-->% B) ==
+      cgraph(B %-->% A, C %-->% B, class = "MPDAG")
+  )
+  expect_true(
+    apply_background_knowledge(cpdag, C %!-->% B) ==
+      cgraph(A %---% B, B %-->% C, class = "MPDAG")
+  )
+  expect_true(
+    apply_background_knowledge(cpdag, spec = "C !--> B") ==
+      apply_background_knowledge(cpdag, C %!-->% B)
+  )
+  expect_error(apply_background_knowledge(cpdag, A %-->% C))
+})
+
+test_that("enumerate_mags can exclude selection bias", {
+  skip_if_no_julia()
+  pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
+  all_mags <- enumerate_mags(pag)
+  no_sb <- enumerate_mags(pag, selection_bias = FALSE)
+  expect_lt(length(no_sb), length(all_mags))
+  expect_false(any(vapply(no_sb, \(m) any(edges(m)$type == "---"), NA)))
+})
+
+test_that("simulate_data takes random_sign and an error_sd range", {
+  skip_if_no_julia()
+  dag <- cgraph(A %-->% B %-->% C)
+  d <- simulate_data(
+    dag,
+    50,
+    standardize = FALSE,
+    coef_range = c(0.5, 2),
+    random_sign = TRUE,
+    error_sd = c(0.5, 1.5),
+    seed = 1
+  )
+  expect_equal(dim(d), c(50L, 3L))
+  expect_error(simulate_data(dag, 5, error_sd = c(1, 2, 3)), "length 1 or 2")
+  expect_error(
+    simulate_data(dag, 5, coef_range = c(-1, 1), random_sign = TRUE),
+    "random_sign"
+  )
+})
+
+test_that("graph metrics match CausalStructures.jl", {
+  skip_if_no_julia()
+  chain <- cgraph(A %-->% B %-->% C)
+  collider <- cgraph(A %-->% B, C %-->% B)
+  expect_equal(hd(chain, collider), 0)
+  expect_equal(shd(chain, collider), 1)
+  expect_equal(shd(cgraph(A %-->% B), cgraph(A %<->% B, class = "ADMG")), 1)
+  expect_equal(hd(cgraph(A %-->% B, C), chain, normalized = TRUE), 1 / 3)
+
+  expect_equal(aid(chain, collider), 4)
+  expect_equal(aid(chain, collider, normalized = TRUE), 2 / 3)
+  truth <- cgraph(A %-->% B %-->% C, A %-->% C)
+  expect_equal(aid(truth, chain, type = "parent"), 1)
+  expect_equal(aid(truth, chain, type = "ancestor"), 0)
+
+  expect_equal(separation_distance(collider, chain), 1)
+  cg1 <- cgraph(A %-->% B %-->% C, A %-->% C, C %-->% D)
+  cg2 <- cgraph(A %-->% B %-->% C %-->% D)
+  expect_equal(separation_distance(cg1, cg2), 1)
+  expect_equal(separation_distance(cg1, cg2, strategy = "zl"), 2)
+  expect_equal(separation_distance(cg1, cg2, mb_enhanced = TRUE), 2)
+  expect_equal(separation_distance(cg1, cg2, normalized = TRUE), 1 / 6)
+  pag1 <- mag_to_pag(cgraph(
+    A %-->% X %-->% M %-->% Y,
+    A %-->% Y,
+    class = "MAG"
+  ))
+  pag2 <- mag_to_pag(cgraph(A %-->% X %-->% M %-->% Y, class = "MAG"))
+  expect_equal(separation_distance(pag1, pag2), 2)
+  expect_error(separation_distance(pag1, pag2, strategy = "zl"), "two DAGs")
+  expect_error(separation_distance(chain, pag2), "same class")
+
+  test <- cgraph(A %-->% B, C %-->% B, C %-->% D)
+  expect_equal(sc_metric(cg2, cg2), 0)
+  expect_equal(sc_metric(cg2, test), 0.25)
+  expect_equal(sc_metric(cg2, test, max_order = 0), 1 / 3)
+  expect_equal(markov_metric(cg2, test), 0.1527777777777778)
+  expect_type(faithfulness_metric(cg2, test), "double")
+  expect_error(
+    sc_metric(chain, cgraph(A %-->% B %-->% C, class = "ADMG")),
+    "separation notion|not supported"
+  )
 })

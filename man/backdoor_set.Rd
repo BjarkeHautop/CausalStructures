@@ -4,12 +4,19 @@
 \alias{backdoor_set}
 \title{Find a generalized backdoor set}
 \usage{
-backdoor_set(cg, x, y)
+backdoor_set(cg, x, y, include = character(), restrict = NULL)
 }
 \arguments{
-\item{cg}{A DAG, CPDAG, MAG, or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{A DAG, CPDAG, ADMG, MAG, or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x, y}{Exposure and outcome node names.}
+
+\item{include}{Character vector of nodes forced into the set (DAG and
+ADMG only).}
+
+\item{restrict}{Character vector of candidate nodes the set is drawn from
+(DAG and ADMG only). \code{NULL} (default) allows every node except \code{x} and
+\code{y}.}
 }
 \value{
 Character vector with a generalized back-door set, or \code{NULL} if
