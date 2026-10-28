@@ -2,7 +2,7 @@ name = "csjl"
 uuid = "5b7847be-0a43-48f2-a83d-4b9045fd9db0"
 version = "0.1.0"
 
-# The binding package of the R package, which jlbind::install_backend() compiles
+# The binding package of the R package, which jlbind::install_library() compiles
 # into one library with those of the other installed packages using jlbind.
 # Only runtime dependencies belong here. The shipped Manifest.toml pins their
 # exact versions; JLBind is jlbind's own copy, so it is not in the manifest.

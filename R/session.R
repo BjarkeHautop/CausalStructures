@@ -33,9 +33,9 @@
 #' }
 #'
 #' The algorithms run in a library compiled from CausalStructures.jl, built by
-#' [install_backend()]. The number of Julia threads it uses is read from the
-#' `JULIA_NUM_THREADS` environment variable (a number or `"auto"`) when the
-#' library is loaded, so set it before loading the package.
+#' [jlbind::install_library()]. The number of Julia threads it uses is read
+#' from the `JULIA_NUM_THREADS` environment variable (a number or `"auto"`)
+#' when the library is loaded, so set it before loading the package.
 #'
 #' @name CausalStructures_options
 NULL
@@ -43,8 +43,8 @@ NULL
 #' Is the compiled CausalStructures.jl library available?
 #'
 #' Every function of the package calls the library built by
-#' [install_backend()], and errors if it is not available. When it is not,
-#' `jlbind::check_bound("CausalStructures")` says why.
+#' [jlbind::install_library()], and errors if it is not available. When it is
+#' not, `jlbind::check_bound("CausalStructures")` says why.
 #'
 #' @return A logical scalar.
 #' @export
@@ -65,7 +65,7 @@ make_rng <- function(seed) {
   if (!julia_ready()) {
     packageStartupMessage(
       "The compiled CausalStructures.jl library is not available. Run ",
-      "install_backend() to build it."
+      "jlbind::install_library() to build it."
     )
   }
 }

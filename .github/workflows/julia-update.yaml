@@ -1,8 +1,8 @@
 # Builds the library with the newest dependency versions inst/julia/Project.toml
-# allows, ignoring the shipped Manifest.toml (what `install_backend(update =
-# TRUE)` does), and runs the tests against it. This catches a release of
+# allows, ignoring the shipped Manifest.toml (what
+# `jlbind::install_library(versions = "compat")` does), and runs the tests against it. This catches a release of
 # CausalStructures.jl or another dependency (or a newer Julia) that breaks the
-# `--trim=safe` build before users of `update = TRUE` hit it, and tells when
+# `--trim=safe` build before users of `versions = "compat"` hit it, and tells when
 # the manifest can be updated.
 on:
   schedule:
@@ -44,8 +44,8 @@ jobs:
           extra-packages: any::pkgload
           needs: check
 
-      # The library that install_backend(update = TRUE) would build, built by
-      # jlbind from the sources and handed to the package through
+      # The library that jlbind::install_library(versions = "compat") would
+      # build, built from the sources and handed to the package through
       # JLBIND_LIBRARY.
       - name: Build the CausalStructures.jl library
         run: |

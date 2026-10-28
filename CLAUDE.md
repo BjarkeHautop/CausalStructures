@@ -10,7 +10,7 @@ code in this repository.
 representing, validating, and reasoning about causal graphs (DAG, UG, PDAG,
 CPDAG, MPDAG, ADMG, AG, MAG, PAG, UNKNOWN). CausalStructures.jl is compiled with
 `juliac --trim=safe` into a shared library by
-[jlbind](https://github.com/BjarkeHautop/jlbind) (`install_backend()` wraps
+[jlbind](https://github.com/BjarkeHautop/jlbind) (users build it with
 `jlbind::install_library()`), and every user-facing R function is a single
 `.Call` into that library --- the actual algorithms live in the Julia package,
 not in this repo. There is no embedded Julia session at run time.
@@ -20,7 +20,7 @@ not in this repo. There is no embedded Julia session at run time.
 ```sh
 # Build the compiled library for development (needs Julia >= 1.13 on the PATH
 # and jlbind installed) into .jlbind/, which pkgload::load_all() uses instead of
-# the one install_backend() makes, and rebuilds when inst/julia/ changes.
+# the one jlbind::install_library() makes, and rebuilds when inst/julia/ changes.
 Rscript -e 'jlbind::build_library()'
 
 # ... against a local CausalStructures.jl checkout instead of the release
@@ -89,8 +89,8 @@ JLBind); see its `DESIGN.md`. In short:
   packages of every installed package that uses it (a `Config/jlbind` field in
   `DESCRIPTION`; here `julia`, i.e. `inst/julia`) into one library, with the
   user's Julia, into `tools::R_user_dir("jlbind", "data")`. Installing or
-  updating any such package means rebuilding. `install_backend()` here just
-  calls `jlbind::install_library()` (`update = TRUE` is `versions = "compat"`).
+  updating any such package means rebuilding. The package has no install
+  function of its own: users call `jlbind::install_library()` directly.
 - Installing the package builds nothing, so it installs (and passes CRAN's
   checks) without Julia; then every function errors, `julia_ready()` is `FALSE`,
   and examples and tests skip. CRAN's policy forbids downloading software and
@@ -107,11 +107,11 @@ JLBind); see its `DESIGN.md`. In short:
   `--trim=safe`, a dependency release that adds a dynamic call would otherwise
   break every user's build at once. jlbind starts the combined build from it
   (keeping its versions where the other packages' bounds allow, and reporting
-  any it could not); `install_backend(update = TRUE)` resolves the newest
-  versions `[compat]` allows instead.
+  any it could not); `jlbind::install_library(versions = "compat")` resolves the
+  newest versions `[compat]` allows instead.
 - The library links against the runtime of the Julia that built it, so if that
   Julia is removed (e.g. by a juliaup update), loading fails and
-  `jlbind::check_bound()` says to run `install_backend(force = TRUE)`.
+  `jlbind::check_bound()` says to run `jlbind::install_library(force = TRUE)`.
 - `.jlbind/` is the development build output of `jlbind::build_library()`:
   gitignored and in `.Rbuildignore`.
 

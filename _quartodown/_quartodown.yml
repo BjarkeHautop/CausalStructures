@@ -134,8 +134,7 @@ reference:
       - plot_default_options
 
   - title: "Setup"
-    desc: "Build the compiled CausalStructures.jl library the package calls."
+    desc: "Check that the compiled CausalStructures.jl library is available, and package options."
     contents:
-      - install_backend
       - julia_ready
       - CausalStructures_options

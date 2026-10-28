@@ -16,7 +16,7 @@ itself from the result, \code{FALSE} (closed definition) includes it.}
 }
 
 The algorithms run in a library compiled from CausalStructures.jl, built by
-\code{\link[=install_backend]{install_backend()}}. The number of Julia threads it uses is read from the
-\code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"}) when the
-library is loaded, so set it before loading the package.
+\code{\link[jlbind:install_library]{jlbind::install_library()}}. The number of Julia threads it uses is read
+from the \code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"})
+when the library is loaded, so set it before loading the package.
 }

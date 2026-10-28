@@ -11,6 +11,6 @@ A logical scalar.
 }
 \description{
 Every function of the package calls the library built by
-\code{\link[=install_backend]{install_backend()}}, and errors if it is not available. When it is not,
-\code{jlbind::check_bound("CausalStructures")} says why.
+\code{\link[jlbind:install_library]{jlbind::install_library()}}, and errors if it is not available. When it is
+not, \code{jlbind::check_bound("CausalStructures")} says why.
 }

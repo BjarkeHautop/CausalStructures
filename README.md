@@ -28,17 +28,19 @@ Julia. Once the package is installed, build the compiled
 CausalStructures.jl library it calls with
 
 ``` r
-CausalStructures::install_backend()
+jlbind::install_library()
 ```
 
 This takes a few minutes while Julia downloads and compiles the
-dependencies, and only needs to be done once per version of
-CausalStructures. Pass `julia = "/path/to/julia"` (or set the `JULIA`
+dependencies, and needs to be redone after installing or updating
+CausalStructures (or any other package built on
+[jlbind](https://github.com/BjarkeHautop/jlbind), since they share one
+compiled library). Pass `julia = "/path/to/julia"` (or set the `JULIA`
 environment variable) to use a Julia other than the one on the `PATH`.
 
 The compiled library uses the runtime of the Julia that built it, so run
-`install_backend(force = TRUE)` again if that Julia is removed (for
-example by a `juliaup` update).
+`jlbind::install_library(force = TRUE)` again if that Julia is removed
+(for example by a `juliaup` update).
 
 ## Graph types
 

@@ -42,7 +42,7 @@ jobs:
           extra-packages: local::.
           needs: website
 
-      # The library that install_backend() would build, built by jlbind from the
+      # The library that jlbind::install_library() would build, built from the
       # sources and handed to the package through JLBIND_LIBRARY.
       - name: Build the CausalStructures.jl library
         run: |

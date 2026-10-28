@@ -23,7 +23,6 @@ Collate:
     'session.R'
     'jlbind.R'
     'jlbind-wrappers.R'
-    'install.R'
     'dsl.R'
     'construction.R'
     'data.R'
@@ -51,7 +50,7 @@ Suggests:
 Config/testthat/edition: 3
 RdMacros: Rdpack
 SystemRequirements: Julia (>= 1.13), needed to build the compiled library
-    with install_backend()
+    with jlbind::install_library()
 Config/jlbind: julia
 Remotes: BjarkeHautop/jlbind
 Language: en-US
