@@ -12,7 +12,7 @@ latent_project(cg, latents)
 \item{latents}{Character vector of latent (unobserved) node names.}
 }
 \value{
-A Julia proxy object representing the resulting ADMG.
+A \code{cgraph} of class \code{ADMG}.
 }
 \description{
 Project out latent (unobserved) variables to produce an

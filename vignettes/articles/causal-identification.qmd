@@ -1,0 +1,205 @@
+---
+title: "Causal Identification"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+bibliography: references.bib
+---
+
+This guide expands on the [Getting Started](../CausalStructures.qmd) guide with
+more advanced identification techniques.
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+```
+
+## Adjustment strategies
+
+`adjustment_set()` supports three different strategies for finding adjustment
+sets. Let's build a DAG with multiple confounders and mediators, Figure 6.5 of
+@peters2017elements:
+
+```{r}
+dag <- cgraph(
+  C %-->% X,
+  A %-->% X + K,
+  X %-->% F + D,
+  K %-->% Y,
+  D %-->% Y + G,
+  Y %-->% H
+)
+plot(dag)
+```
+
+**Parents strategy**: Adjusts for all parents of `X`. Simple but often includes
+unnecessary variables:
+
+```{r}
+adjustment_set(dag, "X", "Y", type = "parents")
+```
+
+**Backdoor strategy**: Applies Pearl's backdoor criterion to find valid
+adjustment sets that block all confounding paths:
+
+```{r}
+adjustment_set(dag, "X", "Y", type = "backdoor")
+```
+
+**Optimal strategy** (default): Computes the O-set, which minimizes the
+asymptotic variance of the causal effect estimator:
+
+```{r}
+adjustment_set(dag, "X", "Y", type = "optimal")
+```
+
+## Minimal separator
+
+Sometimes we need the smallest set of variables that d-separates two nodes.
+`minimal_separator()` finds one:
+
+```{r}
+minimal_separator(dag, "X", "Y")
+```
+
+The `restrict` argument limits the search to a specific pool of variables:
+
+```{r}
+minimal_separator(dag, "X", "Y", restrict = c("D", "K"))
+```
+
+The `include` argument forces certain variables to always be in the result:
+
+```{r}
+minimal_separator(dag, "X", "Y", include = "K")
+```
+
+## Frontdoor adjustment
+
+When confounders are unobserved, the backdoor criterion doesn't apply. Consider
+a graph where an unobserved confounder `U` affects both the treatment `X` and
+outcome `Y`:
+
+```{r}
+#| fig-height: 3
+
+dag2 <- cgraph(U %-->% X + Y, X %-->% M %-->% Y)
+plot(dag2)
+```
+
+The mediator `M` is a descendant of `X`, so adjusting for it violates the
+backdoor criterion:
+
+```{r}
+is_valid_backdoor(dag2, "X", "Y", "M")
+```
+
+However, `M` intercepts every causal path from `X` to `Y` and is itself
+unconfounded; this is exactly the *frontdoor criterion*:
+
+```{r}
+is_valid_frontdoor(dag2, "X", "Y", "M")
+```
+
+```{r}
+frontdoor_set(dag2, "X", "Y")
+```
+
+## Instrumental variables
+
+When hidden confounders block backdoor adjustment and no suitable mediator
+exists for the frontdoor criterion, an *instrumental variable* (IV) can still
+identify the causal effect. An instrument `Z` must satisfy two conditions: it
+must be associated with the treatment `X` (relevance), and it can only affect
+the outcome `Y` through `X` (exclusion restriction).
+
+Consider a graph where `U` is an unobserved confounder and `Z` is an available
+instrument, but there is no mediator on the path from `X` to `Y`:
+
+```{r}
+#| fig-height: 3
+
+dag3 <- cgraph(U %-->% X + Y, Z %-->% X %-->% Y)
+plot(dag3)
+```
+
+Without a mediator, the frontdoor criterion cannot apply here:
+
+```{r}
+is_valid_frontdoor(dag3, "X", "Y", "Z")
+```
+
+However, `Z` is a valid instrument since it is d-connected to `X`, and
+d-separated from `Y` once the causal edge `X --> Y` is removed, so it can only
+affect `Y` through `X`:
+
+```{r}
+is_valid_iv(dag3, "X", "Y", "Z")
+```
+
+## ADMG adjustment
+
+In an ADMG (acyclic directed mixed graph), bidirected edges `<->` represent
+hidden common causes directly, without explicitly keeping the unobserved nodes
+in the graph. An ADMG arises naturally by projecting unobserved variables out of
+a DAG with `latent_project()`. Let's project `U` out of `dag3`:
+
+```{r}
+admg <- latent_project(dag3, "U")
+admg
+```
+
+Removing `U` introduces `X <-> Y`, which captures its confounding effect. The
+functions discussed above also work on ADMGs, e.g.:
+
+```{r}
+is_valid_iv(admg, "X", "Y", "Z")
+```
+
+## General identification
+
+The methods discussed above are each sufficient, not necessary. CausalStructures
+also implements the ID algorithm of @shpitser2008complete, which returns the
+estimand as a formula.
+
+On a graph with an observed confounder, it recovers the familiar g-formula:
+
+```{r}
+dag4 <- cgraph(Z %-->% X + Y, X %-->% Y)
+id(dag4, "X", "Y")
+```
+
+Unlike the criteria above, `id()` also works when no adjustment set exists at
+all. Recall the front-door graph from before, where `U` is an unobserved
+confounder of `X` and `Y`, and `M` mediates the effect of `X` on `Y`. Projecting
+`U` out gives an ADMG with no valid adjustment set, yet `id()` still identifies
+the effect through the mediator:
+
+```{r}
+admg2 <- latent_project(dag2, "U")
+id(admg2, "X", "Y")
+```
+
+which is the standard front-door adjustment formula. The primed `X'` is a
+summation index distinct from the intervened value of `X`, following the usual
+convention.
+
+`id()` can also detect non-identifiability. In the instrument graph from before,
+with `U` projected out, the causal effect cannot be identified:
+
+```{r}
+is.null(id(admg, "X", "Y"))
+```
+
+`idc()` extends `id()` to conditional effects $P(y \mid do(x), z)$:
+
+```{r}
+idc(admg2, "X", "Y", given = "M")
+```
+
+## References
+
+::: {#refs}
+:::

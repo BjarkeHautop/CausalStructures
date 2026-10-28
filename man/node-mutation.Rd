@@ -16,7 +16,7 @@ remove_nodes(cg, nodes)
 \item{nodes}{Character vector of node names.}
 }
 \value{
-A Julia proxy object representing the resulting graph.
+A \code{cgraph}.
 }
 \description{
 \code{add_nodes()} returns a new graph of the same class with \code{nodes}

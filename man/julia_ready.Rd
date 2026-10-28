@@ -10,5 +10,7 @@ julia_ready()
 A logical scalar.
 }
 \description{
-Is the compiled CausalStructures.jl library available?
+Every function of the package calls the library built by
+\code{\link[=install_backend]{install_backend()}}, and errors if it is not available. When it is not,
+\code{jlbind::check_bound("CausalStructures")} says why.
 }

@@ -1,0 +1,151 @@
+---
+title: "PAG Causal Effects"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+bibliography: references.bib
+---
+
+This guide builds on [Equivalence Classes](equivalence-classes.qmd) and [Causal
+Identification](causal-identification.qmd) and covers causal adjustment when the
+graph is known only as a PAG, i.e. when the underlying MAG is identified only up
+to Markov equivalence.
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+```
+
+## Adjustment with a PAG
+
+Consider the MAG from [Equivalence Classes](equivalence-classes.qmd), where `A`
+and `B` share a hidden common cause, and `C` and `B` each cause their successor,
+with an added direct effect `A --> D`:
+
+```{r}
+#| fig-height: 3
+
+mag <- cgraph(A %<->% B, C %-->% B %-->% D, A %-->% D, class = "MAG")
+pag <- mag_to_pag(mag)
+plot(pag)
+```
+
+The resulting PAG contains the circle-marked edge `A o-> B`. Depending on which
+MAG in the equivalence class is the true graph, this edge can correspond to
+either `A --> B` or `A <-> B`.
+
+Consequently, `backdoor_set()` cannot determine an adjustment set from the PAG
+alone:
+
+```{r}
+is.null(backdoor_set(pag, "A", "D"))
+```
+
+In particular, whether `B` needs to be included in an adjustment set depends on
+how the circle at `A` is resolved.
+
+Not every effect here is uncertain. For the effect of `B` on `D`, the PAG admits
+an adjustment set that is valid for every MAG in the equivalence class. The
+generalized adjustment criterion (GAC) can therefore be applied directly to the
+PAG with `all_adjustment_sets()`:
+
+```{r}
+all_adjustment_sets(pag, "B", "D", minimal = FALSE)
+```
+
+## Adjustment sets
+
+`pagcauses()` considers MAGs compatible with the PAG and returns adjustment sets
+that are valid in at least one such MAG [@wang2025pagcauses]:
+
+```{r}
+pagcauses(pag, "A", "D")
+```
+
+For this example, the empty set is valid when `A --> B`, since there is then no
+backdoor path from `A` to `D` through `B`. When `A <-> B`, `B` must instead be
+included to block the path through the hidden common cause. Thus `{B}` is a
+valid adjustment set in that case; nonminimal supersets such as `{B, C}` may
+also be returned when they are valid.
+
+The same procedure applies when the ambiguity occurs elsewhere in the graph. For
+example:
+
+```{r}
+pagcauses(pag, "C", "D")
+```
+
+If there is no MAG compatible with the PAG in which `D` can have a causal effect
+on `A`, `pagcauses()` returns no possible causal effect:
+
+```{r}
+pagcauses(pag, "D", "A")
+```
+
+This is consistent with `possible_ancestors()`.
+
+::: {.callout-note title="No selection bias"}
+`pagcauses()`, `possible_local_structures()`, and `maximal_local_mag()` assume
+that the PAG has no selection bias, matching the assumptions in the source
+papers. Selection bias shows up as an undirected edge in a PAG, and all three
+functions throw an error if the PAG has one:
+
+```{r}
+#| error: true
+
+selection_pag <- cgraph(A %---% B %---% C %---% D %---% A, class = "PAG")
+pagcauses(selection_pag, "A", "B")
+```
+:::
+
+::: {.callout-note title="Why not just enumerate the MAGs?"}
+One could enumerate all MAGs with `enumerate_mags()` and apply `backdoor_set()`
+to each one. However, the number of MAGs in a Markov equivalence class grows as
+$O(3^{(d^2-d)/2})$ with the number of nodes $d$.
+
+`pagcauses()` avoids constructing these MAGs. Instead, it uses graphical
+conditions to check whether a candidate adjustment set can be valid for a MAG
+compatible with the PAG. This reduces the complexity to $O(5^d d^6)$
+[@wang2025pagcauses, Section 3.4].
+
+Depending on your graph size, the brute force approach could of course still be
+faster in practice.
+:::
+
+## Local structures
+
+`pagcauses()` builds on a smaller graphical primitive:
+`possible_local_structures()`. For a single node `x`, this function enumerates
+which subsets of its circle-marked neighbors could resolve to `x <-> v`, with
+the remaining circle-marked edges resolving to `x --> v`, in some consistent
+MAG [@wang2023localbk]:
+
+```{r}
+possible_local_structures(pag, "A")
+```
+
+`A` has one circle-marked neighbor, `B`, so there are two local structures: the
+empty set, corresponding to `A --> B`, and `{B}`, corresponding to `A <-> B`.
+Pairing a local structure with `maximal_local_mag()` resolves the edges around
+`A` implied by this local background knowledge:
+
+```{r}
+maximal_local_mag(pag, "A", character())
+```
+
+```{r}
+maximal_local_mag(pag, "A", "B")
+```
+
+These correspond to the two cases considered by `pagcauses(pag, "A", "D")`: the
+first gives `{}` as a valid adjustment set for `A` and `D`, while the second
+gives `{B}`. The result is returned as an `UNKNOWN` graph rather than a MAG,
+since local background knowledge about one node need not resolve every circle in
+the graph.
+
+## References
+
+::: {#refs}
+:::

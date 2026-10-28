@@ -20,5 +20,6 @@
 ^vignettes/
 ^\.jlbind$
 ^inst/csjl$
-^altdoc$
+^_quartodown\.yml$
 ^_quarto$
+^_quartodown$

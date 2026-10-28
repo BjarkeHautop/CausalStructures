@@ -14,7 +14,7 @@ maximal_local_mag(cg, x, c)
 \item{c}{Character vector of node names: a valid local structure at \code{x}.}
 }
 \value{
-A Julia proxy object representing the resulting \code{"UNKNOWN"} graph.
+A \code{cgraph} of class \code{UNKNOWN}.
 }
 \description{
 Returns the maximal local MAG for the local structure \code{c} at \code{x} in the

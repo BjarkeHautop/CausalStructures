@@ -10,7 +10,7 @@ dag_to_cpdag(cg)
 \item{cg}{A DAG created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{CPDAG} graph proxy.
+A \code{cgraph} of class \code{CPDAG}.
 }
 \description{
 Returns the CPDAG representing the Markov equivalence class (MEC) of the

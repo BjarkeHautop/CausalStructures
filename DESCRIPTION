@@ -34,7 +34,6 @@ Collate:
     'plot-options.R'
     'plot-routing.R'
     'plot.R'
-    'warmup.R'
 Depends:
     R (>= 4.0.0)
 Imports:
@@ -57,5 +56,5 @@ Remotes: BjarkeHautop/jlbind
 Language: en-US
 URL: https://github.com/BjarkeHautop/CausalStructures, https://bjarkehautop.github.io/CausalStructures/
 BugReports: https://github.com/BjarkeHautop/CausalStructures/issues
-Config/Needs/website: altdoc, BjarkeHautop/altdown, quarto
-Config/roxygen2/version: 8.1.0
+Config/Needs/website: BjarkeHautop/quartodown
+Config/roxygen2/version: 8.1.1

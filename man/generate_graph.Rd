@@ -32,7 +32,7 @@ nodes and then project out. Only supported for \code{class = "ADMG"},
 \item{seed}{Optional integer seed for reproducibility.}
 }
 \value{
-A Julia proxy object representing the graph.
+A \code{cgraph}.
 }
 \description{
 Generates a random graph on \code{n} observed nodes named \verb{V1, ..., Vn}. Edges

@@ -12,7 +12,7 @@ normalize_latent_structure(cg, latents)
 \item{latents}{Character vector of latent (unobserved) node names.}
 }
 \value{
-A Julia proxy object representing the resulting DAG.
+A \code{cgraph} of class \code{DAG}.
 }
 \description{
 Simplifies the latent nodes of \code{cg} while preserving the induced

@@ -591,7 +591,7 @@ markov_equivalent <- function(g1, g2) {
 #' class, use [mag_from_pag()].
 #'
 #' @param cg A PAG (partially ancestral graph) created with [cgraph()].
-#' @return A Julia proxy list of MAGs in the equivalence class.
+#' @return A list of `cgraph`s (MAGs) in the equivalence class.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -880,7 +880,7 @@ possible_local_structures <- function(cg, x) {
 #' @param cg A PAG created with [cgraph()].
 #' @param x Node name.
 #' @param c Character vector of node names: a valid local structure at `x`.
-#' @return A Julia proxy object representing the resulting `"UNKNOWN"` graph.
+#' @return A `cgraph` of class `UNKNOWN`.
 #' @references
 #' \insertRef{wang2023localbk}{CausalStructures}
 #'

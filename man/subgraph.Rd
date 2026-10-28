@@ -12,7 +12,7 @@ subgraph(cg, nodes)
 \item{nodes}{Character vector of node names to keep.}
 }
 \value{
-A Julia proxy object representing the subgraph.
+A \code{cgraph}.
 }
 \description{
 Induced subgraph

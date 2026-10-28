@@ -19,7 +19,7 @@
 #'   `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no structural
 #'   constraints; accepts all edge types, including multiple edges between
 #'   the same pair of nodes).
-#' @return A Julia proxy object representing the graph.
+#' @return A `cgraph`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -98,7 +98,7 @@ print.cgraph <- function(x, ...) {
 #'   nodes and then project out. Only supported for `class = "ADMG"`,
 #'   `"MAG"`, or `"PAG"`; must be `0` (default) otherwise.
 #' @param seed Optional integer seed for reproducibility.
-#' @return A Julia proxy object representing the graph.
+#' @return A `cgraph`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -148,7 +148,7 @@ generate_graph <- function(
 #'
 #' @param n Number of observed nodes.
 #' @param seed Optional integer seed for reproducibility.
-#' @return A Julia proxy object representing the graph.
+#' @return A `cgraph`.
 #' @export
 #' @examples
 #' if (julia_ready()) {

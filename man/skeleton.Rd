@@ -11,7 +11,7 @@ skeleton(cg)
 \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{UG} graph proxy.
+A \code{cgraph} of class \code{UG}.
 }
 \description{
 Returns the skeleton of \code{cg}, the undirected graph obtained by replacing

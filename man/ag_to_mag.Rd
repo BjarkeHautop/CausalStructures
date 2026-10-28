@@ -10,7 +10,7 @@ ag_to_mag(cg)
 \item{cg}{An AG created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{MAG} graph proxy.
+A \code{cgraph} of class \code{MAG}.
 }
 \description{
 Adds an edge between every pair of non-adjacent nodes in the AG \code{cg} that

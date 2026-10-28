@@ -58,11 +58,10 @@ JLBIND_LIBRARY=$PWD/.jlbind/jlbind.so Rscript -e 'devtools::check()'
 # Re-knit README.md from README.Rmd after editing README.Rmd
 Rscript -e 'devtools::build_readme()'
 
-# Build the documentation site locally into docs/ (altdown, an altdoc/Quarto
-# theme styled like pkgdown; function groups live in altdoc/altdown.yml), then
-# preview it
-Rscript -e 'altdown::build_site(freeze = FALSE)'
-Rscript -e 'altdoc::preview_docs()'
+# Build the documentation site locally into docs/ (quartodown, a Quarto website
+# styled like pkgdown; function groups live in _quartodown/_quartodown.yml), then preview it
+Rscript -e 'quartodown::build_site()'
+Rscript -e 'quartodown::preview_site()'
 ```
 
 Tests that need the compiled library call `skip_if_no_julia()` (see
@@ -95,10 +94,10 @@ JLBind); see its `DESIGN.md`. In short:
 - `.onLoad` calls `jlbind::bind_client(pkgname)`, which loads the library (once
   per process, setting the Julia thread count from `JULIA_NUM_THREADS` first)
   and binds this package's routines to it, if the library was built from this
-  version of the package. `julia_ready()` is `jlbind::is_bound()`, `setup()` is
-  `jlbind::check_bound()` (an error saying why the library is unavailable).
-  `JLBIND_LIBRARY` overrides the library path; CI builds with
-  `jlbind::build_library()` and sets it.
+  version of the package. `julia_ready()` is `jlbind::is_bound()`; a routine
+  called while unbound errors and points to `jlbind::check_bound()`, which says
+  why the library is unavailable. `JLBIND_LIBRARY` overrides the library path;
+  CI builds with `jlbind::build_library()` and sets it.
 - `inst/julia/Manifest.toml` is committed and shipped, so a package version
   builds against the dependency versions it was tested with: under
   `--trim=safe`, a dependency release that adds a dynamic call would otherwise
@@ -107,8 +106,8 @@ JLBind); see its `DESIGN.md`. In short:
   any it could not); `install_backend(update = TRUE)` resolves the newest
   versions `[compat]` allows instead.
 - The library links against the runtime of the Julia that built it, so if that
-  Julia is removed (e.g. by a juliaup update), loading fails and `setup()` says
-  to run `install_backend(force = TRUE)`.
+  Julia is removed (e.g. by a juliaup update), loading fails and
+  `jlbind::check_bound()` says to run `install_backend(force = TRUE)`.
 - `.jlbind/` is the development build output of `jlbind::build_library()`:
   gitignored and in `.Rbuildignore`.
 
@@ -116,8 +115,8 @@ JLBind); see its `DESIGN.md`. In short:
 
 This is the code to read first for anything touching the R<->Julia boundary.
 
-- `csjl.jl` (module `csjl`) uses JLBind: its `@rcall f(a::T, ...)::R` exports
-  `csjl_f_<nargs>(a::SEXP, ...)::SEXP`, converting each argument with
+- `src/csjl.jl` (module `csjl`) uses JLBind: its `@rcall f(a::T, ...)::R`
+  exports `csjl_f_<nargs>(a::SEXP, ...)::SEXP`, converting each argument with
   `from_sexp(T, a)`, calling `f`, and converting the result with `to_sexp`.
   `SEXP` passes an R object built in place through unchanged (`jl_edges`,
   `jl_edge_marks`, `jl_simulate_data`, built with JLBind's `protect`, `alloc`,
@@ -229,11 +228,14 @@ data from a graph.
   `options()` since it's a nested graphics-parameter list rather than a flat
   behavioral toggle.
 
-### Warmup (`R/warmup.R`)
+### Documentation site
 
-`warmup()` calls every exported wrapper once on small graphs. The library is
-compiled ahead of time, so there is no JIT to warm up; it now serves as a quick
-smoke test of the whole API.
+Built by quartodown from README, man/ and `vignettes/` (all `.Rbuildignore`d, so
+site-only). `vignettes/CausalStructures.qmd` is the "Get started" page, and
+`vignettes/articles/` holds the guides, mostly ported from CausalStructures.jl's
+`docs/src/` (Documenter `!!! note` admonitions become Quarto callouts, `@cite`
+keys resolve against `vignettes/articles/references.bib`). The navbar's article
+order is set in `_quartodown/_quartodown.yml`.
 
 ## File organization
 

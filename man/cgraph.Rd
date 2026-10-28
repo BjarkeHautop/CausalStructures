@@ -23,7 +23,7 @@ constraints; accepts all edge types, including multiple edges between
 the same pair of nodes).}
 }
 \value{
-A Julia proxy object representing the graph.
+A \code{cgraph}.
 }
 \description{
 Builds a graph from edge expressions using the operators documented at

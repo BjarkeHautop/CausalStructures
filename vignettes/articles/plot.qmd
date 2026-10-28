@@ -16,7 +16,6 @@ layouts, or provide your own layout:
 #| label: setup
 
 library(CausalStructures)
-setup()
 ```
 
 ::: {.callout-note title="General-purpose by design"}

@@ -32,44 +32,24 @@
 #'     itself from the result, `FALSE` (closed definition) includes it.}
 #' }
 #'
-#' The algorithms run in a library compiled from CausalStructures.jl by
-#' [install_backend()], shared with the other installed packages that call
-#' Julia through 'jlbind'. The number of Julia threads is read from the
-#' `JULIA_NUM_THREADS` environment variable (a number or `"auto"`) when that
-#' library is loaded, so set it before loading the package. The library is
-#' looked up in the `JLBIND_LIBRARY` environment variable first (a path to a
-#' library built with [jlbind::build_library()]), then, when the package is
-#' loaded with `pkgload::load_all()`, in `.jlbind/` in its sources (where
-#' `jlbind::build_library()` writes by default), then where
-#' [install_backend()] builds it.
+#' The algorithms run in a library compiled from CausalStructures.jl, built by
+#' [install_backend()]. The number of Julia threads it uses is read from the
+#' `JULIA_NUM_THREADS` environment variable (a number or `"auto"`) when the
+#' library is loaded, so set it before loading the package.
 #'
 #' @name CausalStructures_options
 NULL
 
 #' Is the compiled CausalStructures.jl library available?
 #'
+#' Every function of the package calls the library built by
+#' [install_backend()], and errors if it is not available. When it is not,
+#' `jlbind::check_bound("CausalStructures")` says why.
+#'
 #' @return A logical scalar.
 #' @export
 julia_ready <- function() {
   jlbind::is_bound("CausalStructures")
-}
-
-#' Check that the compiled CausalStructures.jl library is available
-#'
-#' Raises an error saying why the library is not available, if it is not.
-#' The library is loaded with the package, by 'jlbind', so this is typically
-#' because it has not been built yet, or was built for another version of
-#' CausalStructures, in which case run [install_backend()].
-#'
-#' @return `NULL`, invisibly.
-#' @export
-#' @examples
-#' if (julia_ready()) {
-#'   setup()
-#' }
-setup <- function() {
-  jlbind::check_bound("CausalStructures")
-  invisible(NULL)
 }
 
 # A seed for the library's RNG, or `NULL` for an unseeded one.
@@ -85,7 +65,7 @@ make_rng <- function(seed) {
   if (!julia_ready()) {
     packageStartupMessage(
       "The compiled CausalStructures.jl library is not available. Run ",
-      "install_backend() to build it, or setup() for details."
+      "install_backend() to build it."
     )
   }
 }

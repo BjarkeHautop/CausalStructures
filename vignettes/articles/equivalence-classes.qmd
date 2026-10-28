@@ -1,0 +1,154 @@
+---
+title: "Equivalence Classes"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+Equivalence classes of graphs arise in several settings, for instance, during
+causal discovery algorithms. This guide covers the graph classes that represent
+such classes and how to work with them.
+
+```{r}
+#| label: setup
+
+library(CausalStructures)
+```
+
+## Equivalence classes of DAGs
+
+A PDAG (partially directed acyclic graph) is a graph whose edges may be directed
+or undirected, with no directed cycles. Two DAGs are Markov equivalent if and
+only if they have the same skeleton and the same v-structures (unshielded
+colliders).
+
+Each Markov equivalence class of DAGs has a unique CPDAG (completed partially
+directed acyclic graph) representation. In a CPDAG, an edge is directed
+precisely when it has the same orientation in every DAG in the equivalence
+class; otherwise it remains undirected.
+
+Given a DAG, `dag_to_cpdag()` computes its CPDAG:
+
+```{r}
+#| fig-height: 3
+
+dag <- cgraph(C %-->% X, A %-->% X + Y, Y %-->% Z)
+cpdag <- dag_to_cpdag(dag)
+plot(cpdag)
+```
+
+The v-structure `C --> X <-- A` appears in every DAG in the equivalence class
+and therefore remains directed. The edges `A --- Y` and `Y --- Z` are undirected
+because no v-structure or Meek rule forces their orientation.
+
+`count_dags()` tells us how many DAGs are in the class, and `enumerate_dags()`
+lists them all:
+
+```{r}
+count_dags(cpdag)
+```
+
+```{r}
+enumerate_dags(cpdag)
+```
+
+When you need one concrete DAG to work with, `dag_from_pdag()` picks one:
+
+```{r}
+dag_from_pdag(cpdag)
+```
+
+You can compute adjustment sets on a CPDAG, and the result is valid for every
+DAG in the equivalence class:
+
+```{r}
+all_adjustment_sets(cpdag, "X", "Z")
+```
+
+An MPDAG (maximally oriented partially directed acyclic graph) can, for
+instance, arise when background knowledge is incorporated during causal
+discovery, orienting some edges of a CPDAG.
+
+`meek_closure()` propagates all further orientations implied by Meek's rules on
+a PDAG to obtain an MPDAG:
+
+```{r}
+pdag <- cgraph(C %---% X, A %-->% X, A %---% Y, Y %-->% Z, class = "PDAG")
+mpdag <- meek_closure(pdag)
+mpdag
+```
+
+Here, `X --- C` was oriented to `X --> C` using Meek's rules.
+
+All the functions shown above work on any PDAG, CPDAG or MPDAG:
+
+```{r}
+count_dags(pdag)
+all_adjustment_sets(mpdag, "X", "Z")
+```
+
+::: {.callout-note title="Only CPDAGs are guaranteed to be extendable"}
+Every CPDAG represents a non-empty Markov equivalence class, so it always admits
+at least one consistent DAG extension and `dag_from_pdag()` is guaranteed to
+succeed. This is not true for a general PDAG or MPDAG: being acyclic (and, for
+an MPDAG, closed under Meek's rules) is not sufficient to ensure a consistent
+extension exists. For example, a chordless undirected cycle is a valid PDAG and
+MPDAG, yet it cannot be oriented into a DAG without introducing a new
+v-structure:
+
+```{r}
+#| error: true
+
+cg <- cgraph(A %---% B %---% C %---% D %---% A, class = "PDAG")
+is_cpdag(cg)
+is_mpdag(cg)
+dag_from_pdag(cg)
+```
+:::
+
+## Equivalence classes of MAGs
+
+Maximal ancestral graphs (MAGs) naturally arise when some common causes are
+unobserved: every latent common cause between two observed nodes becomes a
+bidirected edge (`<->`) in the MAG. Two MAGs are Markov equivalent if they
+encode the same conditional independence structure over the observed variables.
+
+Each Markov equivalence class of MAGs has a unique PAG (partial ancestral
+graph). Like a CPDAG for DAGs, the PAG marks each endpoint with the symbol
+shared by every MAG in the class. A circle (`o`) at an endpoint means that mark
+is not invariant; some MAGs in the class have a tail there and others have an
+arrowhead.
+
+Consider a MAG where `A` and `B` share a hidden common cause, `C` directly
+causes `B`, and `B` directly causes `D`:
+
+```{r}
+mag <- cgraph(A %<->% B, C %-->% B %-->% D, class = "MAG")
+mag
+```
+
+`mag_to_pag()` computes the PAG representing the Markov equivalence class of
+this MAG, so all MAGs that encode the same conditional independences:
+
+```{r}
+pag <- mag_to_pag(mag)
+pag
+```
+
+The arrowheads at `B` on the `A`-`B` and `C`-`B` edges are invariant: `A`, `B`,
+and `C` form an unshielded collider at `B` (since `A` and `C` are non-adjacent),
+so every MAG in the class has an edge pointing into `B` from both sides. The
+circle marks at `A` and `C` are not invariant; the `A`-`B` edge could be
+`A --> B` or `A <-> B`, and similarly for `C`. The `B --> D` edge is invariant
+via Zhang's orientation rule R1: since `A` and `D` are non-adjacent and
+`A o-> B --> D`, the tail at `B` is forced in all MAGs.
+
+`enumerate_mags()` lets you explore the equivalence class:
+
+```{r}
+enumerate_mags(pag)
+```
+
+You can also answer various causal inference questions, see [PAG Causal
+Effects](pag-causal-effects.qmd) for some examples.

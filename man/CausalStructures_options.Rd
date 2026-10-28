@@ -15,14 +15,8 @@
 itself from the result, \code{FALSE} (closed definition) includes it.}
 }
 
-The algorithms run in a library compiled from CausalStructures.jl by
-\code{\link[=install_backend]{install_backend()}}, shared with the other installed packages that call
-Julia through 'jlbind'. The number of Julia threads is read from the
-\code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"}) when that
-library is loaded, so set it before loading the package. The library is
-looked up in the \code{JLBIND_LIBRARY} environment variable first (a path to a
-library built with \code{\link[jlbind:build_library]{jlbind::build_library()}}), then, when the package is
-loaded with \code{pkgload::load_all()}, in \verb{.jlbind/} in its sources (where
-\code{jlbind::build_library()} writes by default), then where
-\code{\link[=install_backend]{install_backend()}} builds it.
+The algorithms run in a library compiled from CausalStructures.jl, built by
+\code{\link[=install_backend]{install_backend()}}. The number of Julia threads it uses is read from the
+\code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"}) when the
+library is loaded, so set it before loading the package.
 }

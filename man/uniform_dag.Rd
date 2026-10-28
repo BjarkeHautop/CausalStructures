@@ -12,7 +12,7 @@ uniform_dag(n, seed = NULL)
 \item{seed}{Optional integer seed for reproducibility.}
 }
 \value{
-A Julia proxy object representing the graph.
+A \code{cgraph}.
 }
 \description{
 Generates a random \link[=cgraph]{DAG} on \code{n} observed nodes named

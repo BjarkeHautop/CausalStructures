@@ -11,7 +11,7 @@ moralize(cg)
 \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{UG} graph proxy.
+A \code{cgraph} of class \code{UG}.
 }
 \description{
 Returns the moral graph of \code{cg}: an undirected graph with a "marriage"

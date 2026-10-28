@@ -15,7 +15,7 @@ condition_marginalize(cg, cond_vars = character(), marg_vars = character())
 \item{marg_vars}{Character vector of node names to marginalize out.}
 }
 \value{
-A Julia proxy object representing the resulting AG.
+A \code{cgraph} of class \code{AG}.
 }
 \description{
 Removes \code{cond_vars} and \code{marg_vars} from \code{cg}, returning the AG over

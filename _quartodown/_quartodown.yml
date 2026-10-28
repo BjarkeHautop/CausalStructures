@@ -1,6 +1,18 @@
-# Configuration for altdown::build_site(). See ?altdown::build_site for
-# all fields, including `articles:` (navbar order) and `quarto:` (extra
+# Configuration for quartodown::build_site(). See ?quartodown::build_site for
+# all fields, including `navbar:` (article order) and `quarto:` (extra
 # Quarto settings).
+
+navbar:
+  left:
+    - intro
+    - reference
+    - text: Articles
+      menu:
+        - articles/equivalence-classes
+        - articles/causal-identification
+        - articles/pag-causal-effects
+        - articles/plot
+    - news
 
 # Groups the function reference index, in the same shape as pkgdown's
 # `reference:` field.
@@ -107,10 +119,9 @@ reference:
       - plot_options
       - plot_default_options
 
-  - title: "Managing Julia"
+  - title: "Setup"
+    desc: "Build the compiled CausalStructures.jl library the package calls."
     contents:
       - install_backend
       - julia_ready
-      - setup
-      - warmup
       - CausalStructures_options

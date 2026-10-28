@@ -20,7 +20,7 @@ with \code{spec}.}
 exclusive with \code{...}.}
 }
 \value{
-A Julia proxy object representing the resulting graph.
+A \code{cgraph}.
 }
 \description{
 \code{add_edges()} and \code{remove_edges()} return a new graph of the same

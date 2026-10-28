@@ -10,7 +10,7 @@ dag_to_mpdag(cg)
 \item{cg}{A DAG created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-An \code{MPDAG} graph proxy.
+A \code{cgraph} of class \code{MPDAG}.
 }
 \description{
 Returns the MPDAG representing the DAGs Markov equivalent to \code{cg}: the

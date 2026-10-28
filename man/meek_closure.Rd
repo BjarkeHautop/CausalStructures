@@ -19,7 +19,7 @@ closure when \code{cg} is known not to need it (e.g. it has no background
 knowledge beyond the v-structures already encoded in it).}
 }
 \value{
-An \code{MPDAG} graph proxy.
+A \code{cgraph} of class \code{MPDAG}.
 }
 \description{
 Applies Meek's rules R1-R4 to the PDAG-family graph \code{cg} until no further

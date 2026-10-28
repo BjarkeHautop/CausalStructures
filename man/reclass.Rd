@@ -17,7 +17,7 @@ reclass(
 structural constraints; accepts all edge types).}
 }
 \value{
-A Julia proxy object representing the reclassified graph.
+A \code{cgraph}.
 }
 \description{
 Returns a new graph of class \code{class} with the same nodes and edges as

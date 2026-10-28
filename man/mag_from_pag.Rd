@@ -10,7 +10,7 @@ mag_from_pag(cg)
 \item{cg}{A PAG created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{MAG} graph proxy.
+A \code{cgraph} of class \code{MAG}.
 }
 \description{
 Returns one MAG belonging to the Markov equivalence class represented by

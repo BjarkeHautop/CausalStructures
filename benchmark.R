@@ -14,7 +14,6 @@
 # which can't filter it, so we only report the median.
 
 pkgload::load_all(".", quiet = TRUE)
-warmup()
 
 n <- 1000L
 p <- 0.25

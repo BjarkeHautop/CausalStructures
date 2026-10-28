@@ -10,7 +10,7 @@ enumerate_mags(cg)
 \item{cg}{A PAG (partially ancestral graph) created with \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A Julia proxy list of MAGs in the equivalence class.
+A list of \code{cgraph}s (MAGs) in the equivalence class.
 }
 \description{
 Enumerates all Markov equivalent MAGs in the equivalence class

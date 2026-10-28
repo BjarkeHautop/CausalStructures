@@ -9,7 +9,7 @@
 #'
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
-#' @return A `UG` graph proxy.
+#' @return A `cgraph` of class `UG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -28,7 +28,7 @@ skeleton <- function(cg) .Call(C_jl_skeleton, cg)
 #'
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
-#' @return A `UG` graph proxy.
+#' @return A `cgraph` of class `UG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -45,7 +45,7 @@ moralize <- function(cg) .Call(C_jl_moralize, cg)
 #' orientations, and [meek_closure()] propagates the rest.
 #'
 #' @param cg A DAG created with [cgraph()].
-#' @return A `CPDAG` graph proxy.
+#' @return A `cgraph` of class `CPDAG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -63,7 +63,7 @@ dag_to_cpdag <- function(cg) .Call(C_jl_dag_to_cpdag, cg)
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
-#' @return A `DAG` graph proxy.
+#' @return A `cgraph` of class `DAG`.
 #' @references
 #' \insertRef{dortarsi1992simple}{CausalStructures}
 #' @export
@@ -95,7 +95,7 @@ dag_from_pdag <- function(cg) .Call(C_jl_dag_from_pdag, cg)
 #' @param r4 If `TRUE` (default), apply rule R4. Disabling this can speed up
 #'   closure when `cg` is known not to need it (e.g. it has no background
 #'   knowledge beyond the v-structures already encoded in it).
-#' @return An `MPDAG` graph proxy.
+#' @return A `cgraph` of class `MPDAG`.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
@@ -114,7 +114,7 @@ meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
 #' CPDAG of `cg` closed under [meek_closure()]'s rules R1-R4.
 #'
 #' @param cg A DAG created with [cgraph()].
-#' @return An `MPDAG` graph proxy.
+#' @return A `cgraph` of class `MPDAG`.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
@@ -136,7 +136,7 @@ dag_to_mpdag <- function(cg) .Call(C_jl_dag_to_mpdag, cg)
 #' m-separation and ancestor relationships).
 #'
 #' @param cg An AG created with [cgraph()].
-#' @return A `MAG` graph proxy.
+#' @return A `cgraph` of class `MAG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -157,7 +157,7 @@ ag_to_mag <- function(cg) .Call(C_jl_ag_to_mag, cg)
 #' whole class, use [mag_from_pag()].
 #'
 #' @param cg A MAG created with [cgraph()].
-#' @return A `PAG` graph proxy.
+#' @return A `cgraph` of class `PAG`.
 #' @references
 #' \insertRef{zhang2008completeness}{CausalStructures}
 #' @export
@@ -181,7 +181,7 @@ mag_to_pag <- function(cg) .Call(C_jl_mag_to_pag, cg)
 #' simplicial elimination.
 #'
 #' @param cg A PAG created with [cgraph()].
-#' @return A `MAG` graph proxy.
+#' @return A `cgraph` of class `MAG`.
 #' @references
 #' \insertRef{zhang2008completeness}{CausalStructures}
 #'
@@ -198,7 +198,7 @@ mag_from_pag <- function(cg) .Call(C_jl_mag_from_pag, cg)
 #'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @param nodes Character vector of node names to keep.
-#' @return A Julia proxy object representing the subgraph.
+#' @return A `cgraph`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -216,7 +216,7 @@ subgraph <- function(cg, nodes) {
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
-#' @return A Julia proxy object representing the resulting ADMG.
+#' @return A `cgraph` of class `ADMG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -235,7 +235,7 @@ latent_project <- function(cg, latents) {
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @param nodes Character vector of node names to exogenize.
-#' @return A Julia proxy object representing the resulting DAG.
+#' @return A `cgraph` of class `DAG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -256,7 +256,7 @@ exogenize <- function(cg, nodes) {
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
-#' @return A Julia proxy object representing the resulting DAG.
+#' @return A `cgraph` of class `DAG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -278,7 +278,7 @@ normalize_latent_structure <- function(cg, latents) {
 #'   [cgraph()].
 #' @param cond_vars Character vector of node names to condition on.
 #' @param marg_vars Character vector of node names to marginalize out.
-#' @return A Julia proxy object representing the resulting AG.
+#' @return A `cgraph` of class `AG`.
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -314,7 +314,7 @@ condition_marginalize <- function(
 #'   with `spec`.
 #' @param spec Edge specification string, for programmatic use. Mutually
 #'   exclusive with `...`.
-#' @return A Julia proxy object representing the resulting graph.
+#' @return A `cgraph`.
 #' @name edge-mutation
 #' @examples
 #' if (julia_ready()) {
@@ -351,7 +351,7 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @param nodes Character vector of node names.
-#' @return A Julia proxy object representing the resulting graph.
+#' @return A `cgraph`.
 #' @name node-mutation
 #' @examples
 #' if (julia_ready()) {
@@ -385,7 +385,7 @@ remove_nodes <- function(cg, nodes) {
 #' @param class Target graph class: `"DAG"`, `"UG"`, `"PDAG"`, `"CPDAG"`,
 #'   `"MPDAG"`, `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no
 #'   structural constraints; accepts all edge types).
-#' @return A Julia proxy object representing the reclassified graph.
+#' @return A `cgraph`.
 #' @export
 #' @examples
 #' if (julia_ready()) {

@@ -11,7 +11,7 @@ dag_from_pdag(cg)
 \code{\link[=cgraph]{cgraph()}}.}
 }
 \value{
-A \code{DAG} graph proxy.
+A \code{cgraph} of class \code{DAG}.
 }
 \description{
 Orients every undirected edge of the PDAG-family graph \code{cg}, using the

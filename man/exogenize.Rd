@@ -12,7 +12,7 @@ exogenize(cg, nodes)
 \item{nodes}{Character vector of node names to exogenize.}
 }
 \value{
-A Julia proxy object representing the resulting DAG.
+A \code{cgraph} of class \code{DAG}.
 }
 \description{
 Returns a copy of \code{cg} with each node in \code{nodes} made exogenous: its
