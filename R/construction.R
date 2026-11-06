@@ -179,10 +179,11 @@ generate_graph <- function(
 #'   nodes the table can be used for.
 #' @param seed Optional integer seed for reproducibility.
 #' @param counts Optional table from `uniform_dag_counts()`, computed for at
-#'   least `n` nodes. It doesn't change the result for a given `seed`.
-#' @return For `uniform_dag()`, a `cgraph`. For `uniform_dag_counts()`, a table
-#'   of class `uniform_dag_counts`, which does not survive saving and reloading
-#'   or a restart of R.
+#'   least `n` nodes.
+#' @return For `uniform_dag()`, a `cgraph`. For `uniform_dag_counts()`, an
+#'   external pointer of class `uniform_dag_counts` to the table, which is held
+#'   by the compiled library, so it does not survive saving and reloading or a
+#'   restart of R.
 #' @references
 #' \insertRef{kuipers2015uniform}{CausalStructures}
 #' @export

@@ -16,12 +16,13 @@ nodes the table can be used for.}
 \item{seed}{Optional integer seed for reproducibility.}
 
 \item{counts}{Optional table from \code{uniform_dag_counts()}, computed for at
-least \code{n} nodes. It doesn't change the result for a given \code{seed}.}
+least \code{n} nodes.}
 }
 \value{
-For \code{uniform_dag()}, a \code{cgraph}. For \code{uniform_dag_counts()}, a table
-of class \code{uniform_dag_counts}, which does not survive saving and reloading
-or a restart of R.
+For \code{uniform_dag()}, a \code{cgraph}. For \code{uniform_dag_counts()}, an
+external pointer of class \code{uniform_dag_counts} to the table, which is held
+by the compiled library, so it does not survive saving and reloading or a
+restart of R.
 }
 \description{
 Generates a random \link[=cgraph]{DAG} on \code{n} nodes named
