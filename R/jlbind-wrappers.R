@@ -6,6 +6,7 @@ jl_generate_graph <- function(n, m, p, class, latents, seed) {
   .Call(C_jl_generate_graph, n, m, p, class, latents, seed)
 }
 jl_uniform_dag_counts <- function(n) .Call(C_jl_uniform_dag_counts, n)
+jl_class_name <- function(g) .Call(C_jl_class_name, g)
 jl_uniform_dag <- function(n, seed, counts) {
   .Call(C_jl_uniform_dag, n, seed, counts)
 }

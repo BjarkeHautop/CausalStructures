@@ -65,6 +65,22 @@ julia_ready <- function() {
   jlbind::is_bound("CausalStructures")
 }
 
+# Plain R data to save a graph as, called by jlbind when R serializes one (see
+# `r_saved_by` in JLBind). Julia rebuilds the graph from it
+# on first use after loading (`r_restore` in inst/julia/src/csjl.jl).
+# jarl-ignore unused_function: called from C by jlbind (src/state.c) when saving
+.jlbind_saved_state <- function(x) {
+  marks <- jl_edge_marks(x)
+  list(
+    class = jl_class_name(x),
+    nodes = nodes(x),
+    from = marks[, 1L],
+    to = marks[, 2L],
+    src_mark = marks[, 3L],
+    dst_mark = marks[, 4L]
+  )
+}
+
 # A seed for the library's RNG, or `NULL` for an unseeded one.
 make_rng <- function(seed) {
   if (is.null(seed)) NULL else as.numeric(seed)

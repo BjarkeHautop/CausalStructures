@@ -150,6 +150,58 @@ test_that("construction works", {
   expect_equal(nrow(edges(multi)), 2)
 })
 
+test_that("graphs survive saving and loading", {
+  skip_if_no_julia()
+  graphs <- list(
+    cgraph(A %-->% X + Y, X %-->% M %-->% Y, E),
+    cgraph(A %---% B, C, class = "UG"),
+    cgraph(A %-->% B, B %---% C, class = "PDAG"),
+    cgraph(A %---% B, B %---% C, class = "CPDAG"),
+    dag_to_mpdag(cgraph(A %-->% B %-->% C), A %-->% B),
+    cgraph(A %-->% B, A %<->% C, class = "ADMG"),
+    cgraph(A %-->% B, B %-->% C, class = "AG"),
+    cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG"),
+    cgraph(A %o->% B, C %o->% B, class = "PAG"),
+    cgraph("A --> B, A <-> B, A o-o C", class = "UNKNOWN"),
+    cgraph(A, B)
+  )
+  for (cg in graphs) {
+    loaded <- unserialize(serialize(cg, NULL))
+    expect_s3_class(loaded, "cgraph")
+    expect_true(loaded == cg)
+  }
+
+  file <- tempfile(fileext = ".rds")
+  on.exit(unlink(file))
+  dag <- graphs[[1]]
+  saveRDS(list(a = dag, b = dag, other = graphs[[2]]), file)
+  gc()
+  live <- jl_graph_count()
+  loaded <- readRDS(file)
+  # Loading builds nothing, and two different graphs still differ.
+  expect_identical(jl_graph_count(), live)
+  expect_false(identical(loaded$a, loaded$other))
+  expect_identical(parents(loaded$a, "M"), "X")
+  expect_identical(jl_graph_count(), live + 1L)
+  # Both copies of a graph are one object, rebuilt once.
+  expect_identical(children(loaded$b, "A"), c("X", "Y"))
+  expect_identical(jl_graph_count(), live + 1L)
+  expect_true(unserialize(serialize(loaded$a, NULL)) == dag)
+  expect_true(skeleton(loaded$a) == skeleton(dag))
+
+  old <- unserialize(serialize(dag, NULL, version = 2))
+  expect_error(parents(old, "M"), "saved without its contents")
+})
+
+test_that("a uniform_dag_counts table does not survive saving and loading", {
+  skip_if_no_julia()
+  loaded <- unserialize(serialize(uniform_dag_counts(8), NULL))
+  expect_error(uniform_dag(6, counts = loaded), "no longer exists")
+  # A loaded graph is not mistaken for a table.
+  graph <- unserialize(serialize(cgraph(A %-->% B), NULL))
+  expect_error(uniform_dag(4, counts = graph), "uniform_dag_counts")
+})
+
 test_that("uniform_dag reuses a table from uniform_dag_counts", {
   skip_if_no_julia()
   table <- uniform_dag_counts(8)

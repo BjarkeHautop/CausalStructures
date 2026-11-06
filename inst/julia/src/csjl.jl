@@ -128,6 +128,36 @@ jl_graph_count() = JLBind.object_count()
 
 jl_cgraph(spec::String, class::String) = @class class T ALL T(spec)
 
+# --- Saving ------------------------------------------------------------------
+
+# Rebuilding what `.jlbind_saved_state()` (R/session.R) saved, on the first use
+# of an object loaded with readRDS() and the like.
+JLBind.r_saved_by(::Type{CausalGraph}) = "CausalStructures"
+
+function _endpoint(mark::String)
+    mark == "Tail" && return CS.Tail
+    mark == "Arrow" && return CS.Arrow
+    mark == "Circle" && return CS.Circle
+    throw(ArgumentError("unknown edge mark in a saved graph: " * mark))
+end
+
+function JLBind.r_restore(::Type{CausalGraph}, state::SEXP)
+    s = from_sexp(
+        NamedTuple{
+            (:class, :nodes, :from, :to, :src_mark, :dst_mark),
+            Tuple{String,SymSet,SymSet,SymSet,Vector{String},Vector{String}},
+        },
+        state,
+    )
+    es = CausalEdge[
+        CausalEdge(s.from[i], s.to[i], _endpoint(s.src_mark[i]), _endpoint(s.dst_mark[i]))
+        for i in eachindex(s.from)
+    ]
+    nodes = Set{Symbol}(s.nodes)
+    class = s.class
+    @class class T ALL T(nodes, es; validate = false)
+end
+
 # `m`, `p` and `seed` arrive unconverted: three optional arguments in one call
 # exceed what the compiler union-splits.
 function jl_generate_graph(
@@ -158,6 +188,7 @@ function _generate(
 end
 
 jl_uniform_dag_counts(n::Int64) = CS.uniform_dag_counts(n)
+jl_class_name(@nospecialize(g::CausalGraph)) = _class_name(g)
 jl_uniform_dag(n::Int64, seed::Union{Nothing,Int64}, counts::Union{Nothing,DagCounts}) =
     CS.uniform_dag(_rng(seed), n; counts = counts)
 
@@ -852,6 +883,7 @@ end
     n::Int64, m::SEXP, p::SEXP, class::String, latents::Int64, seed::SEXP,
 )::GraphRef
 @rcall jl_uniform_dag_counts(n::Int64)::DagCountsRef
+@rcall jl_class_name(g::GraphRef)::String
 @rcall jl_uniform_dag(
     n::Int64, seed::Union{Nothing,Int64}, counts::Union{Nothing,DagCountsRef},
 )::GraphRef

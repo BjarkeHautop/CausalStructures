@@ -14,6 +14,7 @@
     JLBIND_ENTRY(jl_cgraph, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_generate_graph, 6, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5, SEXP a6), (a1, a2, a3, a4, a5, a6)) \
     JLBIND_ENTRY(jl_uniform_dag_counts, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(jl_class_name, 1, (SEXP a1), (a1)) \
     JLBIND_ENTRY(jl_uniform_dag, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_graph_string, 1, (SEXP a1), (a1)) \
     JLBIND_ENTRY(nodes, 1, (SEXP a1), (a1)) \

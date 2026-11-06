@@ -211,7 +211,10 @@ Note the custom-operator precedence gotcha documented at the top of `dsl.R`:
 A causal graph is an R external pointer with S3 class `"cgraph"`, created by the
 library: its address is the graph's registry handle, and a C finalizer releases
 the library's copy when R collects it (the release is deferred to the next graph
-store, since a finalizer can run mid-call). Query functions (`R/queries.R`,
+store, since a finalizer can run mid-call). It survives `saveRDS()` and the like
+through JLBind's `r_saved_by`: `.jlbind_saved_state()` (`R/session.R`) gives the
+plain R data it is saved as, only when saved, and `r_restore` in `csjl.jl`
+rebuilds it on first use after loading. Query functions (`R/queries.R`,
 `R/identification.R`) return plain R vectors, lists and data frames; transform
 functions (`R/transform.R`) return new `cgraph`s. `R/data.R` covers simulating
 data from a graph.
