@@ -33,41 +33,29 @@
 #' }
 NULL
 
-#' @rdname hamming
-#' @export
-hd <- function(cg1, cg2, normalized = FALSE) {
-  .Call(C_jl_hd, cg1, cg2, normalized)
-}
-
-#' @rdname hamming
-#' @export
-shd <- function(cg1, cg2, normalized = FALSE) {
-  .Call(C_jl_shd, cg1, cg2, normalized)
-}
-
 #' Adjustment Identification Distance
 #'
-#' Counts the ordered pairs of distinct nodes `(t, y)` for which `cg_guess`
+#' Counts the ordered pairs of distinct nodes `(t, y)` for which `cg_test`
 #' leads to a wrong conclusion about the causal effect of `t` on `y`
-#' relative to `cg_true`. For each pair, an adjustment set is read off
-#' `cg_guess` with the strategy `type`, and it is a mistake if that set is
-#' not a valid adjustment set in `cg_true`.
+#' relative to `cg_truth`. For each pair, an adjustment set is read off
+#' `cg_test` with the strategy `type`, and it is a mistake if that set is
+#' not a valid adjustment set in `cg_truth`.
 #'
 #' Outside the pairs its adjustment set applies to (`y` not a possible
-#' descendant of `t` in `cg_guess`, or, for `"parent"`, `y` a parent of `t`),
+#' descendant of `t` in `cg_test`, or, for `"parent"`, `y` a parent of `t`),
 #' the strategy instead claims a zero effect, which is correct if `y` is not
-#' a possible descendant of `t` in `cg_true`. For a PDAG-family `cg_guess`
+#' a possible descendant of `t` in `cg_truth`. For a PDAG-family `cg_test`
 #' where the effect is not identifiable, the strategy claims so, which is
-#' correct if it is not identifiable in `cg_true` either.
+#' correct if it is not identifiable in `cg_truth` either.
 #'
-#' @param cg_true The ground-truth graph: a DAG or PDAG-family graph (PDAG,
+#' @param cg_truth The ground-truth graph: a DAG or PDAG-family graph (PDAG,
 #'   CPDAG, MPDAG) created with [cgraph()].
-#' @param cg_guess The guessed graph, of the same kinds and with the same
-#'   nodes as `cg_true`.
+#' @param cg_test The graph to evaluate, of the same kinds and with the same
+#'   nodes as `cg_truth`.
 #' @param type The adjustment strategy: `"oset"` (default; the optimal
 #'   adjustment set, see [adjustment_set()]), `"parent"` (the parents of
 #'   `t`), or `"ancestor"` (the ancestors of `t`, which makes the distance
-#'   zero whenever `cg_guess` respects the causal order of `cg_true`).
+#'   zero whenever `cg_test` respects the causal order of `cg_truth`).
 #' @param normalized If `TRUE`, divide by the number of ordered pairs,
 #'   `n * (n - 1)`, giving a value in `[0, 1]`.
 #' @return A number: the count of mistaken pairs, or its share of all ordered
@@ -86,13 +74,13 @@ shd <- function(cg1, cg2, normalized = FALSE) {
 #'   )
 #' }
 aid <- function(
-  cg_true,
-  cg_guess,
+  cg_truth,
+  cg_test,
   type = c("oset", "parent", "ancestor"),
   normalized = FALSE
 ) {
   type <- if (missing(type)) type[[1L]] else match.arg(type)
-  .Call(C_jl_aid, cg_true, cg_guess, type, normalized)
+  jl_aid(cg_truth, cg_test, type, normalized)
 }
 
 #' Separation distance between two graphs
@@ -152,15 +140,7 @@ separation_distance <- function(
 ) {
   # `NULL` for a missing strategy, which only two DAGs take
   strategy <- if (missing(strategy)) NULL else match.arg(strategy)
-  .Call(
-    C_jl_separation_distance,
-    cg1,
-    cg2,
-    strategy,
-    mb_enhanced,
-    symmetric,
-    normalized
-  )
+  jl_separation_distance(cg1, cg2, strategy, mb_enhanced, symmetric, normalized)
 }
 
 #' Separation/connection metrics between two graphs
@@ -204,21 +184,3 @@ separation_distance <- function(
 #'   )
 #' }
 NULL
-
-#' @rdname sc-metrics
-#' @export
-sc_metric <- function(cg1, cg2, max_order = NULL) {
-  .Call(C_jl_sc_metric, cg1, cg2, max_order)
-}
-
-#' @rdname sc-metrics
-#' @export
-markov_metric <- function(cg_truth, cg_test, max_order = NULL) {
-  .Call(C_jl_markov_metric, cg_truth, cg_test, max_order)
-}
-
-#' @rdname sc-metrics
-#' @export
-faithfulness_metric <- function(cg_truth, cg_test, max_order = NULL) {
-  .Call(C_jl_faithfulness_metric, cg_truth, cg_test, max_order)
-}

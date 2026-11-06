@@ -107,11 +107,11 @@ documentation.
 ## Multi-threading
 
 Some algorithms (`all_backdoor_sets()`, `all_adjustment_sets()`,
-`all_frontdoor_sets()`, `all_iv_sets()`, `enumerate_dags()`,
-`count_dags()`) can use multiple threads. To do so, set the
-`JULIA_NUM_THREADS` environment variable (a number, or `"auto"` for one
-per core) *before* loading the package, for example in your `.Renviron`
-file or with
+`all_frontdoor_sets()`, `enumerate_dags()`, `count_dags()`,
+`enumerate_mags()`, `pagcauses()`) can use multiple threads. To do so,
+set the `JULIA_NUM_THREADS` environment variable (a number, or `"auto"`
+for one per core) *before* loading the package, for example in your
+`.Renviron` file or with
 
 ``` r
 Sys.setenv(JULIA_NUM_THREADS = "4")

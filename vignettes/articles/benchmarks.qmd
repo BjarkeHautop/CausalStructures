@@ -15,10 +15,6 @@ over the whole edge set. Many higher-level algorithms, including
 search, are built on these primitive operations, so their performance depends
 directly on the efficiency of these basic queries.
 
-Every function is a single call into the compiled CausalStructures.jl library,
-so there is no Julia session to start and nothing to warm up: the first call is
-as fast as any other.
-
 ```{r}
 #| label: setup
 

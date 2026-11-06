@@ -21,7 +21,10 @@ Sorted character vector of node names.
 Nodes adjacent to \code{node} by some edge. \code{mode} restricts which edge types
 count: \code{"in"} (parents / arrowheads at \code{node}), \code{"out"} (children / tails
 at \code{node}), \code{"undirected"}, or \code{"bidirected"}; \code{"all"} (default) includes
-every neighbor regardless of edge type. For a PAG, \code{"in"}, \code{"out"},
+every neighbor regardless of edge type.
+}
+\details{
+For a PAG, \code{"in"}, \code{"out"},
 \code{"undirected"}, and \code{"bidirected"} only match \emph{definite} (circle-free)
 edges; neighbors joined by a circle mark (\verb{o->}, \verb{o--}, \code{o-o}) are
 reported by \code{"all"} only.

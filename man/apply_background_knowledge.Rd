@@ -21,7 +21,10 @@ A \code{cgraph} of class \code{MPDAG}.
 \description{
 Orients \code{cg} according to background knowledge about direct causes:
 required edges (\code{A \%-->\% B}, \code{A} must directly cause \code{B}) and forbidden
-ones (\code{A \%!-->\% B}, \code{A} must not). Requiring \verb{A --> B} orients \code{A --- B}
+ones (\code{A \%!-->\% B}, \code{A} must not).
+}
+\details{
+Requiring \verb{A --> B} orients \code{A --- B}
 that way, and forbidding it orients \code{A --- B} as \verb{B --> A}; after each,
 Meek's rules propagate the orientations it implies. Background knowledge
 only orients edges, so it errors when it would add or remove one: a

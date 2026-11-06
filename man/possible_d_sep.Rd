@@ -2,12 +2,12 @@
 % Please edit documentation in R/identification.R
 \name{possible_d_sep}
 \alias{possible_d_sep}
-\title{Find every possible D-SEP set}
+\title{Find the D-SEP set of two nodes}
 \usage{
 possible_d_sep(cg, x, y)
 }
 \arguments{
-\item{cg}{An AG-family (AG, MAG) or PAG graph created with \code{\link[=cgraph]{cgraph()}}.}
+\item{cg}{An AG-family (AG, MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{x}{Node name.}
 
@@ -20,8 +20,8 @@ Sorted character vector of node names.
 Returns D-SEP(x, y, cg). It contains every vertex other than \code{x} for which
 there is a collider path between \code{x} and the vertex in \code{cg} on which every
 vertex, including the vertex itself, is an ancestor of \code{x} or of some
-member of \code{y}. This is the plain graph-level primitive that \code{\link[=backdoor_set]{backdoor_set()}} (for
-MAG/PAG) uses internally to build its generalized back-door set.
+member of \code{y}. \code{\link[=backdoor_set]{backdoor_set()}} uses this set to build its generalized
+back-door set for a MAG or PAG.
 }
 \examples{
 if (julia_ready()) {

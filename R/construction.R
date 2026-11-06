@@ -48,7 +48,7 @@ cgraph <- function(
   )
 ) {
   class <- if (missing(class)) class[[1L]] else match.arg(class)
-  .Call(C_jl_cgraph, .dots_or_spec(substitute(list(...)), spec), class)
+  jl_cgraph(.dots_or_spec(substitute(list(...)), spec), class)
 }
 
 #' Compare two graphs
@@ -71,21 +71,23 @@ NULL
 
 #' @rdname cgraph-equality
 #' @export
-`==.cgraph` <- function(e1, e2) .Call(C_jl_graph_equal, e1, e2)
+`==.cgraph` <- function(e1, e2) jl_graph_equal(e1, e2)
 
 #' @rdname cgraph-equality
 #' @export
-`!=.cgraph` <- function(e1, e2) !.Call(C_jl_graph_equal, e1, e2)
+`!=.cgraph` <- function(e1, e2) !jl_graph_equal(e1, e2)
 
 #' @export
 print.cgraph <- function(x, ...) {
-  cat(sub("^CausalStructures\\.", "", .Call(C_jl_graph_string, x)))
+  cat(sub("^CausalStructures\\.", "", jl_graph_string(x)))
   invisible(x)
 }
 
 #' Generate a random graph
 #'
-#' Generates a random graph on `n` observed nodes named `V1, ..., Vn`. Edges
+#' Generates a random graph on `n` observed nodes named `V1, ..., Vn`.
+#'
+#' Edges
 #' are sampled uniformly at random over all possible pairs using
 #' Erdős–Rényi and oriented by a random topological ordering, guaranteeing
 #' acyclicity. This samples uniformly over graphs of a given size/density,
@@ -150,8 +152,7 @@ generate_graph <- function(
   seed = NULL
 ) {
   class <- if (missing(class)) class[[1L]] else match.arg(class)
-  .Call(
-    C_jl_generate_graph,
+  jl_generate_graph(
     as.integer(n),
     m,
     p,
@@ -163,26 +164,47 @@ generate_graph <- function(
 
 #' Generate a uniformly random DAG
 #'
-#' Generates a random [DAG][cgraph()] on `n` observed nodes named
+#' Generates a random [DAG][cgraph()] on `n` nodes named
 #' `V1, ..., Vn`, sampled uniformly at random from the space of all labelled
-#' DAGs on `n` nodes. It uses the recursive-enumeration algorithm of
-#' Kuipers & Moffa (2015).
+#' DAGs on `n` nodes, using a recursive-enumeration algorithm.
 #'
 #' Unlike [generate_graph()], which samples edges independently (uniform over
 #' graphs of a given size/density but *not* uniform over the space of DAGs),
 #' this samples uniformly over the full space of labelled DAGs on `n` nodes.
 #'
-#' @param n Number of observed nodes.
+#' Every draw has to compute a table whose cost grows quickly with `n`. To draw
+#' many DAGs, compute it once with `uniform_dag_counts()` and pass it as `counts`.
+#'
+#' @param n Number of nodes. For `uniform_dag_counts()`, the largest number of
+#'   nodes the table can be used for.
 #' @param seed Optional integer seed for reproducibility.
-#' @return A `cgraph`.
+#' @param counts Optional table from `uniform_dag_counts()`, computed for at
+#'   least `n` nodes. It doesn't change the result for a given `seed`.
+#' @return For `uniform_dag()`, a `cgraph`. For `uniform_dag_counts()`, a table
+#'   of class `uniform_dag_counts`, which does not survive saving and reloading
+#'   or a restart of R.
+#' @references
+#' \insertRef{kuipers2015uniform}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- uniform_dag(6, seed = 1405)
 #'   dag
 #' }
-uniform_dag <- function(n, seed = NULL) {
-  .Call(C_jl_uniform_dag, as.integer(n), make_rng(seed))
+#'
+#' if (julia_ready()) {
+#'   # Reuse the table across many draws
+#'   table <- uniform_dag_counts(20)
+#'   dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
+#' }
+uniform_dag <- function(n, seed = NULL, counts = NULL) {
+  jl_uniform_dag(as.integer(n), make_rng(seed), counts)
+}
+
+#' @rdname uniform_dag
+#' @export
+uniform_dag_counts <- function(n) {
+  jl_uniform_dag_counts(as.integer(n))
 }
 
 # --- Graph-level queries -----------------------------------------------------
@@ -192,14 +214,13 @@ uniform_dag <- function(n, seed = NULL) {
 #' `nodes()` returns all node names in alphabetical order.
 #' `topological_sort()` returns the nodes of a DAG in topological
 #' order: for every directed edge `u --> v`, `u` appears before `v`.
-#' `exogenous_nodes()` returns the nodes with no parents (for a UG,
-#' the isolated nodes).
+#' `exogenous_nodes()` returns the nodes with no parents.
 #'
 #' @param cg A graph created with [cgraph()]. Supported classes vary by
 #'   function:
 #'   * `nodes()`: any class.
 #'   * `topological_sort()`: DAG.
-#'   * `exogenous_nodes()`: any class except PAG.
+#'   * `exogenous_nodes()`: any class except PAG and UNKNOWN.
 #' @return Character vector of node names.
 #' @name graph-queries
 #' @examples
@@ -222,26 +243,6 @@ uniform_dag <- function(n, seed = NULL) {
 #' }
 NULL
 
-#' @rdname graph-queries
-#' @export
-nodes <- function(cg) {
-  .Call(C_jl_nodes, cg)
-}
-
-#' @rdname graph-queries
-#' @export
-topological_sort <- function(cg) {
-  .Call(C_jl_topological_sort, cg)
-}
-
-#' @rdname graph-queries
-#' @param undirected_as_parents Only used for PDAG-family graphs. If `TRUE`,
-#'   a node incident to any undirected edge is not considered exogenous.
-#' @export
-exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
-  .Call(C_jl_exogenous_nodes, cg, undirected_as_parents)
-}
-
 #' Test whether two nodes are adjacent
 #'
 #' Tests adjacency, not directed reachability: `has_edge(g, x, y)` and
@@ -251,7 +252,6 @@ exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #' @param x,y Node names.
 #' @return `TRUE` if the graph has any edge between `x` and `y`,
 #'   regardless of direction.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, C)
@@ -261,9 +261,8 @@ exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
 #'     "A,C" = has_edge(dag, "A", "C")
 #'   )
 #' }
-has_edge <- function(cg, x, y) {
-  .Call(C_jl_has_edge, cg, x, y)
-}
+#' @name has_edge
+NULL
 
 # Maps a (src_end, dst_end) mark pair (as returned by the Julia
 # `edge_marks` helper) to its notation, e.g. `("Tail", "Arrow")` -> `"-->"`.
@@ -283,12 +282,13 @@ has_edge <- function(cg, x, y) {
 
 #' Get all edges in a graph
 #'
+#' Lists every edge of `cg` with its type.
+#'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @return A data frame with one row per edge and columns `from`, `to` (node
 #'   names) and `type` (the edge's notation, e.g. `"-->"`, `"---"`,
 #'   `"<->"`, `"o->"`, `"o--"`, or `"o-o"` — see [edge-operators]),
 #'   or zero rows if the graph has no edges.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
@@ -297,6 +297,5 @@ has_edge <- function(cg, x, y) {
 #'   pag <- cgraph(A %o-o% B, class = "PAG")
 #'   edges(pag)
 #' }
-edges <- function(cg) {
-  .Call(C_jl_edges, cg)
-}
+#' @name edges
+NULL

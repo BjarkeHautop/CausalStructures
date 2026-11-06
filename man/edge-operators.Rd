@@ -42,15 +42,17 @@ lhs \%!<--\% rhs
 or \code{c()} of either.}
 }
 \value{
-Not meaningful on its own; see the Description.
+None, since the operators are never called.
 }
 \description{
-Infix operators used inside \code{\link[=cgraph]{cgraph()}}, \code{\link[=add_edges]{add_edges()}},
-\code{\link[=remove_edges]{remove_edges()}}, and \code{\link[=apply_background_knowledge]{apply_background_knowledge()}} to specify edges, e.g. \code{A \%-->\% X + Y}. Multiple edges
-fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} means \verb{A --> X} and \verb{A --> Y}; chaining connects consecutive nodes pairwise, so \code{X \%-->\% M \%-->\% Y} means \verb{X --> M} and \verb{M --> Y}.
+Infix operators that specify edges inside \code{\link[=cgraph]{cgraph()}}, \code{\link[=add_edges]{add_edges()}},
+\code{\link[=remove_edges]{remove_edges()}}, \code{\link[=apply_background_knowledge]{apply_background_knowledge()}}, and \code{\link[=dag_to_mpdag]{dag_to_mpdag()}}, e.g.
+\code{A \%-->\% X + Y}.
 }
 \details{
-\tabular{ll}{
+Use \code{+} for several nodes on one side: \code{A \%-->\% X + Y} means \verb{A --> X} and
+\verb{A --> Y}. Chaining connects consecutive nodes: \code{X \%-->\% M \%-->\% Y} means
+\verb{X --> M} and \verb{M --> Y}.\tabular{ll}{
    Operator \tab Meaning \cr
    \verb{\%-->\%} \tab directed, \verb{src --> dst} \cr
    \verb{\%<--\%} \tab directed, \verb{dst --> src} \cr
@@ -64,14 +66,12 @@ fan out from (or into) a single marker with \code{+}: \code{A \%-->\% X + Y} mea
 }
 
 
-\code{\link[=apply_background_knowledge]{apply_background_knowledge()}} also takes \verb{\%!-->\%} (\verb{src --> dst} is
-forbidden) and \verb{\%!<--\%} (\verb{dst --> src} is forbidden), where \verb{\%-->\%} and
-\verb{\%<--\%} mean a required edge.
+\code{\link[=apply_background_knowledge]{apply_background_knowledge()}} and \code{\link[=dag_to_mpdag]{dag_to_mpdag()}} also take \verb{\%!-->\%}
+(\verb{src --> dst} is forbidden) and \verb{\%!<--\%} (\verb{dst --> src} is forbidden), where
+\verb{\%-->\%} and \verb{\%<--\%} mean a required edge.
 
-These operators only make sense inside the \code{...} of \code{cgraph()},
-\code{add_edges()}, or \code{remove_edges()}, which capture their arguments
-unevaluated; they are not exported and are not meant to be called
-directly.
+These functions read the operators from their \code{...} without evaluating them.
+The operators are not exported, so they can't be used anywhere else.
 }
 \examples{
 if (julia_ready()) {
@@ -79,4 +79,3 @@ if (julia_ready()) {
   edges(dag)
 }
 }
-\keyword{internal}

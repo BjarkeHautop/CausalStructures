@@ -23,94 +23,43 @@
 \arguments{
 \item{x}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
-\item{layout}{Specifies the layout. Can be:
+\item{layout}{Where to place the nodes:
 \itemize{
-\item \code{NULL} (default): \code{\link[=cgraph_layout]{cgraph_layout()}}'s own default - \code{"sugiyama"} for a
-\code{DAG}, \code{"stress"} otherwise.
-\item A character string passed to \code{\link[=cgraph_layout]{cgraph_layout()}} as \code{method}
-(\code{"sugiyama"}, \code{"stress"}, \code{"spring"}, \code{"sfdp"}, \code{"spectral"},
-\code{"shell"}, \code{"squaregrid"}). With
-\code{"sugiyama"} (also the \code{NULL} default for a \code{DAG}), each edge is also
-drawn along Sugiyama.jl's own route through its bend points, as in
-CausalStructures.jl; pass \code{cgraph_layout(x, "sugiyama")} instead to
-use the Sugiyama positions with this function's own edge routing.
-\item A layout function, called with \code{x} and any \code{...}.
-\item A pre-computed layout \code{data.frame} with columns \code{name}, \code{x}, \code{y}.
-\item A named list keyed by node name, each element a length-2 \code{c(x, y)},
-e.g. \code{list(A = c(0, 0), X = c(1, 0))}.
+\item \code{NULL} (default): \code{"sugiyama"} for a \code{DAG}, \code{"stress"} otherwise.
+\item A method name for \code{\link[=cgraph_layout]{cgraph_layout()}}. With \code{"sugiyama"}, edges also follow
+the routes it computes; to use only its positions, pass
+\code{cgraph_layout(x, "sugiyama")} instead.
+\item A function, called with \code{x} and \code{...}, that returns a layout.
+\item A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
+\item A named list of \code{c(x, y)} positions, e.g.
+\code{list(A = c(0, 0), X = c(1, 0))}.
 }}
 
-\item{node_style}{List of node styling parameters: \code{fill}, \code{col}, \code{lwd},
-\code{padding} (mm, default 2), \code{size} (multiplier, default 1), \code{radius}
-(mm; when set, every node is drawn at this fixed half-extent instead of
-being fitted to its label - mirrors CausalStructures.jl's Makie
-\code{plot()}'s \code{node_radius}), \code{shape} (\code{"circle"} (default), \code{"square"},
-\code{"ellipse"}, or \code{"rect"} - \code{"circle"}/\code{"square"} are fitted to their
-label and always rounded out to equal sides, while \code{"ellipse"}/\code{"rect"}
-keep the fitted oblong box as-is; there is no automatic switching
-between them based on label length, matching CausalStructures.jl's
-Makie \code{plot()}, whose \code{node_shape} is an explicit choice among these
-same four - edges clip to, and route around, the shape actually drawn),
-\code{linestyle} (e.g. \code{"dashed"}, \code{"dotted"} - any value
-grid's \code{lty} accepts - for a non-solid node border; default solid), and
-\code{by_node} (named list of per-node overrides, which can include
-\code{shape}/\code{linestyle}/\code{radius} too).}
+\item{node_style}{List of node style fields: \code{fill}, \code{col}, \code{lwd},
+\code{linestyle}, \code{shape} (\code{"circle"}, \code{"square"}, \code{"ellipse"}, or \code{"rect"}),
+\code{radius} (mm; nodes fit their labels if unset), \code{padding} (mm), and \code{size}
+(a multiplier). \code{by_node} is a named list of per-node overrides.}
 
-\item{edge_style}{List of edge styling parameters. Can specify global
-options or per-type options via \code{directed}, \code{undirected}, \code{bidirected},
-\code{partially_directed} (\verb{o->}), \code{partially_undirected} (\verb{o--}), \code{partial}
-(\code{o-o}) - matching CausalStructures.jl's Makie \code{plot()}'s six edge-type
-groups (draw.jl's \verb{_edge_type}). Fields: \code{col}, \code{lwd}, \code{fill} (arrowhead
-fill color; defaults to \code{col} so arrowheads render solid and match the
-edge - pass \code{fill = NA} for a hollow/outline arrowhead), \code{arrow_size}
-(mm, default 3), \code{circle_size} (mm, default 1.5, for \verb{o->}/\verb{o--}/\code{o-o}
-endpoints; an edge that would otherwise cross a non-incident node always
-bends around it as a Bezier curve unless \code{curvature} overrides this;
-parallel edges sharing a node pair, e.g. an ADMG's \verb{X --> Y}/\verb{X <-> Y},
-automatically fan out apart from each other for the same reason), and
-\code{curvature} (unset by default; bows an edge into an arc by this signed
-fraction of its length - positive bows left of the \code{from}-to-\code{to}
-direction, negative right; setting it (including to \code{0}) is a manual
-override that takes precedence over both the automatic
-obstacle-avoidance bend and the automatic parallel-edge fan-out above), and
-\code{by_edge} (named list of per-edge or per-node overrides, keyed by node
-name(s)). Style precedence (highest to lowest): specific edge settings
-in \code{by_edge} > node-wide settings in \code{by_edge} > edge-type settings >
-global settings.
+\item{edge_style}{List of edge style fields: \code{col}, \code{fill} (arrowhead fill;
+\code{NA} for hollow), \code{lwd}, \code{lty}, \code{gap} (mm), \code{curvature}, \code{path},
+\code{arrow_size} (mm), \code{circle_size} (mm), and the edge label fields \code{label},
+\code{label_col}, \code{label_fontsize}, \code{label_fontface}, \code{label_fontfamily},
+\code{label_shift}, \code{label_distance} (mm), and \code{label_rotation} (degrees).
 
-Also: \code{lty} (line style), \code{gap} (mm, default 0; extra space between each
-end of the edge and the node border), \code{path} (explicit waypoints, in
-layout coordinates, that the edge is drawn through as straight segments
-from its source to its destination, overriding every automatic route: a
-two-column matrix, a \code{data.frame} with \code{x}/\code{y} columns, or a list of
-\code{c(x, y)} points; set it per edge in \code{by_edge}, where a path given under
-the reversed pair runs from \code{to} to \code{from}), and an edge label: \code{label}
-(text, unset by default), \code{label_col}, \code{label_fontsize} (default 9),
-\code{label_fontface}, \code{label_fontfamily}, \code{label_shift} (position along the
-edge, from 0 at the source to 1 at the destination; default 0.5),
-\code{label_distance} (mm from the edge, to its left; defaults to the label's
-font size) and \code{label_rotation} (degrees; by default the label follows
-the edge's angle, turned to read upright). Like every other field, these
-can be set globally, per edge type, or per edge in \code{by_edge}.
+To override fields for some edges, use a sub-list named after an edge type
+(\code{directed}, \code{undirected}, \code{bidirected}, \code{partially_directed},
+\code{partially_undirected}, or \code{partial}), or \code{by_edge}, a nested list keyed by
+node (\code{by_edge$A}), node pair (\code{by_edge$A$B}), or exact edge
+(\code{by_edge$A$B$.by_type[["<->"]]}). The most specific level wins.}
 
-\code{by_edge}'s pair-level entries (\code{by_edge[[from]][[to]]}) apply to every
-edge between that pair, which can't tell apart e.g. an ADMG's parallel
-\verb{X --> Y} and \verb{X <-> Y}. To style one exact edge type between a pair,
-nest it one level deeper under the reserved key \code{.by_type}, keyed by
-the edge's notation (\code{"-->"}, \code{"<->"}, \code{"o-o"}, ...; see \code{\link[=edges]{edges()}}):
-\code{by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col = "red"), "<->" = list(col = "blue")))))}. This tier takes precedence
-over the plain pair-level entry.}
+\item{label_style}{List of node label style fields: \code{col}, \code{fontsize},
+\code{fontface}, \code{fontfamily}, and \code{cex}. \code{by_node} is a named list of per-node
+overrides.}
 
-\item{label_style}{List of node label styling parameters: \code{col},
-\code{fontsize}, \code{fontface}, \code{fontfamily}, \code{cex}, and \code{by_node} (named list of
-per-node overrides, as in \code{node_style}).}
-
-\item{labels}{Optional named character vector or list overriding the text
-drawn in each node (e.g. \code{c(X = "Exposure", Y = "Outcome")}), while
-\code{edge_style}/\code{by_node}/\code{by_edge} etc. keep using the graph's actual
-node names. A node missing from \code{labels} falls back to a \code{"default"}
-entry if present, else its own name. \code{NULL} (default) shows every
-node's own name, as before. Embedded \verb{\\n} gives a multi-line label.}
+\item{labels}{Optional named character vector or list of the text to draw in
+each node, e.g. \code{c(X = "Exposure", Y = "Outcome")}. \verb{\\n} starts a new line.
+Other nodes use the \code{"default"} entry if there is one, and otherwise their
+own name. The other arguments still refer to nodes by name.}
 
 \item{main}{Optional plot title.}
 
@@ -129,26 +78,28 @@ space; \code{asp = 1} makes one x-unit equal one y-unit.}
 \item{newpage}{If \code{TRUE} (default), call \code{\link[grid:grid.newpage]{grid::grid.newpage()}} before
 drawing.}
 
-\item{...}{Passed to \code{layout} when it is a character string or function.}
+\item{...}{Passed to \code{layout} when it is a method name (e.g. \code{direction} or
+\code{seed}; see \code{\link[=cgraph_layout]{cgraph_layout()}}) or a function.}
 }
 \value{
 A \code{cgraph_plot} object, invisibly. Drawn immediately as a side
 effect; re-drawn if printed or passed to \code{plot()} again.
 }
 \description{
-Plot method for \code{cgraph}. \code{node_style}, \code{edge_style}, \code{label_style}, and
-\code{title_style} each default to the corresponding entry
-from \code{\link[=plot_options]{plot_options()}} (which itself defaults to
-\code{\link[=plot_default_options]{plot_default_options()}}) - set those globally with \code{plot_options()} to
-avoid repeating the same style lists at every call site; arguments passed
-here still take precedence.
+Plot method for \code{cgraph}, drawn with grid graphics. The
+\href{https://bjarkehautop.github.io/CausalStructures/vignettes/articles/plot.html}{plotting article}
+explains the layouts and every style field, with examples.
+}
+\details{
+The style arguments are lists that override the defaults set with
+\code{\link[=plot_options]{plot_options()}}, field by field.
 }
 \examples{
 if (julia_ready()) {
   dag <- cgraph("A --> X + Y, X --> M --> Y")
   plot(dag, main = "A DAG")
-  # Style nodes and edges globally, plus per-node/per-edge overrides.
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
+
+  # Style all nodes and edges, with per-node and per-edge overrides
   plot(
     dag,
     node_style = list(
@@ -163,8 +114,8 @@ if (julia_ready()) {
     ),
     main = "Styled DAG"
   )
-  # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
+
+  # Square, dashed nodes with custom labels and a curved edge
   plot(
     dag,
     node_style = list(shape = "square", linestyle = "dashed"),
@@ -174,8 +125,7 @@ if (julia_ready()) {
 }
 }
 \seealso{
-\code{\link[=plot_options]{plot_options()}} to change the style defaults used above,
-globally, for every plot.
+\code{\link[=plot_options]{plot_options()}} to change the style defaults for every plot.
 
 Other plotting:
 \code{\link[=cgraph_layout]{cgraph_layout()}},

@@ -23,7 +23,9 @@
 #' Computes node coordinates for [plot.cgraph()].
 #'
 #' @param x A graph created with [cgraph()], of any class.
-#' @param method Character string specifying the layout method:
+#' @param method The layout method. The default (`NULL`) is `"sugiyama"` if `x`
+#'   has class `DAG`, and `"stress"` otherwise. This depends on the class `x`
+#'   was given, not its edges: a `PDAG` with only directed edges uses `"stress"`.
 #'   * `"sugiyama"`: layered/hierarchical layout, from the
 #'     [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) package.
 #'     Every edge is layered from its first to its second node (`A --> B`
@@ -41,13 +43,8 @@
 #'   Every method except `"sugiyama"` is from
 #'   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) and
 #'   ignores edge direction.
-#'
-#'   Defaults (`NULL`) to `"sugiyama"` when `x` was constructed (or
-#'   [reclass()]ed) as a `DAG`, `"stress"` otherwise. This checks `x`'s
-#'   actual class, not its edge structure (see [predicates]) - a `PDAG`
-#'   with only directed, acyclic edges still defaults to `"stress"`.
 #' @param direction For `"sugiyama"`, which way the layers flow: `"right"`
-#'   (the default, as in CausalStructures.jl), `"down"`, `"up"` or `"left"`.
+#'   (the default), `"down"`, `"up"` or `"left"`.
 #' @param seed For `"stress"`, `"spring"` and `"sfdp"`, the seed of the random
 #'   initial positions. The layout is the same for the same seed.
 #' @param ... Ignored, so that [plot.cgraph()] can pass its `...` through.
@@ -72,7 +69,7 @@ cgraph_layout <- function(
     stop("`x` must be a causal graph created with cgraph()", call. = FALSE)
   }
   method <- method %||%
-    if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
+    if (jl_is_dag_type(x)) "sugiyama" else "stress"
   method <- match.arg(method, .layout_methods)
 
   nm <- nodes(x)
@@ -82,9 +79,9 @@ cgraph_layout <- function(
   }
 
   coords <- if (method == "sugiyama") {
-    .Call(C_jl_sugiyama_layout, x, match.arg(direction))
+    jl_sugiyama_layout(x, match.arg(direction))
   } else {
-    .Call(C_jl_network_layout, x, method, as.integer(seed))
+    jl_network_layout(x, method, as.integer(seed))
   }
 
   data.frame(

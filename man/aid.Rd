@@ -5,23 +5,23 @@
 \title{Adjustment Identification Distance}
 \usage{
 aid(
-  cg_true,
-  cg_guess,
+  cg_truth,
+  cg_test,
   type = c("oset", "parent", "ancestor"),
   normalized = FALSE
 )
 }
 \arguments{
-\item{cg_true}{The ground-truth graph: a DAG or PDAG-family graph (PDAG,
+\item{cg_truth}{The ground-truth graph: a DAG or PDAG-family graph (PDAG,
 CPDAG, MPDAG) created with \code{\link[=cgraph]{cgraph()}}.}
 
-\item{cg_guess}{The guessed graph, of the same kinds and with the same
-nodes as \code{cg_true}.}
+\item{cg_test}{The graph to evaluate, of the same kinds and with the same
+nodes as \code{cg_truth}.}
 
 \item{type}{The adjustment strategy: \code{"oset"} (default; the optimal
 adjustment set, see \code{\link[=adjustment_set]{adjustment_set()}}), \code{"parent"} (the parents of
 \code{t}), or \code{"ancestor"} (the ancestors of \code{t}, which makes the distance
-zero whenever \code{cg_guess} respects the causal order of \code{cg_true}).}
+zero whenever \code{cg_test} respects the causal order of \code{cg_truth}).}
 
 \item{normalized}{If \code{TRUE}, divide by the number of ordered pairs,
 \code{n * (n - 1)}, giving a value in \verb{[0, 1]}.}
@@ -31,19 +31,19 @@ A number: the count of mistaken pairs, or its share of all ordered
 pairs if \code{normalized = TRUE}.
 }
 \description{
-Counts the ordered pairs of distinct nodes \verb{(t, y)} for which \code{cg_guess}
+Counts the ordered pairs of distinct nodes \verb{(t, y)} for which \code{cg_test}
 leads to a wrong conclusion about the causal effect of \code{t} on \code{y}
-relative to \code{cg_true}. For each pair, an adjustment set is read off
-\code{cg_guess} with the strategy \code{type}, and it is a mistake if that set is
-not a valid adjustment set in \code{cg_true}.
+relative to \code{cg_truth}. For each pair, an adjustment set is read off
+\code{cg_test} with the strategy \code{type}, and it is a mistake if that set is
+not a valid adjustment set in \code{cg_truth}.
 }
 \details{
 Outside the pairs its adjustment set applies to (\code{y} not a possible
-descendant of \code{t} in \code{cg_guess}, or, for \code{"parent"}, \code{y} a parent of \code{t}),
+descendant of \code{t} in \code{cg_test}, or, for \code{"parent"}, \code{y} a parent of \code{t}),
 the strategy instead claims a zero effect, which is correct if \code{y} is not
-a possible descendant of \code{t} in \code{cg_true}. For a PDAG-family \code{cg_guess}
+a possible descendant of \code{t} in \code{cg_truth}. For a PDAG-family \code{cg_test}
 where the effect is not identifiable, the strategy claims so, which is
-correct if it is not identifiable in \code{cg_true} either.
+correct if it is not identifiable in \code{cg_truth} either.
 }
 \examples{
 if (julia_ready()) {

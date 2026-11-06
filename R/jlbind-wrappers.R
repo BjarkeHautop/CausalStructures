@@ -5,20 +5,52 @@ jl_cgraph <- function(spec, class) .Call(C_jl_cgraph, spec, class)
 jl_generate_graph <- function(n, m, p, class, latents, seed) {
   .Call(C_jl_generate_graph, n, m, p, class, latents, seed)
 }
-jl_uniform_dag <- function(n, seed) .Call(C_jl_uniform_dag, n, seed)
-jl_graph_string <- function(g) .Call(C_jl_graph_string, g)
-jl_nodes <- function(g) .Call(C_jl_nodes, g)
-jl_edge_marks <- function(g) .Call(C_jl_edge_marks, g)
-jl_edges <- function(g) .Call(C_jl_edges, g)
-jl_topological_sort <- function(g) .Call(C_jl_topological_sort, g)
-jl_exogenous_nodes <- function(g, undirected_as_parents) {
-  .Call(C_jl_exogenous_nodes, g, undirected_as_parents)
+jl_uniform_dag_counts <- function(n) .Call(C_jl_uniform_dag_counts, n)
+jl_uniform_dag <- function(n, seed, counts) {
+  .Call(C_jl_uniform_dag, n, seed, counts)
 }
-jl_has_edge <- function(g, x, y) .Call(C_jl_has_edge, g, x, y)
-jl_parents <- function(g, node) .Call(C_jl_parents, g, node)
-jl_children <- function(g, node) .Call(C_jl_children, g, node)
-jl_spouses <- function(g, node) .Call(C_jl_spouses, g, node)
-jl_markov_blanket <- function(g, node) .Call(C_jl_markov_blanket, g, node)
+jl_graph_string <- function(g) .Call(C_jl_graph_string, g)
+
+#' @rdname graph-queries
+#' @export
+nodes <- function(cg) .Call(C_nodes, cg)
+jl_edge_marks <- function(g) .Call(C_jl_edge_marks, g)
+
+#' @rdname edges
+#' @export
+edges <- function(cg) .Call(C_edges, cg)
+
+#' @rdname graph-queries
+#' @export
+topological_sort <- function(cg) .Call(C_topological_sort, cg)
+
+#' @rdname graph-queries
+#' @param undirected_as_parents Only used for UG and PDAG-family graphs. If
+#'   `TRUE`, a node incident to any undirected edge is not considered exogenous.
+#' @export
+exogenous_nodes <- function(cg, undirected_as_parents = FALSE) {
+  .Call(C_exogenous_nodes, cg, undirected_as_parents)
+}
+
+#' @rdname has_edge
+#' @export
+has_edge <- function(cg, x, y) .Call(C_has_edge, cg, x, y)
+
+#' @rdname node-queries
+#' @export
+parents <- function(cg, node) .Call(C_parents, cg, node)
+
+#' @rdname node-queries
+#' @export
+children <- function(cg, node) .Call(C_children, cg, node)
+
+#' @rdname node-queries
+#' @export
+spouses <- function(cg, node) .Call(C_spouses, cg, node)
+
+#' @rdname markov_blanket
+#' @export
+markov_blanket <- function(cg, node) .Call(C_markov_blanket, cg, node)
 jl_neighbors <- function(g, node, mode) .Call(C_jl_neighbors, g, node, mode)
 jl_ancestors <- function(g, node, open) .Call(C_jl_ancestors, g, node, open)
 jl_descendants <- function(g, node, open) .Call(C_jl_descendants, g, node, open)
@@ -30,21 +62,60 @@ jl_possible_ancestors <- function(g, node, open) {
 jl_possible_descendants <- function(g, node, open) {
   .Call(C_jl_possible_descendants, g, node, open)
 }
-jl_districts <- function(g) .Call(C_jl_districts, g)
-jl_is_dag <- function(g) .Call(C_jl_is_dag, g)
-jl_is_pdag <- function(g) .Call(C_jl_is_pdag, g)
-jl_is_cpdag <- function(g) .Call(C_jl_is_cpdag, g)
-jl_is_mpdag <- function(g) .Call(C_jl_is_mpdag, g)
-jl_is_ug <- function(g) .Call(C_jl_is_ug, g)
-jl_is_admg <- function(g) .Call(C_jl_is_admg, g)
-jl_is_ag <- function(g) .Call(C_jl_is_ag, g)
-jl_is_mag <- function(g) .Call(C_jl_is_mag, g)
-jl_is_pag <- function(g) .Call(C_jl_is_pag, g)
-jl_is_simple <- function(g) .Call(C_jl_is_simple, g)
-jl_is_acyclic <- function(g) .Call(C_jl_is_acyclic, g)
+
+#' @rdname districts
+#' @export
+districts <- function(cg) .Call(C_districts, cg)
+
+#' @rdname predicates
+#' @export
+is_dag <- function(cg) .Call(C_is_dag, cg)
+
+#' @rdname predicates
+#' @export
+is_pdag <- function(cg) .Call(C_is_pdag, cg)
+
+#' @rdname predicates
+#' @export
+is_cpdag <- function(cg) .Call(C_is_cpdag, cg)
+
+#' @rdname predicates
+#' @export
+is_mpdag <- function(cg) .Call(C_is_mpdag, cg)
+
+#' @rdname predicates
+#' @export
+is_ug <- function(cg) .Call(C_is_ug, cg)
+
+#' @rdname predicates
+#' @export
+is_admg <- function(cg) .Call(C_is_admg, cg)
+
+#' @rdname predicates
+#' @export
+is_ag <- function(cg) .Call(C_is_ag, cg)
+
+#' @rdname predicates
+#' @export
+is_mag <- function(cg) .Call(C_is_mag, cg)
+
+#' @rdname predicates
+#' @export
+is_pag <- function(cg) .Call(C_is_pag, cg)
+
+#' @rdname predicates
+#' @export
+is_simple <- function(cg) .Call(C_is_simple, cg)
+
+#' @rdname predicates
+#' @export
+is_acyclic <- function(cg) .Call(C_is_acyclic, cg)
 jl_is_dag_type <- function(g) .Call(C_jl_is_dag_type, g)
 jl_graph_equal <- function(g1, g2) .Call(C_jl_graph_equal, g1, g2)
-jl_markov_equivalent <- function(g1, g2) .Call(C_jl_markov_equivalent, g1, g2)
+
+#' @rdname markov_equivalent
+#' @export
+markov_equivalent <- function(cg1, cg2) .Call(C_markov_equivalent, cg1, cg2)
 jl_d_separated <- function(g, x, y, z) .Call(C_jl_d_separated, g, x, y, z)
 jl_m_separated <- function(g, x, y, z) .Call(C_jl_m_separated, g, x, y, z)
 jl_minimal_separator <- function(g, x, y, include, restrict) {
@@ -89,32 +160,76 @@ jl_id <- function(g, x, y) .Call(C_jl_id, g, x, y)
 jl_idc <- function(g, x, y, given) .Call(C_jl_idc, g, x, y, given)
 jl_idp <- function(g, x, y) .Call(C_jl_idp, g, x, y)
 jl_cidp <- function(g, x, y, given) .Call(C_jl_cidp, g, x, y, given)
-jl_possible_parent_sets <- function(g, x) .Call(C_jl_possible_parent_sets, g, x)
+
+#' @rdname possible_parent_sets
+#' @export
+possible_parent_sets <- function(cg, x) .Call(C_possible_parent_sets, cg, x)
 jl_possible_joint_parent_sets <- function(g, xs) {
   .Call(C_jl_possible_joint_parent_sets, g, xs)
 }
-jl_possible_optimal_adjustment_sets <- function(g, x, y) {
-  .Call(C_jl_possible_optimal_adjustment_sets, g, x, y)
+
+#' @rdname possible_optimal_adjustment_sets
+#' @export
+possible_optimal_adjustment_sets <- function(cg, x, y) {
+  .Call(C_possible_optimal_adjustment_sets, cg, x, y)
 }
-jl_possible_local_structures <- function(g, x) {
-  .Call(C_jl_possible_local_structures, g, x)
+
+#' @rdname possible_local_structures
+#' @export
+possible_local_structures <- function(cg, x) {
+  .Call(C_possible_local_structures, cg, x)
 }
-jl_pagcauses <- function(g, x, y) .Call(C_jl_pagcauses, g, x, y)
-jl_count_dags <- function(g) .Call(C_jl_count_dags, g)
-jl_enumerate_dags <- function(g) .Call(C_jl_enumerate_dags, g)
-jl_enumerate_mags <- function(g, selection_bias) {
-  .Call(C_jl_enumerate_mags, g, selection_bias)
+
+#' @rdname pagcauses
+#' @export
+pagcauses <- function(cg, x, y) .Call(C_pagcauses, cg, x, y)
+
+#' @rdname equivalence
+#' @export
+count_dags <- function(cg) .Call(C_count_dags, cg)
+
+#' @rdname equivalence
+#' @export
+enumerate_dags <- function(cg) .Call(C_enumerate_dags, cg)
+
+#' @rdname enumerate_mags
+#' @export
+enumerate_mags <- function(cg, selection_bias = TRUE) {
+  .Call(C_enumerate_mags, cg, selection_bias)
 }
-jl_skeleton <- function(g) .Call(C_jl_skeleton, g)
-jl_moralize <- function(g) .Call(C_jl_moralize, g)
-jl_dag_to_cpdag <- function(g) .Call(C_jl_dag_to_cpdag, g)
-jl_dag_from_pdag <- function(g) .Call(C_jl_dag_from_pdag, g)
-jl_dag_to_mpdag <- function(g) .Call(C_jl_dag_to_mpdag, g)
-jl_ag_to_mag <- function(g) .Call(C_jl_ag_to_mag, g)
-jl_mag_to_pag <- function(g) .Call(C_jl_mag_to_pag, g)
-jl_mag_from_pag <- function(g) .Call(C_jl_mag_from_pag, g)
-jl_meek_closure <- function(g, check_cycles, r4) {
-  .Call(C_jl_meek_closure, g, check_cycles, r4)
+
+#' @rdname skeleton
+#' @export
+skeleton <- function(cg) .Call(C_skeleton, cg)
+
+#' @rdname moralize
+#' @export
+moralize <- function(cg) .Call(C_moralize, cg)
+
+#' @rdname dag_to_cpdag
+#' @export
+dag_to_cpdag <- function(cg) .Call(C_dag_to_cpdag, cg)
+
+#' @rdname dag_from_pdag
+#' @export
+dag_from_pdag <- function(cg) .Call(C_dag_from_pdag, cg)
+
+#' @rdname ag_to_mag
+#' @export
+ag_to_mag <- function(cg) .Call(C_ag_to_mag, cg)
+
+#' @rdname mag_to_pag
+#' @export
+mag_to_pag <- function(cg) .Call(C_mag_to_pag, cg)
+
+#' @rdname mag_from_pag
+#' @export
+mag_from_pag <- function(cg) .Call(C_mag_from_pag, cg)
+
+#' @rdname meek_closure
+#' @export
+meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
+  .Call(C_meek_closure, cg, check_cycles, r4)
 }
 jl_subgraph <- function(g, nodes) .Call(C_jl_subgraph, g, nodes)
 jl_latent_project <- function(g, latents) .Call(C_jl_latent_project, g, latents)
@@ -126,6 +241,7 @@ jl_condition_marginalize <- function(g, given, index) {
   .Call(C_jl_condition_marginalize, g, given, index)
 }
 jl_maximal_local_mag <- function(g, x, c) .Call(C_jl_maximal_local_mag, g, x, c)
+jl_dag_to_mpdag <- function(g, spec) .Call(C_jl_dag_to_mpdag, g, spec)
 jl_apply_background_knowledge <- function(g, spec) {
   .Call(C_jl_apply_background_knowledge, g, spec)
 }
@@ -137,22 +253,37 @@ jl_remove_nodes <- function(g, nodes) .Call(C_jl_remove_nodes, g, nodes)
 jl_simulate_data <- function(g, n, seed, standardize, coef_range, random_sign, error_sd) {
   .Call(C_jl_simulate_data, g, n, seed, standardize, coef_range, random_sign, error_sd)
 }
-jl_hd <- function(g1, g2, normalized) .Call(C_jl_hd, g1, g2, normalized)
-jl_shd <- function(g1, g2, normalized) .Call(C_jl_shd, g1, g2, normalized)
+
+#' @rdname hamming
+#' @export
+hd <- function(cg1, cg2, normalized = FALSE) .Call(C_hd, cg1, cg2, normalized)
+
+#' @rdname hamming
+#' @export
+shd <- function(cg1, cg2, normalized = FALSE) .Call(C_shd, cg1, cg2, normalized)
 jl_aid <- function(g1, g2, type, normalized) {
   .Call(C_jl_aid, g1, g2, type, normalized)
 }
 jl_separation_distance <- function(g1, g2, strategy, mb_enhanced, symmetric, normalized) {
   .Call(C_jl_separation_distance, g1, g2, strategy, mb_enhanced, symmetric, normalized)
 }
-jl_sc_metric <- function(g1, g2, max_order) {
-  .Call(C_jl_sc_metric, g1, g2, max_order)
+
+#' @rdname sc-metrics
+#' @export
+sc_metric <- function(cg1, cg2, max_order = NULL) {
+  .Call(C_sc_metric, cg1, cg2, max_order)
 }
-jl_markov_metric <- function(g1, g2, max_order) {
-  .Call(C_jl_markov_metric, g1, g2, max_order)
+
+#' @rdname sc-metrics
+#' @export
+markov_metric <- function(cg_truth, cg_test, max_order = NULL) {
+  .Call(C_markov_metric, cg_truth, cg_test, max_order)
 }
-jl_faithfulness_metric <- function(g1, g2, max_order) {
-  .Call(C_jl_faithfulness_metric, g1, g2, max_order)
+
+#' @rdname sc-metrics
+#' @export
+faithfulness_metric <- function(cg_truth, cg_test, max_order = NULL) {
+  .Call(C_faithfulness_metric, cg_truth, cg_test, max_order)
 }
 jl_sugiyama_layout <- function(g, direction) {
   .Call(C_jl_sugiyama_layout, g, direction)

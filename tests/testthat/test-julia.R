@@ -150,6 +150,18 @@ test_that("construction works", {
   expect_equal(nrow(edges(multi)), 2)
 })
 
+test_that("uniform_dag reuses a table from uniform_dag_counts", {
+  skip_if_no_julia()
+  table <- uniform_dag_counts(8)
+  expect_s3_class(table, "uniform_dag_counts")
+  expect_true(
+    uniform_dag(6, seed = 1405, counts = table) == uniform_dag(6, seed = 1405)
+  )
+  expect_true(is_dag(uniform_dag(8, seed = 1, counts = table)))
+  expect_error(uniform_dag(9, counts = table), "only covers")
+  expect_error(uniform_dag(4, counts = cgraph(A %-->% B)), "uniform_dag_counts")
+})
+
 test_that("uniform_dag works", {
   skip_if_no_julia()
   dag <- uniform_dag(6, seed = 1405)
@@ -197,6 +209,10 @@ test_that("graph-level queries work", {
   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
   expect_setequal(exogenous_nodes(pdag), c("A", "C"))
   expect_identical(exogenous_nodes(pdag, undirected_as_parents = TRUE), "A")
+
+  ug <- cgraph(A %---% B, C, class = "UG")
+  expect_setequal(exogenous_nodes(ug), c("A", "B", "C"))
+  expect_identical(exogenous_nodes(ug, undirected_as_parents = TRUE), "C")
 })
 
 test_that("edge queries work", {
@@ -288,6 +304,26 @@ test_that("transformations work", {
   expect_true(is_pdag(meek_closure(cp)))
   mp <- dag_to_mpdag(dag)
   expect_true(is_mpdag(mp))
+
+  chain <- cgraph(A %-->% B %-->% C)
+  oriented <- edges(dag_to_mpdag(chain, A %-->% B))
+  expect_setequal(oriented$type, "-->")
+  expect_equal(edges(dag_to_mpdag(chain, spec = "A --> B")), oriented)
+  expect_error(dag_to_mpdag(chain, B %-->% A), "inconsistent")
+
+  for (cg in list(
+    cgraph(A %<->% B, B %-->% C, class = "ADMG"),
+    cgraph(A %<->% B, B %-->% C, class = "MAG"),
+    cgraph(A %o->% B, C %o->% B, class = "PAG"),
+    cgraph(A %---% B, B %---% C, class = "UG"),
+    cgraph("A --> B, A <-> B", class = "UNKNOWN")
+  )) {
+    expect_true(is_ug(skeleton(cg)))
+    expect_identical(nodes(skeleton(cg)), nodes(cg))
+  }
+  parallel <- cgraph("A --> B, A <-> B", class = "UNKNOWN")
+  expect_identical(nrow(edges(skeleton(parallel))), 1L)
+
   sub <- subgraph(dag, c("X", "M", "Y"))
   expect_setequal(nodes(sub), c("X", "M", "Y"))
 

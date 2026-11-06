@@ -22,8 +22,8 @@ names.}
 List of character vectors (empty list if none exist).
 }
 \description{
-Lists all sets \code{Z} with \verb{include ⊆ Z ⊆ restrict} satisfying the
-front-door criterion; see \code{\link[=frontdoor_set]{frontdoor_set()}} and
+Lists all sets \code{Z}, containing \code{include} and contained in \code{restrict},
+satisfying the front-door criterion; see \code{\link[=frontdoor_set]{frontdoor_set()}} and
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.
 }
 \examples{

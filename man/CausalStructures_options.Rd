@@ -4,9 +4,11 @@
 \alias{CausalStructures_options}
 \title{Package options}
 \description{
-\code{CausalStructures} reads the following \code{\link[=options]{options()}}:
+Settings that change how \code{CausalStructures} behaves: one option, set with
+\code{\link[=options]{options()}}, and the number of threads, set with an environment variable.
 }
-\details{
+\section{Options}{
+
 \describe{
 \item{\code{CausalStructures.open}}{Logical, default \code{TRUE}. Default for the
 \code{open} argument of \code{\link[=ancestors]{ancestors()}}, \code{\link[=descendants]{descendants()}},
@@ -14,9 +16,21 @@
 \code{\link[=posteriors]{posteriors()}}: \code{TRUE} (open definition) excludes the query node
 itself from the result, \code{FALSE} (closed definition) includes it.}
 }
-
-The algorithms run in a library compiled from CausalStructures.jl, built by
-\code{\link[jlbind:install_library]{jlbind::install_library()}}. The number of Julia threads it uses is read
-from the \code{JULIA_NUM_THREADS} environment variable (a number or \code{"auto"})
-when the library is loaded, so set it before loading the package.
 }
+
+\section{Number of threads}{
+
+\code{\link[=count_dags]{count_dags()}}, \code{\link[=enumerate_dags]{enumerate_dags()}}, \code{\link[=enumerate_mags]{enumerate_mags()}}, \code{\link[=pagcauses]{pagcauses()}},
+\code{\link[=all_backdoor_sets]{all_backdoor_sets()}}, \code{\link[=all_adjustment_sets]{all_adjustment_sets()}}, and \code{\link[=all_frontdoor_sets]{all_frontdoor_sets()}}
+can search in parallel. By default they use one thread. To use more, set
+\code{JULIA_NUM_THREADS} to a number, or to \code{"auto"} for one thread per core,
+before loading the package:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{Sys.setenv(JULIA_NUM_THREADS = "auto")
+library(CausalStructures)
+}\if{html}{\out{</div>}}
+
+To make this permanent, set it in your \code{.Renviron} file instead. The number
+cannot be changed once the package is loaded, so restart R to change it.
+}
+

@@ -3,20 +3,18 @@
 #' Drop edge marks to an undirected graph
 #'
 #' Returns the skeleton of `cg`, the undirected graph obtained by replacing
-#' every directed or partially-directed edge with an undirected edge. A
-#' node pair keeps a single edge regardless of how many marked edges
-#' connected it.
+#' every edge, of any type, with an undirected edge. Parallel edges between two
+#' nodes become one edge, and self-loops are dropped.
 #'
-#' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
-#'   [cgraph()].
+#' @param cg A graph created with [cgraph()], of any class.
 #' @return A `cgraph` of class `UG`.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   skeleton(dag)
 #' }
-skeleton <- function(cg) .Call(C_jl_skeleton, cg)
+#' @name skeleton
+NULL
 
 #' Moralize a graph
 #'
@@ -29,13 +27,13 @@ skeleton <- function(cg) .Call(C_jl_skeleton, cg)
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
 #' @return A `cgraph` of class `UG`.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% C, B %-->% C)
 #'   moralize(dag) # A and B are now married
 #' }
-moralize <- function(cg) .Call(C_jl_moralize, cg)
+#' @name moralize
+NULL
 
 #' Convert a DAG to its CPDAG
 #'
@@ -46,13 +44,13 @@ moralize <- function(cg) .Call(C_jl_moralize, cg)
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @return A `cgraph` of class `CPDAG`.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
 #'   dag_to_cpdag(dag)
 #' }
-dag_to_cpdag <- function(cg) .Call(C_jl_dag_to_cpdag, cg)
+#' @name dag_to_cpdag
+NULL
 
 #' Extend a PDAG to a consistent DAG
 #'
@@ -66,13 +64,13 @@ dag_to_cpdag <- function(cg) .Call(C_jl_dag_to_cpdag, cg)
 #' @return A `cgraph` of class `DAG`.
 #' @references
 #' \insertRef{dortarsi1992simple}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
 #'   dag_from_pdag(pdag)
 #' }
-dag_from_pdag <- function(cg) .Call(C_jl_dag_from_pdag, cg)
+#' @name dag_from_pdag
+NULL
 
 #' Apply Meek's orientation rules
 #'
@@ -84,8 +82,8 @@ dag_from_pdag <- function(cg) .Call(C_jl_dag_from_pdag, cg)
 #'   `a --> b`.
 #' * **R3**: `a --- b`, two non-adjacent parents `c, d` of `b` with
 #'   `a --- c` and `a --- d` implies `a --> b`.
-#' * **R4**: `a --- b`, a directed path `a -->...--> b` exists implies
-#'   `a --> b`.
+#' * **R4**: `a --- b`, `a --- c`, and `c --> d --> b`, with `c` not adjacent to
+#'   `b` and `a` adjacent to `d`, implies `a --> b`.
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
@@ -98,22 +96,27 @@ dag_from_pdag <- function(cg) .Call(C_jl_dag_from_pdag, cg)
 #' @return A `cgraph` of class `MPDAG`.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
 #'   meek_closure(pdag)
 #' }
-meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
-  .Call(C_jl_meek_closure, cg, check_cycles, r4)
-}
+#' @name meek_closure
+NULL
 
 #' Convert a DAG to its MPDAG
 #'
-#' Returns the MPDAG representing the DAGs Markov equivalent to `cg`: the
-#' CPDAG of `cg` closed under [meek_closure()]'s rules R1-R4.
+#' Returns the MPDAG representing the DAGs Markov equivalent to `cg` and
+#' consistent with any background knowledge: the CPDAG of `cg` with that
+#' knowledge applied, closed under [meek_closure()]'s rules R1-R4. Errors if
+#' `cg` itself violates the knowledge, i.e. it lacks a required edge or has a
+#' forbidden one.
 #'
 #' @param cg A DAG created with [cgraph()].
+#' @param ... Required (`%-->%`, `%<--%`) and forbidden (`%!-->%`,
+#'   `%!<--%`) edges; see [edge-operators]. Mutually exclusive with `spec`.
+#' @param spec Background knowledge as a string, e.g. `"A --> B, C !--> D"`,
+#'   for programmatic use. Mutually exclusive with `...`.
 #' @return A `cgraph` of class `MPDAG`.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
@@ -121,15 +124,27 @@ meek_closure <- function(cg, check_cycles = TRUE, r4 = TRUE) {
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   dag_to_mpdag(dag)
+#'   list(
+#'     no_knowledge = dag_to_mpdag(dag),
+#'     required = dag_to_mpdag(dag, A %-->% B)
+#'   )
 #' }
-dag_to_mpdag <- function(cg) .Call(C_jl_dag_to_mpdag, cg)
+dag_to_mpdag <- function(cg, ..., spec = NULL) {
+  knowledge <- if (...length() > 0L || !is.null(spec)) {
+    .dots_or_spec(substitute(list(...)), spec)
+  } else {
+    ""
+  }
+  jl_dag_to_mpdag(cg, knowledge)
+}
 
 #' Apply background knowledge to a PDAG
 #'
 #' Orients `cg` according to background knowledge about direct causes:
 #' required edges (`A %-->% B`, `A` must directly cause `B`) and forbidden
-#' ones (`A %!-->% B`, `A` must not). Requiring `A --> B` orients `A --- B`
+#' ones (`A %!-->% B`, `A` must not).
+#'
+#' Requiring `A --> B` orients `A --- B`
 #' that way, and forbidding it orients `A --- B` as `B --> A`; after each,
 #' Meek's rules propagate the orientations it implies. Background knowledge
 #' only orients edges, so it errors when it would add or remove one: a
@@ -154,18 +169,16 @@ dag_to_mpdag <- function(cg) .Call(C_jl_dag_to_mpdag, cg)
 #'   )
 #' }
 apply_background_knowledge <- function(cg, ..., spec = NULL) {
-  .Call(
-    C_jl_apply_background_knowledge,
-    cg,
-    .dots_or_spec(substitute(list(...)), spec)
-  )
+  jl_apply_background_knowledge(cg, .dots_or_spec(substitute(list(...)), spec))
 }
 
 #' Convert an AG to a Markov equivalent MAG
 #'
 #' Adds an edge between every pair of non-adjacent nodes in the AG `cg` that
 #' cannot be m-separated by any subset of the remaining nodes, producing a
-#' Markov equivalent MAG. For each such pair `(u, v)`, the edge is directed
+#' Markov equivalent MAG.
+#'
+#' For each such pair `(u, v)`, the edge is directed
 #' toward whichever node is not an ancestor of the other, or bidirected if
 #' neither is an ancestor of the other. Edges are added one at a time, with
 #' the graph re-evaluated after each addition (a new edge can change
@@ -173,42 +186,44 @@ apply_background_knowledge <- function(cg, ..., spec = NULL) {
 #'
 #' @param cg An AG created with [cgraph()].
 #' @return A `cgraph` of class `MAG`.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   ag <- cgraph(A %-->% B, B %-->% C, class = "AG")
 #'   ag_to_mag(ag)
 #' }
-ag_to_mag <- function(cg) .Call(C_jl_ag_to_mag, cg)
+#' @name ag_to_mag
+NULL
 
 #' Map a MAG to its PAG equivalence class
 #'
 #' Returns the PAG representing the Markov equivalence class of the MAG
-#' `cg`. It has the same skeleton, with each endpoint kept as an arrowhead or tail only
-#' if that mark is shared by every MAG in the class (a circle mark
-#' otherwise). Starts from the skeleton with all-circle marks, orients
-#' unshielded colliders as they appear in `cg`, then applies Zhang's
-#' complete orientation rules R1-R10 until no further mark is implied. The
-#' input graph is unchanged; for a single representative MAG instead of the
-#' whole class, use [mag_from_pag()].
+#' `cg`. It has the same skeleton, with each endpoint kept as an arrowhead or
+#' tail only if that mark is shared by every MAG in the class (a circle mark
+#' otherwise). To go back to a single MAG of the class, use [mag_from_pag()].
+#'
+#' Starts from the skeleton with all-circle marks, orients unshielded colliders
+#' as they appear in `cg`, then applies Zhang's complete orientation rules
+#' R1-R10 until no further mark is implied.
 #'
 #' @param cg A MAG created with [cgraph()].
 #' @return A `cgraph` of class `PAG`.
 #' @references
 #' \insertRef{zhang2008completeness}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   mag <- cgraph(A %-->% B, B %-->% C, class = "MAG")
 #'   mag_to_pag(mag)
 #' }
-mag_to_pag <- function(cg) .Call(C_jl_mag_to_pag, cg)
+#' @name mag_to_pag
+NULL
 
 #' Resolve a PAG to a representative MAG
 #'
 #' Returns one MAG belonging to the Markov equivalence class represented by
 #' the PAG `cg`: a left inverse of [mag_to_pag()], so
-#' `mag_to_pag(mag_from_pag(pag))` recovers `pag`. Every circle mark left
+#' `mag_to_pag(mag_from_pag(pag))` recovers `pag`.
+#'
+#' Every circle mark left
 #' unresolved by the PAG is resolved to a tail or arrowhead following
 #' Zhang's construction (2008, Theorem 2): a circle opposite a fixed mark
 #' always becomes directed; an undirected edge (selection bias) is kept
@@ -222,15 +237,18 @@ mag_to_pag <- function(cg) .Call(C_jl_mag_to_pag, cg)
 #' \insertRef{zhang2008completeness}{CausalStructures}
 #'
 #' \insertRef{dortarsi1992simple}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
 #'   mag_from_pag(pag)
 #' }
-mag_from_pag <- function(cg) .Call(C_jl_mag_from_pag, cg)
+#' @name mag_from_pag
+NULL
 
 #' Induced subgraph
+#'
+#' Returns the graph on `nodes` with every edge of `cg` between them. Errors if
+#' a node is not in `cg`.
 #'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @param nodes Character vector of node names to keep.
@@ -242,7 +260,7 @@ mag_from_pag <- function(cg) .Call(C_jl_mag_from_pag, cg)
 #'   subgraph(dag, c("A", "B"))
 #' }
 subgraph <- function(cg, nodes) {
-  .Call(C_jl_subgraph, cg, as.character(nodes))
+  jl_subgraph(cg, as.character(nodes))
 }
 
 #' Project out latent variables
@@ -260,7 +278,7 @@ subgraph <- function(cg, nodes) {
 #'   latent_project(dag, "U")
 #' }
 latent_project <- function(cg, latents) {
-  .Call(C_jl_latent_project, cg, as.character(latents))
+  jl_latent_project(cg, as.character(latents))
 }
 
 #' Make nodes exogenous
@@ -279,20 +297,22 @@ latent_project <- function(cg, latents) {
 #'   exogenize(dag, "M")
 #' }
 exogenize <- function(cg, nodes) {
-  .Call(C_jl_exogenize, cg, as.character(nodes))
+  jl_exogenize(cg, as.character(nodes))
 }
 
 #' Normalize latent structure
 #'
 #' Simplifies the latent nodes of `cg` while preserving the induced
-#' marginal model over the observed variables (Evans 2016, Lemmas 1-3). It
-#' exogenizes each latent node, then drops latent nodes with at most one
-#' active child or whose child set is a strict subset of another latent
+#' marginal model over the observed variables (Lemmas 1-3 of the reference
+#' below). It exogenizes each latent node, then drops latent nodes with at most
+#' one active child or whose child set is a strict subset of another latent
 #' node's child set.
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @param latents Character vector of latent (unobserved) node names.
 #' @return A `cgraph` of class `DAG`.
+#' @references
+#' \insertRef{evans2016graphs}{CausalStructures}
 #' @export
 #' @examples
 #' if (julia_ready()) {
@@ -300,7 +320,7 @@ exogenize <- function(cg, nodes) {
 #'   normalize_latent_structure(dag, "U")
 #' }
 normalize_latent_structure <- function(cg, latents) {
-  .Call(C_jl_normalize_latent_structure, cg, as.character(latents))
+  jl_normalize_latent_structure(cg, as.character(latents))
 }
 
 #' Condition and marginalize a graph
@@ -326,12 +346,7 @@ condition_marginalize <- function(
   given = character(),
   index = character()
 ) {
-  .Call(
-    C_jl_condition_marginalize,
-    cg,
-    as.character(given),
-    as.character(index)
-  )
+  jl_condition_marginalize(cg, as.character(given), as.character(index))
 }
 
 # --- Mutation ----------------------------------------------------------------
@@ -365,17 +380,13 @@ NULL
 #' @rdname edge-mutation
 #' @export
 add_edges <- function(cg, ..., spec = NULL) {
-  .Call(C_jl_add_edges, cg, .dots_or_spec(substitute(list(...)), spec))
+  jl_add_edges(cg, .dots_or_spec(substitute(list(...)), spec))
 }
 
 #' @rdname edge-mutation
 #' @export
 remove_edges <- function(cg, ..., spec = NULL) {
-  .Call(
-    C_jl_remove_edges,
-    cg,
-    .dots_or_spec(substitute(list(...)), spec)
-  )
+  jl_remove_edges(cg, .dots_or_spec(substitute(list(...)), spec))
 }
 
 #' Add or remove isolated nodes
@@ -402,13 +413,13 @@ NULL
 #' @rdname node-mutation
 #' @export
 add_nodes <- function(cg, nodes) {
-  .Call(C_jl_add_nodes, cg, as.character(nodes))
+  jl_add_nodes(cg, as.character(nodes))
 }
 
 #' @rdname node-mutation
 #' @export
 remove_nodes <- function(cg, nodes) {
-  .Call(C_jl_remove_nodes, cg, as.character(nodes))
+  jl_remove_nodes(cg, as.character(nodes))
 }
 
 #' Reclassify a graph
@@ -445,5 +456,5 @@ reclass <- function(
   )
 ) {
   class <- if (missing(class)) class[[1L]] else match.arg(class)
-  .Call(C_jl_reclass, cg, class)
+  jl_reclass(cg, class)
 }

@@ -18,8 +18,9 @@
 #'     MPDAG), ADMG, or AG-family (AG, MAG).
 #'   * `spouses()`: ADMG, AG-family (AG, MAG), or PAG.
 #' @param node Node name.
-#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
-#'   exclude `node` itself from the result; if `FALSE`, include it.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option; see
+#'   [CausalStructures_options]), exclude `node` itself from the result; if
+#'   `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name node-queries
 #' @examples
@@ -37,20 +38,12 @@ NULL
 
 #' @rdname node-queries
 #' @export
-parents <- function(cg, node) .Call(C_jl_parents, cg, node)
-
-#' @rdname node-queries
-#' @export
-children <- function(cg, node) .Call(C_jl_children, cg, node)
-
-#' @rdname node-queries
-#' @export
 ancestors <- function(
   cg,
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_ancestors, cg, node, open)
+  jl_ancestors(cg, node, open)
 }
 
 #' @rdname node-queries
@@ -60,12 +53,8 @@ descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_descendants, cg, node, open)
+  jl_descendants(cg, node, open)
 }
-
-#' @rdname node-queries
-#' @export
-spouses <- function(cg, node) .Call(C_jl_spouses, cg, node)
 
 #' Markov blanket of a node
 #'
@@ -73,8 +62,7 @@ spouses <- function(cg, node) .Call(C_jl_spouses, cg, node)
 #' that renders `node` conditionally independent of every other node in the
 #' graph.
 #'
-#' The Markov blanket returns the following, depending on the graph
-#' class:
+#' Which nodes it contains depends on the graph class:
 #' * **DAG**: parents, children, and co-parents (other parents of `node`'s
 #'   children).
 #' * **PDAG-family** (PDAG, CPDAG, MPDAG): the DAG set, plus undirected
@@ -83,12 +71,13 @@ spouses <- function(cg, node) .Call(C_jl_spouses, cg, node)
 #'   (excluding `node` itself).
 #' * **AG-family** (AG, MAG): parents, children, co-parents, spouses, and
 #'   undirected neighbors.
+#' * **PAG**: the AG-family set in the representative MAG of `cg` from
+#'   [mag_from_pag()].
 #'
-#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, or AG-family
-#'   (AG, MAG) graph created with [cgraph()].
+#' @param cg A DAG, PDAG-family (PDAG, CPDAG, MPDAG), ADMG, AG-family (AG, MAG),
+#'   or PAG graph created with [cgraph()].
 #' @param node Node name.
 #' @return Sorted character vector of node names.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% B, B %-->% C, D %-->% C)
@@ -97,14 +86,17 @@ spouses <- function(cg, node) .Call(C_jl_spouses, cg, node)
 #'     blanket_of_c = markov_blanket(dag, "C")
 #'   )
 #' }
-markov_blanket <- function(cg, node) .Call(C_jl_markov_blanket, cg, node)
+#' @name markov_blanket
+NULL
 
 #' Neighbors of a node
 #'
 #' Nodes adjacent to `node` by some edge. `mode` restricts which edge types
 #' count: `"in"` (parents / arrowheads at `node`), `"out"` (children / tails
 #' at `node`), `"undirected"`, or `"bidirected"`; `"all"` (default) includes
-#' every neighbor regardless of edge type. For a PAG, `"in"`, `"out"`,
+#' every neighbor regardless of edge type.
+#'
+#' For a PAG, `"in"`, `"out"`,
 #' `"undirected"`, and `"bidirected"` only match *definite* (circle-free)
 #' edges; neighbors joined by a circle mark (`o->`, `o--`, `o-o`) are
 #' reported by `"all"` only.
@@ -130,26 +122,29 @@ neighbors <- function(
   mode = c("all", "in", "out", "undirected", "bidirected")
 ) {
   mode <- if (missing(mode)) mode[[1L]] else match.arg(mode)
-  .Call(C_jl_neighbors, cg, node, mode)
+  jl_neighbors(cg, node, mode)
 }
 
 #' Possible-ancestor/descendant node-set queries
 #'
 #' `possible_ancestors()` finds every node `V` that is an ancestor of `node`
 #' in some DAG (for a PDAG-family `cg`) or MAG (for a PAG `cg`) in the
-#' equivalence class represented by `cg`. These are the nodes reachable
+#' equivalence class represented by `cg`. `possible_descendants()` is the mirror
+#' notion in the other direction.
+#'
+#' These are the nodes reachable
 #' from `node` by a *possibly directed* path, one on which no edge is
 #' compelled in the direction away from `node` (traversing an undirected
 #' edge, or a directed/circle edge oriented, or possibly orientable, toward
-#' `node`). `possible_descendants()` is the mirror notion in the other
-#' direction. Both are supersets of [ancestors()]/[descendants()], since
+#' `node`). Both are supersets of [ancestors()]/[descendants()], since
 #' those only count edges *compelled* in the right direction.
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) or PAG graph created with
 #'   [cgraph()].
 #' @param node Node name.
-#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
-#'   exclude `node` itself from the result; if `FALSE`, include it.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option; see
+#'   [CausalStructures_options]), exclude `node` itself from the result; if
+#'   `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @references
 #' \insertRef{perkovic2018complete}{CausalStructures}
@@ -173,7 +168,7 @@ possible_ancestors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_possible_ancestors, cg, node, open)
+  jl_possible_ancestors(cg, node, open)
 }
 
 #' @rdname possible-queries
@@ -183,7 +178,7 @@ possible_descendants <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_possible_descendants, cg, node, open)
+  jl_possible_descendants(cg, node, open)
 }
 
 #' Districts of a mixed graph
@@ -194,13 +189,13 @@ possible_descendants <- function(
 #'
 #' @param cg An ADMG or AG-family (AG, MAG) graph created with [cgraph()].
 #' @return A list of sorted character vectors, one per district.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   admg <- cgraph(A %<->% B, B %<->% C, C %-->% D, class = "ADMG")
 #'   districts(admg)
 #' }
-districts <- function(cg) .Call(C_jl_districts, cg)
+#' @name districts
+NULL
 
 #' Anterior/posterior node-set queries
 #'
@@ -215,8 +210,9 @@ districts <- function(cg) .Call(C_jl_districts, cg)
 #' @param cg A DAG, ADMG, PDAG-family (PDAG, CPDAG, MPDAG), or AG-family (AG,
 #'   MAG) graph created with [cgraph()].
 #' @param node Node name.
-#' @param open If `TRUE` (default, from the `CausalStructures.open` option),
-#'   exclude `node` itself from the result; if `FALSE`, include it.
+#' @param open If `TRUE` (default, from the `CausalStructures.open` option; see
+#'   [CausalStructures_options]), exclude `node` itself from the result; if
+#'   `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name anteriors
 #' @examples
@@ -236,7 +232,7 @@ anteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_anteriors, cg, node, open)
+  jl_anteriors(cg, node, open)
 }
 
 #' @rdname anteriors
@@ -246,7 +242,7 @@ posteriors <- function(
   node,
   open = getOption("CausalStructures.open", TRUE)
 ) {
-  .Call(C_jl_posteriors, cg, node, open)
+  jl_posteriors(cg, node, open)
 }
 
 
@@ -275,47 +271,3 @@ posteriors <- function(
 #'   )
 #' }
 NULL
-
-#' @rdname predicates
-#' @export
-is_dag <- function(cg) .Call(C_jl_is_dag, cg)
-
-#' @rdname predicates
-#' @export
-is_pdag <- function(cg) .Call(C_jl_is_pdag, cg)
-
-#' @rdname predicates
-#' @export
-is_cpdag <- function(cg) .Call(C_jl_is_cpdag, cg)
-
-#' @rdname predicates
-#' @export
-is_mpdag <- function(cg) .Call(C_jl_is_mpdag, cg)
-
-#' @rdname predicates
-#' @export
-is_ug <- function(cg) .Call(C_jl_is_ug, cg)
-
-#' @rdname predicates
-#' @export
-is_admg <- function(cg) .Call(C_jl_is_admg, cg)
-
-#' @rdname predicates
-#' @export
-is_ag <- function(cg) .Call(C_jl_is_ag, cg)
-
-#' @rdname predicates
-#' @export
-is_mag <- function(cg) .Call(C_jl_is_mag, cg)
-
-#' @rdname predicates
-#' @export
-is_pag <- function(cg) .Call(C_jl_is_pag, cg)
-
-#' @rdname predicates
-#' @export
-is_simple <- function(cg) .Call(C_jl_is_simple, cg)
-
-#' @rdname predicates
-#' @export
-is_acyclic <- function(cg) .Call(C_jl_is_acyclic, cg)

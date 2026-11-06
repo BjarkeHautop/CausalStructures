@@ -16,9 +16,9 @@ A \code{cgraph} of class \code{DAG}.
 }
 \description{
 Simplifies the latent nodes of \code{cg} while preserving the induced
-marginal model over the observed variables (Evans 2016, Lemmas 1-3). It
-exogenizes each latent node, then drops latent nodes with at most one
-active child or whose child set is a strict subset of another latent
+marginal model over the observed variables (Lemmas 1-3 of the reference
+below). It exogenizes each latent node, then drops latent nodes with at most
+one active child or whose child set is a strict subset of another latent
 node's child set.
 }
 \examples{
@@ -26,4 +26,7 @@ if (julia_ready()) {
   dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
   normalize_latent_structure(dag, "U")
 }
+}
+\references{
+\insertRef{evans2016graphs}{CausalStructures}
 }

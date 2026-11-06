@@ -15,8 +15,9 @@ MAG) graph created with \code{\link[=cgraph]{cgraph()}}.}
 
 \item{node}{Node name.}
 
-\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option),
-exclude \code{node} itself from the result; if \code{FALSE}, include it.}
+\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option; see
+\link{CausalStructures_options}), exclude \code{node} itself from the result; if
+\code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.

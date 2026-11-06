@@ -18,15 +18,17 @@ A \code{cgraph} of class \code{UNKNOWN}.
 }
 \description{
 Returns the maximal local MAG for the local structure \code{c} at \code{x} in the
-PAG \code{cg}. This is \code{cg} with a bidirected edge from \code{x} to every node in \code{c} and a
-directed edge from \code{x} to every other circle-marked neighbor, treated as
-local background knowledge and closed under the corresponding rule set.
-\code{c} should be a valid local structure, i.e. an entry of
-\code{\link[=possible_local_structures]{possible_local_structures()}}\verb{(cg, x)}; passing an invalid one gives an
-unsound result. The returned graph may still contain circles, which is why
-it is returned as class \code{"UNKNOWN"} rather than validated as a MAG or PAG.
+PAG \code{cg}.
 }
 \details{
+This is \code{cg} with a bidirected edge from \code{x} to every node in \code{c} and a
+directed edge from \code{x} to every other circle-marked neighbor, treated as
+local background knowledge and closed under the corresponding rule set.
+\code{c} should be a valid local structure, i.e. an entry of what
+\code{\link[=possible_local_structures]{possible_local_structures()}} returns for \code{x}; passing an invalid one gives
+an unsound result. The returned graph may still contain circles, which is why
+it is returned as class \code{"UNKNOWN"} rather than validated as a MAG or PAG.
+
 Assumes \code{cg} has no selection bias (no undirected edges).
 }
 \examples{

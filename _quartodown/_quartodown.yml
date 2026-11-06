@@ -1,20 +1,3 @@
-# Configuration for quartodown::build_site(). See ?quartodown::build_site for
-# all fields, including `navbar:` (article order) and `quarto:` (extra
-# Quarto settings).
-
-navbar:
-  left:
-    - intro
-    - reference
-    - text: Articles
-      menu:
-        - articles/equivalence-classes
-        - articles/causal-identification
-        - articles/pag-causal-effects
-        - articles/plot
-        - articles/benchmarks
-    - news
-
 # Groups the function reference index, in the same shape as pkgdown's
 # `reference:` field.
 reference:

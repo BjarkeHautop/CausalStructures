@@ -58,8 +58,7 @@ simulate_data <- function(
   error_sd = 1,
   seed = NULL
 ) {
-  mat <- .Call(
-    C_jl_simulate_data,
+  mat <- jl_simulate_data(
     cg,
     n,
     make_rng(seed),

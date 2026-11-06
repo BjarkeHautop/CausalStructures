@@ -264,11 +264,13 @@
 
 #' Edge specification operators
 #'
-#' Infix operators used inside [cgraph()], [add_edges()],
-#' [remove_edges()], and [apply_background_knowledge()] to specify edges, e.g. `A %-->% X + Y`. Multiple edges
-#' fan out from (or into) a single marker with `+`: `A %-->% X + Y` means `A
-#' --> X` and `A --> Y`; chaining connects consecutive nodes pairwise, so `X
-#' %-->% M %-->% Y` means `X --> M` and `M --> Y`.
+#' Infix operators that specify edges inside [cgraph()], [add_edges()],
+#' [remove_edges()], [apply_background_knowledge()], and [dag_to_mpdag()], e.g.
+#' `A %-->% X + Y`.
+#'
+#' Use `+` for several nodes on one side: `A %-->% X + Y` means `A --> X` and
+#' `A --> Y`. Chaining connects consecutive nodes: `X %-->% M %-->% Y` means
+#' `X --> M` and `M --> Y`.
 #'
 #' | Operator  | Meaning                        |
 #' |:----------|:--------------------------------|
@@ -282,20 +284,17 @@
 #' | `%--o%`   | partially undirected, `dst o-- src` |
 #' | `%o-o%`   | partial (both ends circle)      |
 #'
-#' [apply_background_knowledge()] also takes `%!-->%` (`src --> dst` is
-#' forbidden) and `%!<--%` (`dst --> src` is forbidden), where `%-->%` and
-#' `%<--%` mean a required edge.
+#' [apply_background_knowledge()] and [dag_to_mpdag()] also take `%!-->%`
+#' (`src --> dst` is forbidden) and `%!<--%` (`dst --> src` is forbidden), where
+#' `%-->%` and `%<--%` mean a required edge.
 #'
-#' These operators only make sense inside the `...` of `cgraph()`,
-#' `add_edges()`, or `remove_edges()`, which capture their arguments
-#' unevaluated; they are not exported and are not meant to be called
-#' directly.
+#' These functions read the operators from their `...` without evaluating them.
+#' The operators are not exported, so they can't be used anywhere else.
 #'
 #' @param lhs,rhs Node name(s): a bare symbol, a string, or a `+`-combination
 #'   or `c()` of either.
-#' @return Not meaningful on its own; see the Description.
+#' @return None, since the operators are never called.
 #' @name edge-operators
-#' @keywords internal
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)

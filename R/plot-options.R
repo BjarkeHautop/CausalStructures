@@ -71,24 +71,9 @@ plot_default_options <- function() {
 #'   invisibly. When getting, the requested options.
 #'
 #' @details
-#' Fields, matching the corresponding `plot.cgraph()` argument:
-#'
-#' - `node_style`: `fill`, `col`, `lwd`, `padding` (mm), `size` (multiplier),
-#'   `radius` (mm, fixed override), `shape` (`"circle"`, `"square"`,
-#'   `"ellipse"`, or `"rect"`), `linestyle` (e.g. `"dashed"`)
-#' - `edge_style`: `col`, `lwd`, `lty`, `fill` (arrowhead fill), `arrow_size`
-#'   (mm), `circle_size` (mm), `gap` (mm), `curvature` (signed fraction of edge
-#'   length; unset by default, so parallel edges between the same node pair fan
-#'   out automatically - see [plot.cgraph()]), and the edge label fields
-#'   `label_col`, `label_fontsize`, `label_fontface`, `label_fontfamily`,
-#'   `label_shift`, `label_distance` (mm), `label_rotation` (degrees)
-#' - `label_style`: `col`, `fontsize`, `fontface`, `fontfamily`, `cex`
-#' - `title_style`: same fields as `label_style`
-#'
-#' See [plot.cgraph()] for the full description of each field. Per-type
-#' (`edge_style$directed`, ...) and per-node/per-edge (`by_node`, `by_edge`,
-#' `label_style$by_node`) overrides stay `plot()`-call arguments only - they
-#' are not part of these global defaults.
+#' The fields are those of the matching [plot.cgraph()] arguments. Overrides for
+#' an edge type (`edge_style$directed`, ...), node (`by_node`), or edge
+#' (`by_edge`) only work as `plot()` arguments, not as global defaults.
 #'
 #' @seealso [plot.cgraph()] for per-plot style arguments and per-node/edge
 #'   overrides, [plot_default_options()] to inspect or reset to the

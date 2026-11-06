@@ -17,3 +17,5 @@ README.html
 .jlbind/
 /inst/csjl/
 _quarto/
+_quarto/*
+!_quarto/_freeze/

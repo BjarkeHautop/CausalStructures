@@ -13,18 +13,19 @@
     JLBIND_ENTRY(jl_graph_count, 0, (void), ()) \
     JLBIND_ENTRY(jl_cgraph, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_generate_graph, 6, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5, SEXP a6), (a1, a2, a3, a4, a5, a6)) \
-    JLBIND_ENTRY(jl_uniform_dag, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(jl_uniform_dag_counts, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(jl_uniform_dag, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_graph_string, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_nodes, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(nodes, 1, (SEXP a1), (a1)) \
     JLBIND_ENTRY(jl_edge_marks, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_edges, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_topological_sort, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_exogenous_nodes, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_has_edge, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_parents, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_children, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_spouses, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_markov_blanket, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(edges, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(topological_sort, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(exogenous_nodes, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(has_edge, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(parents, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(children, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(spouses, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(markov_blanket, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_neighbors, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_ancestors, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_descendants, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
@@ -32,21 +33,21 @@
     JLBIND_ENTRY(jl_posteriors, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_possible_ancestors, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_possible_descendants, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_districts, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_dag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_pdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_cpdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_mpdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_ug, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_admg, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_ag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_mag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_pag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_simple, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_is_acyclic, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(districts, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_dag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_pdag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_cpdag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_mpdag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_ug, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_admg, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_ag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_mag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_pag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_simple, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(is_acyclic, 1, (SEXP a1), (a1)) \
     JLBIND_ENTRY(jl_is_dag_type, 1, (SEXP a1), (a1)) \
     JLBIND_ENTRY(jl_graph_equal, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_markov_equivalent, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(markov_equivalent, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_d_separated, 4, (SEXP a1, SEXP a2, SEXP a3, SEXP a4), (a1, a2, a3, a4)) \
     JLBIND_ENTRY(jl_m_separated, 4, (SEXP a1, SEXP a2, SEXP a3, SEXP a4), (a1, a2, a3, a4)) \
     JLBIND_ENTRY(jl_minimal_separator, 5, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5), (a1, a2, a3, a4, a5)) \
@@ -67,29 +68,29 @@
     JLBIND_ENTRY(jl_idc, 4, (SEXP a1, SEXP a2, SEXP a3, SEXP a4), (a1, a2, a3, a4)) \
     JLBIND_ENTRY(jl_idp, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_cidp, 4, (SEXP a1, SEXP a2, SEXP a3, SEXP a4), (a1, a2, a3, a4)) \
-    JLBIND_ENTRY(jl_possible_parent_sets, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(possible_parent_sets, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_possible_joint_parent_sets, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_possible_optimal_adjustment_sets, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_possible_local_structures, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_pagcauses, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_count_dags, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_enumerate_dags, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_enumerate_mags, 2, (SEXP a1, SEXP a2), (a1, a2)) \
-    JLBIND_ENTRY(jl_skeleton, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_moralize, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_dag_to_cpdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_dag_from_pdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_dag_to_mpdag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_ag_to_mag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_mag_to_pag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_mag_from_pag, 1, (SEXP a1), (a1)) \
-    JLBIND_ENTRY(jl_meek_closure, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(possible_optimal_adjustment_sets, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(possible_local_structures, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(pagcauses, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(count_dags, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(enumerate_dags, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(enumerate_mags, 2, (SEXP a1, SEXP a2), (a1, a2)) \
+    JLBIND_ENTRY(skeleton, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(moralize, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(dag_to_cpdag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(dag_from_pdag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(ag_to_mag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(mag_to_pag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(mag_from_pag, 1, (SEXP a1), (a1)) \
+    JLBIND_ENTRY(meek_closure, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_subgraph, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_latent_project, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_exogenize, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_normalize_latent_structure, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_condition_marginalize, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_maximal_local_mag, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(jl_dag_to_mpdag, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_apply_background_knowledge, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_reclass, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_add_edges, 2, (SEXP a1, SEXP a2), (a1, a2)) \
@@ -97,13 +98,13 @@
     JLBIND_ENTRY(jl_add_nodes, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_remove_nodes, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_simulate_data, 7, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5, SEXP a6, SEXP a7), (a1, a2, a3, a4, a5, a6, a7)) \
-    JLBIND_ENTRY(jl_hd, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_shd, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(hd, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(shd, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_aid, 4, (SEXP a1, SEXP a2, SEXP a3, SEXP a4), (a1, a2, a3, a4)) \
     JLBIND_ENTRY(jl_separation_distance, 6, (SEXP a1, SEXP a2, SEXP a3, SEXP a4, SEXP a5, SEXP a6), (a1, a2, a3, a4, a5, a6)) \
-    JLBIND_ENTRY(jl_sc_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_markov_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
-    JLBIND_ENTRY(jl_faithfulness_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(sc_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(markov_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
+    JLBIND_ENTRY(faithfulness_metric, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_sugiyama_layout, 2, (SEXP a1, SEXP a2), (a1, a2)) \
     JLBIND_ENTRY(jl_network_layout, 3, (SEXP a1, SEXP a2, SEXP a3), (a1, a2, a3)) \
     JLBIND_ENTRY(jl_sugiyama_paths, 2, (SEXP a1, SEXP a2), (a1, a2))

@@ -445,6 +445,10 @@ plot(
 )
 ```
 
+For several points, `path` can also be a two-column matrix, a `data.frame` with
+`x` and `y` columns, or a list of `c(x, y)` points. Under the reversed pair,
+`by_edge$Y$K`, list the points from `Y` to `K`.
+
 ## Labels and titles
 
 ### Labels

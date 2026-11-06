@@ -4,22 +4,34 @@
 \alias{dag_to_mpdag}
 \title{Convert a DAG to its MPDAG}
 \usage{
-dag_to_mpdag(cg)
+dag_to_mpdag(cg, ..., spec = NULL)
 }
 \arguments{
 \item{cg}{A DAG created with \code{\link[=cgraph]{cgraph()}}.}
+
+\item{...}{Required (\verb{\%-->\%}, \verb{\%<--\%}) and forbidden (\verb{\%!-->\%},
+\verb{\%!<--\%}) edges; see \link{edge-operators}. Mutually exclusive with \code{spec}.}
+
+\item{spec}{Background knowledge as a string, e.g. \code{"A --> B, C !--> D"},
+for programmatic use. Mutually exclusive with \code{...}.}
 }
 \value{
 A \code{cgraph} of class \code{MPDAG}.
 }
 \description{
-Returns the MPDAG representing the DAGs Markov equivalent to \code{cg}: the
-CPDAG of \code{cg} closed under \code{\link[=meek_closure]{meek_closure()}}'s rules R1-R4.
+Returns the MPDAG representing the DAGs Markov equivalent to \code{cg} and
+consistent with any background knowledge: the CPDAG of \code{cg} with that
+knowledge applied, closed under \code{\link[=meek_closure]{meek_closure()}}'s rules R1-R4. Errors if
+\code{cg} itself violates the knowledge, i.e. it lacks a required edge or has a
+forbidden one.
 }
 \examples{
 if (julia_ready()) {
   dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  dag_to_mpdag(dag)
+  list(
+    no_knowledge = dag_to_mpdag(dag),
+    required = dag_to_mpdag(dag, A \%-->\% B)
+  )
 }
 }
 \references{

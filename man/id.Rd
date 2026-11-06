@@ -26,9 +26,9 @@ effect is not identifiable.
 \description{
 \code{id()} returns the interventional distribution \code{P(y | do(x))} as a
 formula in terms of the observational distribution, or \code{NULL} if the
-effect is not identifiable. It implements Shpitser & Pearl's ID algorithm. \code{idc()}
-additionally conditions on \code{given} (the IDC algorithm), reducing to \code{id()}
-when \code{given} is empty.
+effect is not identifiable. It implements Shpitser & Pearl's ID algorithm.
+\code{idc()} additionally conditions on \code{given} (the IDC algorithm), reducing to
+\code{id()} when \code{given} is empty.
 }
 \details{
 Bidirected edges represent latent confounders. To identify an effect in a
@@ -38,10 +38,7 @@ DAG with unobserved variables, project them out first with
 The rendered formula may mention variables outside \code{x}/\code{y}/\code{given}: the
 algorithm can enlarge the intervention set whenever doing so provably
 changes nothing, and the result is then a function of those extra values
-too. This binding renders the resulting \code{Estimand} as a formatted
-character string; it does not expose the underlying symbolic-algebra
-representation (\code{Prob}, \code{Marginal}, \code{Product}, \code{Quotient} in
-CausalStructures.jl) for programmatic manipulation.
+too.
 }
 \examples{
 if (julia_ready()) {

@@ -22,7 +22,6 @@ Roxygen: list(markdown = TRUE)
 Collate:
     'session.R'
     'jlbind.R'
-    'jlbind-wrappers.R'
     'dsl.R'
     'construction.R'
     'data.R'
@@ -34,6 +33,7 @@ Collate:
     'plot-options.R'
     'plot-routing.R'
     'plot.R'
+    'jlbind-wrappers.R'
 Depends:
     R (>= 4.0.0)
 Imports:
@@ -49,8 +49,7 @@ Suggests:
     withr
 Config/testthat/edition: 3
 RdMacros: Rdpack
-SystemRequirements: Julia (>= 1.13), needed to build the compiled library
-    with jlbind::install_library()
+SystemRequirements: Julia (>= 1.13)
 Config/jlbind: julia
 Remotes: BjarkeHautop/jlbind
 Language: en-US

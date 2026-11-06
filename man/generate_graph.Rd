@@ -35,7 +35,10 @@ nodes and then project out. Only supported for \code{class = "ADMG"},
 A \code{cgraph}.
 }
 \description{
-Generates a random graph on \code{n} observed nodes named \verb{V1, ..., Vn}. Edges
+Generates a random graph on \code{n} observed nodes named \verb{V1, ..., Vn}.
+}
+\details{
+Edges
 are sampled uniformly at random over all possible pairs using
 Erdős–Rényi and oriented by a random topological ordering, guaranteeing
 acyclicity. This samples uniformly over graphs of a given size/density,
@@ -43,8 +46,7 @@ but \emph{not} uniformly over the space of DAGs (some DAGs correspond to more
 topological orderings than others). For an exact uniform draw from all
 labelled DAGs on \code{n} nodes regardless of edge count, use \code{\link[=uniform_dag]{uniform_dag()}}
 instead.
-}
-\details{
+
 Exactly one of \code{m} (exact edge count) or \code{p} (edge probability) must be
 given. For \code{class = "CPDAG"}, the sampled DAG is converted with
 \code{\link[=dag_to_cpdag]{dag_to_cpdag()}}. For \code{class = "ADMG"}, \code{"MAG"}, or \code{"PAG"}, \code{latents}

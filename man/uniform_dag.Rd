@@ -2,32 +2,52 @@
 % Please edit documentation in R/construction.R
 \name{uniform_dag}
 \alias{uniform_dag}
+\alias{uniform_dag_counts}
 \title{Generate a uniformly random DAG}
 \usage{
-uniform_dag(n, seed = NULL)
+uniform_dag(n, seed = NULL, counts = NULL)
+
+uniform_dag_counts(n)
 }
 \arguments{
-\item{n}{Number of observed nodes.}
+\item{n}{Number of nodes. For \code{uniform_dag_counts()}, the largest number of
+nodes the table can be used for.}
 
 \item{seed}{Optional integer seed for reproducibility.}
+
+\item{counts}{Optional table from \code{uniform_dag_counts()}, computed for at
+least \code{n} nodes. It doesn't change the result for a given \code{seed}.}
 }
 \value{
-A \code{cgraph}.
+For \code{uniform_dag()}, a \code{cgraph}. For \code{uniform_dag_counts()}, a table
+of class \code{uniform_dag_counts}, which does not survive saving and reloading
+or a restart of R.
 }
 \description{
-Generates a random \link[=cgraph]{DAG} on \code{n} observed nodes named
+Generates a random \link[=cgraph]{DAG} on \code{n} nodes named
 \verb{V1, ..., Vn}, sampled uniformly at random from the space of all labelled
-DAGs on \code{n} nodes. It uses the recursive-enumeration algorithm of
-Kuipers & Moffa (2015).
+DAGs on \code{n} nodes, using a recursive-enumeration algorithm.
 }
 \details{
 Unlike \code{\link[=generate_graph]{generate_graph()}}, which samples edges independently (uniform over
 graphs of a given size/density but \emph{not} uniform over the space of DAGs),
 this samples uniformly over the full space of labelled DAGs on \code{n} nodes.
+
+Every draw has to compute a table whose cost grows quickly with \code{n}. To draw
+many DAGs, compute it once with \code{uniform_dag_counts()} and pass it as \code{counts}.
 }
 \examples{
 if (julia_ready()) {
   dag <- uniform_dag(6, seed = 1405)
   dag
 }
+
+if (julia_ready()) {
+  # Reuse the table across many draws
+  table <- uniform_dag_counts(20)
+  dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
+}
+}
+\references{
+\insertRef{kuipers2015uniform}{CausalStructures}
 }

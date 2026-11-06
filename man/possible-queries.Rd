@@ -16,8 +16,9 @@ possible_descendants(cg, node, open = getOption("CausalStructures.open", TRUE))
 
 \item{node}{Node name.}
 
-\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option),
-exclude \code{node} itself from the result; if \code{FALSE}, include it.}
+\item{open}{If \code{TRUE} (default, from the \code{CausalStructures.open} option; see
+\link{CausalStructures_options}), exclude \code{node} itself from the result; if
+\code{FALSE}, include it.}
 }
 \value{
 Sorted character vector of node names.
@@ -25,12 +26,15 @@ Sorted character vector of node names.
 \description{
 \code{possible_ancestors()} finds every node \code{V} that is an ancestor of \code{node}
 in some DAG (for a PDAG-family \code{cg}) or MAG (for a PAG \code{cg}) in the
-equivalence class represented by \code{cg}. These are the nodes reachable
+equivalence class represented by \code{cg}. \code{possible_descendants()} is the mirror
+notion in the other direction.
+}
+\details{
+These are the nodes reachable
 from \code{node} by a \emph{possibly directed} path, one on which no edge is
 compelled in the direction away from \code{node} (traversing an undirected
 edge, or a directed/circle edge oriented, or possibly orientable, toward
-\code{node}). \code{possible_descendants()} is the mirror notion in the other
-direction. Both are supersets of \code{\link[=ancestors]{ancestors()}}/\code{\link[=descendants]{descendants()}}, since
+\code{node}). Both are supersets of \code{\link[=ancestors]{ancestors()}}/\code{\link[=descendants]{descendants()}}, since
 those only count edges \emph{compelled} in the right direction.
 }
 \examples{

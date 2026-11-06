@@ -15,7 +15,9 @@ cgraph_layout(
 \arguments{
 \item{x}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
-\item{method}{Character string specifying the layout method:
+\item{method}{The layout method. The default (\code{NULL}) is \code{"sugiyama"} if \code{x}
+has class \code{DAG}, and \code{"stress"} otherwise. This depends on the class \code{x}
+was given, not its edges: a \code{PDAG} with only directed edges uses \code{"stress"}.
 \itemize{
 \item \code{"sugiyama"}: layered/hierarchical layout, from the
 \href{https://github.com/BjarkeHautop/Sugiyama.jl}{Sugiyama.jl} package.
@@ -34,15 +36,10 @@ Laplacian.
 
 Every method except \code{"sugiyama"} is from
 \href{https://github.com/JuliaGraphs/NetworkLayout.jl}{NetworkLayout.jl} and
-ignores edge direction.
-
-Defaults (\code{NULL}) to \code{"sugiyama"} when \code{x} was constructed (or
-\code{\link[=reclass]{reclass()}}ed) as a \code{DAG}, \code{"stress"} otherwise. This checks \code{x}'s
-actual class, not its edge structure (see \link{predicates}) - a \code{PDAG}
-with only directed, acyclic edges still defaults to \code{"stress"}.}
+ignores edge direction.}
 
 \item{direction}{For \code{"sugiyama"}, which way the layers flow: \code{"right"}
-(the default, as in CausalStructures.jl), \code{"down"}, \code{"up"} or \code{"left"}.}
+(the default), \code{"down"}, \code{"up"} or \code{"left"}.}
 
 \item{seed}{For \code{"stress"}, \code{"spring"} and \code{"sfdp"}, the seed of the random
 initial positions. The layout is the same for the same seed.}

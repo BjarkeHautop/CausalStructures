@@ -19,7 +19,7 @@
 # opposed to edges(), which collapses the two marks into a single `type`
 # notation column, e.g. "-->").
 .plot_edges <- function(cg) {
-  mat <- .Call(C_jl_edge_marks, cg)
+  mat <- jl_edge_marks(cg)
   data.frame(
     from = mat[, 1],
     to = mat[, 2],
@@ -1278,7 +1278,7 @@ makeContent.cs_graph_grob <- function(x) {
 # one edge (e.g. an ADMG's X --> Y and X <-> Y) get no route, so they fan out
 # apart as usual instead of sharing one.
 .plot_sugiyama <- function(x, direction) {
-  res <- .Call(C_jl_sugiyama_paths, x, direction)
+  res <- jl_sugiyama_paths(x, direction)
   edges <- .plot_edges(x)
   lo <- pmin(edges$from, edges$to)
   hi <- pmax(edges$from, edges$to)
@@ -1298,97 +1298,45 @@ makeContent.cs_graph_grob <- function(x) {
 
 #' Plot a causal graph
 #'
-#' Plot method for `cgraph`. `node_style`, `edge_style`, `label_style`, and
-#' `title_style` each default to the corresponding entry
-#' from [plot_options()] (which itself defaults to
-#' [plot_default_options()]) - set those globally with `plot_options()` to
-#' avoid repeating the same style lists at every call site; arguments passed
-#' here still take precedence.
+#' Plot method for `cgraph`, drawn with grid graphics. The
+#' [plotting article](https://bjarkehautop.github.io/CausalStructures/vignettes/articles/plot.html)
+#' explains the layouts and every style field, with examples.
+#'
+#' The style arguments are lists that override the defaults set with
+#' [plot_options()], field by field.
 #'
 #' @param x A graph created with [cgraph()], of any class.
-#' @param layout Specifies the layout. Can be:
-#'   * `NULL` (default): [cgraph_layout()]'s own default - `"sugiyama"` for a
-#'     `DAG`, `"stress"` otherwise.
-#'   * A character string passed to [cgraph_layout()] as `method`
-#'     (`"sugiyama"`, `"stress"`, `"spring"`, `"sfdp"`, `"spectral"`,
-#'     `"shell"`, `"squaregrid"`). With
-#'     `"sugiyama"` (also the `NULL` default for a `DAG`), each edge is also
-#'     drawn along Sugiyama.jl's own route through its bend points, as in
-#'     CausalStructures.jl; pass `cgraph_layout(x, "sugiyama")` instead to
-#'     use the Sugiyama positions with this function's own edge routing.
-#'   * A layout function, called with `x` and any `...`.
-#'   * A pre-computed layout `data.frame` with columns `name`, `x`, `y`.
-#'   * A named list keyed by node name, each element a length-2 `c(x, y)`,
-#'     e.g. `list(A = c(0, 0), X = c(1, 0))`.
-#' @param node_style List of node styling parameters: `fill`, `col`, `lwd`,
-#'   `padding` (mm, default 2), `size` (multiplier, default 1), `radius`
-#'   (mm; when set, every node is drawn at this fixed half-extent instead of
-#'   being fitted to its label - mirrors CausalStructures.jl's Makie
-#'   `plot()`'s `node_radius`), `shape` (`"circle"` (default), `"square"`,
-#'   `"ellipse"`, or `"rect"` - `"circle"`/`"square"` are fitted to their
-#'   label and always rounded out to equal sides, while `"ellipse"`/`"rect"`
-#'   keep the fitted oblong box as-is; there is no automatic switching
-#'   between them based on label length, matching CausalStructures.jl's
-#'   Makie `plot()`, whose `node_shape` is an explicit choice among these
-#'   same four - edges clip to, and route around, the shape actually drawn),
-#'   `linestyle` (e.g. `"dashed"`, `"dotted"` - any value
-#'   grid's `lty` accepts - for a non-solid node border; default solid), and
-#'   `by_node` (named list of per-node overrides, which can include
-#'   `shape`/`linestyle`/`radius` too).
-#' @param edge_style List of edge styling parameters. Can specify global
-#'   options or per-type options via `directed`, `undirected`, `bidirected`,
-#'   `partially_directed` (`o->`), `partially_undirected` (`o--`), `partial`
-#'   (`o-o`) - matching CausalStructures.jl's Makie `plot()`'s six edge-type
-#'   groups (draw.jl's `_edge_type`). Fields: `col`, `lwd`, `fill` (arrowhead
-#'   fill color; defaults to `col` so arrowheads render solid and match the
-#'   edge - pass `fill = NA` for a hollow/outline arrowhead), `arrow_size`
-#'   (mm, default 3), `circle_size` (mm, default 1.5, for `o->`/`o--`/`o-o`
-#'   endpoints; an edge that would otherwise cross a non-incident node always
-#'   bends around it as a Bezier curve unless `curvature` overrides this;
-#'   parallel edges sharing a node pair, e.g. an ADMG's `X --> Y`/`X <-> Y`,
-#'   automatically fan out apart from each other for the same reason), and
-#'   `curvature` (unset by default; bows an edge into an arc by this signed
-#'   fraction of its length - positive bows left of the `from`-to-`to`
-#'   direction, negative right; setting it (including to `0`) is a manual
-#'   override that takes precedence over both the automatic
-#'   obstacle-avoidance bend and the automatic parallel-edge fan-out above), and
-#'   `by_edge` (named list of per-edge or per-node overrides, keyed by node
-#'   name(s)). Style precedence (highest to lowest): specific edge settings
-#'   in `by_edge` > node-wide settings in `by_edge` > edge-type settings >
-#'   global settings.
+#' @param layout Where to place the nodes:
+#'   * `NULL` (default): `"sugiyama"` for a `DAG`, `"stress"` otherwise.
+#'   * A method name for [cgraph_layout()]. With `"sugiyama"`, edges also follow
+#'     the routes it computes; to use only its positions, pass
+#'     `cgraph_layout(x, "sugiyama")` instead.
+#'   * A function, called with `x` and `...`, that returns a layout.
+#'   * A `data.frame` with columns `name`, `x`, and `y`.
+#'   * A named list of `c(x, y)` positions, e.g.
+#'     `list(A = c(0, 0), X = c(1, 0))`.
+#' @param node_style List of node style fields: `fill`, `col`, `lwd`,
+#'   `linestyle`, `shape` (`"circle"`, `"square"`, `"ellipse"`, or `"rect"`),
+#'   `radius` (mm; nodes fit their labels if unset), `padding` (mm), and `size`
+#'   (a multiplier). `by_node` is a named list of per-node overrides.
+#' @param edge_style List of edge style fields: `col`, `fill` (arrowhead fill;
+#'   `NA` for hollow), `lwd`, `lty`, `gap` (mm), `curvature`, `path`,
+#'   `arrow_size` (mm), `circle_size` (mm), and the edge label fields `label`,
+#'   `label_col`, `label_fontsize`, `label_fontface`, `label_fontfamily`,
+#'   `label_shift`, `label_distance` (mm), and `label_rotation` (degrees).
 #'
-#'   Also: `lty` (line style), `gap` (mm, default 0; extra space between each
-#'   end of the edge and the node border), `path` (explicit waypoints, in
-#'   layout coordinates, that the edge is drawn through as straight segments
-#'   from its source to its destination, overriding every automatic route: a
-#'   two-column matrix, a `data.frame` with `x`/`y` columns, or a list of
-#'   `c(x, y)` points; set it per edge in `by_edge`, where a path given under
-#'   the reversed pair runs from `to` to `from`), and an edge label: `label`
-#'   (text, unset by default), `label_col`, `label_fontsize` (default 9),
-#'   `label_fontface`, `label_fontfamily`, `label_shift` (position along the
-#'   edge, from 0 at the source to 1 at the destination; default 0.5),
-#'   `label_distance` (mm from the edge, to its left; defaults to the label's
-#'   font size) and `label_rotation` (degrees; by default the label follows
-#'   the edge's angle, turned to read upright). Like every other field, these
-#'   can be set globally, per edge type, or per edge in `by_edge`.
-#'
-#'   `by_edge`'s pair-level entries (`by_edge[[from]][[to]]`) apply to every
-#'   edge between that pair, which can't tell apart e.g. an ADMG's parallel
-#'   `X --> Y` and `X <-> Y`. To style one exact edge type between a pair,
-#'   nest it one level deeper under the reserved key `.by_type`, keyed by
-#'   the edge's notation (`"-->"`, `"<->"`, `"o-o"`, ...; see [edges()]):
-#'   `by_edge = list(X = list(Y = list(.by_type = list("-->" = list(col =
-#'   "red"), "<->" = list(col = "blue")))))`. This tier takes precedence
-#'   over the plain pair-level entry.
-#' @param label_style List of node label styling parameters: `col`,
-#'   `fontsize`, `fontface`, `fontfamily`, `cex`, and `by_node` (named list of
-#'   per-node overrides, as in `node_style`).
-#' @param labels Optional named character vector or list overriding the text
-#'   drawn in each node (e.g. `c(X = "Exposure", Y = "Outcome")`), while
-#'   `edge_style`/`by_node`/`by_edge` etc. keep using the graph's actual
-#'   node names. A node missing from `labels` falls back to a `"default"`
-#'   entry if present, else its own name. `NULL` (default) shows every
-#'   node's own name, as before. Embedded `\n` gives a multi-line label.
+#'   To override fields for some edges, use a sub-list named after an edge type
+#'   (`directed`, `undirected`, `bidirected`, `partially_directed`,
+#'   `partially_undirected`, or `partial`), or `by_edge`, a nested list keyed by
+#'   node (`by_edge$A`), node pair (`by_edge$A$B`), or exact edge
+#'   (`by_edge$A$B$.by_type[["<->"]]`). The most specific level wins.
+#' @param label_style List of node label style fields: `col`, `fontsize`,
+#'   `fontface`, `fontfamily`, and `cex`. `by_node` is a named list of per-node
+#'   overrides.
+#' @param labels Optional named character vector or list of the text to draw in
+#'   each node, e.g. `c(X = "Exposure", Y = "Outcome")`. `\n` starts a new line.
+#'   Other nodes use the `"default"` entry if there is one, and otherwise their
+#'   own name. The other arguments still refer to nodes by name.
 #' @param main Optional plot title.
 #' @param title_style List of title styling parameters (same fields as
 #'   `label_style`).
@@ -1400,7 +1348,8 @@ makeContent.cs_graph_grob <- function(x) {
 #'   `grid::unit(1, "lines")`.
 #' @param newpage If `TRUE` (default), call [grid::grid.newpage()] before
 #'   drawing.
-#' @param ... Passed to `layout` when it is a character string or function.
+#' @param ... Passed to `layout` when it is a method name (e.g. `direction` or
+#'   `seed`; see [cgraph_layout()]) or a function.
 #'
 #' @returns A `cgraph_plot` object, invisibly. Drawn immediately as a side
 #'   effect; re-drawn if printed or passed to `plot()` again.
@@ -1409,8 +1358,8 @@ makeContent.cs_graph_grob <- function(x) {
 #' if (julia_ready()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
 #'   plot(dag, main = "A DAG")
-#'   # Style nodes and edges globally, plus per-node/per-edge overrides.
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'
+#'   # Style all nodes and edges, with per-node and per-edge overrides
 #'   plot(
 #'     dag,
 #'     node_style = list(
@@ -1425,8 +1374,8 @@ makeContent.cs_graph_grob <- function(x) {
 #'     ),
 #'     main = "Styled DAG"
 #'   )
-#'   # Square-shaped, dashed-border nodes with custom labels and a curved edge.
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
+#'
+#'   # Square, dashed nodes with custom labels and a curved edge
 #'   plot(
 #'     dag,
 #'     node_style = list(shape = "square", linestyle = "dashed"),
@@ -1434,8 +1383,7 @@ makeContent.cs_graph_grob <- function(x) {
 #'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
 #'   )
 #' }
-#' @seealso [plot_options()] to change the style defaults used above,
-#'   globally, for every plot.
+#' @seealso [plot_options()] to change the style defaults for every plot.
 #' @rdname plot
 #' @family plotting
 #' @export
@@ -1465,7 +1413,7 @@ plot.cgraph <- function(
 
   if (is.null(layout) || is.character(layout)) {
     method <- layout %||%
-      if (.Call(C_jl_is_dag_type, x)) "sugiyama" else "stress"
+      if (jl_is_dag_type(x)) "sugiyama" else "stress"
     method <- match.arg(method, .layout_methods)
     if (method == "sugiyama") {
       # Unlike cgraph_layout(), which only returns positions, this also routes

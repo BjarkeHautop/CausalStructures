@@ -25,7 +25,8 @@ Character vector with a valid frontdoor set, or \code{NULL} if none
 exists.
 }
 \description{
-Returns a set \code{Z} with \verb{include ⊆ Z ⊆ restrict} satisfying all three
+Returns a set \code{Z}, containing \code{include} and contained in \code{restrict},
+satisfying all three
 front-door conditions (Algorithm 1 of the reference below) for the causal
 effect of \code{x} on \code{y}. Validate a candidate set directly with
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.

@@ -15,7 +15,8 @@ subgraph(cg, nodes)
 A \code{cgraph}.
 }
 \description{
-Induced subgraph
+Returns the graph on \code{nodes} with every edge of \code{cg} between them. Errors if
+a node is not in \code{cg}.
 }
 \examples{
 if (julia_ready()) {

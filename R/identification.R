@@ -31,13 +31,7 @@
 #'   )
 #' }
 d_separated <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_d_separated,
-    cg,
-    as.character(x),
-    as.character(y),
-    as.character(given)
-  )
+  jl_d_separated(cg, as.character(x), as.character(y), as.character(given))
 }
 
 #' Test m-separation
@@ -68,13 +62,7 @@ d_separated <- function(cg, x, y, given = character()) {
 #'   m_separated(pag, "A", "C")
 #' }
 m_separated <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_m_separated,
-    cg,
-    as.character(x),
-    as.character(y),
-    as.character(given)
-  )
+  jl_m_separated(cg, as.character(x), as.character(y), as.character(given))
 }
 
 #' Find a minimal separator
@@ -117,8 +105,7 @@ minimal_separator <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_minimal_separator,
+  jl_minimal_separator(
     cg,
     as.character(x),
     as.character(y),
@@ -220,8 +207,7 @@ adjustment_set <- function(
 ) {
   type <- if (missing(type)) type[[1L]] else match.arg(type)
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_adjustment_set,
+  jl_adjustment_set(
     cg,
     as.character(x),
     as.character(y),
@@ -233,7 +219,8 @@ adjustment_set <- function(
 
 #' Find a frontdoor adjustment set
 #'
-#' Returns a set `Z` with `include ⊆ Z ⊆ restrict` satisfying all three
+#' Returns a set `Z`, containing `include` and contained in `restrict`,
+#' satisfying all three
 #' front-door conditions (Algorithm 1 of the reference below) for the causal
 #' effect of `x` on `y`. Validate a candidate set directly with
 #' [is_valid_frontdoor()].
@@ -268,8 +255,7 @@ frontdoor_set <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_frontdoor_set,
+  jl_frontdoor_set(
     cg,
     as.character(x),
     as.character(y),
@@ -300,8 +286,7 @@ frontdoor_set <- function(
 #'   )
 #' }
 is_valid_backdoor <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_is_valid_backdoor,
+  jl_is_valid_backdoor(
     cg,
     as.character(x),
     as.character(y),
@@ -340,8 +325,7 @@ all_backdoor_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_all_backdoor_sets,
+  jl_all_backdoor_sets(
     cg,
     as.character(x),
     as.character(y),
@@ -354,8 +338,8 @@ all_backdoor_sets <- function(
 
 #' Enumerate frontdoor adjustment sets
 #'
-#' Lists all sets `Z` with `include ⊆ Z ⊆ restrict` satisfying the
-#' front-door criterion; see [frontdoor_set()] and
+#' Lists all sets `Z`, containing `include` and contained in `restrict`,
+#' satisfying the front-door criterion; see [frontdoor_set()] and
 #' [is_valid_frontdoor()].
 #'
 #' @param cg A DAG or ADMG created with [cgraph()]. For an ADMG, see the note
@@ -380,8 +364,7 @@ all_frontdoor_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_all_frontdoor_sets,
+  jl_all_frontdoor_sets(
     cg,
     as.character(x),
     as.character(y),
@@ -417,8 +400,7 @@ all_frontdoor_sets <- function(
 #'   )
 #' }
 is_valid_adjustment <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_is_valid_adjustment,
+  jl_is_valid_adjustment(
     cg,
     as.character(x),
     as.character(y),
@@ -458,8 +440,7 @@ all_adjustment_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_all_adjustment_sets,
+  jl_all_adjustment_sets(
     cg,
     as.character(x),
     as.character(y),
@@ -495,8 +476,7 @@ all_adjustment_sets <- function(
 #'   )
 #' }
 is_valid_frontdoor <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_is_valid_frontdoor,
+  jl_is_valid_frontdoor(
     cg,
     as.character(x),
     as.character(y),
@@ -541,14 +521,7 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #'   )
 #' }
 is_valid_iv <- function(cg, x, y, z = character(), given = character()) {
-  .Call(
-    C_jl_is_valid_iv,
-    cg,
-    x,
-    as.character(y),
-    as.character(z),
-    as.character(given)
-  )
+  jl_is_valid_iv(cg, x, as.character(y), as.character(z), as.character(given))
 }
 
 #' Enumerate all valid instrumental variable sets
@@ -587,8 +560,7 @@ all_iv_sets <- function(
   restrict = NULL
 ) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_all_iv_sets,
+  jl_all_iv_sets(
     cg,
     x,
     as.character(y),
@@ -631,7 +603,7 @@ all_iv_sets <- function(
 #' }
 iv_set <- function(cg, x, y, restrict = NULL) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(C_jl_iv_set, cg, x, as.character(y), restrict_arg)
+  jl_iv_set(cg, x, as.character(y), restrict_arg)
 }
 
 # --- Equivalence classes and counts ------------------------------------------
@@ -651,8 +623,8 @@ iv_set <- function(cg, x, y, restrict = NULL) {
 #' recursive listing algorithm).
 #'
 #' @param cg A PDAG, CPDAG, or MPDAG created with [cgraph()].
-#' @return For `count_dags()`, an integer count. For `enumerate_dags()`,
-#'   a list of DAG proxies.
+#' @return For `count_dags()`, the number of DAGs (a double if it is too large
+#'   for an integer). For `enumerate_dags()`, a list of `cgraph`s of class `DAG`.
 #' @references
 #' \insertRef{chickering2002learning}{CausalStructures}
 #' @name equivalence
@@ -668,19 +640,9 @@ iv_set <- function(cg, x, y, restrict = NULL) {
 #' }
 NULL
 
-#' @rdname equivalence
-#' @export
-count_dags <- function(cg) .Call(C_jl_count_dags, cg)
-
-#' @rdname equivalence
-#' @export
-enumerate_dags <- function(cg) {
-  .Call(C_jl_enumerate_dags, cg)
-}
-
 #' Test whether two graphs are Markov equivalent
 #'
-#' Returns `TRUE` if `g1` and `g2` (both DAGs, or both MAGs) belong to the
+#' Returns `TRUE` if `cg1` and `cg2` (both DAGs, or both MAGs) belong to the
 #' same Markov equivalence class, i.e. they impose the same
 #' (conditional-)independence constraints.
 #'
@@ -689,14 +651,13 @@ enumerate_dags <- function(cg) {
 #' non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
 #' they map to the same PAG.
 #'
-#' @param g1,g2 Graphs to compare, created with [cgraph()]. Both must be
+#' @param cg1,cg2 Graphs to compare, created with [cgraph()]. Both must be
 #'   DAGs, or both must be MAGs.
 #' @return A logical scalar.
 #' @references
 #' \insertRef{vermapearl1990equivalence}{CausalStructures}
 #'
 #' \insertRef{ali2009markov}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   g1 <- cgraph(A %-->% B, C %-->% B)
@@ -707,9 +668,8 @@ enumerate_dags <- function(cg) {
 #'     different_v_structures = markov_equivalent(g1, g3)
 #'   )
 #' }
-markov_equivalent <- function(g1, g2) {
-  .Call(C_jl_markov_equivalent, g1, g2)
-}
+#' @name markov_equivalent
+NULL
 
 #' Enumerate MAGs in a PAG equivalence class
 #'
@@ -724,7 +684,6 @@ markov_equivalent <- function(g1, g2) {
 #' @param selection_bias If `FALSE`, return only the MAGs without undirected
 #'   edges (i.e. without selection bias), pruning the others from the search.
 #' @return A list of `cgraph`s (MAGs) in the equivalence class.
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
@@ -733,9 +692,8 @@ markov_equivalent <- function(g1, g2) {
 #'     no_selection_bias = length(enumerate_mags(pag, selection_bias = FALSE))
 #'   )
 #' }
-enumerate_mags <- function(cg, selection_bias = TRUE) {
-  .Call(C_jl_enumerate_mags, cg, selection_bias)
-}
+#' @name enumerate_mags
+NULL
 
 # --- Symbolic identification (ID/IDC) ----------------------------------------
 
@@ -743,9 +701,9 @@ enumerate_mags <- function(cg, selection_bias = TRUE) {
 #'
 #' `id()` returns the interventional distribution `P(y | do(x))` as a
 #' formula in terms of the observational distribution, or `NULL` if the
-#' effect is not identifiable. It implements Shpitser & Pearl's ID algorithm. `idc()`
-#' additionally conditions on `given` (the IDC algorithm), reducing to `id()`
-#' when `given` is empty.
+#' effect is not identifiable. It implements Shpitser & Pearl's ID algorithm.
+#' `idc()` additionally conditions on `given` (the IDC algorithm), reducing to
+#' `id()` when `given` is empty.
 #'
 #' Bidirected edges represent latent confounders. To identify an effect in a
 #' DAG with unobserved variables, project them out first with
@@ -754,10 +712,7 @@ enumerate_mags <- function(cg, selection_bias = TRUE) {
 #' The rendered formula may mention variables outside `x`/`y`/`given`: the
 #' algorithm can enlarge the intervention set whenever doing so provably
 #' changes nothing, and the result is then a function of those extra values
-#' too. This binding renders the resulting `Estimand` as a formatted
-#' character string; it does not expose the underlying symbolic-algebra
-#' representation (`Prob`, `Marginal`, `Product`, `Quotient` in
-#' CausalStructures.jl) for programmatic manipulation.
+#' too.
 #'
 #' @param cg A DAG or ADMG created with [cgraph()].
 #' @param x,y Intervention (exposure) and outcome node name, or character
@@ -801,19 +756,13 @@ NULL
 #' @rdname id
 #' @export
 id <- function(cg, x, y) {
-  .Call(C_jl_id, cg, as.character(x), as.character(y))
+  jl_id(cg, as.character(x), as.character(y))
 }
 
 #' @rdname id
 #' @export
 idc <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_idc,
-    cg,
-    as.character(x),
-    as.character(y),
-    as.character(given)
-  )
+  jl_idc(cg, as.character(x), as.character(y), as.character(given))
 }
 
 #' Identify an interventional distribution from a PAG
@@ -852,19 +801,13 @@ NULL
 #' @rdname idp
 #' @export
 idp <- function(cg, x, y) {
-  .Call(C_jl_idp, cg, as.character(x), as.character(y))
+  jl_idp(cg, as.character(x), as.character(y))
 }
 
 #' @rdname idp
 #' @export
 cidp <- function(cg, x, y, given = character()) {
-  .Call(
-    C_jl_cidp,
-    cg,
-    as.character(x),
-    as.character(y),
-    as.character(given)
-  )
+  jl_cidp(cg, as.character(x), as.character(y), as.character(given))
 }
 
 # --- Generalized backdoor criterion and local IDA ----------------------------
@@ -894,25 +837,18 @@ cidp <- function(cg, x, y, given = character()) {
 #' }
 backdoor_set <- function(cg, x, y, include = character(), restrict = NULL) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
-  .Call(
-    C_jl_backdoor_set,
-    cg,
-    x,
-    y,
-    as.character(include),
-    restrict_arg
-  )
+  jl_backdoor_set(cg, x, y, as.character(include), restrict_arg)
 }
 
-#' Find every possible D-SEP set
+#' Find the D-SEP set of two nodes
 #'
 #' Returns D-SEP(x, y, cg). It contains every vertex other than `x` for which
 #' there is a collider path between `x` and the vertex in `cg` on which every
 #' vertex, including the vertex itself, is an ancestor of `x` or of some
-#' member of `y`. This is the plain graph-level primitive that [backdoor_set()] (for
-#' MAG/PAG) uses internally to build its generalized back-door set.
+#' member of `y`. [backdoor_set()] uses this set to build its generalized
+#' back-door set for a MAG or PAG.
 #'
-#' @param cg An AG-family (AG, MAG) or PAG graph created with [cgraph()].
+#' @param cg An AG-family (AG, MAG) graph created with [cgraph()].
 #' @param x Node name.
 #' @param y Node name, or character vector of node names.
 #' @return Sorted character vector of node names.
@@ -928,7 +864,7 @@ backdoor_set <- function(cg, x, y, include = character(), restrict = NULL) {
 #'   )
 #' }
 possible_d_sep <- function(cg, x, y) {
-  .Call(C_jl_possible_d_sep, cg, x, as.character(y))
+  jl_possible_d_sep(cg, x, as.character(y))
 }
 
 #' Enumerate possible parent sets (local IDA)
@@ -945,7 +881,6 @@ possible_d_sep <- function(cg, x, y) {
 #' @return List of character vectors, one per locally valid orientation.
 #' @references
 #' \insertRef{maathuis2009estimating}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   cpdag <- cgraph(
@@ -954,9 +889,8 @@ possible_d_sep <- function(cg, x, y) {
 #'   )
 #'   possible_parent_sets(cpdag, "X1")
 #' }
-possible_parent_sets <- function(cg, x) {
-  .Call(C_jl_possible_parent_sets, cg, x)
-}
+#' @name possible_parent_sets
+NULL
 
 #' Enumerate possible joint parent sets (joint-IDA)
 #'
@@ -987,18 +921,19 @@ possible_parent_sets <- function(cg, x) {
 #'   possible_joint_parent_sets(cpdag, c("X1", "X2"))
 #' }
 possible_joint_parent_sets <- function(cg, xs) {
-  .Call(C_jl_possible_joint_parent_sets, cg, as.character(xs))
+  jl_possible_joint_parent_sets(cg, as.character(xs))
 }
 
 #' Enumerate possible optimal adjustment sets (O-set-based IDA)
 #'
 #' Returns the optimal adjustment set for each locally valid orientation of
 #' `x`'s undirected neighbors in `cg`: the graph part of optimal-adjustment
-#' IDA. Entries are in the same order (one per locally valid orientation) as
-#' [possible_parent_sets()]`(cg, x)`, so pairing the two element-wise
-#' recovers, for each orientation, both its parent set and its optimal
-#' adjustment set. An entry is `NULL` when `y` is among the resulting parents
-#' of `x` for that orientation.
+#' IDA. An entry is `NULL` when `y` is among the resulting parents of `x` for
+#' that orientation.
+#'
+#' Entries are in the same order as those of [possible_parent_sets()] for `x`,
+#' so pairing the two element-wise recovers, for each orientation, both its
+#' parent set and its optimal adjustment set.
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
@@ -1011,7 +946,6 @@ possible_joint_parent_sets <- function(cg, xs) {
 #' \insertRef{henckel2022graphical}{CausalStructures}
 #'
 #' \insertRef{witte2020efficient}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   cpdag <- cgraph(
@@ -1025,9 +959,8 @@ possible_joint_parent_sets <- function(cg, xs) {
 #'     )
 #'   )
 #' }
-possible_optimal_adjustment_sets <- function(cg, x, y) {
-  .Call(C_jl_possible_optimal_adjustment_sets, cg, x, y)
-}
+#' @name possible_optimal_adjustment_sets
+NULL
 
 # --- PAGcauses and local MAG structures ---------------------------------------
 
@@ -1049,7 +982,6 @@ possible_optimal_adjustment_sets <- function(cg, x, y) {
 #' \insertRef{wang2023localbk}{CausalStructures}
 #'
 #' \insertRef{wang2025pagcauses}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pag <- cgraph(
@@ -1059,19 +991,20 @@ possible_optimal_adjustment_sets <- function(cg, x, y) {
 #'   )
 #'   possible_local_structures(pag, "X")
 #' }
-possible_local_structures <- function(cg, x) {
-  .Call(C_jl_possible_local_structures, cg, x)
-}
+#' @name possible_local_structures
+NULL
 
 #' Build the maximal local MAG for a local structure
 #'
 #' Returns the maximal local MAG for the local structure `c` at `x` in the
-#' PAG `cg`. This is `cg` with a bidirected edge from `x` to every node in `c` and a
+#' PAG `cg`.
+#'
+#' This is `cg` with a bidirected edge from `x` to every node in `c` and a
 #' directed edge from `x` to every other circle-marked neighbor, treated as
 #' local background knowledge and closed under the corresponding rule set.
-#' `c` should be a valid local structure, i.e. an entry of
-#' [possible_local_structures()]`(cg, x)`; passing an invalid one gives an
-#' unsound result. The returned graph may still contain circles, which is why
+#' `c` should be a valid local structure, i.e. an entry of what
+#' [possible_local_structures()] returns for `x`; passing an invalid one gives
+#' an unsound result. The returned graph may still contain circles, which is why
 #' it is returned as class `"UNKNOWN"` rather than validated as a MAG or PAG.
 #'
 #' Assumes `cg` has no selection bias (no undirected edges).
@@ -1095,7 +1028,7 @@ possible_local_structures <- function(cg, x) {
 #'   maximal_local_mag(pag, "X", "A")
 #' }
 maximal_local_mag <- function(cg, x, c) {
-  .Call(C_jl_maximal_local_mag, cg, x, as.character(c))
+  jl_maximal_local_mag(cg, x, as.character(c))
 }
 
 #' Find every possible causal effect in a PAG (PAGcauses)
@@ -1103,7 +1036,9 @@ maximal_local_mag <- function(cg, x, c) {
 #' Returns every valid adjustment set relative to `(x, y)` in some MAG
 #' consistent with the PAG `cg`, i.e. the possible causal effects of `x` on
 #' `y` identifiable via covariate adjustment. It does so without enumerating
-#' MAGs (PAGcauses, Algorithm 1). If `x` is not a possible ancestor of `y`,
+#' MAGs (PAGcauses, Algorithm 1).
+#'
+#' If `x` is not a possible ancestor of `y`,
 #' returns an empty list (no causal effect). If the causal effect is already
 #' identifiable directly in `cg` ([backdoor_set()]), returns that single set.
 #' Otherwise, this searches every valid local structure at `x`
@@ -1118,7 +1053,6 @@ maximal_local_mag <- function(cg, x, c) {
 #'   causal effect on `y`).
 #' @references
 #' \insertRef{wang2025pagcauses}{CausalStructures}
-#' @export
 #' @examples
 #' if (julia_ready()) {
 #'   pag <- cgraph(
@@ -1128,6 +1062,5 @@ maximal_local_mag <- function(cg, x, c) {
 #'   )
 #'   pagcauses(pag, "X", "Y")
 #' }
-pagcauses <- function(cg, x, y) {
-  .Call(C_jl_pagcauses, cg, x, y)
-}
+#' @name pagcauses
+NULL
