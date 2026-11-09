@@ -2,7 +2,7 @@
 
 julia_version = "1.13.3"
 manifest_format = "2.1"
-project_hash = "56ef824a1687c2e242be958ee92ce5aef590f838"
+project_hash = "b99fc1420bd331a57e737b8aa71dd37aadbdbfca"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -18,11 +18,10 @@ version = "1.11.0"
 
 [[deps.CausalStructures]]
 deps = ["Preferences", "Random", "Statistics"]
-git-tree-sha1 = "c7e4510b7291555a58a70e71cf603384e30cdb9b"
-repo-rev = "main"
-repo-url = "https://github.com/BjarkeHautop/CausalStructures.jl"
+git-tree-sha1 = "41272137876293394269d7b9a72f5b3e172b424e"
+registries = "General"
 uuid = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"
-version = "1.2.0-DEV"
+version = "1.2.0"
 
     [deps.CausalStructures.extensions]
     MakieExt = "Makie"
@@ -76,6 +75,15 @@ version = "0.5.13"
     Extents = "411431e0-e8b7-467b-b5e0-f676ba4f2910"
     GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
     IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+
+[[deps.JLBind]]
+deps = ["Dates"]
+git-tree-sha1 = "ba2654ef79f90252773db5123e98722f3ad83fe0"
+repo-rev = "main"
+repo-subdir = "inst/julia/JLBind"
+repo-url = "https://github.com/BjarkeHautop/jlbind"
+uuid = "afbbfe3b-b84d-4508-8d61-b26819a6ee14"
+version = "0.1.0"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]

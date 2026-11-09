@@ -5,7 +5,7 @@ version = "0.1.0"
 # The binding package of the R package, which jlbind::install_library() compiles
 # into one library with those of the other installed packages using jlbind.
 # Only runtime dependencies belong here. The shipped Manifest.toml pins their
-# exact versions; JLBind is jlbind's own copy, so it is not in the manifest.
+# exact versions.
 
 [deps]
 CausalStructures = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"
@@ -15,14 +15,15 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Sugiyama = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
 
 [compat]
-CausalStructures = "1.1.1"
+CausalStructures = "1.2.0"
 NetworkLayout = "0.4.11"
 StableRNGs = "1"
 Sugiyama = "1.0.1"
 julia = "1.13"
 
-# Until the next CausalStructures.jl release, which fixes trim errors in 1.1.1.
-# NetworkLayout.jl compiles under --trim only on this branch, not yet released.
+# JLBind's source only lets Pkg resolve this environment; builds use jlbind's
+# installed copy of JLBind instead. NetworkLayout.jl compiles under --trim only
+# on this branch, not yet released.
 [sources]
-CausalStructures = {url = "https://github.com/BjarkeHautop/CausalStructures.jl", rev = "main"}
+JLBind = {url = "https://github.com/BjarkeHautop/jlbind", subdir = "inst/julia/JLBind", rev = "main"}
 NetworkLayout = {url = "https://github.com/BjarkeHautop/NetworkLayout.jl", rev = "trim-compat"}

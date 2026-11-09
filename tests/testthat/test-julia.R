@@ -577,6 +577,15 @@ test_that("meek_closure accepts check_cycles/r4", {
   expect_true(is_mpdag(mpdag))
 })
 
+test_that("a PDAG with no consistent DAG extension has no DAGs", {
+  skip_if_no_julia()
+  # R1 orients B --> C, closing the cycle A --> B --> C --> D --> A.
+  pdag <- cgraph(A %-->% B, B %---% C, C %-->% D, D %-->% A, class = "PDAG")
+  expect_identical(count_dags(pdag), 0L)
+  expect_identical(enumerate_dags(pdag), list())
+  expect_error(meek_closure(pdag), "no consistent DAG extension")
+})
+
 test_that("anteriors/posteriors and condition_marginalize accept ADMG", {
   skip_if_no_julia()
   admg <- cgraph(A %-->% X, X %-->% Y, class = "ADMG")

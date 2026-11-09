@@ -625,6 +625,7 @@ iv_set <- function(cg, x, y, restrict = NULL) {
 #' @param cg A PDAG, CPDAG, or MPDAG created with [cgraph()].
 #' @return For `count_dags()`, the number of DAGs (a double if it is too large
 #'   for an integer). For `enumerate_dags()`, a list of `cgraph`s of class `DAG`.
+#'   If `cg` has no consistent DAG extension, `0` and an empty list.
 #' @references
 #' \insertRef{chickering2002learning}{CausalStructures}
 #' @name equivalence

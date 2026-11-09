@@ -87,9 +87,12 @@ NULL
 #'
 #' @param cg A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
-#' @param check_cycles If `TRUE` (default), reject an orientation that would
-#'   introduce a directed cycle. Disabling this can speed up closure when
-#'   `cg` is known to admit no such cycle.
+#' @param check_cycles If `TRUE` (default), check every orientation for a
+#'   directed cycle it would close, and error if a rule implies one: every DAG
+#'   consistent with `cg` would contain it, so `cg` has no consistent DAG
+#'   extension and no MPDAG closes it. Disabling this can speed up closure when
+#'   `cg` is known to admit no such cycle, but then the result is not checked
+#'   to be acyclic.
 #' @param r4 If `TRUE` (default), apply rule R4. Disabling this can speed up
 #'   closure when `cg` is known not to need it (e.g. it has no background
 #'   knowledge beyond the v-structures already encoded in it).

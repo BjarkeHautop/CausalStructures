@@ -21,7 +21,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Collate:
     'session.R'
-    'jlbind.R'
     'dsl.R'
     'construction.R'
     'data.R'

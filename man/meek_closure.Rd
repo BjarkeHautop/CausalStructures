@@ -10,9 +10,12 @@ meek_closure(cg, check_cycles = TRUE, r4 = TRUE)
 \item{cg}{A PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 \code{\link[=cgraph]{cgraph()}}.}
 
-\item{check_cycles}{If \code{TRUE} (default), reject an orientation that would
-introduce a directed cycle. Disabling this can speed up closure when
-\code{cg} is known to admit no such cycle.}
+\item{check_cycles}{If \code{TRUE} (default), check every orientation for a
+directed cycle it would close, and error if a rule implies one: every DAG
+consistent with \code{cg} would contain it, so \code{cg} has no consistent DAG
+extension and no MPDAG closes it. Disabling this can speed up closure when
+\code{cg} is known to admit no such cycle, but then the result is not checked
+to be acyclic.}
 
 \item{r4}{If \code{TRUE} (default), apply rule R4. Disabling this can speed up
 closure when \code{cg} is known not to need it (e.g. it has no background

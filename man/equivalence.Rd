@@ -16,6 +16,7 @@ enumerate_dags(cg)
 \value{
 For \code{count_dags()}, the number of DAGs (a double if it is too large
 for an integer). For \code{enumerate_dags()}, a list of \code{cgraph}s of class \code{DAG}.
+If \code{cg} has no consistent DAG extension, \code{0} and an empty list.
 }
 \description{
 \code{cg} (a PDAG, CPDAG, or MPDAG) represents a Markov equivalence class
