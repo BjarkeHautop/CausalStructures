@@ -1,323 +1,327 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.13.3"
 manifest_format = "2.1"
-project_hash = "c2ab54e622196cf07f90d5847af641213295d9fc"
-julia_version = "1.13.2"
+project_hash = "56ef824a1687c2e242be958ee92ce5aef590f838"
+
+[[deps.ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.2"
+
+[[deps.Artifacts]]
+uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+version = "1.11.0"
+
+[[deps.Base64]]
+uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+version = "1.11.0"
+
+[[deps.CausalStructures]]
+deps = ["Preferences", "Random", "Statistics"]
+git-tree-sha1 = "c7e4510b7291555a58a70e71cf603384e30cdb9b"
+repo-rev = "main"
+repo-url = "https://github.com/BjarkeHautop/CausalStructures.jl"
+uuid = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"
+version = "1.2.0-DEV"
+
+    [deps.CausalStructures.extensions]
+    MakieExt = "Makie"
+    NetworkLayoutExt = "NetworkLayout"
+    SugiyamaExt = "Sugiyama"
+
+    [deps.CausalStructures.weakdeps]
+    Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+    NetworkLayout = "46757867-2c16-5918-afeb-47bfcb05e46a"
+    Sugiyama = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
+
+[[deps.CompilerSupportLibraries_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "1.5.5+2"
+
+[[deps.Dates]]
+deps = ["Printf"]
+uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+version = "1.11.0"
+
+[[deps.Downloads]]
+deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
+uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+version = "1.7.0"
+
+[[deps.EarCut_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "e3290f2d49e661fbd94046d7e3726ffcb2d41053"
+registries = "General"
+uuid = "5ae413db-bbd1-5e63-b57d-d24a61df00f5"
+version = "2.2.4+0"
+
+[[deps.FileWatching]]
+uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+version = "1.11.0"
+
+[[deps.GeometryBasics]]
+deps = ["EarCut_jll", "LinearAlgebra", "PrecompileTools", "Random", "StaticArrays"]
+git-tree-sha1 = "ec46c5825710fa1a15d468acb2d93cc939a7a5fe"
+registries = "General"
+uuid = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+version = "0.5.13"
+
+    [deps.GeometryBasics.extensions]
+    ExtentsExt = "Extents"
+    GeometryBasicsGeoInterfaceExt = "GeoInterface"
+    IntervalSetsExt = "IntervalSets"
+
+    [deps.GeometryBasics.weakdeps]
+    Extents = "411431e0-e8b7-467b-b5e0-f676ba4f2910"
+    GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "7204148362dafe5fe6a273f855b8ccbe4df8173e"
+registries = "General"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.8.0"
+
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
+[[deps.LibCURL]]
+deps = ["LibCURL_jll", "MozillaCACerts_jll"]
+uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+version = "1.0.0"
+
+[[deps.LibCURL_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "Zstd_jll", "nghttp2_jll"]
+uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "8.22.0+0"
+
+[[deps.LibGit2]]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+version = "1.11.0"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "PCRE2_jll", "Zlib_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.9.7+0"
+
+[[deps.LibSSH2_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl", "OpenSSL_jll", "Zlib_jll"]
+uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
+version = "1.11.104+0"
+
+[[deps.Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+version = "1.11.0"
+
+[[deps.LinearAlgebra]]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+version = "1.13.0"
+
+[[deps.Logging]]
+uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
+version = "1.11.0"
+
+[[deps.Markdown]]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
+uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+version = "1.11.0"
+
+[[deps.MozillaCACerts_jll]]
+uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+version = "2026.10.20"
 
 [[deps.NetworkLayout]]
-repo-url = "https://github.com/BjarkeHautop/NetworkLayout.jl"
-version = "0.4.11"
-repo-rev = "trim-compat"
 deps = ["GeometryBasics", "LinearAlgebra", "Random", "Requires", "StaticArrays"]
 git-tree-sha1 = "6b36c6747da93d82a4023a8bf15317356ca924cf"
+repo-rev = "trim-compat"
+repo-url = "https://github.com/BjarkeHautop/NetworkLayout.jl"
 uuid = "46757867-2c16-5918-afeb-47bfcb05e46a"
-
-    [deps.NetworkLayout.weakdeps]
-    Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+version = "0.4.11"
 
     [deps.NetworkLayout.extensions]
     NetworkLayoutGraphsExt = "Graphs"
 
-[[deps.p7zip_jll]]
-version = "17.8.3+0"
+    [deps.NetworkLayout.weakdeps]
+    Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+
+[[deps.NetworkOptions]]
+uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+version = "1.3.0"
+
+[[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
-uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.30+0"
 
-[[deps.MozillaCACerts_jll]]
-version = "2026.8.13"
-uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.5.8+0"
 
-[[deps.FileWatching]]
+[[deps.PCRE2_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
+version = "10.47.0+0"
+
+[[deps.Pkg]]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "Zstd_jll", "p7zip_jll"]
+uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+version = "1.13.0"
+
+    [deps.Pkg.extensions]
+    REPLExt = "REPL"
+
+    [deps.Pkg.weakdeps]
+    REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "edbeefc7a4889f528644251bdb5fc9ab5348bc2c"
+registries = "General"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.3.4"
+
+[[deps.Preferences]]
+deps = ["TOML"]
+git-tree-sha1 = "aef1987d90dcc2e2cbd919ad10b2d25bcce4f418"
+registries = "General"
+uuid = "21216c6a-2e73-6563-6e65-726566657250"
+version = "1.6.1"
+
+[[deps.Printf]]
+deps = ["Unicode"]
+uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
-uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.Random]]
+deps = ["SHA"]
+uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+version = "1.11.0"
+
+[[deps.Requires]]
+deps = ["UUIDs"]
+git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
+registries = "General"
+uuid = "ae029012-a4dd-5104-9daa-d747884805df"
+version = "1.3.1"
+
+[[deps.SHA]]
+uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "1.0.0"
+
+[[deps.StableRNGs]]
+deps = ["Random"]
+git-tree-sha1 = "448c4447d4e21ad257d862afec062b66d4f639eb"
+registries = "General"
+uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
+version = "1.1.0"
 
 [[deps.StaticArrays]]
-version = "1.9.23"
 deps = ["LinearAlgebra", "PrecompileTools", "Random", "StaticArraysCore"]
+git-tree-sha1 = "8a8a52f887f38d44014e24ee46b8a7311c625f6d"
 registries = "General"
-git-tree-sha1 = "de349d5585559b692f518b6d3fc7c179d64b2364"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
+version = "1.9.24"
+
+    [deps.StaticArrays.extensions]
+    StaticArraysChainRulesCoreExt = "ChainRulesCore"
+    StaticArraysStatisticsExt = "Statistics"
 
     [deps.StaticArrays.weakdeps]
     ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
     Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
-    [deps.StaticArrays.extensions]
-    StaticArraysStatisticsExt = "Statistics"
-    StaticArraysChainRulesCoreExt = "ChainRulesCore"
-
-[[deps.LibCURL]]
-version = "1.0.0"
-deps = ["LibCURL_jll", "MozillaCACerts_jll"]
-uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-
-[[deps.GeometryBasics]]
-version = "0.5.13"
-deps = ["EarCut_jll", "LinearAlgebra", "PrecompileTools", "Random", "StaticArrays"]
+[[deps.StaticArraysCore]]
+git-tree-sha1 = "bf7e2d0d9ed9ac2a652fd598c0f784910cc759f2"
 registries = "General"
-git-tree-sha1 = "ec46c5825710fa1a15d468acb2d93cc939a7a5fe"
-uuid = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
-
-    [deps.GeometryBasics.weakdeps]
-    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
-    GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
-    Extents = "411431e0-e8b7-467b-b5e0-f676ba4f2910"
-
-    [deps.GeometryBasics.extensions]
-    IntervalSetsExt = "IntervalSets"
-    GeometryBasicsGeoInterfaceExt = "GeoInterface"
-    ExtentsExt = "Extents"
-
-[[deps.LibSSH2_jll]]
-version = "1.11.104+0"
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl", "OpenSSL_jll", "Zlib_jll"]
-uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-
-[[deps.Sugiyama]]
-version = "1.0.1"
-deps = ["GeometryBasics"]
-registries = "General"
-git-tree-sha1 = "7a1d3b5a3993e9f28fbdf9f4acf20e7fa8650978"
-uuid = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
-
-    [deps.Sugiyama.weakdeps]
-    Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
-
-    [deps.Sugiyama.extensions]
-    SugiyamaGraphsExt = "Graphs"
-
-[[deps.ArgTools]]
-version = "1.1.2"
-uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
-
-[[deps.LibCURL_jll]]
-version = "8.22.0+0"
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "Zstd_jll", "nghttp2_jll"]
-uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-
-[[deps.Requires]]
-version = "1.3.1"
-deps = ["UUIDs"]
-registries = "General"
-git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
-uuid = "ae029012-a4dd-5104-9daa-d747884805df"
-
-[[deps.OpenSSL_jll]]
-version = "3.5.8+0"
-deps = ["Artifacts", "Libdl"]
-uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-
-[[deps.JuliaSyntaxHighlighting]]
-version = "1.12.0"
-deps = ["StyledStrings"]
-uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
-
-[[deps.Dates]]
-version = "1.11.0"
-deps = ["Printf"]
-uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
+version = "1.4.5"
 
 [[deps.Statistics]]
-version = "1.11.5"
 deps = ["LinearAlgebra"]
-registries = "General"
 git-tree-sha1 = "e2b53ce13a53367e96601081e33d34746b571bad"
+registries = "General"
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-
-    [deps.Statistics.weakdeps]
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.11.5"
 
     [deps.Statistics.extensions]
     SparseArraysExt = ["SparseArrays"]
 
-[[deps.LibGit2]]
-version = "1.11.0"
-deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
-uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
-
-[[deps.Random]]
-version = "1.11.0"
-deps = ["SHA"]
-uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-
-[[deps.StableRNGs]]
-version = "1.1.0"
-deps = ["Random"]
-registries = "General"
-git-tree-sha1 = "448c4447d4e21ad257d862afec062b66d4f639eb"
-uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
-
-[[deps.Pkg]]
-version = "1.13.0"
-deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "Zstd_jll", "p7zip_jll"]
-uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-
-    [deps.Pkg.weakdeps]
-    REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
-
-    [deps.Pkg.extensions]
-    REPLExt = "REPL"
-
-[[deps.Preferences]]
-version = "1.6.1"
-deps = ["TOML"]
-registries = "General"
-git-tree-sha1 = "aef1987d90dcc2e2cbd919ad10b2d25bcce4f418"
-uuid = "21216c6a-2e73-6563-6e65-726566657250"
-
-[[deps.Libdl]]
-version = "1.11.0"
-uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
-
-[[deps.Zlib_jll]]
-version = "1.3.2+0"
-deps = ["Libdl"]
-uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-
-[[deps.libblastrampoline_jll]]
-version = "5.15.0+0"
-deps = ["Artifacts", "Libdl"]
-uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-
-[[deps.Markdown]]
-version = "1.11.0"
-deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
-uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
-
-[[deps.csjl]]
-path = "."
-version = "0.1.0"
-deps = ["CausalStructures", "JLBind", "NetworkLayout", "StableRNGs", "Sugiyama"]
-uuid = "5b7847be-0a43-48f2-a83d-4b9045fd9db0"
-
-[[deps.UUIDs]]
-version = "1.11.0"
-deps = ["Random", "SHA"]
-uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
-
-[[deps.LinearAlgebra]]
-version = "1.13.0"
-deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
-uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-
-[[deps.TOML]]
-version = "1.0.3"
-deps = ["Dates"]
-uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-
-[[deps.Unicode]]
-version = "1.11.0"
-uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
-
-[[deps.Base64]]
-version = "1.11.0"
-uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
-
-[[deps.StaticArraysCore]]
-version = "1.4.4"
-registries = "General"
-git-tree-sha1 = "6ab403037779dae8c514bad259f32a447262455a"
-uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
-
-[[deps.PrecompileTools]]
-version = "1.3.4"
-deps = ["Preferences"]
-registries = "General"
-git-tree-sha1 = "edbeefc7a4889f528644251bdb5fc9ab5348bc2c"
-uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-
-[[deps.Artifacts]]
-version = "1.11.0"
-uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
-
-[[deps.OpenBLAS_jll]]
-version = "0.3.30+0"
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
-uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-
-[[deps.Downloads]]
-version = "1.7.0"
-deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
-uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-
-[[deps.Printf]]
-version = "1.11.0"
-deps = ["Unicode"]
-uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-
-[[deps.CausalStructures]]
-version = "1.2.0-DEV"
-deps = ["Preferences", "Random", "Statistics"]
-path = "/home/bjarke/GitHub/CausalStructures.jl"
-uuid = "b41ab49a-79bc-5eac-acbb-517b17bd5c16"
-
-    [deps.CausalStructures.weakdeps]
-    Sugiyama = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
-    Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
-    NetworkLayout = "46757867-2c16-5918-afeb-47bfcb05e46a"
-
-    [deps.CausalStructures.extensions]
-    SugiyamaExt = "Sugiyama"
-    NetworkLayoutExt = "NetworkLayout"
-    MakieExt = "Makie"
-
-[[deps.Tar]]
-version = "1.10.0"
-deps = ["ArgTools", "SHA"]
-uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-
-[[deps.NetworkOptions]]
-version = "1.3.0"
-uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-
-[[deps.nghttp2_jll]]
-version = "1.70.0+0"
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
-uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-
-[[deps.LibGit2_jll]]
-version = "1.9.7+0"
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "PCRE2_jll", "Zlib_jll"]
-uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-
-[[deps.EarCut_jll]]
-version = "2.2.4+0"
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-registries = "General"
-git-tree-sha1 = "e3290f2d49e661fbd94046d7e3726ffcb2d41053"
-uuid = "5ae413db-bbd1-5e63-b57d-d24a61df00f5"
-
-[[deps.Logging]]
-version = "1.11.0"
-uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
-
-[[deps.JLLWrappers]]
-version = "1.8.0"
-deps = ["Artifacts", "Preferences"]
-registries = "General"
-git-tree-sha1 = "7204148362dafe5fe6a273f855b8ccbe4df8173e"
-uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
-
-[[deps.SHA]]
-version = "1.0.0"
-uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
-
-[[deps.Zstd_jll]]
-version = "1.5.7+1"
-deps = ["CompilerSupportLibraries_jll", "Libdl"]
-uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
-
-[[deps.CompilerSupportLibraries_jll]]
-version = "1.5.5+2"
-deps = ["Artifacts", "Libdl"]
-uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-
-[[deps.PCRE2_jll]]
-version = "10.46.0+0"
-deps = ["Artifacts", "Libdl"]
-uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
+    [deps.Statistics.weakdeps]
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.StyledStrings]]
-version = "1.11.0"
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
+version = "1.11.0"
+
+[[deps.Sugiyama]]
+deps = ["GeometryBasics"]
+git-tree-sha1 = "7a1d3b5a3993e9f28fbdf9f4acf20e7fa8650978"
+registries = "General"
+uuid = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
+version = "1.0.1"
+
+    [deps.Sugiyama.extensions]
+    SugiyamaGraphsExt = "Graphs"
+
+    [deps.Sugiyama.weakdeps]
+    Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+
+[[deps.TOML]]
+deps = ["Dates"]
+uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.3"
+
+[[deps.Tar]]
+deps = ["ArgTools", "SHA"]
+uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+version = "1.10.0"
+
+[[deps.UUIDs]]
+deps = ["Random", "SHA"]
+uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+version = "1.11.0"
+
+[[deps.Unicode]]
+uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+version = "1.11.0"
+
+[[deps.Zlib_jll]]
+deps = ["Libdl"]
+uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.3.2+0"
+
+[[deps.Zstd_jll]]
+deps = ["CompilerSupportLibraries_jll", "Libdl"]
+uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
+version = "1.5.7+1"
+
+[[deps.csjl]]
+deps = ["CausalStructures", "JLBind", "NetworkLayout", "StableRNGs", "Sugiyama"]
+path = "."
+uuid = "5b7847be-0a43-48f2-a83d-4b9045fd9db0"
+version = "0.1.0"
+
+[[deps.libblastrampoline_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.15.0+0"
+
+[[deps.nghttp2_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
+version = "1.70.0+0"
+
+[[deps.p7zip_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+version = "17.8.3+0"
 
 [registries.General]
 url = "https://github.com/JuliaRegistries/General.git"

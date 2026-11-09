@@ -21,6 +21,8 @@ StableRNGs = "1"
 Sugiyama = "1.0.1"
 julia = "1.13"
 
+# Until the next CausalStructures.jl release, which fixes trim errors in 1.1.1.
 # NetworkLayout.jl compiles under --trim only on this branch, not yet released.
 [sources]
+CausalStructures = {url = "https://github.com/BjarkeHautop/CausalStructures.jl", rev = "main"}
 NetworkLayout = {url = "https://github.com/BjarkeHautop/NetworkLayout.jl", rev = "trim-compat"}
