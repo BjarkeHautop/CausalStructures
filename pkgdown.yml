@@ -1,9 +1,10 @@
-pandoc: 3.8.3
-pkgdown: 2.2.1.9000
-pkgdown_sha: edeaffaf3a19330d0749ca8c5021dc3709e6c959
-articles:
-  articles/plot: plot.html
-last_built: 2026-10-12T19:07Z
 urls:
   reference: https://bjarkehautop.github.io/CausalStructures/reference
-  article: https://bjarkehautop.github.io/CausalStructures/articles
+  article: https://bjarkehautop.github.io/CausalStructures/vignettes
+articles:
+  CausalStructures: CausalStructures.html
+  benchmarks: articles/benchmarks.html
+  causal-identification: articles/causal-identification.html
+  equivalence-classes: articles/equivalence-classes.html
+  pag-causal-effects: articles/pag-causal-effects.html
+  plot: articles/plot.html

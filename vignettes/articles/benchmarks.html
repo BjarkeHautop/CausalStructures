@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Benchmarks – CausalStructures 0.0.0.9000</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script><script src="../../site_libs/quarto-nav/headroom.min.js"></script><script src="../../site_libs/clipboard/clipboard.min.js"></script><script src="../../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../../site_libs/quarto-search/fuse.min.js"></script><script src="../../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script><script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../../site_libs/quarto-html/popper.min.js"></script><script src="../../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../../site_libs/quarto-html/anchor.min.js"></script><link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": " Search",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><!--
+Quarto ignores `prefers-color-scheme`, so pick dark mode for first-time
+visitors who prefer it, before Quarto reads the stored choice.
+--><script>
+(function () {
+  try {
+    if (
+      window.localStorage.getItem("quarto-color-scheme") === null &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      window.localStorage.setItem("quarto-color-scheme", "alternate");
+    }
+  } catch (e) {
+    // No localStorage: keep Quarto's light default.
+  }
+})();
+</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><meta property="og:title" content="Benchmarks – CausalStructures 0.0.0.9000">
+<meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta name="twitter:title" content="Benchmarks – CausalStructures 0.0.0.9000">
+<meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="nav-fixed quarto-light">
+<a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script><div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">CausalStructures 0.0.0.9000</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../vignettes/CausalStructures.html"> 
+<span class="menu-text">Get started</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../reference/index.html"> 
+<span class="menu-text">Reference</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-articles" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Articles</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
+<li>
+    <a class="dropdown-item" href="../../vignettes/articles/benchmarks.html">
+ <span class="dropdown-text">Benchmarks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../vignettes/articles/causal-identification.html">
+ <span class="dropdown-text">Causal Identification</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../vignettes/articles/equivalence-classes.html">
+ <span class="dropdown-text">Equivalence Classes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../vignettes/articles/pag-causal-effects.html">
+ <span class="dropdown-text">PAG Causal Effects</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../vignettes/articles/plot.html">
+ <span class="dropdown-text">Plotting Causal Graphs</span></a>
+  </li>  
+    </ul>
+</li>
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/BjarkeHautop/CausalStructures" title="GitHub" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#queries-stay-fast-as-graphs-grow" id="toc-queries-stay-fast-as-graphs-grow" class="nav-link active" data-scroll-target="#queries-stay-fast-as-graphs-grow">Queries stay fast as graphs grow</a></li>
+  <li><a href="#searching-for-adjustment-sets" id="toc-searching-for-adjustment-sets" class="nav-link" data-scroll-target="#searching-for-adjustment-sets">Searching for adjustment sets</a></li>
+  <li>
+<a href="#expensive-algorithms" id="toc-expensive-algorithms" class="nav-link" data-scroll-target="#expensive-algorithms">Expensive algorithms</a>
+  <ul class="collapse">
+<li><a href="#exact-uniform-dag-sampling" id="toc-exact-uniform-dag-sampling" class="nav-link" data-scroll-target="#exact-uniform-dag-sampling">Exact uniform DAG sampling</a></li>
+  <li><a href="#markov-equivalence-class-enumeration" id="toc-markov-equivalence-class-enumeration" class="nav-link" data-scroll-target="#markov-equivalence-class-enumeration">Markov equivalence class enumeration</a></li>
+  <li><a href="#mag-equivalence-class-enumeration" id="toc-mag-equivalence-class-enumeration" class="nav-link" data-scroll-target="#mag-equivalence-class-enumeration">MAG equivalence class enumeration</a></li>
+  </ul>
+</li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Benchmarks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p class="source-note">
+<small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/vignettes/articles/benchmarks.qmd"><code>vignettes/articles/benchmarks.qmd</code></a></small>
+</p>
+<p>Every graph in CausalStructures precomputes and stores each node’s parents, children, spouses, and neighbors directly, so <code><a class="quartodown-tip-ref" data-quartodown-tip="t14" href="../../reference/node-queries.html">parents</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t15" href="../../reference/node-queries.html">spouses</a>()</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t16" href="../../reference/neighbors.html">neighbors</a>()</code> are effectively <span class="math inline">\(O(1)\)</span> lookups rather than scans over the whole edge set. Many higher-level algorithms, including <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/d_separated.html">d_separated</a>()</code>/<code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/m_separated.html">m_separated</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/minimal_separator.html">minimal_separator</a>()</code>, and adjustment-set search, are built on these primitive operations, so their performance depends directly on the efficiency of these basic queries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The median time of each expression. Memory allocated inside the library, and</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># its garbage collection, is invisible to bench, so only the time is shown.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>timings <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">iterations =</span> <span class="dv">200</span>) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu"><a href="https://bench.r-lib.org/reference/mark.html">mark</a></span>(..., <span class="at">iterations =</span> iterations, <span class="at">check =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="at">expression =</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(b<span class="sc">$</span>expression), <span class="at">median =</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(b<span class="sc">$</span>median))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+<section id="queries-stay-fast-as-graphs-grow" class="level2"><h2 class="anchored" data-anchor-id="queries-stay-fast-as-graphs-grow">Queries stay fast as graphs grow</h2>
+<p>Single-hop queries such as <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a>()</code> are just slice lookups, so their runtime is essentially unchanged whether the graph has 100 nodes or 10,000:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>graphs <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>), \(n) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a></span>(n, <span class="at">p =</span> <span class="dv">5</span> <span class="sc">/</span> n, <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 100"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a></span>(graphs[[<span class="dv">1</span>]], <span class="st">"V50"</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 1,000"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a></span>(graphs[[<span class="dv">2</span>]], <span class="st">"V500"</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 10,000"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a></span>(graphs[[<span class="dv">3</span>]], <span class="st">"V5000"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression median</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    n = 100  1.7µs</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  n = 1,000 1.64µs</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 n = 10,000 1.66µs</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+<p>These primitives keep more involved queries fast too, on graphs with hundreds of nodes and across graph classes:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a></span>(<span class="dv">500</span>, <span class="at">p =</span> <span class="fl">0.1</span>, <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a></span>(<span class="dv">500</span>, <span class="at">p =</span> <span class="fl">0.01</span>, <span class="at">class =</span> <span class="st">"MAG"</span>, <span class="at">latents =</span> <span class="dv">20</span>, <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"V10"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="st">"V290"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"d_separated (DAG)"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/d_separated.html">d_separated</a></span>(dag, x, y),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"m_separated (MAG)"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/m_separated.html">m_separated</a></span>(mag, x, y),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"topological_sort"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="../../reference/graph-queries.html">topological_sort</a></span>(dag),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"minimal_separator"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/minimal_separator.html">minimal_separator</a></span>(dag, x, y),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"markov_blanket"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/markov_blanket.html">markov_blanket</a></span>(dag, x)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          expression  median</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 d_separated (DAG) 148.2µs</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m_separated (MAG)  13.1µs</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  topological_sort    59µs</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 minimal_separator 166.3µs</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    markov_blanket  16.5µs</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+</section><section id="searching-for-adjustment-sets" class="level2"><h2 class="anchored" data-anchor-id="searching-for-adjustment-sets">Searching for adjustment sets</h2>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t17" href="../../reference/all_backdoor_sets.html">all_backdoor_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="../../reference/all_iv_sets.html">all_iv_sets</a>()</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t19" href="../../reference/all_frontdoor_sets.html">all_frontdoor_sets</a>()</code> search subsets of the candidate universe up to <code>max_size</code>, checking each one against the relevant validity criterion. Consequently, the runtime grows exponentially with <code>max_size</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a></span>(<span class="dv">35</span>, <span class="at">p =</span> <span class="fl">0.15</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>, <span class="at">latents =</span> <span class="dv">8</span>, <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"V3"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="st">"V33"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sizes <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>n_sets <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  sizes,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  \(ms) <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(admg, x, y, <span class="at">minimal =</span> <span class="cn">FALSE</span>, <span class="at">max_size =</span> ms)),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span>(<span class="dv">1</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">timings</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_size = 2"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      admg,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      x,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      y,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">minimal =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">max_size =</span> <span class="dv">2</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_size = 3"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      admg,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>      x,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      y,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">minimal =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">max_size =</span> <span class="dv">3</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_size = 4"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      admg,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>      x,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      y,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">minimal =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">max_size =</span> <span class="dv">4</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">iterations =</span> <span class="dv">20</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">sets =</span> n_sets</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     expression   median sets</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 max_size = 2   1.47ms   33</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 max_size = 3  19.09ms  272</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 max_size = 4 161.43ms 1537</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+</section><section id="expensive-algorithms" class="level2"><h2 class="anchored" data-anchor-id="expensive-algorithms">Expensive algorithms</h2>
+<p>Here we will show the performance of some of the most expensive algorithms.</p>
+<section id="exact-uniform-dag-sampling" class="level3"><h3 class="anchored" data-anchor-id="exact-uniform-dag-sampling">Exact uniform DAG sampling</h3>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a>()</code> uses an Erdős–Rényi model: it samples each edge independently, which is cheap regardless of <code>n</code> but is not uniform over the space of DAGs. <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a>()</code> instead draws exactly uniformly from all labeled DAGs on <code>n</code> nodes using the recursive enumeration algorithm of <span class="citation" data-cites="kuipers2015uniform">Kuipers and Moffa (<a href="#ref-kuipers2015uniform" role="doc-biblioref">2015</a>)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 10"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a></span>(<span class="dv">10</span>, <span class="at">seed =</span> <span class="dv">1</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 20"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a></span>(<span class="dv">20</span>, <span class="at">seed =</span> <span class="dv">1</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 40"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a></span>(<span class="dv">40</span>, <span class="at">seed =</span> <span class="dv">1</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">20</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     n = 10 105.88µs</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     n = 20 747.35µs</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     n = 40   6.17ms</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+</section><section id="markov-equivalence-class-enumeration" class="level3"><h3 class="anchored" data-anchor-id="markov-equivalence-class-enumeration">Markov equivalence class enumeration</h3>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code> and <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code> operate on a CPDAG, PDAG, or MPDAG by considering every DAG in its Markov equivalence class. The size of that class grows combinatorially with the number of undirected edges. For example, a clique on <span class="math inline">\(k\)</span> nodes has <span class="math inline">\(k!\)</span> consistent orientations, so the class can grow very large very quickly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A PDAG whose k nodes are all joined by undirected edges</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>clique <span class="ot">&lt;-</span> <span class="cf">function</span>(k) {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"V"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(k)), <span class="dv">2</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/cgraph.html">cgraph</a></span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pairs[<span class="dv">1</span>, ], <span class="st">"---"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"PDAG"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>cliques <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), clique)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(cliques, count_dags, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span>(<span class="dv">1</span>))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]   120  5040 40320</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"count_dags, k = 5"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a></span>(cliques[[<span class="dv">1</span>]]),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"count_dags, k = 7"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a></span>(cliques[[<span class="dv">2</span>]]),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"count_dags, k = 8"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a></span>(cliques[[<span class="dv">3</span>]]),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"enumerate_dags, k = 5"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a></span>(cliques[[<span class="dv">1</span>]]),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"enumerate_dags, k = 7"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a></span>(cliques[[<span class="dv">2</span>]]),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"enumerate_dags, k = 8"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a></span>(cliques[[<span class="dv">3</span>]]),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              expression  median</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     count_dags, k = 5 527.8µs</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     count_dags, k = 7  35.7ms</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     count_dags, k = 8 259.1ms</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 enumerate_dags, k = 5 631.2µs</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 enumerate_dags, k = 7  38.2ms</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 enumerate_dags, k = 8 491.9ms</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code> must materialize every DAG rather than simply count them, so it is slower and uses more memory than <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code>, as the numbers above show. In R, every DAG it returns is also a <code>cgraph</code>, so keep the class small, or use <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code> first to check its size.</p>
+</section><section id="mag-equivalence-class-enumeration" class="level3"><h3 class="anchored" data-anchor-id="mag-equivalence-class-enumeration">MAG equivalence class enumeration</h3>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code> is the PAG/MAG counterpart to <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code>. While <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code> is fairly efficient via Chickering’s recursive pruning, <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code> simply brute-forces every tail/arrowhead assignment for each circle endpoint in the PAG (<span class="math inline">\(2^k\)</span> candidates for <span class="math inline">\(k\)</span> circle endpoints), and keeps the candidates that are valid MAGs with the given PAG as their equivalence class. Thus, it’s considerably more expensive than <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code>/<code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A PAG whose k nodes are all joined by o-o edges</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>circle_clique <span class="ot">&lt;-</span> <span class="cf">function</span>(k) {</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"V"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(k)), <span class="dv">2</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/cgraph.html">cgraph</a></span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pairs[<span class="dv">1</span>, ], <span class="st">"o-o"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"PAG"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>pags <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>, circle_clique)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(pags, \(pag) <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pag)), <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span>(<span class="dv">1</span>))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  23 242</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"k = 3"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pags[[<span class="dv">1</span>]]),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"k = 4"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pags[[<span class="dv">2</span>]]),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      k = 3   4.32ms</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      k = 4 439.98ms</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+<p>With one more node, <code>k = 5</code>, the class has 4,457 MAGs among <span class="math inline">\(2^{20}\)</span> candidates, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code> takes tens of seconds.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Parallel search
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t20" href="../../reference/pagcauses.html">pagcauses</a>()</code>, and the whole <code>all_*_sets()</code> family<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> parallelize their search across the library’s threads automatically once the problem is large enough to benefit. The library runs with one thread unless the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) is set before the package is loaded, e.g. in your <code>.Renviron</code>.</p>
+</div>
+</div>
+</section></section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-kuipers2015uniform" class="csl-entry" role="listitem">
+Kuipers, Jack, and Giusi Moffa. 2015. <span>“Uniform Random Generation of Large Acyclic Digraphs.”</span> <em>Statistics and Computing</em> 25 (2): 227–42.
+</div>
+</div>
+
+
+</section><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Except for <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="../../reference/all_iv_sets.html">all_iv_sets</a>()</code>, since the candidate check for IV is a trivial lookup, and thus not worth it.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></div></main><!-- /main --><style>
+.quartodown-theme-switching * {
+  transition: none !important;
+}
+</style>
+<script>
+(function () {
+  function contentLeft(main) {
+    // With margin content, <main> is a full-width grid; use the title.
+    if (main.classList.contains("page-full")) {
+      var heading = main.querySelector("h1");
+      if (heading) return heading.getBoundingClientRect().left;
+    }
+    return main.getBoundingClientRect().left;
+  }
+  // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
+  function alignNavbarToContent() {
+    var main = document.querySelector("#quarto-document-content");
+    var navContainer = document.querySelector(".navbar-container");
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
+    navContainer.style.paddingLeft = "";
+    var diff = contentLeft(main) -
+      navContainer.getBoundingClientRect().left;
+    navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+    // Where the navbar is crowded (just past its collapse breakpoint), give
+    // the padding back to a title that would otherwise be cut off.
+    var brand = navContainer.querySelector(".navbar-brand");
+    var overflow = brand ? brand.scrollWidth - brand.clientWidth : 0;
+    if (overflow > 0) {
+      navContainer.style.paddingLeft = Math.max(diff - overflow, 0) + "px";
+    }
+  }
+  // While previewing the site locally, reload the page when a rebuild changes
+  // it. It checks its own address, which needs nothing of the server.
+  function reloadWhenRebuilt() {
+    if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+    var url = location.href.split("#")[0];
+    var page;
+    function check() {
+      if (document.hidden) {
+        setTimeout(check, 1000);
+        return;
+      }
+      fetch(url, { cache: "no-store" })
+        .then(function (response) {
+          return response.ok ? response.text() : page;
+        })
+        .then(function (text) {
+          if (page !== undefined && text !== page) {
+            location.reload();
+            return;
+          }
+          page = text;
+          setTimeout(check, 1000);
+        })
+        .catch(function () {}); // The server has stopped.
+    }
+    check();
+  }
+  // Wrap the version in the "<pkg> <version>" title so it can be styled.
+  function shrinkNavbarVersion() {
+    var title = document.querySelector(".navbar-title");
+    if (!title || title.querySelector(".navbar-version")) return;
+    var text = title.textContent;
+    var spaceIndex = text.indexOf(" ");
+    if (spaceIndex === -1) return;
+    title.textContent = text.slice(0, spaceIndex);
+    var version = document.createElement("small");
+    version.className = "navbar-version";
+    version.textContent = text.slice(spaceIndex + 1);
+    // A development or unreleased version's site (see dev_mode()) says so.
+    var mode = document.querySelector('meta[name="quartodown-dev-mode"]');
+    var tips = {
+      devel: "In-development version",
+      unreleased: "Unreleased version"
+    };
+    if (mode && tips[mode.content]) {
+      version.classList.add("navbar-version-dev");
+      version.title = tips[mode.content];
+    }
+    title.appendChild(document.createTextNode(" "));
+    title.appendChild(version);
+  }
+  // Next to the title, a switch between the released version's site and the
+  // development version's in its dev/ (see dev_mode()), showing both with the
+  // current one marked. The other links to the same page there, or to that
+  // site's home page if it lacks the page. The release build doesn't know
+  // whether there's a dev/ site, so it's looked for here. The answer is
+  // stored, so the switch shows at once on the next page instead of after the
+  // request, and checked again in the background.
+  function addVersionSwitch() {
+    var mode = document.querySelector('meta[name="quartodown-dev-mode"]');
+    var offset = document.querySelector('meta[name="quarto:offset"]');
+    var brand = document.querySelector(".navbar-brand-container");
+    if (!mode || !offset || !brand || !window.fetch) return;
+    if (mode.content !== "devel" && mode.content !== "release") return;
+    var onDev = mode.content === "devel";
+    var root = new URL(offset.content, window.location.href);
+    var other = new URL(onDev ? "../" : "dev/", root);
+    var page = window.location.pathname.slice(root.pathname.length);
+    var target = new URL(page || "index.html", other);
+    // Some servers send a missing page's request on to their 404 page.
+    function exists(url) {
+      return fetch(url, { method: "HEAD" }).then(function (response) {
+        return response.ok && !response.redirected;
+      }, function () {
+        return false;
+      });
+    }
+    var key = "quartodown-site:" + other.href;
+    function stored() {
+      try {
+        return window.localStorage.getItem(key) === "1";
+      } catch (e) {
+        return false;
+      }
+    }
+    function store(found) {
+      try {
+        if (found) {
+          window.localStorage.setItem(key, "1");
+        } else {
+          window.localStorage.removeItem(key);
+        }
+      } catch (e) {
+        // No localStorage: look for the site on each page.
+      }
+    }
+    var versions;
+    function show() {
+      if (versions) return;
+      var current = document.createElement("span");
+      current.setAttribute("aria-current", "true");
+      current.textContent = onDev ? "dev" : "release";
+      current.title = onDev ?
+        "You're viewing the development version's documentation" :
+        "You're viewing the released version's documentation";
+      var link = document.createElement("a");
+      link.href = target.href + window.location.hash;
+      link.textContent = onDev ? "release" : "dev";
+      link.title = onDev ?
+        "Switch to this page in the released version's documentation" :
+        "Switch to this page in the development version's documentation";
+      // Whether the other site has this page is only asked when it's needed.
+      link.addEventListener("click", function (e) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        var href = link.href;
+        exists(target.href).then(function (same) {
+          window.location.href = same ? href : other.href;
+        });
+      });
+      versions = document.createElement("div");
+      versions.className = "navbar-version-switch";
+      versions.setAttribute("role", "group");
+      versions.setAttribute("aria-label", "Documentation version");
+      versions.appendChild(onDev ? link : current);
+      versions.appendChild(onDev ? current : link);
+      brand.appendChild(versions);
+    }
+    if (stored()) show();
+    exists(other.href + "index.html").then(function (found) {
+      store(found);
+      if (found && !versions) {
+        show();
+        alignNavbarToContent();
+      } else if (!found && versions) {
+        versions.remove();
+        versions = null;
+        alignNavbarToContent();
+      }
+    });
+  }
+  // Leave `#>` output lines out of what the copy button copies. clipboard.js copies synchronously in its click handler, so a copy
+  // event during a copy-button click is its.
+  function stripOutputOnCopy() {
+    var fromButton = false;
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest || !e.target.closest(".code-copy-button")) return;
+      fromButton = true;
+      setTimeout(function () { fromButton = false; }, 0);
+    }, true);
+    document.addEventListener("copy", function (e) {
+      if (!fromButton || !e.clipboardData) return;
+      // clipboard.js copies from a hidden <textarea>, whose selection
+      // window.getSelection() doesn't report in every browser.
+      var text = e.target instanceof HTMLTextAreaElement ?
+        e.target.value : String(window.getSelection());
+      var code = text.split("\n").filter(function (line) {
+        return !/^#>/.test(line);
+      }).join("\n");
+      if (code === text) return;
+      e.clipboardData.setData("text/plain", code);
+      e.preventDefault();
+    }, true);
+  }
+  // Shows the tip of a reference to the package's own topics, from the
+  // page's hidden `.quartodown-tip-payload` (see link_code_html()), in
+  // one `position: fixed` element, so code blocks' `overflow: auto` can't
+  // clip it.
+  function initTooltips() {
+    var payload = document.querySelector(".quartodown-tip-payload");
+    if (!payload) return;
+    var float = document.createElement("div");
+    float.className = "quartodown-tip-float";
+    float.setAttribute("role", "tooltip");
+    document.body.appendChild(float);
+    var hideTimer;
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var top = r.bottom + 6;
+      var left = r.left;
+      var maxLeft = window.innerWidth - float.offsetWidth - 8;
+      if (left > maxLeft) left = Math.max(8, maxLeft);
+      var maxTop = window.innerHeight - float.offsetHeight - 8;
+      if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+      float.style.top = top + "px";
+      float.style.left = left + "px";
+    }
+    function show(el) {
+      var key = el.getAttribute("data-quartodown-tip");
+      var tip = payload.querySelector('[data-for="' + key + '"]');
+      if (!tip) return;
+      float.innerHTML = tip.innerHTML;
+      float.style.display = "block";
+      place(el);
+    }
+    function hide() { float.style.display = "none"; }
+    function cancelHide() { clearTimeout(hideTimer); }
+    function scheduleHide() { hideTimer = setTimeout(hide, 150); }
+    document.querySelectorAll("a.quartodown-tip-ref").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cancelHide(); show(el); });
+      el.addEventListener("mouseleave", scheduleHide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    float.addEventListener("mouseenter", cancelHide);
+    float.addEventListener("mouseleave", scheduleHide);
+  }
+  // Quarto swaps the theme stylesheets at once, but elements with a CSS
+  // transition (buttons, links) then fade to the new colors, lagging behind
+  // the page. Turn transitions off until the new stylesheet applies, which
+  // can take a frame or more: until the page background changes, or 30
+  // frames if it never does.
+  function switchThemeWithoutTransitions() {
+    var toggle = window.quartoToggleColorScheme;
+    if (typeof toggle !== "function") return;
+    window.quartoToggleColorScheme = function () {
+      var root = document.documentElement;
+      function background() {
+        return getComputedStyle(document.body).backgroundColor;
+      }
+      var before = background();
+      var frames = 0;
+      root.classList.add("quartodown-theme-switching");
+      var result = toggle.apply(this, arguments);
+      function settle() {
+        if (background() === before && ++frames < 30) {
+          requestAnimationFrame(settle);
+        } else {
+          requestAnimationFrame(function () {
+            root.classList.remove("quartodown-theme-switching");
+          });
+        }
+      }
+      requestAnimationFrame(settle);
+      return result;
+    };
+  }
+  stripOutputOnCopy();
+  switchThemeWithoutTransitions();
+  // The payload comes after this script, at the end of the body.
+  document.addEventListener("DOMContentLoaded", initTooltips);
+  shrinkNavbarVersion();
+  addVersionSwitch();
+  alignNavbarToContent();
+  window.addEventListener("load", alignNavbarToContent);
+  window.addEventListener("resize", alignNavbarToContent);
+  reloadWhenRebuilt();
+})();
+</script><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/bjarkehautop\.github\.io\/CausalStructures");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Developed by Bjarke Hautop Kristensen.</p>
+</div>   
+    <div class="nav-footer-center">
+       
+    </div>
+    <div class="nav-footer-right">
+<p>Site built with <a href="https://github.com/BjarkeHautop/quartodown">quartodown</a> and <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer><div class="quartodown-tip-payload" hidden>
+<div data-for="t1">
+<code class="quartodown-tip-sig"><span class="fu">generate_graph</span>(
+  n,
+  <span class="at">m</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">p</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>),
+  <span class="at">latents</span> <span class="at">=</span> <span class="dv">0</span>,
+  <span class="at">seed</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Generate a random graph</span>
+</div>
+<div data-for="t2">
+<code class="quartodown-tip-sig"><span class="fu">children</span>(cg, node)</code><span class="quartodown-tip-brief">Node-set queries</span>
+</div>
+<div data-for="t3">
+<code class="quartodown-tip-sig"><span class="fu">d_separated</span>(cg, x, y, <span class="at">given</span> <span class="at">=</span> <span class="fu">character</span>())</code><span class="quartodown-tip-brief">Test d-separation</span>
+</div>
+<div data-for="t4">
+<code class="quartodown-tip-sig"><span class="fu">m_separated</span>(cg, x, y, <span class="at">given</span> <span class="at">=</span> <span class="fu">character</span>())</code><span class="quartodown-tip-brief">Test m-separation</span>
+</div>
+<div data-for="t5">
+<code class="quartodown-tip-sig"><span class="fu">topological_sort</span>(cg)</code><span class="quartodown-tip-brief">Graph-level node queries</span>
+</div>
+<div data-for="t6">
+<code class="quartodown-tip-sig"><span class="fu">minimal_separator</span>(cg, x, y, <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(), <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Find a minimal separator</span>
+</div>
+<div data-for="t7">
+<code class="quartodown-tip-sig"><span class="fu">markov_blanket</span>(cg, node)</code><span class="quartodown-tip-brief">Markov blanket of a node</span>
+</div>
+<div data-for="t8">
+<code class="quartodown-tip-sig"><span class="fu">all_adjustment_sets</span>(
+  cg,
+  x,
+  y,
+  <span class="at">minimal</span> <span class="at">=</span> <span class="cn">TRUE</span>,
+  <span class="at">max_size</span> <span class="at">=</span> <span class="dv">3</span>,
+  <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(),
+  <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Enumerate all valid adjustment sets</span>
+</div>
+<div data-for="t9">
+<code class="quartodown-tip-sig"><span class="fu">uniform_dag</span>(n, <span class="at">seed</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">counts</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Generate a uniformly random DAG</span>
+</div>
+<div data-for="t10">
+<code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
+  ...,
+  <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
+)</code><span class="quartodown-tip-brief">Create a causal graph</span>
+</div>
+<div data-for="t11">
+<code class="quartodown-tip-sig"><span class="fu">count_dags</span>(cg)</code><span class="quartodown-tip-brief">Count and enumerate DAGs in a Markov equivalence class</span>
+</div>
+<div data-for="t12">
+<code class="quartodown-tip-sig"><span class="fu">enumerate_dags</span>(cg)</code><span class="quartodown-tip-brief">Count and enumerate DAGs in a Markov equivalence class</span>
+</div>
+<div data-for="t13">
+<code class="quartodown-tip-sig"><span class="fu">enumerate_mags</span>(cg, <span class="at">selection_bias</span> <span class="at">=</span> <span class="cn">TRUE</span>)</code><span class="quartodown-tip-brief">Enumerate MAGs in a PAG equivalence class</span>
+</div>
+<div data-for="t14">
+<code class="quartodown-tip-sig"><span class="fu">parents</span>(cg, node)</code><span class="quartodown-tip-brief">Node-set queries</span>
+</div>
+<div data-for="t15">
+<code class="quartodown-tip-sig"><span class="fu">spouses</span>(cg, node)</code><span class="quartodown-tip-brief">Node-set queries</span>
+</div>
+<div data-for="t16">
+<code class="quartodown-tip-sig"><span class="fu">neighbors</span>(cg, node, <span class="at">mode</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"all"</span>, <span class="st">"in"</span>, <span class="st">"out"</span>, <span class="st">"undirected"</span>, <span class="st">"bidirected"</span>))</code><span class="quartodown-tip-brief">Neighbors of a node</span>
+</div>
+<div data-for="t17">
+<code class="quartodown-tip-sig"><span class="fu">all_backdoor_sets</span>(
+  cg,
+  x,
+  y,
+  <span class="at">minimal</span> <span class="at">=</span> <span class="cn">TRUE</span>,
+  <span class="at">max_size</span> <span class="at">=</span> <span class="dv">3</span>,
+  <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(),
+  <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Enumerate backdoor adjustment sets</span>
+</div>
+<div data-for="t18">
+<code class="quartodown-tip-sig"><span class="fu">all_iv_sets</span>(
+  cg,
+  x,
+  y,
+  <span class="at">given</span> <span class="at">=</span> <span class="fu">character</span>(),
+  <span class="at">minimal</span> <span class="at">=</span> <span class="cn">TRUE</span>,
+  <span class="at">max_size</span> <span class="at">=</span> <span class="dv">3</span>,
+  <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(),
+  <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Enumerate all valid instrumental variable sets</span>
+</div>
+<div data-for="t19">
+<code class="quartodown-tip-sig"><span class="fu">all_frontdoor_sets</span>(cg, x, y, <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(), <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Enumerate frontdoor adjustment sets</span>
+</div>
+<div data-for="t20">
+<code class="quartodown-tip-sig"><span class="fu">pagcauses</span>(cg, x, y)</code><span class="quartodown-tip-brief">Find every possible causal effect in a PAG (PAGcauses)</span>
+</div>
+</div>
+</body>
+</html>
