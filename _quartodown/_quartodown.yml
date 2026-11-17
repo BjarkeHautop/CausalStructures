@@ -1,3 +1,17 @@
+navbar:
+  left:
+    - intro
+    - reference
+    - text: Articles
+      menu:
+        - articles/equivalence-classes
+        - articles/causal-identification
+        - articles/pag-causal-effects
+        - text: "---"
+        - articles/plot
+        - text: "---"
+        - articles/benchmarks
+
 # Groups the function reference index, in the same shape as pkgdown's
 # `reference:` field.
 reference:
