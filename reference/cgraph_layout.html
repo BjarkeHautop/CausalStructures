@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Compute a graph layout – CausalStructures 0.0.0.9000</title>
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<link href="../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,9 +112,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 })();
 </script><meta property="og:title" content="Compute a graph layout – CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1037">
 <meta name="twitter:title" content="Compute a graph layout – CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-fixed quarto-light">
@@ -354,13 +358,14 @@ visitors who prefer it, before Quarto reads the stored choice.
   <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
   <li><a href="#arguments" id="toc-arguments" class="nav-link" data-scroll-target="#arguments">Arguments</a></li>
   <li><a href="#value" id="toc-value" class="nav-link" data-scroll-target="#value">Value</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul></nav>
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Compute a graph layout</h1>
+<img src="../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Compute a graph layout</h1>
 </div>
 
 
@@ -378,13 +383,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/layout.R"><code>R/layout.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Computes node coordinates for <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./plot.html">plot.cgraph</a>()</code>.</p>
+<p>Computes node coordinates for <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_layout.html">cgraph_layout</a></span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  x,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"right"</span>, <span class="st">"down"</span>, <span class="st">"up"</span>, <span class="st">"left"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"down"</span>, <span class="st">"up"</span>, <span class="st">"left"</span>),</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">1</span>L,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  ...</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
@@ -405,19 +410,19 @@ A graph created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3
 <code>method</code>
 </td>
 <td>
-<p>The layout method. The default (<code>NULL</code>) is <code>"sugiyama"</code> if <code>x</code> has class <code>DAG</code>, and <code>"stress"</code> otherwise. This depends on the class <code>x</code> was given, not its edges: a <code>PDAG</code> with only directed edges uses <code>"stress"</code>.</p>
+<p>The layout method. The default (<code>NULL</code>) is <code>"sugiyama"</code> if <code>x</code> has class <code>DAG</code>, and <code>"stress"</code> otherwise.</p>
 <ul>
 <li>
-<p><code>"sugiyama"</code>: layered/hierarchical layout, from the <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a> package. Every edge is layered from its first to its second node (<code>A --&gt; B</code> puts <code>A</code> before <code>B</code>), and any cycles are broken, so it works for every graph class.</p>
+<p><code>"sugiyama"</code>: layered/hierarchical layout (Sugiyama et al. 1981), from the <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a> package.</p>
 </li>
 <li>
-<p><code>"stress"</code>: stress majorization (Gansner, Koren and North, 2005). A good general-purpose choice.</p>
+<p><code>"stress"</code>: stress majorization (Gansner et al. 2005). A good general-purpose choice.</p>
 </li>
 <li>
-<p><code>"spring"</code>: Fruchterman-Reingold force-directed layout.</p>
+<p><code>"spring"</code>: force-directed layout (Fruchterman and Reingold 1991).</p>
 </li>
 <li>
-<p><code>"sfdp"</code>: scalable force-directed placement (Hu, 2005).</p>
+<p><code>"sfdp"</code>: scalable force-directed placement (Hu 2006).</p>
 </li>
 <li>
 <p><code>"spectral"</code>: spectral layout, from eigenvectors of the graph Laplacian.</p>
@@ -453,13 +458,15 @@ For <code>"stress"</code>, <code>"spring"</code> and <code>"sfdp"</code>, the se
 <code>...</code>
 </td>
 <td>
-Ignored, so that <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./plot.html">plot.cgraph</a>()</code> can pass its <code>...</code> through.
+Ignored, so that <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code> can pass its <code>...</code> through.
 </td>
 </tr>
 </tbody></table></section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>A <code>data.frame</code> with columns <code>name</code>, <code>x</code>, and <code>y</code>.</p>
+</section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Fruchterman TMJ, Reingold EM (1991). “Graph drawing by force-directed placement.” <em>Software: Practice and Experience</em>, <b>21</b>(11), 1129–1164. <a href="https://doi.org/10.1002/spe.4380211102">doi:10.1002/spe.4380211102</a>.<br><br> Gansner ER, Koren Y, North S (2005). “Graph Drawing by Stress Majorization.” In Pach J (ed.), <em>Graph Drawing (GD 2004)</em>, volume 3383 of <em>Lecture Notes in Computer Science</em>, 239–250. <a href="https://doi.org/10.1007/978-3-540-31843-9_25">doi:10.1007/978-3-540-31843-9_25</a>.<br><br> Hu Y (2006). “Efficient, High-Quality Force-Directed Graph Drawing.” <em>The Mathematica Journal</em>, <b>10</b>(1), 37–71.<br><br> Sugiyama K, Tagawa S, Toda M (1981). “Methods for Visual Understanding of Hierarchical System Structures.” <em>IEEE Transactions on Systems, Man, and Cybernetics</em>, <b>11</b>(2), 109–125. <a href="https://doi.org/10.1109/TSMC.1981.4308636">doi:10.1109/TSMC.1981.4308636</a>.</p>
 </section><section id="see-also" class="level2"><h2 class="anchored" data-anchor-id="see-also">See Also</h2>
-<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./plot.html">plot.cgraph</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./plot_options.html">plot_options</a>()</code></p>
+<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./plot_options.html">plot_options</a>()</code></p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -1320,26 +1327,26 @@ Ignored, so that <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" hr
 <code class="quartodown-tip-sig">lhs <span class="sc">%--&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
 <div data-for="t5">
-<code class="quartodown-tip-sig"><span class="fu">plot.cgraph</span>(
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
   x,
   <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
-  <span class="at">node_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">edge_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">label_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">labels</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
-  <span class="at">title_style</span> <span class="at">=</span> <span class="fu">list</span>(),
   <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
-  <span class="co"># ... 4 more lines</span>
+  <span class="at">outer_margin</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">"mm"</span>),
+  <span class="at">title_gap</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>),
+  ...
 )</code><span class="quartodown-tip-brief">Plot a causal graph</span>
 </div>
 <div data-for="t6">
 <code class="quartodown-tip-sig"><span class="fu">nodes</span>(cg)</code><span class="quartodown-tip-brief">Graph-level node queries</span>
 </div>
 <div data-for="t7">
-<code class="quartodown-tip-sig"><span class="fu">plot_default_options</span>()</code><span class="quartodown-tip-brief">Default plot styling options</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
 </div>
 <div data-for="t8">
+<code class="quartodown-tip-sig"><span class="fu">plot_default_options</span>()</code><span class="quartodown-tip-brief">Default plot styling options</span>
+</div>
+<div data-for="t9">
 <code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
 </div>

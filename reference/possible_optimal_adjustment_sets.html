@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Enumerate possible optimal adjustment sets (O-set-based IDA) – CausalStructures 0.0.0.9000</title>
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<link href="../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,9 +112,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 })();
 </script><meta property="og:title" content="Enumerate possible optimal adjustment sets (O-set-based IDA) – CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1037">
 <meta name="twitter:title" content="Enumerate possible optimal adjustment sets (O-set-based IDA) – CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-fixed quarto-light">
@@ -361,7 +365,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Enumerate possible optimal adjustment sets (O-set-based IDA)</h1>
+<img src="../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Enumerate possible optimal adjustment sets (O-set-based IDA)</h1>
 </div>
 
 
@@ -419,7 +423,7 @@ Exposure and outcome node names.
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X2, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X3, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X4, X3 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./edge-operators.html">%--&gt;%</a></span> Y, X4 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./edge-operators.html">%--&gt;%</a></span> Y,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"CPDAG"</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">parent_sets =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./possible_parent_sets.html">possible_parent_sets</a></span>(cpdag, <span class="st">"X1"</span>),</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimal_adjustment_sets =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./possible_optimal_adjustment_sets.html">possible_optimal_adjustment_sets</a></span>(</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      cpdag, <span class="st">"X1"</span>, <span class="st">"Y"</span></span>

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Default plot styling options – CausalStructures 0.0.0.9000</title>
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<link href="../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,9 +112,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 })();
 </script><meta property="og:title" content="Default plot styling options – CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1037">
 <meta name="twitter:title" content="Default plot styling options – CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-fixed quarto-light">
@@ -359,7 +363,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Default plot styling options</h1>
+<img src="../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Default plot styling options</h1>
 </div>
 
 
@@ -377,17 +381,17 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/plot-options.R"><code>R/plot-options.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>The built-in defaults for <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code>, before any global customization. Useful for resetting after calling <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code>, or as a base to build a custom style set from with <a href="https://rdrr.io/r/utils/modifyList.html"><code>utils::modifyList()</code></a>.</p>
+<p>The built-in defaults for <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code>, before any global customization. Useful for resetting after calling <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code>, or as a base to build a custom style set from with <code>utils::modifyList()</code>.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./plot_default_options.html">plot_default_options</a></span>()</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>A list with <code>node_style</code>, <code>edge_style</code>, <code>label_style</code>, and <code>title_style</code> components - see <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./plot.html">plot.cgraph</a>()</code> for their fields.</p>
+<p>A list with <code>node_style</code>, <code>edge_style</code>, <code>label_style</code>, and <code>title_style</code> components - see <a href="plot-styling.html">plot-styling</a> for their fields.</p>
 </section><section id="see-also" class="level2"><h2 class="anchored" data-anchor-id="see-also">See Also</h2>
 <p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code> for getting and setting these globally.</p>
-<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./plot.html">plot.cgraph</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code></p>
+<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code></p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -1290,18 +1294,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
 <div data-for="t3">
-<code class="quartodown-tip-sig"><span class="fu">plot.cgraph</span>(
-  x,
-  <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
-  <span class="at">node_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">edge_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">label_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">labels</span> <span class="at">=</span> <span class="cn">NULL</span>,
-  <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
-  <span class="at">title_style</span> <span class="at">=</span> <span class="fu">list</span>(),
-  <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
-  <span class="co"># ... 4 more lines</span>
-)</code><span class="quartodown-tip-brief">Plot a causal graph</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
 </div>
 <div data-for="t4">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
@@ -1311,6 +1304,17 @@ visitors who prefer it, before Quarto reads the stored choice.
   <span class="at">seed</span> <span class="at">=</span> <span class="dv">1L</span>,
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
+</div>
+<div data-for="t5">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
+  x,
+  <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
+  <span class="at">outer_margin</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">"mm"</span>),
+  <span class="at">title_gap</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>),
+  ...
+)</code><span class="quartodown-tip-brief">Plot a causal graph</span>
 </div>
 </div>
 </body>

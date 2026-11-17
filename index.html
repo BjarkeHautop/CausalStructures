@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>CausalStructures 0.0.0.9000</title>
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="site_libs/quarto-nav/quarto-nav.js"></script><script src="site_libs/quarto-nav/headroom.min.js"></script><script src="site_libs/clipboard/clipboard.min.js"></script><script src="site_libs/quarto-search/autocomplete.umd.js"></script><script src="site_libs/quarto-search/fuse.min.js"></script><script src="site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="./">
+<link href="./man/figures/logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script><script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="site_libs/quarto-html/popper.min.js"></script><script src="site_libs/quarto-html/tippy.umd.min.js"></script><script src="site_libs/quarto-html/anchor.min.js"></script><link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script><link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,10 +112,16 @@ visitors who prefer it, before Quarto reads the stored choice.
 })();
 </script><meta property="og:title" content="CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo-light.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta property="og:image:alt" content="CausalStructures logo">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1037">
 <meta name="twitter:title" content="CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo-light.png">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image:alt" content="CausalStructures logo">
 </head>
 <body class="nav-fixed quarto-light">
 <a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
@@ -351,7 +357,7 @@ visitors who prefer it, before Quarto reads the stored choice.
    
   <ul>
 <li>
-<a href="#causalstructures" id="toc-causalstructures" class="nav-link active" data-scroll-target="#causalstructures">CausalStructures</a>
+<a href="#causalstructures" id="toc-causalstructures" class="nav-link active" data-scroll-target="#causalstructures">CausalStructures <img src="man/figures/logo-light.png" align="right" height="139" alt="CausalStructures logo" class="light-content"><img src="man/figures/logo.png" align="right" height="139" alt="CausalStructures logo" class="dark-content"></a>
   <ul class="collapse">
 <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
   <li><a href="#graph-types" id="toc-graph-types" class="nav-link" data-scroll-target="#graph-types">Graph types</a></li>
@@ -362,7 +368,8 @@ visitors who prefer it, before Quarto reads the stored choice.
   </ul></nav>
 </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"></header><section id="causalstructures" class="level1 quartodown-home"><h1>CausalStructures</h1>
+<main class="content page-columns page-full" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"></header><section id="causalstructures" class="level1 quartodown-home"><h1>CausalStructures <img src="man/figures/logo-light.png" align="right" height="139" alt="CausalStructures logo" class="light-content"><img src="man/figures/logo.png" align="right" height="139" alt="CausalStructures logo" class="dark-content">
+</h1>
 <p>CausalStructures is an R binding to the Julia package <a href="https://github.com/BjarkeHautop/CausalStructures.jl">CausalStructures.jl</a>, for representing, validating, and reasoning about causal graphs</p>
 <section id="installation" class="level2"><h2 class="anchored" data-anchor-id="installation">Installation</h2>
 <p>Install CausalStructures from GitHub:</p>
@@ -370,7 +377,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html">pak</a></span>(<span class="st">"BjarkeHautop/CausalStructures"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-<p>CausalStructures needs <a href="https://julialang.org/">Julia</a> (&gt;= 1.13); see <a href="https://julialang.org/install/" class="uri">https://julialang.org/install/</a> for the recommended way to install Julia. Once the package is installed, build the compiled CausalStructures.jl library it calls with</p>
+<p>CausalStructures needs <a href="https://julialang.org/">Julia</a> (&gt;= 1.13); see https://julialang.org/install/ for the recommended way to install Julia. Once the package is installed, build the compiled CausalStructures.jl library it calls with</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>jlbind<span class="sc">::</span><span class="fu"><a href="https://bjarkehautop.github.io/jlbind/reference/install_library.html">install_library</a></span>()</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
@@ -396,7 +403,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </section><section id="example" class="level2"><h2 class="anchored" data-anchor-id="example">Example</h2>
 <p>First, we define a causal graph using the <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/cgraph.html">cgraph</a>()</code> function. <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/cgraph.html">cgraph</a>("A --&gt; X + Y, X --&gt; M --&gt; Y")</code></p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X + Y, X --&gt; M --&gt; Y"</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -423,12 +430,24 @@ visitors who prefer it, before Quarto reads the stored choice.
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     A --- X, M --- X, M --&gt; Y, A --&gt; Y</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
+<p>and plot it, here highlighting the treatment, the outcome and the adjustment set:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"lightskyblue"</span>, <span class="at">nodes =</span> <span class="fu">c</span>(<span class="st">"X"</span>, <span class="st">"Y"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"gold"</span>, <span class="at">nodes =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="reference/adjustment_set.html">adjustment_set</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>))</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<!-- Linked by hand, as Quarto's GFM output drops the alt text of plots. -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="man/figures/README-plot-1.png" class="img-fluid figure-img"></p>
+<figcaption>The DAG drawn left to right, with X and Y in blue and the adjustment set, A, in gold.</figcaption></figure>
+</div>
 <p>See the <a href="https://bjarkehautop.github.io/CausalStructures/">documentation site</a> for the full documentation.</p>
 </section><section id="multi-threading" class="level2"><h2 class="anchored" data-anchor-id="multi-threading">Multi-threading</h2>
-<p>Some algorithms (<code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="reference/all_backdoor_sets.html">all_backdoor_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="reference/all_adjustment_sets.html">all_adjustment_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="reference/all_frontdoor_sets.html">all_frontdoor_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="reference/equivalence.html">enumerate_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="reference/equivalence.html">count_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="reference/enumerate_mags.html">enumerate_mags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="reference/pagcauses.html">pagcauses</a>()</code>) can use multiple threads. To do so, set the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) <em>before</em> loading the package, for example in your <code>.Renviron</code> file or with</p>
+<p>Some algorithms (<code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="reference/all_backdoor_sets.html">all_backdoor_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="reference/all_adjustment_sets.html">all_adjustment_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="reference/all_frontdoor_sets.html">all_frontdoor_sets</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="reference/equivalence.html">enumerate_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="reference/equivalence.html">count_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="reference/enumerate_mags.html">enumerate_mags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t14" href="reference/pagcauses.html">pagcauses</a>()</code>) can use multiple threads. To do so, set the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) <em>before</em> loading the package, for example in your <code>.Renviron</code> file or with</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="at">JULIA_NUM_THREADS =</span> <span class="st">"4"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">JULIA_NUM_THREADS =</span> <span class="st">"4"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section></section><div class="no-row-height column-margin column-container"><div class="">
@@ -441,7 +460,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </section><section id="citation" class="level4"><h4 class="anchored" data-anchor-id="citation">Citation</h4>
 <p><a href="authors.html#citation">Citing CausalStructures</a></p>
 </section><section id="developers" class="level4"><h4 class="anchored" data-anchor-id="developers">Developers</h4>
-<p>Bjarke Hautop Kristensen<br><small>Author, maintainer</small></p>
+<p>Bjarke Hautop Kristensen<br><small>Author, maintainer, copyright holder</small></p>
 <p><a href="authors.html">More about authors…</a></p>
 </section><section id="dev-status" class="level4"><h4 class="anchored" data-anchor-id="dev-status">Dev status</h4>
 <p><a href="https://app.codecov.io/gh/BjarkeHautop/CausalStructures"><img src="https://codecov.io/gh/BjarkeHautop/CausalStructures/graph/badge.svg" class="img-fluid" alt="Codecov test coverage"></a> <a href="https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/BjarkeHautop/CausalStructures/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid" alt="R-CMD-check"></a></p>
@@ -1293,6 +1312,20 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code class="quartodown-tip-sig"><span class="fu">dag_to_cpdag</span>(cg)</code><span class="quartodown-tip-brief">Convert a DAG to its CPDAG</span>
 </div>
 <div data-for="t6">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
+  x,
+  <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
+  <span class="at">outer_margin</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">"mm"</span>),
+  <span class="at">title_gap</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>),
+  ...
+)</code><span class="quartodown-tip-brief">Plot a causal graph</span>
+</div>
+<div data-for="t7">
+<code class="quartodown-tip-sig"><span class="fu">style_nodes</span>(p, ..., <span class="at">nodes</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t8">
 <code class="quartodown-tip-sig"><span class="fu">all_backdoor_sets</span>(
   cg,
   x,
@@ -1303,7 +1336,7 @@ visitors who prefer it, before Quarto reads the stored choice.
   <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>
 )</code><span class="quartodown-tip-brief">Enumerate backdoor adjustment sets</span>
 </div>
-<div data-for="t7">
+<div data-for="t9">
 <code class="quartodown-tip-sig"><span class="fu">all_adjustment_sets</span>(
   cg,
   x,
@@ -1314,19 +1347,19 @@ visitors who prefer it, before Quarto reads the stored choice.
   <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>
 )</code><span class="quartodown-tip-brief">Enumerate all valid adjustment sets</span>
 </div>
-<div data-for="t8">
+<div data-for="t10">
 <code class="quartodown-tip-sig"><span class="fu">all_frontdoor_sets</span>(cg, x, y, <span class="at">include</span> <span class="at">=</span> <span class="fu">character</span>(), <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Enumerate frontdoor adjustment sets</span>
 </div>
-<div data-for="t9">
+<div data-for="t11">
 <code class="quartodown-tip-sig"><span class="fu">enumerate_dags</span>(cg)</code><span class="quartodown-tip-brief">Count and enumerate DAGs in a Markov equivalence class</span>
 </div>
-<div data-for="t10">
+<div data-for="t12">
 <code class="quartodown-tip-sig"><span class="fu">count_dags</span>(cg)</code><span class="quartodown-tip-brief">Count and enumerate DAGs in a Markov equivalence class</span>
 </div>
-<div data-for="t11">
+<div data-for="t13">
 <code class="quartodown-tip-sig"><span class="fu">enumerate_mags</span>(cg, <span class="at">selection_bias</span> <span class="at">=</span> <span class="cn">TRUE</span>)</code><span class="quartodown-tip-brief">Enumerate MAGs in a PAG equivalence class</span>
 </div>
-<div data-for="t12">
+<div data-for="t14">
 <code class="quartodown-tip-sig"><span class="fu">pagcauses</span>(cg, x, y)</code><span class="quartodown-tip-brief">Find every possible causal effect in a PAG (PAGcauses)</span>
 </div>
 </div>

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Causal Identification – CausalStructures 0.0.0.9000</title>
@@ -80,14 +79,15 @@ div.csl-indent {
   margin-left: 2em;
 }</style>
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script><script src="../../site_libs/quarto-nav/headroom.min.js"></script><script src="../../site_libs/clipboard/clipboard.min.js"></script><script src="../../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../../site_libs/quarto-search/fuse.min.js"></script><script src="../../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../../">
+<link href="../../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script><script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../../site_libs/quarto-html/popper.min.js"></script><script src="../../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../../site_libs/quarto-html/anchor.min.js"></script><link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -409,7 +409,7 @@ window.Quarto = {
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Causal Identification</h1>
+<img src="../../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Causal Identification</h1>
 </div>
 
 
@@ -429,7 +429,7 @@ window.Quarto = {
 <p>This guide expands on the <a href="../../vignettes/CausalStructures.html">Getting Started</a> guide with more advanced identification techniques.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -445,7 +445,7 @@ window.Quarto = {
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  D <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> Y <span class="sc">+</span> G,</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  Y <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> H</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag)</span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dag)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -491,7 +491,7 @@ window.Quarto = {
 <p>The <code>restrict</code> argument limits the search to a specific pool of variables:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/minimal_separator.html">minimal_separator</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"D"</span>, <span class="st">"K"</span>))</span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/minimal_separator.html">minimal_separator</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"K"</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "D" "K"</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -509,7 +509,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dag2 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(U <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> M <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> Y)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag2)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dag2)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -548,7 +548,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dag3 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(U <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, Z <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/edge-operators.html">%--&gt;%</a></span> Y)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag3)</span></code></pre></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dag3)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -594,7 +594,7 @@ window.Quarto = {
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $given</span></span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "W"</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/iv_set.html">iv_set</a></span>(dag5, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"X"</span>, <span class="st">"Y"</span>)))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">is.null</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/iv_set.html">iv_set</a></span>(dag5, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu">c</span>(<span class="st">"Z"</span>, <span class="st">"X"</span>, <span class="st">"Y"</span>)))</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -644,7 +644,7 @@ window.Quarto = {
 <p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/id.html">id</a>()</code> can also detect non-identifiability. In the instrument graph from before, with <code>U</code> projected out, the causal effect cannot be identified:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/id.html">id</a></span>(admg, <span class="st">"X"</span>, <span class="st">"Y"</span>))</span>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.null</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/id.html">id</a></span>(admg, <span class="st">"X"</span>, <span class="st">"Y"</span>))</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>

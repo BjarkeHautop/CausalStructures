@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Plot a causal graph – CausalStructures 0.0.0.9000</title>
+<title>Grid grob of a causal graph plot – CausalStructures 0.0.0.9000</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<link href="../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -110,15 +110,15 @@ visitors who prefer it, before Quarto reads the stored choice.
     // No localStorage: keep Quarto's light default.
   }
 })();
-</script><meta property="og:title" content="Plot a causal graph – CausalStructures 0.0.0.9000">
+</script><meta property="og:title" content="Grid grob of a causal graph plot – CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
-<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/reference/plot_files/figure-html/unnamed-chunk-2-1.png">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/reference/cgraph_grob_files/figure-html/unnamed-chunk-2-1.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
-<meta name="twitter:title" content="Plot a causal graph – CausalStructures 0.0.0.9000">
+<meta name="twitter:title" content="Grid grob of a causal graph plot – CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
-<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/reference/plot_files/figure-html/unnamed-chunk-2-1.png">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/reference/cgraph_grob_files/figure-html/unnamed-chunk-2-1.png">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-fixed quarto-light">
@@ -357,7 +357,6 @@ visitors who prefer it, before Quarto reads the stored choice.
 <li><a href="#description" id="toc-description" class="nav-link active" data-scroll-target="#description">Description</a></li>
   <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
   <li><a href="#arguments" id="toc-arguments" class="nav-link" data-scroll-target="#arguments">Arguments</a></li>
-  <li><a href="#details" id="toc-details" class="nav-link" data-scroll-target="#details">Details</a></li>
   <li><a href="#value" id="toc-value" class="nav-link" data-scroll-target="#value">Value</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
@@ -365,7 +364,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Plot a causal graph</h1>
+<img src="../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Grid grob of a causal graph plot</h1>
 </div>
 
 
@@ -383,206 +382,38 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/plot.R"><code>R/plot.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Plot method for <code>cgraph</code>, drawn with grid graphics. The <a href="https://bjarkehautop.github.io/CausalStructures/vignettes/articles/plot.html">plotting article</a> explains the layouts and every style field, with examples.</p>
+<p>The grid grob that draws a plot built with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_plot.html">cgraph_plot</a>()</code> or <code>plot()</code>, e.g. to arrange several plots on one page with grid viewports or to embed one in another grid-based figure. <code>grid::grid.draw()</code> also draws a <code>cgraph_plot</code> directly.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## S3 method for class 'cgraph'</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  x,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(),</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">title_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">asp =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">outer_margin =</span> grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span>(<span class="dv">2</span>, <span class="st">"mm"</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">title_gap =</span> grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span>(<span class="dv">1</span>, <span class="st">"lines"</span>),</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">newpage =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_grob.html">cgraph_grob</a></span>(x)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="arguments" class="level2"><h2 class="anchored" data-anchor-id="arguments">Arguments</h2>
-<table role="presentation"><tbody>
-<tr>
+<table role="presentation"><tbody><tr>
 <td>
 <code>x</code>
 </td>
 <td>
-A graph created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a>()</code>, of any class.
+A <code>cgraph_plot</code> object, or a graph created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph.html">cgraph</a>()</code> (plotted with the defaults).
 </td>
-</tr>
-<tr>
-<td>
-<code>layout</code>
-</td>
-<td>
-<p>Where to place the nodes:</p>
-<ul>
-<li>
-<p><code>NULL</code> (default): <code>"sugiyama"</code> for a <code>DAG</code>, <code>"stress"</code> otherwise.</p>
-</li>
-<li>
-<p>A method name for <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_layout.html">cgraph_layout</a>()</code>. With <code>"sugiyama"</code>, edges also follow the routes it computes; to use only its positions, pass <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_layout.html">cgraph_layout</a>(x, "sugiyama")</code> instead.</p>
-</li>
-<li>
-<p>A function, called with <code>x</code> and <code>...</code>, that returns a layout.</p>
-</li>
-<li>
-<p>A <code>data.frame</code> with columns <code>name</code>, <code>x</code>, and <code>y</code>.</p>
-</li>
-<li>
-<p>A named list of <code><a href="https://rdrr.io/r/base/c.html">c</a>(x, y)</code> positions, e.g. <code><a href="https://rdrr.io/r/base/list.html">list</a>(A = c(0, 0), X = c(1, 0))</code>.</p>
-</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td>
-<code>node_style</code>
-</td>
-<td>
-List of node style fields: <code>fill</code>, <code>col</code>, <code>lwd</code>, <code>linestyle</code>, <code>shape</code> (<code>"circle"</code>, <code>"square"</code>, <code>"ellipse"</code>, or <code>"rect"</code>), <code>radius</code> (mm; nodes fit their labels if unset), <code>padding</code> (mm), and <code>size</code> (a multiplier). <code>by_node</code> is a named list of per-node overrides.
-</td>
-</tr>
-<tr>
-<td>
-<code>edge_style</code>
-</td>
-<td>
-<p>List of edge style fields: <code>col</code>, <code>fill</code> (arrowhead fill; <code>NA</code> for hollow), <code>lwd</code>, <code>lty</code>, <code>gap</code> (mm), <code>curvature</code>, <code>path</code>, <code>arrow_size</code> (mm), <code>circle_size</code> (mm), and the edge label fields <code>label</code>, <code>label_col</code>, <code>label_fontsize</code>, <code>label_fontface</code>, <code>label_fontfamily</code>, <code>label_shift</code>, <code>label_distance</code> (mm), and <code>label_rotation</code> (degrees).</p>
-To override fields for some edges, use a sub-list named after an edge type (<code>directed</code>, <code>undirected</code>, <code>bidirected</code>, <code>partially_directed</code>, <code>partially_undirected</code>, or <code>partial</code>), or <code>by_edge</code>, a nested list keyed by node (<code>by_edge$A</code>), node pair (<code>by_edge$A$B</code>), or exact edge (<code>by_edge$A$B$.by_type[["&lt;-&gt;"]]</code>). The most specific level wins.
-</td>
-</tr>
-<tr>
-<td>
-<code>label_style</code>
-</td>
-<td>
-List of node label style fields: <code>col</code>, <code>fontsize</code>, <code>fontface</code>, <code>fontfamily</code>, and <code>cex</code>. <code>by_node</code> is a named list of per-node overrides.
-</td>
-</tr>
-<tr>
-<td>
-<code>labels</code>
-</td>
-<td>
-Optional named character vector or list of the text to draw in each node, e.g. <code><a href="https://rdrr.io/r/base/c.html">c</a>(X = "Exposure", Y = "Outcome")</code>. <code>\n</code> starts a new line. Other nodes use the <code>"default"</code> entry if there is one, and otherwise their own name. The other arguments still refer to nodes by name.
-</td>
-</tr>
-<tr>
-<td>
-<code>main</code>
-</td>
-<td>
-Optional plot title.
-</td>
-</tr>
-<tr>
-<td>
-<code>title_style</code>
-</td>
-<td>
-List of title styling parameters (same fields as <code>label_style</code>).
-</td>
-</tr>
-<tr>
-<td>
-<code>asp</code>
-</td>
-<td>
-Optional y/x aspect ratio. <code>NA</code> (default) fills the available space; <code>asp = 1</code> makes one x-unit equal one y-unit.
-</td>
-</tr>
-<tr>
-<td>
-<code>outer_margin</code>
-</td>
-<td>
-Grid unit for the outer margin. Default <code>grid::<a href="https://rdrr.io/r/grid/unit.html">unit</a>(2, "mm")</code>.
-</td>
-</tr>
-<tr>
-<td>
-<code>title_gap</code>
-</td>
-<td>
-Grid unit for the gap between title and graph. Default <code>grid::<a href="https://rdrr.io/r/grid/unit.html">unit</a>(1, "lines")</code>.
-</td>
-</tr>
-<tr>
-<td>
-<code>newpage</code>
-</td>
-<td>
-If <code>TRUE</code> (default), call <a href="https://rdrr.io/r/grid/grid.newpage.html"><code>grid::grid.newpage()</code></a> before drawing.
-</td>
-</tr>
-<tr>
-<td>
-<code>...</code>
-</td>
-<td>
-Passed to <code>layout</code> when it is a method name (e.g. <code>direction</code> or <code>seed</code>; see <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_layout.html">cgraph_layout</a>()</code>) or a function.
-</td>
-</tr>
-</tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
-<p>The style arguments are lists that override the defaults set with <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./plot_options.html">plot_options</a>()</code>, field by field.</p>
-</section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>A <code>cgraph_plot</code> object, invisibly. Drawn immediately as a side effect; re-drawn if printed or passed to <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> again.</p>
+</tr></tbody></table></section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
+<p>A grid grob (a <code>gTree</code>).</p>
 </section><section id="see-also" class="level2"><h2 class="anchored" data-anchor-id="see-also">See Also</h2>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./plot_options.html">plot_options</a>()</code> to change the style defaults for every plot.</p>
-<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./plot_options.html">plot_options</a>()</code></p>
+<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="./plot_options.html">plot_options</a>()</code></p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X + Y, X --&gt; M --&gt; Y"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">main =</span> <span class="st">"A DAG"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Style all nodes and edges, with per-node and per-edge overrides</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    dag,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> <span class="st">"lightblue"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"navy"</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"gold"</span>))</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"gray40"</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">M =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">3</span>)))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">main =</span> <span class="st">"Styled DAG"</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Square, dashed nodes with custom labels and a curved edge</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    dag,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">shape =</span> <span class="st">"square"</span>, <span class="at">linestyle =</span> <span class="st">"dashed"</span>),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">curvature =</span> <span class="fl">0.3</span>)))),</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="at">A =</span> <span class="st">"Confounder"</span>, <span class="at">X =</span> <span class="st">"Exposure"</span>, <span class="at">Y =</span> <span class="st">"Outcome"</span>)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_plot.html">cgraph_plot</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X + Y, X --&gt; Y"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_grob.html">cgraph_grob</a></span>(p)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  grid<span class="sc">::</span><span class="fu">grid.newpage</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  grid<span class="sc">::</span><span class="fu">grid.draw</span>(g)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="plot_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="plot_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="plot_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="cgraph_grob_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1410,16 +1241,30 @@ Passed to <code>layout</code> when it is a method name (e.g. <code>direction</c
   </div>
 </footer><div class="quartodown-tip-payload" hidden>
 <div data-for="t1">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
 </div>
 <div data-for="t2">
+<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
+</div>
+<div data-for="t3">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
+  x,
+  <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
+  <span class="at">outer_margin</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">"mm"</span>),
+  <span class="at">title_gap</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>),
+  ...
+)</code><span class="quartodown-tip-brief">Plot a causal graph</span>
+</div>
+<div data-for="t4">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t3">
+<div data-for="t5">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
   x,
   <span class="at">method</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -1428,11 +1273,11 @@ Passed to <code>layout</code> when it is a method name (e.g. <code>direction</c
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
 </div>
-<div data-for="t4">
-<code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
-</div>
-<div data-for="t5">
+<div data-for="t6">
 <code class="quartodown-tip-sig"><span class="fu">plot_default_options</span>()</code><span class="quartodown-tip-brief">Default plot styling options</span>
+</div>
+<div data-for="t7">
+<code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
 </div>
 </body>

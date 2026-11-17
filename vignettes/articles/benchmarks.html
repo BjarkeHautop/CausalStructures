@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Benchmarks – CausalStructures 0.0.0.9000</title>
@@ -80,14 +79,15 @@ div.csl-indent {
   margin-left: 2em;
 }</style>
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script><script src="../../site_libs/quarto-nav/headroom.min.js"></script><script src="../../site_libs/clipboard/clipboard.min.js"></script><script src="../../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../../site_libs/quarto-search/fuse.min.js"></script><script src="../../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../../">
+<link href="../../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script><script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../../site_libs/quarto-html/popper.min.js"></script><script src="../../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../../site_libs/quarto-html/anchor.min.js"></script><link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -156,9 +156,13 @@ window.Quarto = {
 };
 </script><meta property="og:title" content="Benchmarks – CausalStructures 0.0.0.9000">
 <meta property="og:description" content="Representing and Reasoning About Causal Graphs">
+<meta property="og:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta property="og:site_name" content="CausalStructures 0.0.0.9000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1037">
 <meta name="twitter:title" content="Benchmarks – CausalStructures 0.0.0.9000">
 <meta name="twitter:description" content="Representing and Reasoning About Causal Graphs">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/CausalStructures/man/figures/logo.png">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-fixed quarto-light">
@@ -409,7 +413,7 @@ window.Quarto = {
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Benchmarks</h1>
+<img src="../../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Benchmarks</h1>
 </div>
 
 
@@ -429,13 +433,13 @@ window.Quarto = {
 <p>Every graph in CausalStructures precomputes and stores each node’s parents, children, spouses, and neighbors directly, so <code><a class="quartodown-tip-ref" data-quartodown-tip="t14" href="../../reference/node-queries.html">parents</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t15" href="../../reference/node-queries.html">spouses</a>()</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t16" href="../../reference/neighbors.html">neighbors</a>()</code> are effectively <span class="math inline">\(O(1)\)</span> lookups rather than scans over the whole edge set. Many higher-level algorithms, including <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/d_separated.html">d_separated</a>()</code>/<code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/m_separated.html">m_separated</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/minimal_separator.html">minimal_separator</a>()</code>, and adjustment-set search, are built on these primitive operations, so their performance depends directly on the efficiency of these basic queries.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The median time of each expression. Memory allocated inside the library, and</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># its garbage collection, is invisible to bench, so only the time is shown.</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>timings <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">iterations =</span> <span class="dv">200</span>) {</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> bench<span class="sc">::</span><span class="fu"><a href="https://bench.r-lib.org/reference/mark.html">mark</a></span>(..., <span class="at">iterations =</span> iterations, <span class="at">check =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="at">expression =</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(b<span class="sc">$</span>expression), <span class="at">median =</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(b<span class="sc">$</span>median))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">expression =</span> <span class="fu">names</span>(b<span class="sc">$</span>expression), <span class="at">median =</span> <span class="fu">format</span>(b<span class="sc">$</span>median))</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -444,7 +448,7 @@ window.Quarto = {
 <p>Single-hop queries such as <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a>()</code> are just slice lookups, so their runtime is essentially unchanged whether the graph has 100 nodes or 10,000:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>graphs <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>), \(n) {</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>graphs <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>), \(n) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a></span>(n, <span class="at">p =</span> <span class="dv">5</span> <span class="sc">/</span> n, <span class="at">seed =</span> <span class="dv">1</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
@@ -453,9 +457,9 @@ window.Quarto = {
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 10,000"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a></span>(graphs[[<span class="dv">3</span>]], <span class="st">"V5000"</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression median</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    n = 100  1.7µs</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  n = 1,000 1.64µs</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 n = 10,000 1.66µs</span></span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    n = 100  981ns</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  n = 1,000  972ns</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 n = 10,000  972ns</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -475,11 +479,11 @@ window.Quarto = {
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"markov_blanket"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/markov_blanket.html">markov_blanket</a></span>(dag, x)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          expression  median</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 d_separated (DAG) 148.2µs</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m_separated (MAG)  13.1µs</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  topological_sort    59µs</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 minimal_separator 166.3µs</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    markov_blanket  16.5µs</span></span></code></pre></div>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 d_separated (DAG)  43.5µs</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m_separated (MAG)  7.86µs</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  topological_sort 25.41µs</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 minimal_separator 50.98µs</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    markov_blanket  9.62µs</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -492,12 +496,12 @@ window.Quarto = {
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="st">"V33"</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sizes <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>n_sets <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>n_sets <span class="ot">&lt;-</span> <span class="fu">vapply</span>(</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  sizes,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  \(ms) <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(admg, x, y, <span class="at">minimal =</span> <span class="cn">FALSE</span>, <span class="at">max_size =</span> ms)),</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span>(<span class="dv">1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  \(ms) <span class="fu">length</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(admg, x, y, <span class="at">minimal =</span> <span class="cn">FALSE</span>, <span class="at">max_size =</span> ms)),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">integer</span>(<span class="dv">1</span>)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">timings</span>(</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_size = 2"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/all_adjustment_sets.html">all_adjustment_sets</a></span>(</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      admg,</span>
@@ -524,10 +528,10 @@ window.Quarto = {
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">sets =</span> n_sets</span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     expression   median sets</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 max_size = 2   1.47ms   33</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 max_size = 3  19.09ms  272</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 max_size = 4 161.43ms 1537</span></span></code></pre></div>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     expression median sets</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 max_size = 2  884µs   33</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 max_size = 3   12ms  272</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 max_size = 4  104ms 1537</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -544,9 +548,9 @@ window.Quarto = {
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">20</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     n = 10 105.88µs</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     n = 20 747.35µs</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     n = 40   6.17ms</span></span></code></pre></div>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     n = 10   62.8µs</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     n = 20 427.19µs</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     n = 40   3.65ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -556,14 +560,14 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A PDAG whose k nodes are all joined by undirected edges</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>clique <span class="ot">&lt;-</span> <span class="cf">function</span>(k) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"V"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(k)), <span class="dv">2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">combn</span>(<span class="fu">paste0</span>(<span class="st">"V"</span>, <span class="fu">seq_len</span>(k)), <span class="dv">2</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/cgraph.html">cgraph</a></span>(</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pairs[<span class="dv">1</span>, ], <span class="st">"---"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu">paste</span>(pairs[<span class="dv">1</span>, ], <span class="st">"---"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"PDAG"</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>cliques <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), clique)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(cliques, count_dags, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span>(<span class="dv">1</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>cliques <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), clique)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(cliques, count_dags, <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]   120  5040 40320</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
@@ -576,12 +580,12 @@ window.Quarto = {
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              expression  median</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     count_dags, k = 5 527.8µs</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     count_dags, k = 7  35.7ms</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     count_dags, k = 8 259.1ms</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 enumerate_dags, k = 5 631.2µs</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 enumerate_dags, k = 7  38.2ms</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 enumerate_dags, k = 8 491.9ms</span></span></code></pre></div>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     count_dags, k = 5 304.3µs</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     count_dags, k = 7  23.6ms</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     count_dags, k = 8 174.2ms</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 enumerate_dags, k = 5 334.2µs</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 enumerate_dags, k = 7  20.3ms</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 enumerate_dags, k = 8 338.7ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -592,14 +596,14 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A PAG whose k nodes are all joined by o-o edges</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>circle_clique <span class="ot">&lt;-</span> <span class="cf">function</span>(k) {</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"V"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(k)), <span class="dv">2</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">combn</span>(<span class="fu">paste0</span>(<span class="st">"V"</span>, <span class="fu">seq_len</span>(k)), <span class="dv">2</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/cgraph.html">cgraph</a></span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pairs[<span class="dv">1</span>, ], <span class="st">"o-o"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">spec =</span> <span class="fu">paste</span>(pairs[<span class="dv">1</span>, ], <span class="st">"o-o"</span>, pairs[<span class="dv">2</span>, ], <span class="at">collapse =</span> <span class="st">", "</span>),</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"PAG"</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>pags <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>, circle_clique)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span>(pags, \(pag) <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pag)), <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span>(<span class="dv">1</span>))</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>pags <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>, circle_clique)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(pags, \(pag) <span class="fu">length</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pag)), <span class="fu">integer</span>(<span class="dv">1</span>))</span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  23 242</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
@@ -608,8 +612,8 @@ window.Quarto = {
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      k = 3   4.32ms</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      k = 4 439.98ms</span></span></code></pre></div>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      k = 3   2.22ms</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      k = 4 204.48ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>

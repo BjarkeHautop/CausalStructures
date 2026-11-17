@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.11.9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Plotting Causal Graphs – CausalStructures 0.0.0.9000</title>
@@ -61,14 +60,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script><script src="../../site_libs/quarto-nav/headroom.min.js"></script><script src="../../site_libs/clipboard/clipboard.min.js"></script><script src="../../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../../site_libs/quarto-search/fuse.min.js"></script><script src="../../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../../">
+<link href="../../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script><script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../../site_libs/quarto-html/popper.min.js"></script><script src="../../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../../site_libs/quarto-html/anchor.min.js"></script><link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-a30fdb1d660ea9bb63b3f4fd7d6b7902.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dfebb157b562ab802c491a652fa23640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-895821ad15f059b9418e27e3b3cc8812.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -355,6 +355,7 @@ visitors who prefer it, before Quarto reads the stored choice.
    
   <ul>
 <li><a href="#basic-usage" id="toc-basic-usage" class="nav-link active" data-scroll-target="#basic-usage">Basic usage</a></li>
+  <li><a href="#styling-a-plot" id="toc-styling-a-plot" class="nav-link" data-scroll-target="#styling-a-plot">Styling a plot</a></li>
   <li><a href="#plot-layouts" id="toc-plot-layouts" class="nav-link" data-scroll-target="#plot-layouts">Layout</a></li>
   <li>
 <a href="#styling-nodes" id="toc-styling-nodes" class="nav-link" data-scroll-target="#styling-nodes">Styling nodes</a>
@@ -365,7 +366,7 @@ visitors who prefer it, before Quarto reads the stored choice.
   <li>
 <a href="#styling-edges" id="toc-styling-edges" class="nav-link" data-scroll-target="#styling-edges">Styling edges</a>
   <ul class="collapse">
-<li><a href="#targeting-specific-edges" id="toc-targeting-specific-edges" class="nav-link" data-scroll-target="#targeting-specific-edges">Targeting specific edges</a></li>
+<li><a href="#parallel-edges" id="toc-parallel-edges" class="nav-link" data-scroll-target="#parallel-edges">Parallel edges</a></li>
   <li><a href="#curvature-and-automatic-routing" id="toc-curvature-and-automatic-routing" class="nav-link" data-scroll-target="#curvature-and-automatic-routing">Curvature and automatic routing</a></li>
   <li><a href="#explicit-edge-paths" id="toc-explicit-edge-paths" class="nav-link" data-scroll-target="#explicit-edge-paths">Explicit edge paths</a></li>
   </ul>
@@ -385,7 +386,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Plotting Causal Graphs</h1>
+<img src="../../man/figures/logo-light.png" class="quartodown-logo light-content" alt=""><img src="../../man/figures/logo.png" class="quartodown-logo dark-content" alt=""><h1 class="title">Plotting Causal Graphs</h1>
 </div>
 
 
@@ -402,10 +403,10 @@ visitors who prefer it, before Quarto reads the stored choice.
 </header><p class="source-note">
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/vignettes/articles/plot.qmd"><code>vignettes/articles/plot.qmd</code></a></small>
 </p>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> draws a <code>cgraph</code> with <a href="https://stat.ethz.ch/R-manual/R-devel/library/grid/html/00Index.html">grid</a> graphics. For node placement, you can use the layered layout from <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a>, one of the built-in layouts, or provide your own layout:</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a>()</code> draws a <code>cgraph</code> with <a href="https://stat.ethz.ch/R-manual/R-devel/library/grid/html/00Index.html">grid</a> graphics. For node placement, you can use the layouts provided by <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a> or <a href="https://github.com/JuliaGraphs/NetworkLayout.jl">NetworkLayout.jl</a><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, or provide your own layout:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<a href="https://bjarkehautop.github.io/CausalStructures/">CausalStructures</a>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -420,15 +421,15 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 <div class="callout-body-container callout-body">
 <p>There are many conventions for drawing causal graphs. For example, you might box conditioned variables, dash latent variables, draw <code>&lt;-&gt;</code> as a dashed arc, or use different colors for exposures and outcomes.</p>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> does not impose any of these conventions by default. Instead, you can use its styling options, global defaults, and layouts to choose the conventions that make sense for your application<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a>()</code> does not impose any of these conventions by default. Instead, you can use the style functions, global defaults, and layouts to choose the conventions that make sense for your application<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
 </div>
 </div>
 <section id="basic-usage" class="level2"><h2 class="anchored" data-anchor-id="basic-usage">Basic usage</h2>
-<p>You can pass any <code>cgraph</code> to <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code>, and all edge marks are supported:</p>
+<p>You can pass any <code>cgraph</code> to <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a>()</code>, and all edge marks are supported:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>unknown <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A &lt;-&gt; B o-&gt; C o-- A"</span>, <span class="at">class =</span> <span class="st">"UNKNOWN"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(unknown)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(unknown)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -444,7 +445,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C --&gt; X, A --&gt; X + K, X --&gt; F + D, K --&gt; Y, D --&gt; Y + G, Y --&gt; H"</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag)</span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -454,78 +455,63 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> draws the graph right away and returns a <code>cgraph_plot</code> object invisibly. Printing it, or passing it to <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> again, redraws it, and its <code>grob</code> element is the grid grob, so you can also draw it yourself with <code>grid::<a href="https://rdrr.io/r/grid/grid.draw.html">grid.draw</a>()</code>:</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a>()</code> returns a <code>cgraph_plot</code> object, which is drawn when it is printed. At the console that happens automatically; inside a function or loop, call <code>print()</code> on it. <code>plot(dag)</code> is a shortcut that builds the plot and draws it right away.</p>
+</section><section id="styling-a-plot" class="level2"><h2 class="anchored" data-anchor-id="styling-a-plot">Styling a plot</h2>
+<p>Before a plot is drawn, you can add styling to it step by step, chained with <code>|&gt;</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"gray60"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"lightskyblue"</span>, <span class="at">nodes =</span> <span class="st">"Y"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="plot_files/figure-html/plot-object-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="plot_files/figure-html/compose-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(p<span class="sc">$</span>grob)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "gTree" "grob"  "gDesc"</span></span></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-</div>
-<p>There are four main areas of styling:</p>
+<p>There are five style functions:</p>
 <ul>
 <li>
-<strong><a href="#plot-layouts">Layout</a></strong>: where nodes are placed</li>
+<strong><code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a>()</code></strong> styles the nodes in <code>nodes</code>.</li>
 <li>
-<strong><a href="#styling-nodes">Styling nodes</a></strong>: node appearance</li>
+<strong><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>()</code></strong> styles the edges joining a node in <code>from</code> to a node in <code>to</code>, optionally of a given <code>type</code>.</li>
 <li>
-<strong><a href="#styling-edges">Styling edges</a></strong>: edge appearance</li>
+<strong><code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a>()</code></strong> styles the node labels in <code>nodes</code>, and <strong><code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/plot-styling.html">label_nodes</a>()</code></strong> sets their text.</li>
 <li>
-<strong><a href="#labels-and-titles">Labels and titles</a></strong>: text and annotations</li>
+<strong><code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/plot-styling.html">style_title</a>()</code></strong> styles the title.</li>
 </ul>
-<p>If you want to set defaults for an entire project, you can use <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/plot_options.html">plot_options</a>()</code>. Arguments passed to <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> still take precedence, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/plot_options.html">plot_options</a>(plot_default_options())</code> resets to the built-in defaults:</p>
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/plot_options.html">plot_options</a></span>(<span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>), <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">lwd =</span> <span class="dv">2</span>))</span></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Per-node and per-edge styling
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Every field in <code>node_style</code> and <code>edge_style</code> applies to all nodes or edges. <code>node_style$by_node</code> and <code>edge_style$by_edge</code> override fields for specific nodes and edges, which otherwise keep the global value:</p>
+<p>Each call styles only the nodes or edges it selects; leaving out a selector selects everything. If two calls set the same field, the later one wins, so you can start with a style for all edges, as above, and then single some out.</p>
+<p>Since the selectors are node sets, you can pass the results of query functions straight in. For example, to highlight the parents of <code>Y</code> and dash the edges into it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"lightskyblue"</span>))),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"gray60"</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>)))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"lightskyblue"</span>, <span class="at">nodes =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="../../reference/node-queries.html">parents</a></span>(dag, <span class="st">"Y"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">to =</span> <span class="st">"Y"</span>, <span class="at">type =</span> <span class="st">"--&gt;"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="plot_files/figure-html/per-node-edge-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="plot_files/figure-html/compose-queries-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Only <code>Y</code> is filled blue; the other nodes keep the default white. The <code>K --&gt; Y</code> edge is crimson, and the global <code>col</code> turns every other edge gray. The sections below list the fields each style list accepts.</p>
+<p>A style function also accepts a graph directly, starting the plot with the default layout, so <code>dag |&gt; style_nodes(fill = "gold")</code> works too.</p>
+<p>If you want to set defaults for an entire project, you can use <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/plot_options.html">plot_options</a>()</code>, with a list of fields for each of <code>node_style</code>, <code>edge_style</code>, <code>label_style</code> and <code>title_style</code>. The style functions still take precedence, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/plot_options.html">plot_options</a>(plot_default_options())</code> resets to the built-in defaults:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/plot_options.html">plot_options</a></span>(<span class="at">node_style =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>), <span class="at">edge_style =</span> <span class="fu">list</span>(<span class="at">lwd =</span> <span class="dv">2</span>))</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-</div>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/cgraph_grob.html">cgraph_grob</a>()</code> gives the grid grob of a plot, if you want to draw it yourself with <code>grid::grid.draw()</code>, for example in a viewport of a larger figure.</p>
 </section><section id="plot-layouts" class="level2"><h2 class="anchored" data-anchor-id="plot-layouts">Layout</h2>
 <p>The <code>layout</code> argument controls where the nodes are placed. It defaults to <code>"sugiyama"</code> for a <code>DAG</code>, and to <code>"stress"</code> otherwise.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">layout =</span> <span class="st">"stress"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">layout =</span> <span class="st">"stress"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -535,7 +521,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p>You can use these names for the built-in layouts. <code>"sugiyama"</code> comes from <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a>, while the others come from <a href="https://github.com/JuliaGraphs/NetworkLayout.jl">NetworkLayout.jl</a>, as in CausalStructures.jl; see <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">?cgraph_layout</a></code> for details:</p>
+<p>You can use these names for the built-in layouts. <code>"sugiyama"</code> comes from <a href="https://github.com/BjarkeHautop/Sugiyama.jl">Sugiyama.jl</a>, while the others come from <a href="https://github.com/JuliaGraphs/NetworkLayout.jl">NetworkLayout.jl</a>, as in CausalStructures.jl; see <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">?cgraph_layout</a></code> for details:</p>
 <table class="caption-top table">
 <thead><tr class="header">
 <th><code>layout</code></th>
@@ -576,7 +562,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>For <code>"sugiyama"</code>, <code>direction</code> (<code>"right"</code>, the default, <code>"down"</code>, <code>"up"</code>, or <code>"left"</code>) sets which way the layers flow:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">direction =</span> <span class="st">"down"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">direction =</span> <span class="st">"down"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -586,23 +572,23 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p>If you want to place the nodes yourself, you can pass explicit positions instead of a name. You can either use a named list of <code><a href="https://rdrr.io/r/base/c.html">c</a>(x, y)</code> pairs keyed by node name, or a <code>data.frame</code> with <code>name</code>, <code>x</code>, and <code>y</code> columns:</p>
+<p>If you want to place the nodes yourself, you can pass explicit positions instead of a name. You can either use a named list of <code>c(x, y)</code> pairs keyed by node name, or a <code>data.frame</code> with <code>name</code>, <code>x</code>, and <code>y</code> columns:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">C =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">D =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">F =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>),</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3</span>, <span class="dv">0</span>),</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">G =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>),</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">H =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">0</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu">list</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">A =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">C =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">K =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">X =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">D =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">F =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">0</span>),</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">G =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">H =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">0</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -622,12 +608,12 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You can compute a starting layout using <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">cgraph_layout</a>()</code>, and then manually adjust a few nodes:</p>
+<p>You can compute a starting layout using <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">cgraph_layout</a>()</code>, and then manually adjust a few nodes:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag, <span class="at">method =</span> <span class="st">"stress"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>positions[positions<span class="sc">$</span>name <span class="sc">==</span> <span class="st">"G"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"x"</span>, <span class="st">"y"</span>)] <span class="ot">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="fl">1.5</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">layout =</span> positions)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag, <span class="at">method =</span> <span class="st">"stress"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>positions[positions<span class="sc">$</span>name <span class="sc">==</span> <span class="st">"G"</span>, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.5</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">layout =</span> positions)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -649,11 +635,11 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Sugiyama.jl implements its own routing using dummy nodes. If you prefer the automatic Bezier-curve routing used by <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code>, you can compute the Sugiyama positions with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">cgraph_layout</a>()</code> and pass those instead:</p>
+<p>Sugiyama.jl implements its own routing using dummy nodes. If you prefer the automatic Bezier-curve routing used otherwise, you can compute the Sugiyama positions with <code><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">cgraph_layout</a>()</code> and pass those instead:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dag_layered <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X, A --&gt; B, X --&gt; Y, B --&gt; Y, A --&gt; Y"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag_layered, <span class="at">layout =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag_layered, <span class="st">"sugiyama"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dag_layered <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X, A --&gt; B, X --&gt; Y, B --&gt; Y, A --&gt; Y"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag_layered, <span class="at">layout =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag_layered, <span class="st">"sugiyama"</span>))</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -666,7 +652,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </section><section id="styling-nodes" class="level2"><h2 class="anchored" data-anchor-id="styling-nodes">Styling nodes</h2>
-<p><code>node_style$by_node</code> is a named list of per-node overrides, keyed by node name.</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a>()</code> takes these fields:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 13%">
@@ -726,17 +712,10 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>Combine color, border, and shape to highlight a node:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"lightblue"</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"navy"</span>,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"salmon"</span>, <span class="at">col =</span> <span class="st">"#DC143C"</span>),</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">shape =</span> <span class="st">"square"</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>, <span class="at">col =</span> <span class="st">"navy"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"salmon"</span>, <span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">nodes =</span> <span class="st">"A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">shape =</span> <span class="st">"square"</span>, <span class="at">nodes =</span> <span class="st">"K"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -749,12 +728,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>You can set <code>shape</code> to <code>"circle"</code> (the default), <code>"square"</code>, <code>"ellipse"</code>, or <code>"rect"</code>. The latter two are mainly useful when you want to fit an oblong label. You can also use <code>linestyle</code> to style the border, for example to mark a latent variable:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">linestyle =</span> <span class="st">"dashed"</span>, <span class="at">col =</span> <span class="st">"gray50"</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">linestyle =</span> <span class="st">"dashed"</span>, <span class="at">col =</span> <span class="st">"gray50"</span>, <span class="at">nodes =</span> <span class="st">"X"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -767,15 +741,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>If you only want to draw the node names, you can make the fill and the border transparent. Edges still stop at the (now invisible) node boundary, so you can use <code>"rect"</code> with a smaller <code>padding</code> to bring the arrowheads closer to the text:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"transparent"</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"transparent"</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="st">"rect"</span>,</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">padding =</span> <span class="dv">1</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"transparent"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"transparent"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="st">"rect"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">padding =</span> <span class="dv">1</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -789,11 +761,8 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>By default (<code>radius = NULL</code>), nodes are sized to fit their labels:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>longlabels <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"Exposure --&gt; Mediator --&gt; Y_outcome"</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  longlabels,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Exposure =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">shape =</span> <span class="st">"ellipse"</span>)))</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>longlabels <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"Exposure --&gt; Mediator --&gt; Y_outcome"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>longlabels <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">shape =</span> <span class="st">"ellipse"</span>, <span class="at">nodes =</span> <span class="st">"Exposure"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -806,7 +775,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>If you want to control the size yourself, you can set <code>radius</code> explicitly:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">radius =</span> <span class="dv">6</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">radius =</span> <span class="dv">6</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -817,16 +786,48 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </section></section><section id="styling-edges" class="level2"><h2 class="anchored" data-anchor-id="styling-edges">Styling edges</h2>
-<p><code>edge_style</code> can override its global fields at the following levels, checked in this order:</p>
-<ol type="1">
-<li>one exact edge: a <code>.by_type</code> entry under a node pair in <code>by_edge</code>, keyed by the edge’s notation, e.g. <code>by_edge = list(X = list(Y = list(.by_type = list("&lt;-&gt;" = ...))))</code>
-</li>
-<li>a node pair in <code>by_edge</code> (<code>by_edge[[src]][[dst]]</code>), in either order</li>
-<li>a node in <code>by_edge</code> (<code>by_edge[[node]]</code>), for every edge touching it</li>
-<li>an edge-type sub-list (<code>directed</code>, <code>undirected</code>, <code>bidirected</code>, <code>partially_directed</code>, <code>partially_undirected</code>, <code>partial</code>)</li>
-<li>the global fields of <code>edge_style</code>
-</li>
-</ol>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>()</code> selects the edges joining a node in <code>from</code> to a node in <code>to</code>, in either direction. <code>type</code> keeps only the edges with the given notation, read from <code>from</code> to <code>to</code>, so it also fixes the direction:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 61%">
+<col style="width: 38%">
+</colgroup>
+<thead><tr class="header">
+<th>Call</th>
+<th>Styles</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ...)</code></td>
+<td>every edge</td>
+</tr>
+<tr class="even">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ..., from = "X")</code></td>
+<td>every edge touching <code>X</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ..., from = "X", type = "--&gt;")</code></td>
+<td>the edges out of <code>X</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ..., to = "X", type = "--&gt;")</code></td>
+<td>the edges into <code>X</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ..., from = "A", to = "X")</code></td>
+<td>the edges between <code>A</code> and <code>X</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>(p, ..., type = "&lt;-&gt;")</code></td>
+<td>every bidirected edge</td>
+</tr>
+</tbody>
+</table>
+<p>The notations are <code>"--&gt;"</code>, <code>"&lt;--"</code>, <code>"---"</code>, <code>"&lt;-&gt;"</code>, <code>"o-&gt;"</code>, <code>"&lt;-o"</code>, <code>"o--"</code>, <code>"--o"</code>, and <code>"o-o"</code>. <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>()</code> takes these fields:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 16%">
@@ -890,15 +891,11 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>Let’s style some edges by type:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"X --&gt; Y, X &lt;-&gt; Z, Z --&gt; Y"</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  admg,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">directed =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"steelblue"</span>),</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bidirected =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"X --&gt; Y, X &lt;-&gt; Z, Z --&gt; Y"</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(admg) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">type =</span> <span class="st">"--&gt;"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>, <span class="at">type =</span> <span class="st">"&lt;-&gt;"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -911,7 +908,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p><code>fill</code> controls the arrowhead’s fill color. By default (<code>NULL</code>), it uses the edge’s resolved <code>col</code>, so arrowheads are solid. If you want hollow, outline-only arrowheads, pass <code>NA</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="cn">NA</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">fill =</span> <span class="cn">NA</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -924,7 +921,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p><code>lty</code> styles the edge line itself. For example, you can use it to dash <code>&lt;-&gt;</code> edges:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(admg, <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">bidirected =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">lty =</span> <span class="st">"dashed"</span>)))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>admg <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">type =</span> <span class="st">"&lt;-&gt;"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -937,7 +934,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>If you prefer some space between each end of an edge and the node border, you can set <code>gap</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">gap =</span> <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">gap =</span> <span class="dv">1</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -947,34 +944,15 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<section id="targeting-specific-edges" class="level3"><h3 class="anchored" data-anchor-id="targeting-specific-edges">Targeting specific edges</h3>
-<p>If you want to change something for a specific edge, you can use a node pair in <code>by_edge</code>:</p>
+<section id="parallel-edges" class="level3"><h3 class="anchored" data-anchor-id="parallel-edges">Parallel edges</h3>
+<p>If an <code>ADMG</code> has both <code>X --&gt; Y</code> and <code>X &lt;-&gt; Y</code>, <code>from = "X", to = "Y"</code> selects both edges. If you need to distinguish them, add <code>type</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"red"</span>)))))</span></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="plot_files/figure-html/edge-pair-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>A node pair is unordered. This means that if an <code>ADMG</code> has both <code>X --&gt; Y</code> and <code>X &lt;-&gt; Y</code>, the pair applies to both edges. If you need to distinguish them, add a <code>.by_type</code> entry instead:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>shared <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"X --&gt; Y, X &lt;-&gt; Y"</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  shared,</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"steelblue"</span>,</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">.by_type =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"&lt;-&gt;"</span> <span class="ot">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>))))</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>shared <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"X --&gt; Y, X &lt;-&gt; Y"</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(shared) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"steelblue"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">from =</span> <span class="st">"X"</span>, <span class="at">to =</span> <span class="st">"Y"</span>, <span class="at">type =</span> <span class="st">"&lt;-&gt;"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -984,25 +962,12 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Symmetric edges
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For symmetric edges, the order does not matter, so <code>by_edge$Y$X</code> with <code>"&lt;-&gt;"</code> is the same key as <code>by_edge$X$Y</code> with <code>"&lt;-&gt;"</code>.</p>
-</div>
-</div>
 <p>Notice that the two edges between <code>X</code> and <code>Y</code> are automatically curved apart, so they don’t overlap.</p>
 </section><section id="curvature-and-automatic-routing" class="level3"><h3 class="anchored" data-anchor-id="curvature-and-automatic-routing">Curvature and automatic routing</h3>
-<p><code>curvature</code> bows an edge into an arc instead of drawing it straight. Positive values bow the edge to the left when travelling from <code>src</code> to <code>dst</code>, while negative values bow it to the right.</p>
+<p><code>curvature</code> bows an edge into an arc instead of drawing it straight. Positive values bow the edge to the left when travelling from its first node to its second (as listed by <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/edges.html">edges</a>()</code>), while negative values bow it to the right.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(admg, <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">bidirected =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.3</span>)))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>admg <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">type =</span> <span class="st">"&lt;-&gt;"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1012,12 +977,12 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p>If a straight <code>src --&gt; dst</code> edge would pass too close to a non-incident node, <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> automatically bends it around that node with a Bezier curve. Edges with nothing in the way are always drawn straight.</p>
+<p>If a straight edge would pass too close to a non-incident node, it is automatically bent around that node with a Bezier curve. Edges with nothing in the way are always drawn straight.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>detour <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X + Y, X --&gt; Y"</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(detour, <span class="at">layout =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">0</span>)))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>detour <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A --&gt; X + Y, X --&gt; Y"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(detour, <span class="at">layout =</span> <span class="fu">list</span>(<span class="at">A =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">X =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">0</span>)))</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1030,11 +995,8 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>If you want to disable this automatic routing for a particular edge, you can set its <code>curvature</code> to <code>0</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  detour,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">0</span>)),</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">curvature =</span> <span class="dv">0</span>))))</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(detour, <span class="at">layout =</span> <span class="fu">list</span>(<span class="at">A =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">X =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">0</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">curvature =</span> <span class="dv">0</span>, <span class="at">from =</span> <span class="st">"A"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1048,13 +1010,10 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>Edges are normally drawn as straight lines unless automatic routing is needed. If you want to control the path yourself, you can set <code>path</code> and provide intermediate points for the edge, in the coordinates of the layout. For example, the edge <code>K --&gt; Y</code> below is drawn through the point <code>(0.5, -0.25)</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag, <span class="at">method =</span> <span class="st">"stress"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> positions,</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">path =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.5</span>, <span class="sc">-</span><span class="fl">0.25</span>)))))</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/cgraph_layout.html">cgraph_layout</a></span>(dag, <span class="at">method =</span> <span class="st">"stress"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">layout =</span> positions) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">path =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="sc">-</span><span class="fl">0.25</span>), <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1064,55 +1023,18 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p>For several points, <code>path</code> can also be a two-column matrix, a <code>data.frame</code> with <code>x</code> and <code>y</code> columns, or a list of <code><a href="https://rdrr.io/r/base/c.html">c</a>(x, y)</code> points. Under the reversed pair, <code>by_edge$Y$K</code>, list the points from <code>Y</code> to <code>K</code>.</p>
+<p>For several points, <code>path</code> can also be a two-column matrix, a <code>data.frame</code> with <code>x</code> and <code>y</code> columns, or a list of <code>c(x, y)</code> points, listed from the node in <code>from</code> to the node in <code>to</code>.</p>
 </section></section><section id="labels-and-titles" class="level2"><h2 class="anchored" data-anchor-id="labels-and-titles">Labels and titles</h2>
 <section id="labels" class="level3"><h3 class="anchored" data-anchor-id="labels">Labels</h3>
-<p><code>label_style$by_node</code> overrides the node label fields per node, like <a href="#styling-nodes">node styling</a>.</p>
-<table class="caption-top table">
-<thead><tr class="header">
-<th>Argument / field</th>
-<th>Default</th>
-<th>Controls</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>labels</code></td>
-<td><code>NULL</code></td>
-<td>text drawn in each node</td>
-</tr>
-<tr class="even">
-<td><code>label_style$col</code></td>
-<td><code>"black"</code></td>
-<td>node label text color</td>
-</tr>
-<tr class="odd">
-<td><code>label_style$fontsize</code></td>
-<td><code>10</code></td>
-<td>node label font size</td>
-</tr>
-<tr class="even">
-<td><code>label_style$fontface</code></td>
-<td><code>"plain"</code></td>
-<td>node label font face</td>
-</tr>
-<tr class="odd">
-<td><code>label_style$fontfamily</code></td>
-<td><code>""</code></td>
-<td>node label font family</td>
-</tr>
-</tbody>
-</table>
-<p>By default, each node is labelled with its own name. If you want different labels, you can set them with <code>labels</code>. Node sizing takes multi-line labels into account, so the nodes grow to fit:</p>
+<p>By default, each node is labelled with its own name. If you want different labels, you can set them with <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/plot-styling.html">label_nodes</a>()</code>. Node sizing takes multi-line labels into account, so the nodes grow to fit:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A0 --&gt; L1 --&gt; A1 --&gt; Y, A0 --&gt; Y + A1"</span>),</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">A0 =</span> <span class="st">"Treatment</span><span class="sc">\n</span><span class="st">at baseline"</span>,</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">L1 =</span> <span class="st">"Confounder</span><span class="sc">\n</span><span class="st">at time 1"</span>,</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">A1 =</span> <span class="st">"Treatment</span><span class="sc">\n</span><span class="st">at time 1"</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(<span class="st">"A0 --&gt; L1 --&gt; A1 --&gt; Y, A0 --&gt; Y + A1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="../../reference/plot-styling.html">label_nodes</a></span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">A0 =</span> <span class="st">"Treatment</span><span class="sc">\n</span><span class="st">at baseline"</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">L1 =</span> <span class="st">"Confounder</span><span class="sc">\n</span><span class="st">at time 1"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">A1 =</span> <span class="st">"Treatment</span><span class="sc">\n</span><span class="st">at time 1"</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1122,13 +1044,41 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </div>
-<p>You can use <code>col</code> and <code>fontsize</code> to style the label text:</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a>()</code> styles the label text of the nodes in <code>nodes</code>:</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Field</th>
+<th>Default</th>
+<th>Controls</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>col</code></td>
+<td><code>"black"</code></td>
+<td>text color</td>
+</tr>
+<tr class="even">
+<td><code>fontsize</code></td>
+<td><code>10</code></td>
+<td>font size</td>
+</tr>
+<tr class="odd">
+<td><code>fontface</code></td>
+<td><code>"plain"</code></td>
+<td>font face</td>
+</tr>
+<tr class="even">
+<td><code>fontfamily</code></td>
+<td><code>""</code></td>
+<td>font family</td>
+</tr>
+</tbody>
+</table>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fontsize =</span> <span class="dv">13</span>, <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>)))</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a></span>(<span class="at">fontsize =</span> <span class="dv">13</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a></span>(<span class="at">col =</span> <span class="st">"#DC143C"</span>, <span class="at">nodes =</span> <span class="st">"A"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1139,7 +1089,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </section><section id="edge-labels" class="level3"><h3 class="anchored" data-anchor-id="edge-labels">Edge labels</h3>
-<p>Edge label fields are part of <code>edge_style</code>, so they use the same levels as <a href="#styling-edges">edge styling</a>.</p>
+<p>Edge labels are set with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a>()</code>, so they select edges in the same way as <a href="#styling-edges">edge styling</a>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 18%">
@@ -1180,7 +1130,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <tr class="even">
 <td><code>label_shift</code></td>
 <td><code>0.5</code></td>
-<td>position along the edge, 0 (source) to 1 (destination)</td>
+<td>position along the edge, 0 (first node) to 1 (second node)</td>
 </tr>
 <tr class="odd">
 <td><code>label_distance</code></td>
@@ -1198,10 +1148,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>Let’s add a label to the edge <code>K --&gt; Y</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">label =</span> <span class="st">"hello"</span>))))</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dag <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">label =</span> <span class="st">"hello"</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1214,14 +1161,9 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>By default, the label follows the edge’s angle. You can use <code>label_shift</code> and <code>label_distance</code> to move it along or away from the edge:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label_shift =</span> <span class="fl">0.75</span>,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">label_distance =</span> <span class="dv">4</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">label =</span> <span class="st">"hi"</span>)))</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">label_shift =</span> <span class="fl">0.75</span>, <span class="at">label_distance =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">label =</span> <span class="st">"hi"</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1234,22 +1176,16 @@ visitors who prefer it, before Quarto reads the stored choice.
 <p>If an edge is steep or curved, following its angle can make the label hard to read. You can use <code>label_rotation</code> to give it a fixed angle instead:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  dag,</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">A =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">label =</span> <span class="st">"steep"</span>,</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">label_rotation =</span> <span class="dv">0</span>,</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">label_distance =</span> <span class="dv">6</span>,</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">label_col =</span> <span class="st">"#DC143C"</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">label =</span> <span class="st">"follows"</span>))</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag) <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"steep"</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label_rotation =</span> <span class="dv">0</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">label_distance =</span> <span class="dv">6</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">label_col =</span> <span class="st">"#DC143C"</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">from =</span> <span class="st">"A"</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">to =</span> <span class="st">"X"</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">label =</span> <span class="st">"follows"</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1260,11 +1196,12 @@ visitors who prefer it, before Quarto reads the stored choice.
 </div>
 </div>
 </section><section id="titles" class="level3"><h3 class="anchored" data-anchor-id="titles">Titles</h3>
+<p>If you want to add a title, set <code>main</code>, and style it with <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/plot-styling.html">style_title</a>()</code>, which takes the same fields as <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a>()</code>:</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 27%">
-<col style="width: 29%">
-<col style="width: 43%">
+<col style="width: 21%">
+<col style="width: 32%">
+<col style="width: 46%">
 </colgroup>
 <thead><tr class="header">
 <th>Argument / field</th>
@@ -1278,31 +1215,31 @@ visitors who prefer it, before Quarto reads the stored choice.
 <td>plot title; <code>NULL</code> means no title</td>
 </tr>
 <tr class="even">
-<td><code>title_style$fontsize</code></td>
+<td><code>fontsize</code></td>
 <td><code>14</code></td>
 <td>title font size</td>
 </tr>
 <tr class="odd">
-<td><code>title_style$col</code></td>
+<td><code>col</code></td>
 <td><code>"black"</code></td>
 <td>title color</td>
 </tr>
 <tr class="even">
-<td><code>title_style$fontface</code></td>
+<td><code>fontface</code></td>
 <td><code>"bold"</code></td>
 <td>title font face</td>
 </tr>
 <tr class="odd">
 <td><code>title_gap</code></td>
-<td><code>grid::<a href="https://rdrr.io/r/grid/unit.html">unit</a>(1, "lines")</code></td>
+<td><code>grid::unit(1, "lines")</code></td>
 <td>gap between the title and the graph</td>
 </tr>
 </tbody>
 </table>
-<p>If you want to add a title, set <code>main</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">main =</span> <span class="st">"My DAG"</span>, <span class="at">title_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fontsize =</span> <span class="dv">20</span>, <span class="at">col =</span> <span class="st">"navy"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">main =</span> <span class="st">"My DAG"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/plot-styling.html">style_title</a></span>(<span class="at">fontsize =</span> <span class="dv">20</span>, <span class="at">col =</span> <span class="st">"navy"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1327,7 +1264,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <tbody>
 <tr class="odd">
 <td><code>outer_margin</code></td>
-<td><code>grid::<a href="https://rdrr.io/r/grid/unit.html">unit</a>(2, "mm")</code></td>
+<td><code>grid::unit(2, "mm")</code></td>
 <td>padding around the whole plot</td>
 </tr>
 <tr class="even">
@@ -1337,10 +1274,10 @@ visitors who prefer it, before Quarto reads the stored choice.
 </tr>
 </tbody>
 </table>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> draws into whatever graphics device is open, so the figure size is set the usual R way, e.g. with <code>grDevices::<a href="https://rdrr.io/r/grDevices/png.html">png</a>(width =, height =)</code> or a chunk’s <code>fig-width</code>/<code>fig-height</code>. Let’s make the figure a bit larger:</p>
+<p>A plot is drawn into whatever graphics device is open, so the figure size is set the usual R way, e.g. with <code>grDevices::png(width =, height =)</code> or a chunk’s <code>fig-width</code>/<code>fig-height</code>. Let’s make the figure a bit larger:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1364,7 +1301,7 @@ Figure 1
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The default figure size works well for small examples. As your graph gets larger, labels and edges can become cramped or overlap. Increase the figure size (and, if needed, <code>node_style$radius</code> or <code>label_style$fontsize</code>) to keep larger graphs readable.</p>
+<p>The default figure size works well for small examples. As your graph gets larger, labels and edges can become cramped or overlap. Increase the figure size (and, if needed, the node <code>radius</code> or the label <code>fontsize</code>) to keep larger graphs readable.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1381,61 +1318,48 @@ Figure 1
 </div>
 </div>
 </section><section id="composing-into-an-existing-figure" class="level2"><h2 class="anchored" data-anchor-id="composing-into-an-existing-figure">Composing into an existing figure</h2>
-<p>So far we’ve only used <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>()</code> on its own page. If you already have a grid viewport (for example, as one panel of a larger figure), you can use <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a>(cg, newpage = FALSE)</code> to draw the graph there instead.</p>
+<p>So far each plot has had its own page. If you already have a grid viewport (for example, as one panel of a larger figure), you can print a plot with <code>newpage = FALSE</code> to draw it there instead.</p>
 <p>Let’s use this to draw the DAG and the ADMG side by side in one figure:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/grid.newpage.html">grid.newpage</a></span>()</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewports.html">pushViewport</a></span>(grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewport.html">viewport</a></span>(<span class="at">layout =</span> grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/grid.layout.html">grid.layout</a></span>(<span class="dv">1</span>, <span class="dv">2</span>)))</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewports.html">pushViewport</a></span>(grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewport.html">viewport</a></span>(<span class="at">layout.pos.col =</span> <span class="dv">1</span>))</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(dag, <span class="at">newpage =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewports.html">popViewport</a></span>()</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewports.html">pushViewport</a></span>(grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewport.html">viewport</a></span>(<span class="at">layout.pos.col =</span> <span class="dv">2</span>))</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(admg, <span class="at">newpage =</span> <span class="cn">FALSE</span>, <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"salmon"</span>))</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu"><a href="https://rdrr.io/r/grid/viewports.html">popViewport</a></span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">grid.newpage</span>()</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">pushViewport</span>(grid<span class="sc">::</span><span class="fu">viewport</span>(<span class="at">layout =</span> grid<span class="sc">::</span><span class="fu">grid.layout</span>(<span class="dv">1</span>, <span class="dv">2</span>)))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">pushViewport</span>(grid<span class="sc">::</span><span class="fu">viewport</span>(<span class="at">layout.pos.col =</span> <span class="dv">1</span>))</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(dag), <span class="at">newpage =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">popViewport</span>()</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">pushViewport</span>(grid<span class="sc">::</span><span class="fu">viewport</span>(<span class="at">layout.pos.col =</span> <span class="dv">2</span>))</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(admg, <span class="at">fill =</span> <span class="st">"salmon"</span>), <span class="at">newpage =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">::</span><span class="fu">popViewport</span>()</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="plot_files/figure-html/compose-1.png" class="img-fluid figure-img" width="864"></p>
+<figure class="figure"><p><img src="plot_files/figure-html/existing-figure-1.png" class="img-fluid figure-img" width="864"></p>
 </figure>
 </div>
 </div>
 </div>
 </section><section id="combining-options" class="level2"><h2 class="anchored" data-anchor-id="combining-options">Combining options</h2>
-<p>Here we combine some of the styling options above to plot a PAG:</p>
+<p>Here we combine some of the styling above to plot a PAG:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C o-&gt; X, D --&gt; G + Y, X --&gt; D + F, Y --&gt; H, K o-&gt; X, K --&gt; Y"</span>,</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">"PAG"</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  pag,</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">layout =</span> <span class="st">"stress"</span>,</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">node_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"whitesmoke"</span>,</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"slategray"</span>,</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">col =</span> <span class="st">"royalblue"</span>),</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fill =</span> <span class="st">"gold"</span>, <span class="at">col =</span> <span class="st">"darkorange"</span>),</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">shape =</span> <span class="st">"square"</span>, <span class="at">linestyle =</span> <span class="st">"dashed"</span>)</span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">edge_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"darkslategray"</span>,</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">partially_directed =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"royalblue"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>),</span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_edge =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">K =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">curvature =</span> <span class="fl">0.3</span>), <span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">label =</span> <span class="st">"cool"</span>))</span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_node =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">X =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"navy"</span>), <span class="at">Y =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">col =</span> <span class="st">"saddlebrown"</span>))</span>
-<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"A cool PAG"</span>,</span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">title_style =</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="at">fontsize =</span> <span class="dv">18</span>, <span class="at">col =</span> <span class="st">"navy"</span>)</span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/cgraph.html">cgraph</a></span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C o-&gt; X, D --&gt; G + Y, X --&gt; D + F, Y --&gt; H, K o-&gt; X, K --&gt; Y"</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">"PAG"</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/cgraph_plot.html">cgraph_plot</a></span>(pag, <span class="at">layout =</span> <span class="st">"stress"</span>, <span class="at">main =</span> <span class="st">"A cool PAG"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"whitesmoke"</span>, <span class="at">col =</span> <span class="st">"slategray"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">col =</span> <span class="st">"royalblue"</span>, <span class="at">nodes =</span> <span class="st">"X"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"gold"</span>, <span class="at">col =</span> <span class="st">"darkorange"</span>, <span class="at">nodes =</span> <span class="st">"Y"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../../reference/plot-styling.html">style_nodes</a></span>(<span class="at">shape =</span> <span class="st">"square"</span>, <span class="at">linestyle =</span> <span class="st">"dashed"</span>, <span class="at">nodes =</span> <span class="st">"K"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"darkslategray"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">col =</span> <span class="st">"royalblue"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"o-&gt;"</span>, <span class="st">"&lt;-o"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">curvature =</span> <span class="fl">0.3</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"Y"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/plot-styling.html">style_edges</a></span>(<span class="at">label =</span> <span class="st">"cool"</span>, <span class="at">from =</span> <span class="st">"K"</span>, <span class="at">to =</span> <span class="st">"X"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a></span>(<span class="at">col =</span> <span class="st">"navy"</span>, <span class="at">nodes =</span> <span class="st">"X"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/plot-styling.html">style_labels</a></span>(<span class="at">col =</span> <span class="st">"saddlebrown"</span>, <span class="at">nodes =</span> <span class="st">"Y"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="../../reference/plot-styling.html">style_title</a></span>(<span class="at">fontsize =</span> <span class="dv">18</span>, <span class="at">col =</span> <span class="st">"navy"</span>)</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
@@ -1450,7 +1374,8 @@ Figure 1
 </section><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/plot_options.html">plot_options</a>()</code> presets for common conventions are also welcome as PRs!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>The compiled library uses <a href="https://github.com/BjarkeHautop/NetworkLayout.jl/tree/trim-compat">a fork of NetworkLayout.jl</a>, since the released version does not compile with <code>juliac --trim=safe</code>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="../../reference/plot_options.html">plot_options</a>()</code> presets for common conventions are also welcome as PRs!<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol></section></div></main><!-- /main --><style>
 .quartodown-theme-switching * {
   transition: none !important;
@@ -2279,9 +2204,29 @@ Figure 1
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
+  x,
+  <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">main</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">asp</span> <span class="at">=</span> <span class="cn">NA</span>,
+  <span class="at">outer_margin</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">"mm"</span>),
+  <span class="at">title_gap</span> <span class="at">=</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>),
+  ...
+)</code><span class="quartodown-tip-brief">Plot a causal graph</span>
 </div>
 <div data-for="t3">
+<code class="quartodown-tip-sig"><span class="fu">style_edges</span>(p, ..., <span class="at">from</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">to</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">type</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t4">
+<code class="quartodown-tip-sig"><span class="fu">style_nodes</span>(p, ..., <span class="at">nodes</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t5">
+<code class="quartodown-tip-sig"><span class="fu">parents</span>(cg, node)</code><span class="quartodown-tip-brief">Node-set queries</span>
+</div>
+<div data-for="t6">
+<code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
+</div>
+<div data-for="t7">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
   x,
   <span class="at">method</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -2289,6 +2234,21 @@ Figure 1
   <span class="at">seed</span> <span class="at">=</span> <span class="dv">1L</span>,
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
+</div>
+<div data-for="t8">
+<code class="quartodown-tip-sig"><span class="fu">label_nodes</span>(p, ...)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t9">
+<code class="quartodown-tip-sig"><span class="fu">style_labels</span>(p, ..., <span class="at">nodes</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t10">
+<code class="quartodown-tip-sig"><span class="fu">style_title</span>(p, ...)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
+</div>
+<div data-for="t11">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
+</div>
+<div data-for="t12">
+<code class="quartodown-tip-sig"><span class="fu">edges</span>(cg)</code><span class="quartodown-tip-brief">Get all edges in a graph</span>
 </div>
 </div>
 </body>
