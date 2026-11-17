@@ -21,14 +21,14 @@ Let's build a DAG with a confounder `A` that affects both `X` and `Y`, and a
 mediator `M` between `X` and `Y`:
 
 ```{r}
-dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
 dag
 ```
 
 Each edge is written with an operator such as `%-->%`, `%<->%` or `%o-o%` (see
 [edge operators](../reference/edge-operators.qmd)), and `+` fans an edge out to,
-or in from, several nodes at once. `cgraph()` builds a DAG unless you pass
-another `class`.
+or in from, several nodes at once. `class` says which kind of graph it is;
+`"DAG"` is the default.
 
 ::: {.callout-note title="Validation on construction"}
 Every graph is checked against the structural constraints of its class when you

@@ -68,16 +68,16 @@ construction.
 
 ## Example
 
-First, we define a causal graph using the `cgraph()` function.
-`cgraph("A --> X + Y, X --> M --> Y")`
+First, we define a causal graph using the `cgraph()` function, giving
+its edges and its class:
 
 ``` r
 library(CausalStructures)
 
-dag <- cgraph("A --> X + Y, X --> M --> Y")
+dag <- cgraph("A --> X + Y, X --> M --> Y", class = "DAG")
 
 # Alternatively, wrap the edges in %...%, and then not use a string:
-cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
 #> DAG with 4 nodes and 4 edges:
 #>   nodes: A, M, X, Y
 #>   edges:
