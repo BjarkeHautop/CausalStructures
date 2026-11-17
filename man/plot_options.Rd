@@ -19,16 +19,11 @@ When setting, the previous values for the updated options,
 invisibly. When getting, the requested options.
 }
 \description{
-Configure package-wide defaults for \code{\link[=plot.cgraph]{plot.cgraph()}}'s \code{node_style},
-\code{edge_style}, \code{label_style}, and \code{title_style} arguments. Every plot
-picks them up, without repeating the same style lists at every call
-site. Arguments passed directly to \code{plot()} still take precedence
-over these global defaults.
-}
-\details{
-The fields are those of the matching \code{\link[=plot.cgraph]{plot.cgraph()}} arguments. Overrides for
-an edge type (\code{edge_style$directed}, ...), node (\code{by_node}), or edge
-(\code{by_edge}) only work as \code{plot()} arguments, not as global defaults.
+Configure the package-wide defaults for every plot: \code{node_style},
+\code{edge_style}, \code{label_style}, and \code{title_style}, each a list of the fields
+taken by \code{\link[=style_nodes]{style_nodes()}}, \code{\link[=style_edges]{style_edges()}}, \code{\link[=style_labels]{style_labels()}}, and
+\code{\link[=style_title]{style_title()}}. The style verbs still override these defaults for the
+nodes and edges they select.
 }
 \examples{
 # Query all current plot options
@@ -53,13 +48,14 @@ plot_options(
 plot_options(plot_default_options())
 }
 \seealso{
-\code{\link[=plot.cgraph]{plot.cgraph()}} for per-plot style arguments and per-node/edge
-overrides, \code{\link[=plot_default_options]{plot_default_options()}} to inspect or reset to the
-built-in defaults.
+\link{plot-styling} for the style fields and per-plot styling,
+\code{\link[=plot_default_options]{plot_default_options()}} to inspect or reset to the built-in defaults.
 
 Other plotting:
+\code{\link[=cgraph_grob]{cgraph_grob()}},
 \code{\link[=cgraph_layout]{cgraph_layout()}},
-\code{\link[=plot.cgraph]{plot.cgraph()}},
+\code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link{plot-styling}},
 \code{\link[=plot_default_options]{plot_default_options()}}
 }
 \concept{plotting}

@@ -16,18 +16,18 @@ cgraph_layout(
 \item{x}{A graph created with \code{\link[=cgraph]{cgraph()}}, of any class.}
 
 \item{method}{The layout method. The default (\code{NULL}) is \code{"sugiyama"} if \code{x}
-has class \code{DAG}, and \code{"stress"} otherwise. This depends on the class \code{x}
-was given, not its edges: a \code{PDAG} with only directed edges uses \code{"stress"}.
+has class \code{DAG}, and \code{"stress"} otherwise.
 \itemize{
-\item \code{"sugiyama"}: layered/hierarchical layout, from the
+\item \code{"sugiyama"}: layered/hierarchical layout
+\insertCite{sugiyama1981methods}{CausalStructures}, from the
 \href{https://github.com/BjarkeHautop/Sugiyama.jl}{Sugiyama.jl} package.
-Every edge is layered from its first to its second node (\verb{A --> B}
-puts \code{A} before \code{B}), and any cycles are broken, so it works for every
-graph class.
-\item \code{"stress"}: stress majorization (Gansner, Koren and North, 2005).
-A good general-purpose choice.
-\item \code{"spring"}: Fruchterman-Reingold force-directed layout.
-\item \code{"sfdp"}: scalable force-directed placement (Hu, 2005).
+\item \code{"stress"}: stress majorization
+\insertCite{gansner2005stress}{CausalStructures}. A good
+general-purpose choice.
+\item \code{"spring"}: force-directed layout
+\insertCite{fruchterman1991graph}{CausalStructures}.
+\item \code{"sfdp"}: scalable force-directed placement
+\insertCite{hu2006efficient}{CausalStructures}.
 \item \code{"spectral"}: spectral layout, from eigenvectors of the graph
 Laplacian.
 \item \code{"shell"}: nodes evenly spaced on a circle, in \code{\link[=nodes]{nodes()}} order.
@@ -44,13 +44,13 @@ ignores edge direction.}
 \item{seed}{For \code{"stress"}, \code{"spring"} and \code{"sfdp"}, the seed of the random
 initial positions. The layout is the same for the same seed.}
 
-\item{...}{Ignored, so that \code{\link[=plot.cgraph]{plot.cgraph()}} can pass its \code{...} through.}
+\item{...}{Ignored, so that \code{\link[=cgraph_plot]{cgraph_plot()}} can pass its \code{...} through.}
 }
 \value{
 A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
 }
 \description{
-Computes node coordinates for \code{\link[=plot.cgraph]{plot.cgraph()}}.
+Computes node coordinates for \code{\link[=cgraph_plot]{cgraph_plot()}}.
 }
 \examples{
 if (julia_ready()) {
@@ -59,9 +59,14 @@ if (julia_ready()) {
   cgraph_layout(dag, method = "stress")
 }
 }
+\references{
+\insertAllCited{}
+}
 \seealso{
 Other plotting:
-\code{\link[=plot.cgraph]{plot.cgraph()}},
+\code{\link[=cgraph_grob]{cgraph_grob()}},
+\code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link{plot-styling}},
 \code{\link[=plot_default_options]{plot_default_options()}},
 \code{\link[=plot_options]{plot_options()}}
 }

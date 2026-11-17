@@ -18,14 +18,14 @@ repos:
 
   - repo: local
     hooks:
-      - id: readme-rmd-rendered
-        name: README.md is up to date with README.Rmd
+      - id: readme-qmd-rendered
+        name: README.md is up to date with README.qmd
         entry: >
-          bash -c 'if [ README.Rmd -nt README.md ]; then
-          echo "README.md is out of date; re-knit with devtools::build_readme()";
+          bash -c 'if [ README.qmd -nt README.md ]; then
+          echo "README.md is out of date; re-render with devtools::build_readme()";
           exit 1; fi'
         language: system
-        files: '^README\.(R)?md$'
+        files: '^README\.(q)?md$'
         pass_filenames: false
       - id: needs-roxygenize
         name: roxygen2 documentation is up to date

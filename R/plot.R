@@ -29,27 +29,6 @@
   )
 }
 
-# Classifies an edge's style group from its endpoint marks, mirroring
-# CausalStructures.jl's Makie `plot()` (draw.jl's `_edge_type`): "directed"
-# (-->), "undirected" (---), "bidirected" (<->), "partially_directed" (o->),
-# "partially_undirected" (o--), and "partial" (o-o) are six distinct groups,
-# so a PAG's o->/o--/o-o edges can each be styled independently.
-.plot_edge_type <- function(src_mark, dst_mark) {
-  if (src_mark == "Tail" && dst_mark == "Arrow") {
-    "directed"
-  } else if (src_mark == "Tail" && dst_mark == "Tail") {
-    "undirected"
-  } else if (src_mark == "Arrow" && dst_mark == "Arrow") {
-    "bidirected"
-  } else if (src_mark == "Circle" && dst_mark == "Arrow") {
-    "partially_directed"
-  } else if (src_mark == "Circle" && dst_mark == "Tail") {
-    "partially_undirected"
-  } else {
-    "partial"
-  }
-}
-
 .plot_gpar_params <- function(style) {
   gpar_names <- c(
     "fill",
@@ -74,60 +53,21 @@
 }
 
 .plot_make_styles <- function(
-  node_style,
-  edge_style,
-  label_style,
-  title_style
+  node_by = list(),
+  label_by = list(),
+  edge_overrides = list(),
+  title_style = list()
 ) {
-  # Global defaults come from plot_options() (plot-options.R), so
-  # plot_options(node_style = list(fill = "lightblue")) et al. apply to every
-  # subsequent plot() call without repeating style lists at each call site;
-  # arguments passed directly here still take precedence, applied via
-  # modifyList() below.
+  # Defaults come from plot_options() (plot-options.R); the per-node and
+  # per-edge overrides recorded by the style verbs (plot-compose.R) go on top.
   opts <- plot_options()
-  node_defaults <- opts$node_style
-  edge_defaults <- opts$edge_style
-  label_defaults <- opts$label_style
-  title_defaults <- opts$title_style
-
-  by_node <- node_style$by_node %||% list()
-  node_style$by_node <- NULL
-
-  # Per-type overrides (edge_style$directed / $undirected / $bidirected /
-  # $partially_directed / $partially_undirected / $partial) layer on top of
-  # the global edge options; by_edge overrides are applied later, per edge,
-  # in .plot_make_edges().
-  edge_type_names <- c(
-    "directed",
-    "undirected",
-    "bidirected",
-    "partially_directed",
-    "partially_undirected",
-    "partial"
-  )
-  by_edge <- edge_style$by_edge %||% list()
-  global_edge_opts <- edge_style[
-    setdiff(names(edge_style), c(edge_type_names, "by_edge"))
-  ]
-  edge_types <- list()
-  for (type in edge_type_names) {
-    edge_types[[type]] <- utils::modifyList(
-      utils::modifyList(edge_defaults, global_edge_opts),
-      edge_style[[type]] %||% list()
-    )
-  }
-
+  label_style <- opts$label_style
+  label_style$by_node <- label_by
   list(
-    node_style = list(
-      global = utils::modifyList(node_defaults, node_style),
-      by_node = by_node
-    ),
-    edge_style = list(
-      types = edge_types,
-      by_edge = by_edge
-    ),
-    label_style = utils::modifyList(label_defaults, label_style),
-    title_style = utils::modifyList(title_defaults, title_style)
+    node_style = list(global = opts$node_style, by_node = node_by),
+    edge_style = list(global = opts$edge_style, by_index = edge_overrides),
+    label_style = label_style,
+    title_style = utils::modifyList(opts$title_style, title_style)
   )
 }
 
@@ -135,7 +75,7 @@
 
 # Range check for a resolved numeric style value, mirroring
 # CausalStructures.jl's `_check_value`, e.g.
-# `.plot_check_value(r > 0, "node_style$radius", r, "node \"A\"", "positive")`.
+# `.plot_check_value(r > 0, "radius", r, "node \"A\"", "positive")`.
 # A NULL value (unset) always passes.
 .plot_check_value <- function(value, ok, name, target, requirement) {
   if (is.null(value) || isTRUE(ok(value))) {
@@ -160,25 +100,25 @@
   .plot_check_value(
     style$radius,
     positive,
-    "node_style$radius",
+    "radius",
     target,
     "positive"
   )
   .plot_check_value(
     style$padding,
     non_negative,
-    "node_style$padding",
+    "padding",
     target,
     "non-negative"
   )
   .plot_check_value(
     style$lwd,
     non_negative,
-    "node_style$lwd",
+    "lwd",
     target,
     "non-negative"
   )
-  .plot_check_value(style$size, positive, "node_style$size", target, "positive")
+  .plot_check_value(style$size, positive, "size", target, "positive")
   invisible(style)
 }
 
@@ -194,7 +134,7 @@
     .plot_check_value(
       style[[field]],
       non_negative,
-      paste0("edge_style$", field),
+      field,
       target,
       "non-negative"
     )
@@ -202,7 +142,7 @@
   .plot_check_value(
     style$label_shift,
     function(v) is.numeric(v) && length(v) == 1 && v >= 0 && v <= 1,
-    "edge_style$label_shift",
+    "label_shift",
     target,
     "between 0 and 1"
   )
@@ -961,66 +901,14 @@ makeContent.cs_graph_grob <- function(x) {
   )
 }
 
-# Resolves one edge's style, including the .by_type precedence tier for
-# disambiguating parallel edges of different types between the same node
-# pair (e.g. an ADMG's X-->Y and X<->Y) - see plot.cgraph()'s edge_style
-# docs. Split out from .plot_make_edges() so it can be unit-tested directly.
+# Resolves one edge's style: the plot_options() default with the edge's own
+# overrides from style_edges() on top. Split out from .plot_make_edges() so it
+# can be unit-tested directly.
 .plot_edge_style <- function(edges, i, edge_style) {
-  from_name <- edges$from[i]
-  to_name <- edges$to[i]
-  by_edge <- edge_style$by_edge
-
-  edge_type <- .plot_edge_type(edges$src_mark[i], edges$dst_mark[i])
-  style <- edge_style$types[[edge_type]]
-
-  # Precedence (highest to lowest): exact-edge-type override (.by_type,
-  # disambiguating e.g. an ADMG's parallel X-->Y/X<->Y) > specific
-  # from->to/to->from override > node-wide "to" override > node-wide "from"
-  # override > edge-type style > global style.
-  override <- list()
-
-  # A pair entry names an unordered pair, so a `path` given under the reversed
-  # pair runs from `to` to `from` and is flipped to this edge's direction.
-  if (!is.null(by_edge[[from_name]][[to_name]])) {
-    override <- utils::modifyList(
-      override,
-      .plot_path_override(by_edge[[from_name]][[to_name]], reverse = FALSE)
-    )
-  } else if (!is.null(by_edge[[to_name]][[from_name]])) {
-    override <- utils::modifyList(
-      override,
-      .plot_path_override(by_edge[[to_name]][[from_name]], reverse = TRUE)
-    )
-  }
-
-  for (node_name in c(from_name, to_name)) {
-    node_wide <- by_edge[[node_name]]
-    if (!is.null(node_wide)) {
-      node_wide <- node_wide[!vapply(node_wide, is.list, logical(1))]
-      if (length(node_wide) > 0) {
-        override <- utils::modifyList(node_wide, override)
-      }
-    }
-  }
-
-  type_str <- unname(.edge_mark_types[
-    paste(edges$src_mark[i], edges$dst_mark[i], sep = ".")
-  ])
-  type_override <- by_edge[[from_name]][[to_name]][[".by_type"]][[type_str]]
-  if (!is.null(type_override)) {
-    type_override <- .plot_path_override(type_override, reverse = FALSE)
-  } else {
-    type_override <- by_edge[[to_name]][[from_name]][[".by_type"]][[type_str]]
-    if (!is.null(type_override)) {
-      type_override <- .plot_path_override(type_override, reverse = TRUE)
-    }
-  }
-  if (!is.null(type_override)) {
-    override <- utils::modifyList(override, type_override)
-  }
-
-  if (length(override) > 0) {
-    style <- utils::modifyList(style, override)
+  style <- edge_style$global
+  by_index <- edge_style$by_index
+  if (i <= length(by_index) && !is.null(by_index[[i]])) {
+    style <- utils::modifyList(style, by_index[[i]])
   }
 
   # Arrowheads are filled polygons (see .plot_edge_grob); default fill to
@@ -1058,21 +946,6 @@ makeContent.cs_graph_grob <- function(x) {
   unname(path)
 }
 
-# A by_edge override with its `path` (if any) normalized by
-# .plot_waypoints(), reversed when it was given for the reversed pair.
-.plot_path_override <- function(override, reverse) {
-  if (is.null(override$path)) {
-    return(override)
-  }
-  path <- .plot_waypoints(override$path)
-  override$path <- if (reverse) {
-    path[rev(seq_len(nrow(path))), , drop = FALSE]
-  } else {
-    path
-  }
-  override
-}
-
 # Assigns each edge a signed fan-out slot: 0 when it is the only edge on its
 # (undirected) node pair, otherwise evenly spaced values centered on 0.
 # Grouping ignores direction, so antiparallel edges fan out too - and since
@@ -1105,7 +978,7 @@ makeContent.cs_graph_grob <- function(x) {
 
 # Widens x_range/y_range so an explicit `curvature`'s Bezier bow fits inside
 # the graph viewport instead of bowing out past the plot boundary - the
-# curvature counterpart to the node-radius margin in plot.cgraph(). Traces
+# curvature counterpart to the node-radius margin in cgraph_grob(). Traces
 # each curved edge with the real bow_edge_path() geometry and iterates,
 # since padding one axis changes that axis's native-to-mm scale, which
 # changes how much mm bulge an edge running along the *other* axis produces.
@@ -1298,12 +1171,15 @@ makeContent.cs_graph_grob <- function(x) {
 
 #' Plot a causal graph
 #'
-#' Plot method for `cgraph`, drawn with grid graphics. The
+#' `cgraph_plot()` builds a plot of a `cgraph`, drawn with grid graphics when it
+#' is printed. Style it first with [style_nodes()], [style_edges()],
+#' [style_labels()], [label_nodes()] and [style_title()]. The
 #' [plotting article](https://bjarkehautop.github.io/CausalStructures/vignettes/articles/plot.html)
 #' explains the layouts and every style field, with examples.
 #'
-#' The style arguments are lists that override the defaults set with
-#' [plot_options()], field by field.
+#' Unstyled nodes, edges, labels and titles use the defaults set with
+#' [plot_options()]. `plot(x, ...)` is a shortcut for
+#' `print(cgraph_plot(x, ...))`.
 #'
 #' @param x A graph created with [cgraph()], of any class.
 #' @param layout Where to place the nodes:
@@ -1315,99 +1191,89 @@ makeContent.cs_graph_grob <- function(x) {
 #'   * A `data.frame` with columns `name`, `x`, and `y`.
 #'   * A named list of `c(x, y)` positions, e.g.
 #'     `list(A = c(0, 0), X = c(1, 0))`.
-#' @param node_style List of node style fields: `fill`, `col`, `lwd`,
-#'   `linestyle`, `shape` (`"circle"`, `"square"`, `"ellipse"`, or `"rect"`),
-#'   `radius` (mm; nodes fit their labels if unset), `padding` (mm), and `size`
-#'   (a multiplier). `by_node` is a named list of per-node overrides.
-#' @param edge_style List of edge style fields: `col`, `fill` (arrowhead fill;
-#'   `NA` for hollow), `lwd`, `lty`, `gap` (mm), `curvature`, `path`,
-#'   `arrow_size` (mm), `circle_size` (mm), and the edge label fields `label`,
-#'   `label_col`, `label_fontsize`, `label_fontface`, `label_fontfamily`,
-#'   `label_shift`, `label_distance` (mm), and `label_rotation` (degrees).
-#'
-#'   To override fields for some edges, use a sub-list named after an edge type
-#'   (`directed`, `undirected`, `bidirected`, `partially_directed`,
-#'   `partially_undirected`, or `partial`), or `by_edge`, a nested list keyed by
-#'   node (`by_edge$A`), node pair (`by_edge$A$B`), or exact edge
-#'   (`by_edge$A$B$.by_type[["<->"]]`). The most specific level wins.
-#' @param label_style List of node label style fields: `col`, `fontsize`,
-#'   `fontface`, `fontfamily`, and `cex`. `by_node` is a named list of per-node
-#'   overrides.
-#' @param labels Optional named character vector or list of the text to draw in
-#'   each node, e.g. `c(X = "Exposure", Y = "Outcome")`. `\n` starts a new line.
-#'   Other nodes use the `"default"` entry if there is one, and otherwise their
-#'   own name. The other arguments still refer to nodes by name.
-#' @param main Optional plot title.
-#' @param title_style List of title styling parameters (same fields as
-#'   `label_style`).
+#' @param main Optional plot title, styled with [style_title()].
 #' @param asp Optional y/x aspect ratio. `NA` (default) fills the available
 #'   space; `asp = 1` makes one x-unit equal one y-unit.
 #' @param outer_margin Grid unit for the outer margin. Default
 #'   `grid::unit(2, "mm")`.
 #' @param title_gap Grid unit for the gap between title and graph. Default
 #'   `grid::unit(1, "lines")`.
-#' @param newpage If `TRUE` (default), call [grid::grid.newpage()] before
-#'   drawing.
 #' @param ... Passed to `layout` when it is a method name (e.g. `direction` or
-#'   `seed`; see [cgraph_layout()]) or a function.
+#'   `seed`; see [cgraph_layout()]) or a function. For `plot()`, the arguments
+#'   of `cgraph_plot()`.
 #'
-#' @returns A `cgraph_plot` object, invisibly. Drawn immediately as a side
-#'   effect; re-drawn if printed or passed to `plot()` again.
+#' @returns A `cgraph_plot` object, drawn when printed (`plot()` draws it and
+#'   returns it invisibly). Printing it with `newpage = FALSE` draws it into
+#'   the current grid viewport instead of a new page; [cgraph_grob()] gives its
+#'   grid grob.
 #'
 #' @examples
 #' if (julia_ready()) {
 #'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   plot(dag, main = "A DAG")
+#'   cgraph_plot(dag, main = "A DAG")
+#'   cgraph_plot(dag, layout = "sugiyama", direction = "down")
 #'
-#'   # Style all nodes and edges, with per-node and per-edge overrides
-#'   plot(
-#'     dag,
-#'     node_style = list(
-#'       fill = "lightblue",
-#'       col = "navy",
-#'       by_node = list(Y = list(fill = "gold"))
-#'     ),
-#'     edge_style = list(
-#'       col = "gray40",
-#'       lwd = 2,
-#'       by_edge = list(X = list(M = list(col = "red", lwd = 3)))
-#'     ),
-#'     main = "Styled DAG"
-#'   )
-#'
-#'   # Square, dashed nodes with custom labels and a curved edge
-#'   plot(
-#'     dag,
-#'     node_style = list(shape = "square", linestyle = "dashed"),
-#'     edge_style = list(by_edge = list(A = list(Y = list(curvature = 0.3)))),
-#'     labels = c(A = "Confounder", X = "Exposure", Y = "Outcome")
-#'   )
+#'   # Style it step by step; it is drawn when printed
+#'   cgraph_plot(dag, main = "Styled DAG") |>
+#'     style_nodes(fill = "lightblue", col = "navy") |>
+#'     style_nodes(fill = "gold", nodes = "Y") |>
+#'     style_edges(col = "gray40", lwd = 2) |>
+#'     style_edges(col = "red", lwd = 3, from = "X", to = "M")
 #' }
-#' @seealso [plot_options()] to change the style defaults for every plot.
-#' @rdname plot
+#' @seealso [plot-styling] for the style verbs, [plot_options()] to change the
+#'   style defaults for every plot.
 #' @family plotting
 #' @export
-plot.cgraph <- function(
+cgraph_plot <- function(
   x,
   layout = NULL,
-  node_style = list(),
-  edge_style = list(),
-  label_style = list(),
-  labels = NULL,
   main = NULL,
-  title_style = list(),
   asp = NA,
   outer_margin = grid::unit(2, "mm"),
   title_gap = grid::unit(1, "lines"),
-  newpage = TRUE,
   ...
 ) {
+  if (!inherits(x, "cgraph")) {
+    stop("`x` must be a graph created with cgraph().", call. = FALSE)
+  }
   stopifnot(
     is.null(asp) ||
       is.na(asp) ||
       isTRUE(is.numeric(asp) && length(asp) == 1 && asp > 0)
   )
+  placed <- .plot_place_nodes(x, layout, ...)
+  edges <- .plot_edges(x)
+  structure(
+    list(
+      graph = x,
+      coords = placed$coords,
+      auto_paths = placed$auto_paths,
+      edges = edges,
+      main = main,
+      asp = asp,
+      outer_margin = outer_margin,
+      title_gap = title_gap,
+      # Set by the style verbs (plot-compose.R): style overrides per node, per
+      # node label and per row of `edges`, the label text, and the title style.
+      node_by = list(),
+      label_by = list(),
+      edge_overrides = vector("list", nrow(edges)),
+      labels = list(),
+      title_style = list()
+    ),
+    class = "cgraph_plot"
+  )
+}
 
+#' @rdname cgraph_plot
+#' @export
+plot.cgraph <- function(x, ...) {
+  print(cgraph_plot(x, ...))
+}
+
+# Node positions (and, for "sugiyama", edge routes) from cgraph_plot()'s
+# `layout` argument.
+.plot_place_nodes <- function(x, layout, ...) {
   dots <- list(...)
   auto_paths <- NULL
 
@@ -1487,37 +1353,52 @@ plot.cgraph <- function(
   if (nrow(coords) == 0) {
     stop("Cannot plot an empty graph (0 nodes).", call. = FALSE)
   }
+  list(coords = coords, auto_paths = auto_paths)
+}
+
+#' Grid grob of a causal graph plot
+#'
+#' The grid grob that draws a plot built with [cgraph_plot()] or [plot()],
+#' e.g. to arrange several plots on one page with grid viewports or to embed
+#' one in another grid-based figure. [grid::grid.draw()] also draws a
+#' `cgraph_plot` directly.
+#'
+#' @param x A `cgraph_plot` object, or a graph created with [cgraph()] (plotted
+#'   with the defaults).
+#' @returns A grid grob (a `gTree`).
+#' @examples
+#' if (julia_ready()) {
+#'   p <- cgraph_plot(cgraph("A --> X + Y, X --> Y"))
+#'   g <- cgraph_grob(p)
+#'   grid::grid.newpage()
+#'   grid::grid.draw(g)
+#' }
+#' @family plotting
+#' @export
+cgraph_grob <- function(x) {
+  p <- .as_cgraph_plot(x)
+  coords <- p$coords
+  edges <- p$edges
+  auto_paths <- p$auto_paths
+  outer_margin <- p$outer_margin
+  title_gap <- p$title_gap
+  asp <- p$asp
+  main <- p$main
 
   styles <- .plot_make_styles(
-    node_style,
-    edge_style,
-    label_style,
-    title_style
+    p$node_by,
+    p$label_by,
+    p$edge_overrides,
+    p$title_style
   )
 
-  node_labels <- if (is.null(labels)) {
-    coords$name
-  } else {
-    # as.list() so a plain named character vector (or list) can be looked up
-    # with [[ ]] safely - unlike an atomic vector, a list's [[ ]] returns
-    # NULL (not an error) for a name that isn't present.
-    labels_list <- as.list(labels)
-    vapply(
-      coords$name,
-      function(nm) {
-        if (!is.null(labels_list[[nm]])) {
-          as.character(labels_list[[nm]])
-        } else if (!is.null(labels_list[["default"]])) {
-          as.character(labels_list[["default"]])
-        } else {
-          nm
-        }
-      },
-      character(1),
-      USE.NAMES = FALSE
-    )
-  }
-  edges <- .plot_edges(x)
+  labels <- p$labels
+  node_labels <- vapply(
+    coords$name,
+    function(nm) labels[[nm]] %||% nm,
+    character(1),
+    USE.NAMES = FALSE
+  )
 
   # Explicit and Sugiyama-routed edge paths can leave the nodes' bounding box,
   # so their waypoints count towards the plotted range too.
@@ -1605,9 +1486,9 @@ plot.cgraph <- function(
   )
 
   # xscale/yscale here are an inert fallback; makeContent.cs_graph_grob()
-  # below computes the real, curvature-padded scale and applies it via a
-  # nested viewport once this one is actually active on the device (needed
-  # for its width/height to resolve to real mm).
+  # computes the real, curvature-padded scale and applies it via a nested
+  # viewport once this one is actually active on the device (needed for its
+  # width/height to resolve to real mm).
   graph_vp <- grid::viewport(
     x = vp_x,
     y = vp_y,
@@ -1624,10 +1505,8 @@ plot.cgraph <- function(
     name = "node_gtree"
   )
 
-  graph_children <- grid::gList(edge_grobs, node_gtree)
-
   graph_grob <- grid::gTree(
-    children = graph_children,
+    children = grid::gList(edge_grobs, node_gtree),
     cs_edges = edges,
     cs_coords = coords,
     cs_edge_style = styles$edge_style,
@@ -1649,17 +1528,23 @@ plot.cgraph <- function(
     graph_vp
   )
 
-  final_grob <- grid::gTree(
+  grid::gTree(
     children = grid::gList(title_grob, graph_grob),
     name = "cs.titled"
   )
+}
 
-  result <- structure(list(grob = final_grob), class = "cgraph_plot")
-  if (newpage) {
-    grid::grid.newpage()
+.as_cgraph_plot <- function(x) {
+  if (inherits(x, "cgraph_plot")) {
+    x
+  } else if (inherits(x, "cgraph")) {
+    cgraph_plot(x)
+  } else {
+    stop(
+      "Expected a plot from cgraph_plot() or a graph from cgraph().",
+      call. = FALSE
+    )
   }
-  grid::grid.draw(result$grob)
-  invisible(result)
 }
 
 #' @export
@@ -1672,6 +1557,11 @@ plot.cgraph_plot <- function(x, newpage = TRUE, ...) {
   if (newpage) {
     grid::grid.newpage()
   }
-  grid::grid.draw(x$grob)
+  grid::grid.draw(cgraph_grob(x))
   invisible(x)
+}
+
+#' @exportS3Method grid::grid.draw
+grid.draw.cgraph_plot <- function(x, recording = TRUE) {
+  grid::grid.draw(cgraph_grob(x), recording = recording)
 }

@@ -2,7 +2,7 @@ Package: CausalStructures
 Title: Representing and Reasoning About Causal Graphs
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Bjarke Hautop", "Kristensen", , "bjarke.hautop@gmail.com", role = c("aut", "cre")),
+    person("Bjarke Hautop", "Kristensen", , "bjarke.hautop@gmail.com", role = c("aut", "cre", "cph")),
     person("Frederik", "Fabricius-Bjerre", role = "ctb",
            comment = "Author of adapted plotting code from caugi"),
     person("Johan", "Larsson", role = "ctb",
@@ -32,6 +32,7 @@ Collate:
     'plot-options.R'
     'plot-routing.R'
     'plot.R'
+    'plot-compose.R'
     'jlbind-wrappers.R'
 Depends:
     R (>= 4.0.0)

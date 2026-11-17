@@ -8,8 +8,7 @@ plot_default_options()
 }
 \value{
 A list with \code{node_style}, \code{edge_style}, \code{label_style}, and
-\code{title_style} components - see \code{\link[=plot.cgraph]{plot.cgraph()}} for
-their fields.
+\code{title_style} components - see \link{plot-styling} for their fields.
 }
 \description{
 The built-in defaults for \code{\link[=plot_options]{plot_options()}}, before any global
@@ -26,8 +25,10 @@ plot_options(plot_default_options())
 \code{\link[=plot_options]{plot_options()}} for getting and setting these globally.
 
 Other plotting:
+\code{\link[=cgraph_grob]{cgraph_grob()}},
 \code{\link[=cgraph_layout]{cgraph_layout()}},
-\code{\link[=plot.cgraph]{plot.cgraph()}},
+\code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link{plot-styling}},
 \code{\link[=plot_options]{plot_options()}}
 }
 \concept{plotting}

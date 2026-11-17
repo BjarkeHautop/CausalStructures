@@ -1,5 +1,6 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 # CausalStructures
 
@@ -23,9 +24,9 @@ pak::pak("BjarkeHautop/CausalStructures")
 ```
 
 CausalStructures needs [Julia](https://julialang.org/) (\>= 1.13); see
-<https://julialang.org/install/> for the recommended way to install
-Julia. Once the package is installed, build the compiled
-CausalStructures.jl library it calls with
+https://julialang.org/install/ for the recommended way to install Julia.
+Once the package is installed, build the compiled CausalStructures.jl
+library it calls with
 
 ``` r
 jlbind::install_library()
@@ -99,6 +100,20 @@ cpdag
 #>   edges:
 #>     A --- X, M --- X, M --> Y, A --> Y
 ```
+
+and plot it, here highlighting the treatment, the outcome and the
+adjustment set:
+
+``` r
+cgraph_plot(dag) |>
+  style_nodes(fill = "lightskyblue", nodes = c("X", "Y")) |>
+  style_nodes(fill = "gold", nodes = adjustment_set(dag, "X", "Y"))
+```
+
+<!-- Linked by hand, as Quarto's GFM output drops the alt text of plots. -->
+
+![The DAG drawn left to right, with X and Y in blue and the adjustment
+set, A, in gold.](man/figures/README-plot-1.png)
 
 See the [documentation
 site](https://bjarkehautop.github.io/CausalStructures/) for the full

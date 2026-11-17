@@ -1,6 +1,6 @@
 # --- Global plot styling options ------------------------------------------
 #
-# A dedicated get/set/reset accessor for plot()'s style defaults, modeled on
+# A dedicated get/set/reset accessor for the plot style defaults, modeled on
 # caugi::caugi_options() (see inst/COPYRIGHTS for attribution) but scoped to
 # plotting only - the package's other settings (see CausalStructures_options)
 # stay on base options()/getOption(), since those are flat behavioral toggles
@@ -15,8 +15,7 @@
 #' a base to build a custom style set from with [utils::modifyList()].
 #'
 #' @return A list with `node_style`, `edge_style`, `label_style`, and
-#'   `title_style` components - see [plot.cgraph()] for
-#'   their fields.
+#'   `title_style` components - see [plot-styling] for their fields.
 #'
 #' @seealso [plot_options()] for getting and setting these globally.
 #' @family plotting
@@ -54,11 +53,11 @@ plot_default_options <- function() {
 
 #' Get or set global default plot styles
 #'
-#' Configure package-wide defaults for [plot.cgraph()]'s `node_style`,
-#' `edge_style`, `label_style`, and `title_style` arguments. Every plot
-#' picks them up, without repeating the same style lists at every call
-#' site. Arguments passed directly to `plot()` still take precedence
-#' over these global defaults.
+#' Configure the package-wide defaults for every plot: `node_style`,
+#' `edge_style`, `label_style`, and `title_style`, each a list of the fields
+#' taken by [style_nodes()], [style_edges()], [style_labels()], and
+#' [style_title()]. The style verbs still override these defaults for the
+#' nodes and edges they select.
 #'
 #' @param ... Named values to update options with (merged into the existing
 #'   options via [utils::modifyList()], so a partial style list only
@@ -70,14 +69,8 @@ plot_default_options <- function() {
 #' @return When setting, the previous values for the updated options,
 #'   invisibly. When getting, the requested options.
 #'
-#' @details
-#' The fields are those of the matching [plot.cgraph()] arguments. Overrides for
-#' an edge type (`edge_style$directed`, ...), node (`by_node`), or edge
-#' (`by_edge`) only work as `plot()` arguments, not as global defaults.
-#'
-#' @seealso [plot.cgraph()] for per-plot style arguments and per-node/edge
-#'   overrides, [plot_default_options()] to inspect or reset to the
-#'   built-in defaults.
+#' @seealso [plot-styling] for the style fields and per-plot styling,
+#'   [plot_default_options()] to inspect or reset to the built-in defaults.
 #' @family plotting
 #' @export
 #'

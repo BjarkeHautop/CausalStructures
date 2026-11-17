@@ -1,9 +1,11 @@
-test_that("plot.cgraph draws with the default layout", {
+test_that("plot() and cgraph_plot() draw with the default layout", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
   expect_no_error(plot(test_dag()))
+  expect_s3_class(plot(test_dag()), "cgraph_plot")
+  expect_no_error(print(cgraph_plot(test_dag())))
 })
 
 test_that("cgraph_layout works for every layout method", {
@@ -63,25 +65,19 @@ test_that("plot.cgraph draws with a layout function", {
   expect_no_error(plot(test_dag(), layout = cgraph_layout))
 })
 
-test_that("plot.cgraph honors styling options without error", {
+test_that("styled plots draw without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(
-    test_dag(),
-    main = "Quick guide DAG",
-    node_style = list(
-      fill = "lightblue",
-      by_node = list(A = list(fill = "red"))
-    ),
-    edge_style = list(
-      col = "darkgray",
-      by_edge = list(A = list(X = list(col = "blue")))
-    ),
-    label_style = list(fontsize = 8),
-    title_style = list(col = "blue"),
-    asp = 1
+  expect_no_error(print(
+    cgraph_plot(test_dag(), main = "Quick guide DAG", asp = 1) |>
+      style_nodes(fill = "lightblue") |>
+      style_nodes(fill = "red", nodes = "A") |>
+      style_edges(col = "darkgray") |>
+      style_edges(col = "blue", from = "A", to = "X") |>
+      style_labels(fontsize = 8) |>
+      style_title(col = "blue")
   ))
 })
 
@@ -123,31 +119,22 @@ test_that("print.cgraph_plot and plot.cgraph_plot redraw a saved plot", {
   expect_no_error(plot(p))
 })
 
-test_that("node_style shape draws square and per-node overrides without error", {
+test_that("node shapes draw for all or some nodes without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), node_style = list(shape = "square")))
-  expect_no_error(plot(
-    test_dag(),
-    node_style = list(by_node = list(A = list(shape = "square")))
-  ))
+  for (shape in c("square", "ellipse", "rect")) {
+    expect_no_error(print(style_nodes(test_dag(), shape = shape)))
+  }
+  expect_no_error(print(style_nodes(test_dag(), shape = "square", nodes = "A")))
 })
 
-test_that("node_style shape draws ellipse and rect without error", {
-  skip_if_no_julia()
-  grDevices::pdf(NULL)
-  on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), node_style = list(shape = "ellipse")))
-  expect_no_error(plot(test_dag(), node_style = list(shape = "rect")))
-})
-
-test_that("node_style shape errors on an unknown shape", {
+test_that("style_nodes() errors on an unknown shape", {
   skip_if_no_julia()
   expect_error(
-    plot(test_dag(), node_style = list(shape = "hexagon")),
+    style_nodes(test_dag(), shape = "hexagon"),
     "Unknown node shape"
   )
 })
@@ -160,46 +147,36 @@ test_that("ellipse/rect force an oblong box even for a short label", {
   expect_true(rect[1] / rect[2] <= 1.4 + 1e-8)
 })
 
-test_that("node_style radius overrides label-based sizing", {
+test_that("radius overrides label-based sizing", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), node_style = list(radius = 15)))
-  expect_no_error(plot(
-    test_dag(),
-    node_style = list(by_node = list(A = list(radius = 20)))
-  ))
+  expect_no_error(print(style_nodes(test_dag(), radius = 15)))
+  expect_no_error(print(style_nodes(test_dag(), radius = 20, nodes = "A")))
 })
 
-test_that("edge_style styles the three partial-mark edge types independently", {
+test_that("style_edges() styles the partial-mark edge types independently", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
   g <- cgraph("A o-> B, C o-- D, E o-o F", class = "UNKNOWN")
-  expect_no_error(plot(
-    g,
-    edge_style = list(
-      partially_directed = list(col = "red"),
-      partially_undirected = list(col = "blue"),
-      partial = list(col = "green")
-    )
-  ))
+  p <- cgraph_plot(g) |>
+    style_edges(col = "red", type = "o->") |>
+    style_edges(col = "blue", type = "o--") |>
+    style_edges(col = "green", type = "o-o")
+  expect_no_error(print(p))
 
-  styles <- .plot_make_styles(
-    list(),
-    list(
-      partially_directed = list(col = "red"),
-      partially_undirected = list(col = "blue"),
-      partial = list(col = "green")
-    ),
-    list(),
-    list()
+  styles <- .plot_make_styles(edge_overrides = p$edge_overrides)
+  cols <- vapply(
+    seq_len(nrow(p$edges)),
+    function(i) .plot_edge_style(p$edges, i, styles$edge_style)$col,
+    character(1)
   )
-  expect_equal(styles$edge_style$types$partially_directed$col, "red")
-  expect_equal(styles$edge_style$types$partially_undirected$col, "blue")
-  expect_equal(styles$edge_style$types$partial$col, "green")
+  expect_identical(cols[p$edges$from == "A"], "red")
+  expect_identical(cols[p$edges$from == "C"], "blue")
+  expect_identical(cols[p$edges$from %in% c("E", "F")], "green")
 })
 
 test_that("circle/square always equalize half-extents regardless of label length", {
@@ -228,24 +205,24 @@ test_that("circle/square always equalize half-extents regardless of label length
   expect_equal(square[1], square[2])
 })
 
-test_that("node_style linestyle draws without error", {
+test_that("node linestyle draws without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), node_style = list(linestyle = "dashed")))
+  expect_no_error(print(style_nodes(test_dag(), linestyle = "dashed")))
 })
 
-test_that("labels overrides node text, falling back to the node name", {
+test_that("label_nodes() overrides node text, falling back to the node name", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  p <- plot(test_dag(), labels = c(A = "Confounder"))
+  p <- label_nodes(test_dag(), A = "Confounder")
   expect_s3_class(p, "cgraph_plot")
 
   label_texts <- vapply(
-    p$grob$children$cs.graph$children$node_gtree$children,
+    cgraph_grob(p)$children$cs.graph$children$node_gtree$children,
     function(g) {
       if (grepl("^label", g$name)) as.character(g$label) else NA_character_
     },
@@ -253,7 +230,7 @@ test_that("labels overrides node text, falling back to the node name", {
   )
   label_texts <- label_texts[!is.na(label_texts)]
   expect_true("Confounder" %in% label_texts)
-  # A node not in `labels` keeps its own name
+  # A node not given a label keeps its own name
   expect_true("X" %in% label_texts)
 })
 
@@ -272,43 +249,31 @@ test_that("layout accepts a named list of node positions", {
   )
 })
 
-test_that("edge_style curvature draws globally and per-edge without error", {
+test_that("curvature draws globally and per-edge without error", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  expect_no_error(plot(test_dag(), edge_style = list(curvature = 0.3)))
-  expect_no_error(plot(
-    test_dag(),
-    edge_style = list(by_edge = list(A = list(X = list(curvature = -0.2))))
+  expect_no_error(print(style_edges(test_dag(), curvature = 0.3)))
+  expect_no_error(print(
+    style_edges(test_dag(), curvature = -0.2, from = "A", to = "X")
   ))
 })
 
-test_that("by_edge .by_type disambiguates parallel edges of different types", {
+test_that("type disambiguates parallel edges of different types", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
   admg <- cgraph("X --> Y, X <-> Y", class = "UNKNOWN")
-  by_type_style <- list(
-    by_edge = list(
-      X = list(
-        Y = list(
-          .by_type = list(
-            "-->" = list(col = "red"),
-            "<->" = list(col = "blue")
-          )
-        )
-      )
-    )
-  )
-  expect_no_error(plot(admg, edge_style = by_type_style))
+  p <- cgraph_plot(admg) |>
+    style_edges(col = "red", from = "X", to = "Y", type = "-->") |>
+    style_edges(col = "blue", from = "X", to = "Y", type = "<->")
+  expect_no_error(print(p))
 
-  edges <- .plot_edges(admg)
-  styles <- .plot_make_styles(list(), by_type_style, list(), list())
-  s1 <- .plot_edge_style(edges, 1, styles$edge_style)
-  s2 <- .plot_edge_style(edges, 2, styles$edge_style)
-  expect_false(identical(s1$col, s2$col))
+  styles <- .plot_make_styles(edge_overrides = p$edge_overrides)
+  s1 <- .plot_edge_style(p$edges, 1, styles$edge_style)
+  s2 <- .plot_edge_style(p$edges, 2, styles$edge_style)
   expect_setequal(c(s1$col, s2$col), c("red", "blue"))
 })
 
@@ -393,18 +358,16 @@ drawn_edge_texts <- function(i) {
   Filter(function(k) inherits(k, "text"), e$children)
 }
 
-test_that("edge_style label draws a label on the edges it is set for", {
+test_that("edge labels are drawn on the edges they are set for", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
   g <- cgraph("A --> B, B --> C")
-  plot(
-    g,
-    edge_style = list(
-      label_col = "navy",
-      by_edge = list(A = list(B = list(label = "hello", label_shift = 0.25)))
-    )
+  print(
+    cgraph_plot(g) |>
+      style_edges(label_col = "navy") |>
+      style_edges(label = "hello", label_shift = 0.25, from = "A", to = "B")
   )
   texts <- drawn_edge_texts(1)
   expect_length(texts, 1)
@@ -413,7 +376,7 @@ test_that("edge_style label draws a label on the edges it is set for", {
   expect_length(drawn_edge_texts(2), 0)
 
   # A fixed rotation, in degrees.
-  plot(g, edge_style = list(label = "x", label_rotation = 30))
+  print(style_edges(g, label = "x", label_rotation = 30))
   expect_equal(drawn_edge_texts(1)[[1]]$rot, 30)
 })
 
@@ -424,47 +387,44 @@ test_that("edge labels follow the edge's angle and read upright", {
   expect_equal(grob$rot, 45)
 })
 
-test_that("edge_style gap and label fields are validated", {
+test_that("numeric style fields are validated", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
   expect_error(
-    plot(test_dag(), edge_style = list(gap = -1)),
-    "`edge_style\\$gap` must be non-negative"
+    print(style_edges(test_dag(), gap = -1)),
+    "`gap` must be non-negative"
   )
   expect_error(
-    plot(test_dag(), edge_style = list(label = "x", label_shift = 2)),
-    "`edge_style\\$label_shift` must be between 0 and 1"
+    print(style_edges(test_dag(), label = "x", label_shift = 2)),
+    "`label_shift` must be between 0 and 1"
   )
   expect_error(
-    plot(test_dag(), edge_style = list(arrow_size = -1)),
-    "`edge_style\\$arrow_size` must be non-negative"
+    print(style_edges(test_dag(), arrow_size = -1)),
+    "`arrow_size` must be non-negative"
   )
   expect_error(
-    plot(test_dag(), node_style = list(radius = 0)),
-    "`node_style\\$radius` must be positive"
+    print(style_nodes(test_dag(), radius = 0)),
+    "`radius` must be positive"
   )
   expect_error(
-    plot(test_dag(), node_style = list(by_node = list(X = list(padding = -1)))),
-    "`node_style\\$padding` must be non-negative, got -1 for node \"X\""
+    print(style_nodes(test_dag(), padding = -1, nodes = "X")),
+    "`padding` must be non-negative, got -1 for node \"X\""
   )
-  expect_no_error(plot(test_dag(), edge_style = list(gap = 2)))
+  expect_no_error(print(style_edges(test_dag(), gap = 2)))
 })
 
-test_that("label_style by_node styles single node labels", {
+test_that("style_labels() styles single node labels", {
   skip_if_no_julia()
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  p <- plot(
-    test_dag(),
-    label_style = list(col = "black", by_node = list(A = list(col = "red")))
-  )
+  p <- style_labels(test_dag(), col = "red", nodes = "A")
   label_cols <- vapply(
     Filter(
       function(g) grepl("^label", g$name),
-      p$grob$children$cs.graph$children$node_gtree$children
+      cgraph_grob(p)$children$cs.graph$children$node_gtree$children
     ),
     function(g) g$gp$col,
     character(1)
@@ -485,26 +445,16 @@ test_that(".plot_waypoints accepts matrices, data.frames, and point lists", {
   expect_error(.plot_waypoints("a"), "two-column matrix")
 })
 
-test_that("a path set for the reversed node pair is flipped", {
+test_that("a path given from the edge's second node is flipped", {
   skip_if_no_julia()
   g <- cgraph("A --> B")
-  edges <- .plot_edges(g)
   path <- list(c(0, 1), c(2, 3))
-  forward <- .plot_make_styles(
-    list(),
-    list(by_edge = list(A = list(B = list(path = path)))),
-    list(),
-    list()
-  )
-  reversed <- .plot_make_styles(
-    list(),
-    list(by_edge = list(B = list(A = list(path = rev(path))))),
-    list(),
-    list()
-  )
+  forward <- style_edges(g, path = path, from = "A", to = "B")
+  reversed <- style_edges(g, path = rev(path), from = "B", to = "A")
+  expect_identical(forward$edge_overrides, reversed$edge_overrides)
   expect_identical(
-    .plot_edge_style(edges, 1, forward$edge_style)$path,
-    .plot_edge_style(edges, 1, reversed$edge_style)$path
+    forward$edge_overrides[[1]]$path,
+    matrix(c(0, 1, 2, 3), ncol = 2, byrow = TRUE)
   )
 })
 
@@ -541,13 +491,13 @@ test_that("explicit edge paths draw and widen the plotted range", {
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
 
-  g <- cgraph("A --> B")
-  p <- plot(
-    g,
-    layout = list(A = c(0, 0), B = c(1, 0)),
-    edge_style = list(by_edge = list(A = list(B = list(path = c(0.5, 2)))))
-  )
-  expect_identical(p$grob$children$cs.graph$cs_y_range, c(0, 2))
+  p <- cgraph_plot(
+    cgraph("A --> B"),
+    layout = list(A = c(0, 0), B = c(1, 0))
+  ) |>
+    style_edges(path = c(0.5, 2), from = "A", to = "B")
+  expect_no_error(print(p))
+  expect_identical(cgraph_grob(p)$children$cs.graph$cs_y_range, c(0, 2))
 })
 
 test_that("sugiyama routes long edges through bend points", {

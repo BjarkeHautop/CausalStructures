@@ -5,7 +5,8 @@
 ^panache\.toml$
 ^jarl\.toml$
 ^LICENSE\.md$
-^README\.Rmd$
+^README\.qmd$
+^README_files$
 ^codecov\.yml$
 ^\.github$
 ^docs$

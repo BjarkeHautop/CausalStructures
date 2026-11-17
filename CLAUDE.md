@@ -58,7 +58,7 @@ Rscript -e 'roxygen2::roxygenise()'
 # at a build (as CI does), or the tests and examples needing it are skipped.
 JLBIND_LIBRARY=$PWD/.jlbind/jlbind.so Rscript -e 'devtools::check()'
 
-# Re-knit README.md from README.Rmd after editing README.Rmd
+# Re-render README.md from README.qmd after editing README.qmd
 Rscript -e 'devtools::build_readme()'
 
 # Build the documentation site locally into docs/ (quartodown, a Quarto website
@@ -72,7 +72,7 @@ Tests that need the compiled library call `skip_if_no_julia()` (see
 checks that the library loads.
 
 Pre-commit hooks (`.pre-commit-config.yaml`) enforce: `air` formatting,
-`jarl`/`panache` linting, README.md being newer than README.Rmd, and roxygen
+`jarl`/`panache` linting, README.md being newer than README.qmd, and roxygen
 docs being up to date (`roxygen2::needs_roxygenize()` must be `FALSE`) --- run
 `roxygen2::roxygenise()` before committing if you touched `R/`, `DESCRIPTION`,
 `NAMESPACE`, or `man/`.
@@ -216,7 +216,7 @@ rebuilds it on first use after loading. Query functions (`R/queries.R`,
 functions (`R/transform.R`) return new `cgraph`s. `R/data.R` covers simulating
 data from a graph.
 
-### Plotting (`R/plot.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
+### Plotting (`R/plot.R`, `R/plot-compose.R`, `R/plot-options.R`, `R/plot-routing.R`, `R/layout.R`)
 
 - `cgraph_layout()` (`R/layout.R`) computes node positions. `"sugiyama"` is the
   library's `jl_sugiyama_layout` entrypoint, which calls
@@ -237,16 +237,25 @@ data from a graph.
   random layouts get an explicit `StableRNG(seed)`: NetworkLayout's default RNG
   is a type only known at run time. Every seeded function uses `StableRNG`
   (`_rng`), so a seed gives the same result on every Julia version.
-- The grid-graphics rendering (`plot.cgraph()` in `R/plot.R`, edge routing in
+- Styling is composable: `cgraph_plot()` computes the layout and returns a
+  `cgraph_plot` object, drawn only when printed (`cgraph_grob()` builds the
+  grob). `cgraph_plot()` is the one documented entry point; `plot.cgraph()` is
+  just `print(cgraph_plot(x, ...))`, so `plot(dag)` works. The verbs in
+  `R/plot-compose.R` (`style_nodes()`, `style_edges()`, `style_labels()`,
+  `label_nodes()`, `style_title()`) only record overrides on it --- per node,
+  and per row of its `edges` --- which the renderer puts on top of the
+  `plot_options()` defaults, later calls winning. There are deliberately no
+  style-list arguments (`node_style =`, `by_edge`, ...): one way to style.
+- The grid-graphics rendering (`cgraph_grob()` in `R/plot.R`, edge routing in
   `R/plot-routing.R`) is adapted from [caugi](https://github.com/) 's plotting
   code (see attribution comments in those files and `inst/COPYRIGHTS`) rather
   than written from scratch --- check there before assuming rendering behavior
   is bespoke to this package.
 - `plot_options()`/`plot_default_options()` (`R/plot-options.R`) is a dedicated
   get/set/reset accessor for plot styling defaults (`node_style`, `edge_style`,
-  `label_style`, `title_style`), deliberately kept separate from base
-  `options()` since it's a nested graphics-parameter list rather than a flat
-  behavioral toggle.
+  `label_style`, `title_style`; the fields of the matching verbs), deliberately
+  kept separate from base `options()` since it's a nested graphics-parameter
+  list rather than a flat behavioral toggle.
 
 ### Documentation site
 

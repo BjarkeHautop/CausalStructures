@@ -52,7 +52,7 @@ test_that("plot_options(plot_default_options()) resets to defaults", {
   expect_equal(plot_options(), plot_default_options())
 })
 
-test_that("plot.cgraph picks up global plot_options() defaults", {
+test_that("plots pick up global plot_options() defaults", {
   skip_if_no_julia()
   withr::defer(plot_options(plot_default_options()))
   grDevices::pdf(NULL)
@@ -63,18 +63,23 @@ test_that("plot.cgraph picks up global plot_options() defaults", {
     edge_style = list(col = "gray40")
   )
 
-  styles <- .plot_make_styles(list(), list(), list(), list())
+  styles <- .plot_make_styles()
   expect_equal(styles$node_style$global$fill, "lightblue")
-  expect_equal(styles$edge_style$types$directed$col, "gray40")
+  expect_equal(styles$edge_style$global$col, "gray40")
 
-  # An explicit plot() argument still overrides the global default.
-  styles_override <- .plot_make_styles(
-    list(fill = "gold"),
-    list(),
-    list(),
-    list()
+  # A style verb still overrides the global default.
+  p <- style_edges(test_dag(), col = "gold", from = "A", to = "X")
+  styles <- .plot_make_styles(edge_overrides = p$edge_overrides)
+  i <- which(p$edges$from == "A" & p$edges$to == "X")
+  expect_equal(.plot_edge_style(p$edges, i, styles$edge_style)$col, "gold")
+  expect_equal(
+    .plot_edge_style(
+      p$edges,
+      setdiff(seq_len(nrow(p$edges)), i)[1],
+      styles$edge_style
+    )$col,
+    "gray40"
   )
-  expect_equal(styles_override$node_style$global$fill, "gold")
 
   expect_no_error(plot(test_dag()))
 })

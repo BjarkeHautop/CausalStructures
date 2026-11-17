@@ -1,17 +1,20 @@
 ---
-output: github_document
+format:
+  gfm:
+    default-image-extension: ""
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 ```{r}
+#| label: setup
 #| include: false
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  dpi = 150
 )
 ```
 
@@ -106,6 +109,24 @@ adjustment_set(dag, "X", "Y")
 cpdag <- dag_to_cpdag(dag)
 cpdag
 ```
+
+and plot it, here highlighting the treatment, the outcome and the adjustment
+set:
+
+```{r}
+#| label: plot
+#| fig-width: 6
+#| fig-height: 2.5
+#| fig-show: hide
+
+cgraph_plot(dag) |>
+  style_nodes(fill = "lightskyblue", nodes = c("X", "Y")) |>
+  style_nodes(fill = "gold", nodes = adjustment_set(dag, "X", "Y"))
+```
+
+<!-- Linked by hand, as Quarto's GFM output drops the alt text of plots. -->
+![The DAG drawn left to right, with X and Y in blue and the adjustment set, A,
+in gold.](man/figures/README-plot-1.png)
 
 See the [documentation site](https://bjarkehautop.github.io/CausalStructures/)
 for the full documentation.

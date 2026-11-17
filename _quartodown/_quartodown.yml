@@ -111,7 +111,9 @@ reference:
 
   - title: "Plotting"
     contents:
-      - plot.cgraph
+      - cgraph_plot
+      - plot-styling
+      - cgraph_grob
       - cgraph_layout
       - plot_options
       - plot_default_options

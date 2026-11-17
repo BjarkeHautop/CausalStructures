@@ -6,7 +6,7 @@ knitr:
     comment: "#>"
 ---
 
-`plot()` draws a `cgraph` with
+`cgraph_plot()` draws a `cgraph` with
 [grid](https://stat.ethz.ch/R-manual/R-devel/library/grid/html/00Index.html)
 graphics. For node placement, you can use the layouts provided by
 [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) or
@@ -27,22 +27,22 @@ There are many conventions for drawing causal graphs. For example, you might box
 conditioned variables, dash latent variables, draw `<->` as a dashed arc, or use
 different colors for exposures and outcomes.
 
-`plot()` does not impose any of these conventions by default. Instead, you can
-use its styling options, global defaults, and layouts to choose the conventions
-that make sense for your application[^1].
+`cgraph_plot()` does not impose any of these conventions by default. Instead,
+you can use the style functions, global defaults, and layouts to choose the
+conventions that make sense for your application[^1].
 
 [^1]: `plot_options()` presets for common conventions are also welcome as PRs!
 :::
 
 ## Basic usage
 
-You can pass any `cgraph` to `plot()`, and all edge marks are supported:
+You can pass any `cgraph` to `cgraph_plot()`, and all edge marks are supported:
 
 ```{r}
 #| label: edge-marks
 
 unknown <- cgraph("A <-> B o-> C o-- A", class = "UNKNOWN")
-plot(unknown)
+cgraph_plot(unknown)
 ```
 
 As an example, here is the DAG from Figure 6.5 of Peters, Janzing and Schölkopf
@@ -54,58 +54,67 @@ As an example, here is the DAG from Figure 6.5 of Peters, Janzing and Schölkopf
 dag <- cgraph(
   "C --> X, A --> X + K, X --> F + D, K --> Y, D --> Y + G, Y --> H"
 )
-plot(dag)
+cgraph_plot(dag)
 ```
 
-`plot()` draws the graph right away and returns a `cgraph_plot` object
-invisibly. Printing it, or passing it to `plot()` again, redraws it, and its
-`grob` element is the grid grob, so you can also draw it yourself with
-`grid::grid.draw()`:
+`cgraph_plot()` returns a `cgraph_plot` object, which is drawn when it is
+printed. At the console that happens automatically; inside a function or loop,
+call `print()` on it. `plot(dag)` is a shortcut that builds the plot and draws
+it right away.
+
+## Styling a plot
+
+Before a plot is drawn, you can add styling to it step by step, chained with
+`|>`:
 
 ```{r}
-#| label: plot-object
+#| label: compose
 
-p <- plot(dag)
-class(p$grob)
+cgraph_plot(dag) |>
+  style_edges(col = "gray60") |>
+  style_nodes(fill = "lightskyblue", nodes = "Y") |>
+  style_edges(col = "#DC143C", lwd = 2, from = "K", to = "Y")
 ```
 
-There are four main areas of styling:
+There are five style functions:
 
-- **[Layout](#plot-layouts)**: where nodes are placed
-- **[Styling nodes](#styling-nodes)**: node appearance
-- **[Styling edges](#styling-edges)**: edge appearance
-- **[Labels and titles](#labels-and-titles)**: text and annotations
+- **[`style_nodes()`](#styling-nodes)** styles the nodes in `nodes`.
+- **[`style_edges()`](#styling-edges)** styles the edges joining a node in
+  `from` to a node in `to`, optionally of a given `type`.
+- **[`style_labels()`](#labels)** styles the node labels in `nodes`, and
+  **`label_nodes()`** sets their text.
+- **[`style_title()`](#titles)** styles the title.
 
-If you want to set defaults for an entire project, you can use `plot_options()`.
-Arguments passed to `plot()` still take precedence, and
+Each call styles only the nodes or edges it selects; leaving out a selector
+selects everything. If two calls set the same field, the later one wins, so you
+can start with a style for all edges, as above, and then single some out.
+
+Since the selectors are node sets, you can pass the results of query functions
+straight in. For example, to highlight the parents of `Y` and dash the edges
+into it:
+
+```{r}
+#| label: compose-queries
+
+cgraph_plot(dag) |>
+  style_nodes(fill = "lightskyblue", nodes = parents(dag, "Y")) |>
+  style_edges(lty = "dashed", to = "Y", type = "-->")
+```
+
+A style function also accepts a graph directly, starting the plot with the
+default layout, so `dag |> style_nodes(fill = "gold")` works too.
+
+If you want to set defaults for an entire project, you can use `plot_options()`,
+with a list of fields for each of `node_style`, `edge_style`, `label_style` and
+`title_style`. The style functions still take precedence, and
 `plot_options(plot_default_options())` resets to the built-in defaults:
 
 ```r
 plot_options(node_style = list(fill = "lightblue"), edge_style = list(lwd = 2))
 ```
 
-::: {.callout-tip title="Per-node and per-edge styling"}
-Every field in `node_style` and `edge_style` applies to all nodes or edges.
-`node_style$by_node` and `edge_style$by_edge` override fields for specific nodes
-and edges, which otherwise keep the global value:
-
-```{r}
-#| label: per-node-edge
-
-plot(
-  dag,
-  node_style = list(by_node = list(Y = list(fill = "lightskyblue"))),
-  edge_style = list(
-    col = "gray60",
-    by_edge = list(K = list(Y = list(col = "#DC143C")))
-  )
-)
-```
-
-Only `Y` is filled blue; the other nodes keep the default white. The `K --> Y`
-edge is crimson, and the global `col` turns every other edge gray. The sections
-below list the fields each style list accepts.
-:::
+`cgraph_grob()` gives the grid grob of a plot, if you want to draw it yourself
+with `grid::grid.draw()`, for example in a viewport of a larger figure.
 
 ## Layout {#plot-layouts}
 
@@ -115,7 +124,7 @@ The `layout` argument controls where the nodes are placed. It defaults to
 ```{r}
 #| label: layout-stress
 
-plot(dag, layout = "stress")
+cgraph_plot(dag, layout = "stress")
 ```
 
 You can use these names for the built-in layouts. `"sugiyama"` comes from
@@ -142,7 +151,7 @@ For `"sugiyama"`, `direction` (`"right"`, the default, `"down"`, `"up"`, or
 ```{r}
 #| label: layout-direction
 
-plot(dag, direction = "down")
+cgraph_plot(dag, direction = "down")
 ```
 
 If you want to place the nodes yourself, you can pass explicit positions instead
@@ -152,7 +161,7 @@ name, or a `data.frame` with `name`, `x`, and `y` columns:
 ```{r}
 #| label: layout-fixed
 
-plot(
+cgraph_plot(
   dag,
   layout = list(
     A = c(0, 1),
@@ -177,26 +186,26 @@ adjust a few nodes:
 
 positions <- cgraph_layout(dag, method = "stress")
 positions[positions$name == "G", c("x", "y")] <- c(1, 1.5)
-plot(dag, layout = positions)
+cgraph_plot(dag, layout = positions)
 ```
 :::
 
 ::: {.callout-tip title="Sugiyama positions without Sugiyama routing"}
 Sugiyama.jl implements its own routing using dummy nodes. If you prefer the
-automatic Bezier-curve routing used by `plot()`, you can compute the Sugiyama
+automatic Bezier-curve routing used otherwise, you can compute the Sugiyama
 positions with `cgraph_layout()` and pass those instead:
 
 ```{r}
 #| label: sugiyama-positions
 
 dag_layered <- cgraph("A --> X, A --> B, X --> Y, B --> Y, A --> Y")
-plot(dag_layered, layout = cgraph_layout(dag_layered, "sugiyama"))
+cgraph_plot(dag_layered, layout = cgraph_layout(dag_layered, "sugiyama"))
 ```
 :::
 
 ## Styling nodes
 
-`node_style$by_node` is a named list of per-node overrides, keyed by node name.
+`style_nodes()` takes these fields:
 
   | Field       | Default           | Controls                                                 |
   | ----------- | ----------------- | -------------------------------------------------------- |
@@ -214,17 +223,10 @@ Combine color, border, and shape to highlight a node:
 ```{r}
 #| label: node-highlight
 
-plot(
-  dag,
-  node_style = list(
-    fill = "lightblue",
-    col = "navy",
-    by_node = list(
-      A = list(fill = "salmon", col = "#DC143C"),
-      K = list(shape = "square")
-    )
-  )
-)
+cgraph_plot(dag) |>
+  style_nodes(fill = "lightblue", col = "navy") |>
+  style_nodes(fill = "salmon", col = "#DC143C", nodes = "A") |>
+  style_nodes(shape = "square", nodes = "K")
 ```
 
 You can set `shape` to `"circle"` (the default), `"square"`, `"ellipse"`, or
@@ -235,12 +237,7 @@ variable:
 ```{r}
 #| label: node-linestyle
 
-plot(
-  dag,
-  node_style = list(
-    by_node = list(X = list(linestyle = "dashed", col = "gray50"))
-  )
-)
+dag |> style_nodes(linestyle = "dashed", col = "gray50", nodes = "X")
 ```
 
 If you only want to draw the node names, you can make the fill and the border
@@ -251,15 +248,13 @@ text:
 ```{r}
 #| label: node-transparent
 
-plot(
-  dag,
-  node_style = list(
+dag |>
+  style_nodes(
     fill = "transparent",
     col = "transparent",
     shape = "rect",
     padding = 1
   )
-)
 ```
 
 ### Text-fit node sizing
@@ -270,10 +265,7 @@ By default (`radius = NULL`), nodes are sized to fit their labels:
 #| label: text-fit
 
 longlabels <- cgraph("Exposure --> Mediator --> Y_outcome")
-plot(
-  longlabels,
-  node_style = list(by_node = list(Exposure = list(shape = "ellipse")))
-)
+longlabels |> style_nodes(shape = "ellipse", nodes = "Exposure")
 ```
 
 If you want to control the size yourself, you can set `radius` explicitly:
@@ -281,22 +273,26 @@ If you want to control the size yourself, you can set `radius` explicitly:
 ```{r}
 #| label: fixed-radius
 
-plot(dag, node_style = list(radius = 6))
+dag |> style_nodes(radius = 6)
 ```
 
 ## Styling edges
 
-`edge_style` can override its global fields at the following levels, checked in
-this order:
+`style_edges()` selects the edges joining a node in `from` to a node in `to`, in
+either direction. `type` keeps only the edges with the given notation, read from
+`from` to `to`, so it also fixes the direction:
 
-1. one exact edge: a `.by_type` entry under a node pair in `by_edge`, keyed by
-   the edge's notation, e.g.
-   `by_edge = list(X = list(Y = list(.by_type = list("<->" = ...))))`
-2. a node pair in `by_edge` (`by_edge[[src]][[dst]]`), in either order
-3. a node in `by_edge` (`by_edge[[node]]`), for every edge touching it
-4. an edge-type sub-list (`directed`, `undirected`, `bidirected`,
-   `partially_directed`, `partially_undirected`, `partial`)
-5. the global fields of `edge_style`
+  | Call                                            | Styles                        |
+  | ----------------------------------------------- | ----------------------------- |
+  | `style_edges(p, ...)`                           | every edge                    |
+  | `style_edges(p, ..., from = "X")`               | every edge touching `X`       |
+  | `style_edges(p, ..., from = "X", type = "-->")` | the edges out of `X`          |
+  | `style_edges(p, ..., to = "X", type = "-->")`   | the edges into `X`            |
+  | `style_edges(p, ..., from = "A", to = "X")`     | the edges between `A` and `X` |
+  | `style_edges(p, ..., type = "<->")`             | every bidirected edge         |
+
+The notations are `"-->"`, `"<--"`, `"---"`, `"<->"`, `"o->"`, `"<-o"`, `"o--"`,
+`"--o"`, and `"o-o"`. `style_edges()` takes these fields:
 
   | Field         | Default                   | Controls                                   |
   | ------------- | ------------------------- | ------------------------------------------ |
@@ -317,13 +313,9 @@ Let's style some edges by type:
 
 admg <- cgraph("X --> Y, X <-> Z, Z --> Y", class = "ADMG")
 
-plot(
-  admg,
-  edge_style = list(
-    directed = list(col = "steelblue"),
-    bidirected = list(col = "#DC143C", lwd = 2.5)
-  )
-)
+cgraph_plot(admg) |>
+  style_edges(col = "steelblue", type = "-->") |>
+  style_edges(col = "#DC143C", lwd = 2.5, type = "<->")
 ```
 
 `fill` controls the arrowhead's fill color. By default (`NULL`), it uses the
@@ -333,7 +325,7 @@ arrowheads, pass `NA`:
 ```{r}
 #| label: edge-fill
 
-plot(dag, edge_style = list(fill = NA))
+dag |> style_edges(fill = NA)
 ```
 
 `lty` styles the edge line itself. For example, you can use it to dash `<->`
@@ -342,7 +334,7 @@ edges:
 ```{r}
 #| label: edge-lty
 
-plot(admg, edge_style = list(bidirected = list(lty = "dashed")))
+admg |> style_edges(lty = "dashed", type = "<->")
 ```
 
 If you prefer some space between each end of an edge and the node border, you
@@ -351,44 +343,23 @@ can set `gap`:
 ```{r}
 #| label: edge-gap
 
-plot(dag, edge_style = list(gap = 1))
+dag |> style_edges(gap = 1)
 ```
 
-### Targeting specific edges
+### Parallel edges
 
-If you want to change something for a specific edge, you can use a node pair in
-`by_edge`:
-
-```{r}
-#| label: edge-pair
-
-plot(dag, edge_style = list(by_edge = list(A = list(X = list(col = "red")))))
-```
-
-A node pair is unordered. This means that if an `ADMG` has both `X --> Y` and
-`X <-> Y`, the pair applies to both edges. If you need to distinguish them, add
-a `.by_type` entry instead:
+If an `ADMG` has both `X --> Y` and `X <-> Y`, `from = "X", to = "Y"` selects
+both edges. If you need to distinguish them, add `type`:
 
 ```{r}
 #| label: edge-by-type
 
 shared <- cgraph("X --> Y, X <-> Y", class = "ADMG")
 
-plot(
-  shared,
-  edge_style = list(
-    col = "steelblue",
-    by_edge = list(
-      X = list(Y = list(.by_type = list("<->" = list(col = "#DC143C"))))
-    )
-  )
-)
+cgraph_plot(shared) |>
+  style_edges(col = "steelblue") |>
+  style_edges(col = "#DC143C", from = "X", to = "Y", type = "<->")
 ```
-
-::: {.callout-tip title="Symmetric edges"}
-For symmetric edges, the order does not matter, so `by_edge$Y$X` with `"<->"` is
-the same key as `by_edge$X$Y` with `"<->"`.
-:::
 
 Notice that the two edges between `X` and `Y` are automatically curved apart, so
 they don't overlap.
@@ -396,25 +367,25 @@ they don't overlap.
 ### Curvature and automatic routing
 
 `curvature` bows an edge into an arc instead of drawing it straight. Positive
-values bow the edge to the left when travelling from `src` to `dst`, while
-negative values bow it to the right.
+values bow the edge to the left when travelling from its first node to its
+second (as listed by `edges()`), while negative values bow it to the right.
 
 ```{r}
 #| label: curvature
 
-plot(admg, edge_style = list(bidirected = list(curvature = -0.3)))
+admg |> style_edges(curvature = -0.3, type = "<->")
 ```
 
-If a straight `src --> dst` edge would pass too close to a non-incident node,
-`plot()` automatically bends it around that node with a Bezier curve. Edges with
-nothing in the way are always drawn straight.
+If a straight edge would pass too close to a non-incident node, it is
+automatically bent around that node with a Bezier curve. Edges with nothing in
+the way are always drawn straight.
 
 ```{r}
 #| label: auto-routing
 
 detour <- cgraph("A --> X + Y, X --> Y")
 
-plot(detour, layout = list(A = c(0, 0), X = c(1, 0), Y = c(2, 0)))
+cgraph_plot(detour, layout = list(A = c(0, 0), X = c(1, 0), Y = c(2, 0)))
 ```
 
 If you want to disable this automatic routing for a particular edge, you can set
@@ -423,11 +394,8 @@ its `curvature` to `0`:
 ```{r}
 #| label: no-routing
 
-plot(
-  detour,
-  layout = list(A = c(0, 0), X = c(1, 0), Y = c(2, 0)),
-  edge_style = list(by_edge = list(A = list(Y = list(curvature = 0))))
-)
+cgraph_plot(detour, layout = list(A = c(0, 0), X = c(1, 0), Y = c(2, 0))) |>
+  style_edges(curvature = 0, from = "A", to = "Y")
 ```
 
 ### Explicit edge paths
@@ -442,64 +410,54 @@ the edge `K --> Y` below is drawn through the point `(0.5, -0.25)`:
 
 positions <- cgraph_layout(dag, method = "stress")
 
-plot(
-  dag,
-  layout = positions,
-  edge_style = list(by_edge = list(K = list(Y = list(path = c(0.5, -0.25)))))
-)
+cgraph_plot(dag, layout = positions) |>
+  style_edges(path = c(0.5, -0.25), from = "K", to = "Y")
 ```
 
 For several points, `path` can also be a two-column matrix, a `data.frame` with
-`x` and `y` columns, or a list of `c(x, y)` points. Under the reversed pair,
-`by_edge$Y$K`, list the points from `Y` to `K`.
+`x` and `y` columns, or a list of `c(x, y)` points, listed from the node in
+`from` to the node in `to`.
 
 ## Labels and titles
 
 ### Labels
 
-`label_style$by_node` overrides the node label fields per node, like [node
-styling](#styling-nodes).
-
-  | Argument / field         | Default   | Controls                |
-  | ------------------------ | --------- | ----------------------- |
-  | `labels`                 | `NULL`    | text drawn in each node |
-  | `label_style$col`        | `"black"` | node label text color   |
-  | `label_style$fontsize`   | `10`      | node label font size    |
-  | `label_style$fontface`   | `"plain"` | node label font face    |
-  | `label_style$fontfamily` | `""`      | node label font family  |
-
 By default, each node is labelled with its own name. If you want different
-labels, you can set them with `labels`. Node sizing takes multi-line labels into
-account, so the nodes grow to fit:
+labels, you can set them with `label_nodes()`. Node sizing takes multi-line
+labels into account, so the nodes grow to fit:
 
 ```{r}
 #| label: labels
 
-plot(
-  cgraph("A0 --> L1 --> A1 --> Y, A0 --> Y + A1"),
-  labels = c(
+cgraph("A0 --> L1 --> A1 --> Y, A0 --> Y + A1") |>
+  label_nodes(
     A0 = "Treatment\nat baseline",
     L1 = "Confounder\nat time 1",
     A1 = "Treatment\nat time 1"
   )
-)
 ```
 
-You can use `col` and `fontsize` to style the label text:
+`style_labels()` styles the label text of the nodes in `nodes`:
+
+  | Field        | Default   | Controls    |
+  | ------------ | --------- | ----------- |
+  | `col`        | `"black"` | text color  |
+  | `fontsize`   | `10`      | font size   |
+  | `fontface`   | `"plain"` | font face   |
+  | `fontfamily` | `""`      | font family |
 
 ```{r}
 #| label: label-style
 
-plot(
-  dag,
-  label_style = list(fontsize = 13, by_node = list(A = list(col = "#DC143C")))
-)
+cgraph_plot(dag) |>
+  style_labels(fontsize = 13) |>
+  style_labels(col = "#DC143C", nodes = "A")
 ```
 
 ### Edge labels
 
-Edge label fields are part of `edge_style`, so they use the same levels as [edge
-styling](#styling-edges).
+Edge labels are set with `style_edges()`, so they select edges in the same way
+as [edge styling](#styling-edges).
 
   | Field              | Default   | Controls                                                                  |
   | ------------------ | --------- | ------------------------------------------------------------------------- |
@@ -508,7 +466,7 @@ styling](#styling-edges).
   | `label_fontsize`   | `9`       | edge label font size                                                      |
   | `label_fontface`   | `"plain"` | edge label font face                                                      |
   | `label_fontfamily` | `""`      | edge label font family                                                    |
-  | `label_shift`      | `0.5`     | position along the edge, 0 (source) to 1 (destination)                    |
+  | `label_shift`      | `0.5`     | position along the edge, 0 (first node) to 1 (second node)                |
   | `label_distance`   | `NULL`    | perpendicular gap (mm) from the edge; `NULL` scales with `label_fontsize` |
   | `label_rotation`   | `NULL`    | text angle in degrees; `NULL` follows the edge's own angle                |
 
@@ -517,10 +475,7 @@ Let's add a label to the edge `K --> Y`:
 ```{r}
 #| label: edge-label
 
-plot(
-  dag,
-  edge_style = list(by_edge = list(K = list(Y = list(label = "hello"))))
-)
+dag |> style_edges(label = "hello", from = "K", to = "Y")
 ```
 
 By default, the label follows the edge's angle. You can use `label_shift` and
@@ -529,14 +484,9 @@ By default, the label follows the edge's angle. You can use `label_shift` and
 ```{r}
 #| label: edge-label-shift
 
-plot(
-  dag,
-  edge_style = list(
-    label_shift = 0.75,
-    label_distance = 4,
-    by_edge = list(K = list(Y = list(label = "hi")))
-  )
-)
+cgraph_plot(dag) |>
+  style_edges(label_shift = 0.75, label_distance = 4) |>
+  style_edges(label = "hi", from = "K", to = "Y")
 ```
 
 If an edge is steep or curved, following its angle can make the label hard to
@@ -545,40 +495,36 @@ read. You can use `label_rotation` to give it a fixed angle instead:
 ```{r}
 #| label: edge-label-rotation
 
-plot(
-  dag,
-  edge_style = list(
-    by_edge = list(
-      A = list(
-        X = list(
-          label = "steep",
-          label_rotation = 0,
-          label_distance = 6,
-          label_col = "#DC143C"
-        )
-      ),
-      K = list(Y = list(label = "follows"))
-    )
-  )
-)
+cgraph_plot(dag) |>
+  style_edges(
+    label = "steep",
+    label_rotation = 0,
+    label_distance = 6,
+    label_col = "#DC143C",
+    from = "A",
+    to = "X"
+  ) |>
+  style_edges(label = "follows", from = "K", to = "Y")
 ```
 
 ### Titles
 
-  | Argument / field       | Default                  | Controls                            |
-  | ---------------------- | ------------------------ | ----------------------------------- |
-  | `main`                 | `NULL`                   | plot title; `NULL` means no title   |
-  | `title_style$fontsize` | `14`                     | title font size                     |
-  | `title_style$col`      | `"black"`                | title color                         |
-  | `title_style$fontface` | `"bold"`                 | title font face                     |
-  | `title_gap`            | `grid::unit(1, "lines")` | gap between the title and the graph |
+If you want to add a title, set `main`, and style it with `style_title()`, which
+takes the same fields as `style_labels()`:
 
-If you want to add a title, set `main`:
+  | Argument / field | Default                  | Controls                            |
+  | ---------------- | ------------------------ | ----------------------------------- |
+  | `main`           | `NULL`                   | plot title; `NULL` means no title   |
+  | `fontsize`       | `14`                     | title font size                     |
+  | `col`            | `"black"`                | title color                         |
+  | `fontface`       | `"bold"`                 | title font face                     |
+  | `title_gap`      | `grid::unit(1, "lines")` | gap between the title and the graph |
 
 ```{r}
 #| label: title
 
-plot(dag, main = "My DAG", title_style = list(fontsize = 20, col = "navy"))
+cgraph_plot(dag, main = "My DAG") |>
+  style_title(fontsize = 20, col = "navy")
 ```
 
 ## Figure size and margins
@@ -588,7 +534,7 @@ plot(dag, main = "My DAG", title_style = list(fontsize = 20, col = "navy"))
   | `outer_margin` | `grid::unit(2, "mm")` | padding around the whole plot                                  |
   | `asp`          | `NA`                  | y/x aspect ratio of the layout; `NA` fills the available space |
 
-`plot()` draws into whatever graphics device is open, so the figure size is set
+A plot is drawn into whatever graphics device is open, so the figure size is set
 the usual R way, e.g. with `grDevices::png(width =, height =)` or a chunk's
 `fig-width`/`fig-height`. Let's make the figure a bit larger:
 
@@ -597,13 +543,13 @@ the usual R way, e.g. with `grDevices::png(width =, height =)` or a chunk's
 #| fig-width: 8
 #| fig-height: 6
 
-plot(dag)
+cgraph_plot(dag)
 ```
 
 ::: {.callout-tip title="Large graphs need a bigger figure"}
 The default figure size works well for small examples. As your graph gets
 larger, labels and edges can become cramped or overlap. Increase the figure size
-(and, if needed, `node_style$radius` or `label_style$fontsize`) to keep larger
+(and, if needed, the node `radius` or the label `fontsize`) to keep larger
 graphs readable.
 :::
 
@@ -615,30 +561,30 @@ instead, set `asp = 1`.
 
 ## Composing into an existing figure
 
-So far we've only used `plot()` on its own page. If you already have a grid
-viewport (for example, as one panel of a larger figure), you can use
-`plot(cg, newpage = FALSE)` to draw the graph there instead.
+So far each plot has had its own page. If you already have a grid viewport (for
+example, as one panel of a larger figure), you can print a plot with
+`newpage = FALSE` to draw it there instead.
 
 Let's use this to draw the DAG and the ADMG side by side in one figure:
 
 ```{r}
-#| label: compose
+#| label: existing-figure
 #| fig-width: 9
 #| fig-height: 4
 
 grid::grid.newpage()
 grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, 2)))
 grid::pushViewport(grid::viewport(layout.pos.col = 1))
-plot(dag, newpage = FALSE)
+print(cgraph_plot(dag), newpage = FALSE)
 grid::popViewport()
 grid::pushViewport(grid::viewport(layout.pos.col = 2))
-plot(admg, newpage = FALSE, node_style = list(fill = "salmon"))
+print(style_nodes(admg, fill = "salmon"), newpage = FALSE)
 grid::popViewport()
 ```
 
 ## Combining options
 
-Here we combine some of the styling options above to plot a PAG:
+Here we combine some of the styling above to plot a PAG:
 
 ```{r}
 #| label: combined
@@ -650,29 +596,16 @@ pag <- cgraph(
   class = "PAG"
 )
 
-plot(
-  pag,
-  layout = "stress",
-  node_style = list(
-    fill = "whitesmoke",
-    col = "slategray",
-    by_node = list(
-      X = list(fill = "skyblue", col = "royalblue"),
-      Y = list(fill = "gold", col = "darkorange"),
-      K = list(shape = "square", linestyle = "dashed")
-    )
-  ),
-  edge_style = list(
-    col = "darkslategray",
-    partially_directed = list(col = "royalblue", lty = "dashed"),
-    by_edge = list(
-      K = list(Y = list(curvature = 0.3), X = list(label = "cool"))
-    )
-  ),
-  label_style = list(
-    by_node = list(X = list(col = "navy"), Y = list(col = "saddlebrown"))
-  ),
-  main = "A cool PAG",
-  title_style = list(fontsize = 18, col = "navy")
-)
+cgraph_plot(pag, layout = "stress", main = "A cool PAG") |>
+  style_nodes(fill = "whitesmoke", col = "slategray") |>
+  style_nodes(fill = "skyblue", col = "royalblue", nodes = "X") |>
+  style_nodes(fill = "gold", col = "darkorange", nodes = "Y") |>
+  style_nodes(shape = "square", linestyle = "dashed", nodes = "K") |>
+  style_edges(col = "darkslategray") |>
+  style_edges(col = "royalblue", lty = "dashed", type = c("o->", "<-o")) |>
+  style_edges(curvature = 0.3, from = "K", to = "Y") |>
+  style_edges(label = "cool", from = "K", to = "X") |>
+  style_labels(col = "navy", nodes = "X") |>
+  style_labels(col = "saddlebrown", nodes = "Y") |>
+  style_title(fontsize = 18, col = "navy")
 ```
