@@ -25,12 +25,8 @@ import Sugiyama
 
 using JLBind
 using JLBind:
-    @R, @r_global, protect, unprotect, alloc, string_elt, set_string_elt,
+    @r_global, protect, unprotect, alloc, alloc_matrix, string_elt, set_string_elt,
     set_vector_elt, real_ptr, mkchar, data_frame, STRSXP, REALSXP, VECSXP
-
-# An nrow-by-ncol R matrix of type `t`, which JLBind has no allocator for.
-_alloc_matrix(t::Cint, nrow::Integer, ncol::Integer) =
-    ccall(@R(Rf_allocMatrix), SEXP, (Cint, Cint, Cint), t, nrow, ncol)
 
 # A graph in R: an external pointer of class `cgraph`. Functions take it as
 # `@nospecialize(g::CausalGraph)`: a call with the abstract type would stay
@@ -53,19 +49,11 @@ function _unsupported(fname::String, class::String)
 end
 
 # `@on "f" g (DAG, ADMG) body` evaluates `body` with `g` narrowed to each
-# listed concrete class in turn, and throws for any other class. `ALL` stands
-# for every class.
+# listed concrete class in turn (JLBind's `@narrow`), and throws for any other
+# class. `ALL` stands for every class.
 macro on(fname, g, classes, body)
     Ts = classes === :ALL ? ALL_CLASSES : Tuple(classes.args)
-    ex = :(_unsupported($fname, _class_name($g)))
-    for T in reverse(Ts)
-        ex = Expr(:if, :($g isa $T), :(
-            let $g = $g::$T
-                $body
-            end
-        ), ex)
-    end
-    return esc(ex)
+    return esc(:(@narrow $g ($(Ts...),) $body _unsupported($fname, _class_name($g))))
 end
 
 # `@class cls T body` evaluates `body` with `T` bound to the graph type named
@@ -122,10 +110,6 @@ end
 
 # --- Construction and lifetime ----------------------------------------------
 
-# The number of graphs R holds (every Julia object R holds, if other packages
-# using jlbind hold some too).
-jl_graph_count() = JLBind.object_count()
-
 jl_cgraph(spec::String, class::String) = @class class T ALL T(spec)
 
 # --- Saving ------------------------------------------------------------------
@@ -158,15 +142,12 @@ function JLBind.r_restore(::Type{CausalGraph}, state::SEXP)
     @class class T ALL T(nodes, es; validate = false)
 end
 
-# `m`, `p` and `seed` arrive unconverted: three optional arguments in one call
-# exceed what the compiler union-splits.
 function jl_generate_graph(
-    n::Int64, m::SEXP, p::SEXP, class::String, latents::Int64, seed::SEXP,
+    n::Int64, m::Union{Nothing,Int64}, p::Union{Nothing,Float64}, class::String,
+    latents::Int64, seed::Union{Nothing,Int64},
 )
-    rng = _rng(from_sexp(Union{Nothing,Int64}, seed))
-    mm = from_sexp(Union{Nothing,Int64}, m)
-    pp = from_sexp(Union{Nothing,Float64}, p)
-    @class class T (DAG, CPDAG, ADMG, MAG, PAG) _generate(rng, n, mm, pp, T, latents)
+    rng = _rng(seed)
+    @class class T (DAG, CPDAG, ADMG, MAG, PAG) _generate(rng, n, m, p, T, latents)
 end
 
 # A type passed as a keyword is stored as `DataType` in the keyword NamedTuple,
@@ -207,7 +188,7 @@ end
 function jl_edge_marks(@nospecialize(g::CausalGraph))
     es = @on "edges" g ALL g.edges
     n = length(es)
-    out = protect(_alloc_matrix(STRSXP, n, 4))
+    out = protect(alloc_matrix(STRSXP, n, 4))
     marks = protect(alloc(STRSXP, 3))
     set_string_elt(marks, 0, mkchar("Tail"))
     set_string_elt(marks, 1, mkchar("Arrow"))
@@ -637,31 +618,25 @@ end
 
 # --- Mutation ----------------------------------------------------------------
 
-# `f(g, items...)` one item at a time: splatting a vector into varargs is a
-# dynamic `_apply_iterate` call that `--trim` cannot resolve.
-function _fold(f::F, g::G, items::Vector) where {F,G<:CausalGraph}
-    for item in items
-        g = f(g, item)::G
-    end
-    return g
-end
-
+# The vector methods, since splatting a vector into the varargs methods is a
+# dynamic `_apply_iterate` call that `--trim` cannot resolve. All the items are
+# applied before the graph is validated.
 function jl_add_edges(@nospecialize(g::CausalGraph), spec::String)
     es = _spec_edges(spec)
-    @on "add_edges" g ALL _fold(CS.add_edges, g, es)
+    @on "add_edges" g ALL CS.add_edges(g, es)
 end
 
 function jl_remove_edges(@nospecialize(g::CausalGraph), spec::String)
     es = _spec_edges(spec)
-    @on "remove_edges" g ALL _fold(CS.remove_edges, g, es)
+    @on "remove_edges" g ALL CS.remove_edges(g, es)
 end
 
 function jl_add_nodes(@nospecialize(g::CausalGraph), nodes::SymSet)
-    @on "add_nodes" g ALL _fold(CS.add_nodes, g, nodes)
+    @on "add_nodes" g ALL CS.add_nodes(g, nodes)
 end
 
 function jl_remove_nodes(@nospecialize(g::CausalGraph), nodes::SymSet)
-    @on "remove_nodes" g ALL _fold(CS.remove_nodes, g, nodes)
+    @on "remove_nodes" g ALL CS.remove_nodes(g, nodes)
 end
 
 # --- Data generation ---------------------------------------------------------
@@ -697,7 +672,7 @@ function jl_simulate_data(
         throw(ArgumentError("error_sd must have length 1 or 2"))
     end
     ns = (g::DAG).backend.nodes
-    out = protect(_alloc_matrix(REALSXP, n, length(ns)))
+    out = protect(alloc_matrix(REALSXP, n, length(ns)))
     p = real_ptr(out)
     for (j, nd) in enumerate(ns)
         col = d[nd]
@@ -866,7 +841,7 @@ end
 # Points as an n-by-2 numeric matrix of x and y coordinates.
 function _points_matrix(pts)
     n = length(pts)
-    out = _alloc_matrix(REALSXP, n, 2)
+    out = alloc_matrix(REALSXP, n, 2)
     p = real_ptr(out)
     for (i, pt) in enumerate(pts)
         unsafe_store!(p, Float64(pt[1]), i)
@@ -877,10 +852,10 @@ end
 
 # --- R entrypoints -----------------------------------------------------------
 
-@rcall jl_graph_count()::Int64
 @rcall jl_cgraph(spec::String, class::String)::GraphRef
 @rcall jl_generate_graph(
-    n::Int64, m::SEXP, p::SEXP, class::String, latents::Int64, seed::SEXP,
+    n::Int64, m::Union{Nothing,Int64}, p::Union{Nothing,Float64}, class::String,
+    latents::Int64, seed::Union{Nothing,Int64},
 )::GraphRef
 @rcall jl_uniform_dag_counts(n::Int64)::DagCountsRef
 @rcall jl_class_name(g::GraphRef)::String

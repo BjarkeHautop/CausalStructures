@@ -176,16 +176,16 @@ test_that("graphs survive saving and loading", {
   dag <- graphs[[1]]
   saveRDS(list(a = dag, b = dag, other = graphs[[2]]), file)
   gc()
-  live <- jl_graph_count()
+  live <- jlbind::object_count()
   loaded <- readRDS(file)
   # Loading builds nothing, and two different graphs still differ.
-  expect_identical(jl_graph_count(), live)
+  expect_identical(jlbind::object_count(), live)
   expect_false(identical(loaded$a, loaded$other))
   expect_identical(parents(loaded$a, "M"), "X")
-  expect_identical(jl_graph_count(), live + 1L)
+  expect_identical(jlbind::object_count(), live + 1L)
   # Both copies of a graph are one object, rebuilt once.
   expect_identical(children(loaded$b, "A"), c("X", "Y"))
-  expect_identical(jl_graph_count(), live + 1L)
+  expect_identical(jlbind::object_count(), live + 1L)
   expect_true(unserialize(serialize(loaded$a, NULL)) == dag)
   expect_true(skeleton(loaded$a) == skeleton(dag))
 
@@ -409,6 +409,16 @@ test_that("latent variable transforms work", {
 
   ag <- condition_marginalize(dag, given = "U")
   expect_setequal(nodes(ag), c("X", "Y"))
+})
+
+test_that("mutation applies every edge before validating", {
+  skip_if_no_julia()
+  # Neither edge alone is a valid CPDAG, but the v-structure is.
+  empty <- cgraph(spec = "A, B, C", class = "CPDAG")
+  cpdag <- add_edges(empty, A %-->% C, B %-->% C)
+  expect_true(cpdag == cgraph(A %-->% C %<--% B, class = "CPDAG"))
+  expect_true(remove_edges(cpdag, A %-->% C, B %-->% C) == empty)
+  expect_error(add_edges(empty, A %-->% C), "strongly protected")
 })
 
 test_that("mutation works", {

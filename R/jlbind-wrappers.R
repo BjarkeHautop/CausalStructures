@@ -5,7 +5,6 @@
 # `.jlbind` for the functions below.
 .jlbind_module <- "csjl"
 .jlbind_entries <- c(
-  "jl_graph_count",
   "jl_cgraph",
   "jl_generate_graph",
   "jl_uniform_dag_counts",
@@ -107,7 +106,6 @@
 )
 .jlbind <- new.env(parent = emptyenv())
 
-jl_graph_count <- function() .External(.jlbind$.call, .jlbind$jl_graph_count)
 jl_cgraph <- function(spec, class) {
   .External(.jlbind$.call, .jlbind$jl_cgraph, spec, class)
 }

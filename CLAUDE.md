@@ -138,20 +138,22 @@ This is the code to read first for anything touching the R<->Julia boundary.
   registry, released by its finalizer. A function receiving one takes
   `@nospecialize(g::CausalGraph)`: a call with an abstractly typed argument
   stays dynamic otherwise, which `--trim` rejects. Inside, it branches on the
-  concrete class with `@on "name" g (DAG, ADMG) body` (or `ALL`). List only the
-  classes the CausalStructures.jl function has methods for; other classes get a
-  clean "not supported for a <class>" error.
+  concrete class with `@on "name" g (DAG, ADMG) body` (or `ALL`), a wrapper of
+  JLBind's `@narrow`. List only the classes the CausalStructures.jl function has
+  methods for; other classes get a clean "not supported for a <class>" error.
 - Errors never unwind through Julia frames: a Julia exception is caught in the
   entrypoint and returned as a character vector with class `jlbind_error`, which
   jlbind's call routine raises. Only the messages of common exception types
   (`ArgumentError`, `ErrorException`, ...) are passed on, since rendering an
   arbitrary exception is a dynamic call `--trim` rejects.
-- `--trim=safe` pitfalls already hit here: an abstractly typed argument without
-  `@nospecialize` (see above), splatting a vector into varargs (use `_fold`),
-  `nameof(typeof(g))` on an abstract graph (use `_class_name`), more than two
-  `Union{T,Nothing}` arguments in one call (take raw `SEXP` and convert inside,
-  as `jl_generate_graph` does), and a type passed as a keyword argument
-  (`class = T`, inlined with `@inline` in `_generate`).
+- `--trim=safe` pitfalls already hit here (still so on Julia 1.13 and nightly
+  1.15): an abstractly typed argument without `@nospecialize` (see above),
+  splatting a vector into varargs (call the vector method instead, as for
+  `add_edges`; applying items one at a time is wrong too, since every
+  intermediate graph is validated), `nameof(typeof(g))` on an abstract graph
+  (use `_class_name`), and a type passed as a keyword argument (`class = T`,
+  inlined with `@inline` in `_generate`). Any number of `Union{Nothing,T}`
+  arguments is fine: `@rcall` branches on each.
 - A function of two graphs narrows both, nesting `@on`
   (`@on "f" g1 (DAG,   PDAG) @on "f" g2 (DAG, PDAG) body`); keep the pairs few,
   since each is compiled. `hd`/`shd` only read edges, so they compare both
