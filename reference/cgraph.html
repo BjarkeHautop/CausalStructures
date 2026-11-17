@@ -423,7 +423,7 @@ Graph class: <code>"DAG"</code>, <code>"UG"</code>, <code>"PDAG"</code>, <code>"
 </tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
 <p>For programmatic construction (e.g. from an edge list assembled at runtime), pass a spec string directly via <code>spec</code> instead of <code>...</code>, using the same syntax as the operators expand to (e.g. <code>"A --&gt; X + Y, X --&gt; M --&gt; Y"</code>).</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>A <code>cgraph</code>.</p>
+<p>A <code>cgraph</code>: a reference to a graph held by the Julia library. It can be saved and loaded like any R object (e.g. with <code>saveRDS()</code>).</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">

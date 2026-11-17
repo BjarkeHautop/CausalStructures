@@ -390,10 +390,10 @@ visitors who prefer it, before Quarto reads the stored choice.
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>A list with <code>node_style</code>, <code>edge_style</code>, <code>label_style</code>, and <code>title_style</code> components - see <a href="plot-styling.html">plot-styling</a> for their fields.</p>
+<p>A list with <code>node_style</code>, <code>edge_style</code>, <code>label_style</code>, and <code>title_style</code> components - see <a href="plot-styling.html">plot-styling</a> for their fields - and <code>spacing</code>, the gap between plots arranged with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code>.</p>
 </section><section id="see-also" class="level2"><h2 class="anchored" data-anchor-id="see-also">See Also</h2>
 <p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code> for getting and setting these globally.</p>
-<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code></p>
+<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a>()</code></p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -461,9 +461,13 @@ visitors who prefer it, before Quarto reads the stored choice.
 <span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $title_style$fontface</span></span>
 <span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "bold"</span></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Reset to defaults after changing them</span></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./plot_default_options.html">plot_default_options</a></span>())</span></code></pre></div>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $spacing</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1lines</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Reset to defaults after changing them</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./plot_options.html">plot_options</a></span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./plot_default_options.html">plot_default_options</a></span>())</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1296,9 +1300,20 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
 <div data-for="t3">
-<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot_grid</span>(
+  ...,
+  <span class="at">nrow</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">ncol</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">byrow</span> <span class="at">=</span> <span class="cn">TRUE</span>,
+  <span class="at">widths</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">heights</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">spacing</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Arrange several plots in one figure</span>
 </div>
 <div data-for="t4">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
+</div>
+<div data-for="t5">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
   x,
   <span class="at">method</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -1307,7 +1322,7 @@ visitors who prefer it, before Quarto reads the stored choice.
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
 </div>
-<div data-for="t5">
+<div data-for="t6">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
   x,
   <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,

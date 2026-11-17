@@ -789,25 +789,31 @@ Plot a causal graph
 Style the nodes, edges and labels of a plot
 </dd>
 <dt>
-<code><a class="quartodown-tip-ref" data-quartodown-tip="t97" href="./cgraph_grob.html">cgraph_grob</a>()</code>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t97" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code> <code><a href="../reference/cgraph_plot_grid.html">Ops(<i>&lt;cgraph_plot&gt;</i>)</a></code> <code><a href="../reference/cgraph_plot_grid.html">Ops(<i>&lt;cgraph_plots&gt;</i>)</a></code>
+</dt>
+<dd>
+Arrange several plots in one figure
+</dd>
+<dt>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t98" href="./cgraph_grob.html">cgraph_grob</a>()</code>
 </dt>
 <dd>
 Grid grob of a causal graph plot
 </dd>
 <dt>
-<code><a class="quartodown-tip-ref" data-quartodown-tip="t98" href="./cgraph_layout.html">cgraph_layout</a>()</code>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t99" href="./cgraph_layout.html">cgraph_layout</a>()</code>
 </dt>
 <dd>
 Compute a graph layout
 </dd>
 <dt>
-<code><a class="quartodown-tip-ref" data-quartodown-tip="t99" href="./plot_options.html">plot_options</a>()</code>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t100" href="./plot_options.html">plot_options</a>()</code>
 </dt>
 <dd>
 Get or set global default plot styles
 </dd>
 <dt>
-<code><a class="quartodown-tip-ref" data-quartodown-tip="t100" href="./plot_default_options.html">plot_default_options</a>()</code>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t101" href="./plot_default_options.html">plot_default_options</a>()</code>
 </dt>
 <dd>
 Default plot styling options
@@ -816,7 +822,7 @@ Default plot styling options
 <p>Check that the compiled CausalStructures.jl library is available, and package options.</p>
 <dl class="ref-index">
 <dt>
-<code><a class="quartodown-tip-ref" data-quartodown-tip="t101" href="./julia_ready.html">julia_ready</a>()</code>
+<code><a class="quartodown-tip-ref" data-quartodown-tip="t102" href="./julia_ready.html">julia_ready</a>()</code>
 </dt>
 <dd>
 Is the compiled CausalStructures.jl library available?
@@ -2010,9 +2016,20 @@ Package options
 <code class="quartodown-tip-sig"><span class="fu">style_edges</span>(p, ..., <span class="at">from</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">to</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">type</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
 </div>
 <div data-for="t97">
-<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
+<code class="quartodown-tip-sig"><span class="fu">cgraph_plot_grid</span>(
+  ...,
+  <span class="at">nrow</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">ncol</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">byrow</span> <span class="at">=</span> <span class="cn">TRUE</span>,
+  <span class="at">widths</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">heights</span> <span class="at">=</span> <span class="cn">NULL</span>,
+  <span class="at">spacing</span> <span class="at">=</span> <span class="cn">NULL</span>
+)</code><span class="quartodown-tip-brief">Arrange several plots in one figure</span>
 </div>
 <div data-for="t98">
+<code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
+</div>
+<div data-for="t99">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
   x,
   <span class="at">method</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -2021,13 +2038,13 @@ Package options
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
 </div>
-<div data-for="t99">
+<div data-for="t100">
 <code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
-<div data-for="t100">
+<div data-for="t101">
 <code class="quartodown-tip-sig"><span class="fu">plot_default_options</span>()</code><span class="quartodown-tip-brief">Default plot styling options</span>
 </div>
-<div data-for="t101">
+<div data-for="t102">
 <code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
 </div>
 </div>
