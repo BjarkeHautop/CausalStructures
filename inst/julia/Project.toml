@@ -15,7 +15,7 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Sugiyama = "a85cd6b6-3810-52a0-aaf7-38a6bd88fd85"
 
 [compat]
-CausalStructures = "1.2.0"
+CausalStructures = "1.3.0"
 NetworkLayout = "0.4.11"
 StableRNGs = "1"
 Sugiyama = "1.0.1"
