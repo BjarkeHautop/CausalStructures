@@ -1450,16 +1450,22 @@ cgraph_grob <- function(x) {
     auto_paths
   )
 
-  # Shrink from [0, 1] x [0, 1] npc by the largest node circle's radius so no
-  # node gets clipped at the plot edge. grobWidth()/grobHeight() (size-only)
-  # rather than grobX()/grobY() (position) avoid circularity: the latter
-  # would need graph_vp's own native scale resolved before it exists.
+  # Shrink from [0, 1] x [0, 1] npc by the largest node's half-extent on each
+  # side so no node gets clipped at the plot edge. The node geometry's hw/hh
+  # reach the outer edge of its border, which the drawn shape's own
+  # grobWidth()/grobHeight() leave out.
   vp_x <- grid::unit(0.5, "npc")
   vp_y <- grid::unit(0.5, "npc")
   vp_width <- grid::unit(1, "npc") -
-    max(grid::grobWidth(nodes_res$circle_grobs))
+    grid::unit(
+      2 * max(vapply(nodes_res$node_geom, `[[`, numeric(1), "hw")),
+      "mm"
+    )
   vp_height <- grid::unit(1, "npc") -
-    max(grid::grobHeight(nodes_res$circle_grobs))
+    grid::unit(
+      2 * max(vapply(nodes_res$node_geom, `[[`, numeric(1), "hh")),
+      "mm"
+    )
 
   # A fixed aspect ratio: a one-cell layout whose "null" width and height
   # are respected, so grid gives the cell the largest size with exactly that
