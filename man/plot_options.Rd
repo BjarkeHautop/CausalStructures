@@ -23,7 +23,8 @@ Configure the package-wide defaults for every plot: \code{node_style},
 \code{edge_style}, \code{label_style}, and \code{title_style}, each a list of the fields
 taken by \code{\link[=style_nodes]{style_nodes()}}, \code{\link[=style_edges]{style_edges()}}, \code{\link[=style_labels]{style_labels()}}, and
 \code{\link[=style_title]{style_title()}}. The style verbs still override these defaults for the
-nodes and edges they select.
+nodes and edges they select. \code{spacing} is the default gap (a grid unit)
+between plots arranged with \code{\link[=cgraph_plot_grid]{cgraph_plot_grid()}}, \code{|} or \code{/}.
 }
 \examples{
 # Query all current plot options
@@ -37,6 +38,9 @@ plot_options("node_style", "fill")
 
 # Set a global default node fill
 plot_options(node_style = list(fill = "lightblue"))
+
+# Wider gaps between arranged plots
+plot_options(spacing = grid::unit(3, "lines"))
 
 # Set multiple defaults at once
 plot_options(
@@ -55,6 +59,7 @@ Other plotting:
 \code{\link[=cgraph_grob]{cgraph_grob()}},
 \code{\link[=cgraph_layout]{cgraph_layout()}},
 \code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link[=cgraph_plot_grid]{cgraph_plot_grid()}},
 \code{\link{plot-styling}},
 \code{\link[=plot_default_options]{plot_default_options()}}
 }

@@ -127,6 +127,7 @@ reference:
     contents:
       - cgraph_plot
       - plot-styling
+      - cgraph_plot_grid
       - cgraph_grob
       - cgraph_layout
       - plot_options

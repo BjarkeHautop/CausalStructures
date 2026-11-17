@@ -518,3 +518,60 @@ test_that("sugiyama routes long edges through bend points", {
   on.exit(grDevices::dev.off(), add = TRUE)
   expect_no_error(plot(g, layout = "sugiyama", direction = "down"))
 })
+
+test_that("| and / arrange plots, flattening chains of one operator", {
+  skip_if_no_julia()
+  p <- cgraph_plot(test_dag())
+
+  row <- p | p | p
+  expect_s3_class(row, "cgraph_plots")
+  expect_equal(c(row$nrow, row$ncol), c(1L, 3L))
+
+  col <- p / p
+  expect_equal(c(col$nrow, col$ncol), c(2L, 1L))
+
+  nested <- (p | p) / p
+  expect_equal(c(nested$nrow, nested$ncol), c(2L, 1L))
+  expect_s3_class(nested$plots[[1]], "cgraph_plots")
+
+  # A graph is plotted with the defaults
+  expect_s3_class((test_dag() | p)$plots[[1]], "cgraph_plot")
+  expect_error(p + p, "combine only with")
+  expect_error(style_nodes(p | p, fill = "red"), "before arranging")
+})
+
+test_that("cgraph_plot_grid() sizes the grid and checks its arguments", {
+  skip_if_no_julia()
+  p <- cgraph_plot(test_dag())
+  ps <- rep(list(p), 5)
+
+  g <- cgraph_plot_grid(ps)
+  expect_equal(c(g$nrow, g$ncol), c(2L, 3L))
+  g <- cgraph_plot_grid(ps, nrow = 1)
+  expect_equal(c(g$nrow, g$ncol), c(1L, 5L))
+  g <- cgraph_plot_grid(p, p, ncol = 1)
+  expect_equal(c(g$nrow, g$ncol), c(2L, 1L))
+
+  expect_error(cgraph_plot_grid(ps, nrow = 2, ncol = 2), "room for 4")
+  expect_error(cgraph_plot_grid(), "at least one")
+  expect_error(cgraph_plot_grid(p, p, widths = 1), "one per column")
+  expect_error(cgraph_plot_grid(p, p, spacing = 1), "grid::unit")
+})
+
+test_that("arranged plots draw without error", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  p <- cgraph_plot(test_dag(), main = "A")
+  expect_no_error(print((p | style_nodes(p, fill = "salmon")) / p))
+  expect_no_error(print(cgraph_plot_grid(
+    p,
+    p,
+    p,
+    byrow = FALSE,
+    widths = c(2, 1),
+    spacing = grid::unit(5, "mm")
+  )))
+  expect_s3_class(cgraph_grob(p | p), "gTree")
+})

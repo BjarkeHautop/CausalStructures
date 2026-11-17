@@ -1358,13 +1358,13 @@ plot.cgraph <- function(x, ...) {
 
 #' Grid grob of a causal graph plot
 #'
-#' The grid grob that draws a plot built with [cgraph_plot()] or [plot()],
-#' e.g. to arrange several plots on one page with grid viewports or to embed
-#' one in another grid-based figure. [grid::grid.draw()] also draws a
-#' `cgraph_plot` directly.
+#' The grid grob that draws a plot built with [cgraph_plot()] or [plot()], or
+#' an arrangement of plots from [cgraph_plot_grid()], e.g. to embed it in
+#' another grid-based figure. [grid::grid.draw()] also draws a `cgraph_plot`
+#' directly.
 #'
-#' @param x A `cgraph_plot` object, or a graph created with [cgraph()] (plotted
-#'   with the defaults).
+#' @param x A `cgraph_plot` or `cgraph_plots` object, or a graph created with
+#'   [cgraph()] (plotted with the defaults).
 #' @returns A grid grob (a `gTree`).
 #' @examples
 #' if (julia_ready()) {
@@ -1376,6 +1376,9 @@ plot.cgraph <- function(x, ...) {
 #' @family plotting
 #' @export
 cgraph_grob <- function(x) {
+  if (inherits(x, "cgraph_plots")) {
+    return(.plot_arrange_grob(x))
+  }
   p <- .as_cgraph_plot(x)
   coords <- p$coords
   edges <- p$edges
@@ -1539,6 +1542,12 @@ cgraph_grob <- function(x) {
     x
   } else if (inherits(x, "cgraph")) {
     cgraph_plot(x)
+  } else if (inherits(x, "cgraph_plots")) {
+    stop(
+      "Style each plot before arranging it: this is an arrangement of ",
+      "plots, not a single plot.",
+      call. = FALSE
+    )
   } else {
     stop(
       "Expected a plot from cgraph_plot() or a graph from cgraph().",

@@ -2,7 +2,7 @@ CausalStructures (c) 2026 Bjarke Hautop Kristensen
 
 # Except for the following parts:
 
-Files: R/causal-structures-plot.R, R/causal-structures-plot-routing.R
+Files: R/plot.R, R/plot-routing.R, R/plot-options.R, R/plot-arrange.R
 Adapted from:
   caugi (https://github.com/frederikfabriciusbjerre/caugi)
   Copyright: 2025 caugi authors
@@ -10,5 +10,5 @@ Adapted from:
 
   Adapted portions:
     R/plot-core.R and R/plot-grobs.R (grid-graphics node/edge rendering,
-    style-override precedence rules)
+    style-override precedence rules, plot composition with | and /)
     R/plot-routing.R (edge routing around non-incident nodes)

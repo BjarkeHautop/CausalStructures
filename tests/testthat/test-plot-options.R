@@ -83,3 +83,10 @@ test_that("plots pick up global plot_options() defaults", {
 
   expect_no_error(plot(test_dag()))
 })
+
+test_that("plot_options() sets the default spacing between arranged plots", {
+  withr::defer(plot_options(plot_default_options()))
+
+  plot_options(spacing = grid::unit(3, "lines"))
+  expect_equal(plot_options("spacing"), grid::unit(3, "lines"))
+})

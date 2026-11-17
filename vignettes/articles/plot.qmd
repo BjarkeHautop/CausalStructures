@@ -559,27 +559,50 @@ the layout's own proportions in an uneven figure. If you want to keep them
 instead, set `asp = 1`.
 :::
 
-## Composing into an existing figure
+## Several plots in one figure
 
-So far each plot has had its own page. If you already have a grid viewport (for
-example, as one panel of a larger figure), you can print a plot with
-`newpage = FALSE` to draw it there instead.
-
-Let's use this to draw the DAG and the ADMG side by side in one figure:
+Plots combine with `|` (side by side) and `/` (stacked). Let's draw the DAG and
+the ADMG side by side:
 
 ```{r}
-#| label: existing-figure
+#| label: side-by-side
 #| fig-width: 9
 #| fig-height: 4
 
-grid::grid.newpage()
-grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, 2)))
-grid::pushViewport(grid::viewport(layout.pos.col = 1))
-print(cgraph_plot(dag), newpage = FALSE)
-grid::popViewport()
-grid::pushViewport(grid::viewport(layout.pos.col = 2))
-print(style_nodes(admg, fill = "salmon"), newpage = FALSE)
-grid::popViewport()
+cgraph_plot(dag, main = "DAG") |
+  style_nodes(cgraph_plot(admg, main = "ADMG"), fill = "salmon")
+```
+
+A chain of one operator gives equal panels (`p1 | p2 | p3`), and the two nest:
+`(p1 | p2) / p3` puts two plots above a third. Style each plot before combining
+it, since the style verbs act on a single graph.
+
+For more plots, or a list of them, `cgraph_plot_grid()` arranges them in rows
+and columns, with optional relative `widths` and `heights`:
+
+```{r}
+#| label: plot-grid
+#| fig-width: 9
+#| fig-height: 6
+
+dags <- lapply(1:6, function(i) generate_graph(5, p = 0.4, seed = i))
+cgraph_plot_grid(lapply(dags, cgraph_plot), ncol = 3)
+```
+
+The gap between plots is `plot_options("spacing")`, or the `spacing` argument of
+`cgraph_plot_grid()`.
+
+### Into an existing figure
+
+A plot (or an arrangement) printed with `newpage = FALSE` is drawn into the
+current grid viewport instead of a new page, e.g. as one panel of a larger grid
+figure. `cgraph_grob()` gives its grid grob, which also lets you combine it with
+ggplot2 plots through patchwork:
+
+```{r}
+#| eval: false
+
+patchwork::wrap_elements(full = cgraph_grob(cgraph_plot(dag))) + my_ggplot
 ```
 
 ## Combining options

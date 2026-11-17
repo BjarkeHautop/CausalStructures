@@ -15,7 +15,8 @@
 #' a base to build a custom style set from with [utils::modifyList()].
 #'
 #' @return A list with `node_style`, `edge_style`, `label_style`, and
-#'   `title_style` components - see [plot-styling] for their fields.
+#'   `title_style` components - see [plot-styling] for their fields - and
+#'   `spacing`, the gap between plots arranged with [cgraph_plot_grid()].
 #'
 #' @seealso [plot_options()] for getting and setting these globally.
 #' @family plotting
@@ -47,7 +48,8 @@ plot_default_options <- function() {
       label_shift = 0.5
     ),
     label_style = list(col = "black", fontsize = 10),
-    title_style = list(col = "black", fontsize = 14, fontface = "bold")
+    title_style = list(col = "black", fontsize = 14, fontface = "bold"),
+    spacing = grid::unit(1, "lines")
   )
 }
 
@@ -57,7 +59,8 @@ plot_default_options <- function() {
 #' `edge_style`, `label_style`, and `title_style`, each a list of the fields
 #' taken by [style_nodes()], [style_edges()], [style_labels()], and
 #' [style_title()]. The style verbs still override these defaults for the
-#' nodes and edges they select.
+#' nodes and edges they select. `spacing` is the default gap (a grid unit)
+#' between plots arranged with [cgraph_plot_grid()], `|` or `/`.
 #'
 #' @param ... Named values to update options with (merged into the existing
 #'   options via [utils::modifyList()], so a partial style list only
@@ -86,6 +89,9 @@ plot_default_options <- function() {
 #'
 #' # Set a global default node fill
 #' plot_options(node_style = list(fill = "lightblue"))
+#'
+#' # Wider gaps between arranged plots
+#' plot_options(spacing = grid::unit(3, "lines"))
 #'
 #' # Set multiple defaults at once
 #' plot_options(

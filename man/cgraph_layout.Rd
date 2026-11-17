@@ -66,6 +66,7 @@ if (julia_ready()) {
 Other plotting:
 \code{\link[=cgraph_grob]{cgraph_grob()}},
 \code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link[=cgraph_plot_grid]{cgraph_plot_grid()}},
 \code{\link{plot-styling}},
 \code{\link[=plot_default_options]{plot_default_options()}},
 \code{\link[=plot_options]{plot_options()}}

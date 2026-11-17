@@ -7,17 +7,17 @@
 cgraph_grob(x)
 }
 \arguments{
-\item{x}{A \code{cgraph_plot} object, or a graph created with \code{\link[=cgraph]{cgraph()}} (plotted
-with the defaults).}
+\item{x}{A \code{cgraph_plot} or \code{cgraph_plots} object, or a graph created with
+\code{\link[=cgraph]{cgraph()}} (plotted with the defaults).}
 }
 \value{
 A grid grob (a \code{gTree}).
 }
 \description{
-The grid grob that draws a plot built with \code{\link[=cgraph_plot]{cgraph_plot()}} or \code{\link[=plot]{plot()}},
-e.g. to arrange several plots on one page with grid viewports or to embed
-one in another grid-based figure. \code{\link[grid:grid.draw]{grid::grid.draw()}} also draws a
-\code{cgraph_plot} directly.
+The grid grob that draws a plot built with \code{\link[=cgraph_plot]{cgraph_plot()}} or \code{\link[=plot]{plot()}}, or
+an arrangement of plots from \code{\link[=cgraph_plot_grid]{cgraph_plot_grid()}}, e.g. to embed it in
+another grid-based figure. \code{\link[grid:grid.draw]{grid::grid.draw()}} also draws a \code{cgraph_plot}
+directly.
 }
 \examples{
 if (julia_ready()) {
@@ -31,6 +31,7 @@ if (julia_ready()) {
 Other plotting:
 \code{\link[=cgraph_layout]{cgraph_layout()}},
 \code{\link[=cgraph_plot]{cgraph_plot()}},
+\code{\link[=cgraph_plot_grid]{cgraph_plot_grid()}},
 \code{\link{plot-styling}},
 \code{\link[=plot_default_options]{plot_default_options()}},
 \code{\link[=plot_options]{plot_options()}}

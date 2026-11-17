@@ -33,6 +33,7 @@ Collate:
     'plot-routing.R'
     'plot.R'
     'plot-compose.R'
+    'plot-arrange.R'
     'jlbind-wrappers.R'
 Depends:
     R (>= 4.0.0)
