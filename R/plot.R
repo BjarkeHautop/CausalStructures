@@ -1449,15 +1449,25 @@ cgraph_grob <- function(x) {
   vp_height <- grid::unit(1, "npc") -
     max(grid::grobHeight(nodes_res$circle_grobs))
 
-  if (!is.null(asp) && !is.na(asp) && is.numeric(asp) && asp > 0) {
-    data_width <- diff(x_range)
-    data_height <- diff(y_range)
-    data_asp <- data_height / data_width
-    if (data_asp > asp) {
-      vp_width <- vp_height * (data_width / data_height) * asp
-    } else {
-      vp_height <- vp_width * (data_height / data_width) / asp
-    }
+  # A fixed aspect ratio: a one-cell layout whose "null" width and height
+  # are respected, so grid gives the cell the largest size with exactly that
+  # physical ratio that fits the available space, whatever its shape.
+  fixed_asp <- !is.null(asp) && !is.na(asp) && is.numeric(asp) && asp > 0
+  asp_vp <- if (fixed_asp) {
+    grid::viewport(
+      x = vp_x,
+      y = vp_y,
+      width = vp_width,
+      height = vp_height,
+      layout = grid::grid.layout(
+        1,
+        1,
+        widths = grid::unit(diff(x_range), "null"),
+        heights = grid::unit(diff(y_range) * asp, "null"),
+        respect = TRUE
+      ),
+      name = "cs.asp"
+    )
   }
 
   title_grob <- if (is.null(main)) {
@@ -1492,15 +1502,25 @@ cgraph_grob <- function(x) {
   # computes the real, curvature-padded scale and applies it via a nested
   # viewport once this one is actually active on the device (needed for its
   # width/height to resolve to real mm).
-  graph_vp <- grid::viewport(
-    x = vp_x,
-    y = vp_y,
-    xscale = x_range,
-    yscale = y_range,
-    width = vp_width,
-    height = vp_height,
-    name = "cs.vp"
-  )
+  graph_vp <- if (fixed_asp) {
+    grid::viewport(
+      layout.pos.row = 1,
+      layout.pos.col = 1,
+      xscale = x_range,
+      yscale = y_range,
+      name = "cs.vp"
+    )
+  } else {
+    grid::viewport(
+      x = vp_x,
+      y = vp_y,
+      xscale = x_range,
+      yscale = y_range,
+      width = vp_width,
+      height = vp_height,
+      name = "cs.vp"
+    )
+  }
 
   node_gtree <- grid::grobTree(
     nodes_res$circle_grobs,
@@ -1525,10 +1545,13 @@ cgraph_grob <- function(x) {
     layout_vp,
     grid::viewport(layout.pos.row = 2, layout.pos.col = 2)
   )
-  graph_grob$vp <- grid::vpStack(
-    layout_vp,
-    grid::viewport(layout.pos.row = 4, layout.pos.col = 2),
-    graph_vp
+  graph_grob$vp <- do.call(
+    grid::vpStack,
+    c(
+      list(layout_vp, grid::viewport(layout.pos.row = 4, layout.pos.col = 2)),
+      if (fixed_asp) list(asp_vp),
+      list(graph_vp)
+    )
   )
 
   grid::gTree(

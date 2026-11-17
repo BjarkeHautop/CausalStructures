@@ -575,3 +575,18 @@ test_that("arranged plots draw without error", {
   )))
   expect_s3_class(cgraph_grob(p | p), "gTree")
 })
+
+test_that("asp = 1 gives one x-unit the same length as one y-unit", {
+  skip_if_no_julia()
+  grDevices::pdf(NULL, width = 9, height = 4)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  g <- cgraph("A --> B, B --> C, C --> D", class = "UNKNOWN")
+  sq <- list(A = c(0, 0), B = c(1, 0), C = c(1, 1), D = c(0, 1))
+  grid::grid.newpage()
+  grid::grid.draw(cgraph_grob(cgraph_plot(g, layout = sq, asp = 1)))
+  grid::seekViewport("cs.vp")
+  w <- grid::convertWidth(grid::unit(1, "npc"), "mm", valueOnly = TRUE)
+  h <- grid::convertHeight(grid::unit(1, "npc"), "mm", valueOnly = TRUE)
+  expect_equal(w, h, tolerance = 1e-6)
+})
