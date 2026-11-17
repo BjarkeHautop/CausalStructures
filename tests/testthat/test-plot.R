@@ -590,3 +590,14 @@ test_that("asp = 1 gives one x-unit the same length as one y-unit", {
   h <- grid::convertHeight(grid::unit(1, "npc"), "mm", valueOnly = TRUE)
   expect_equal(w, h, tolerance = 1e-6)
 })
+
+test_that("a thick node border stays clear of edge ends", {
+  skip_if_no_julia()
+  p <- cgraph_plot(cgraph(A %-->% B)) |> style_nodes(lwd = 25)
+  g <- cgraph_grob(p)
+  nodes <- grid::getGrob(g, "node_gtree")
+  r_drawn <- grid::convertWidth(nodes$children[[1]]$r, "mm", valueOnly = TRUE)
+  stroke_half_mm <- 25 / 192 * 25.4
+  geom <- grid::getGrob(g, "edge.1")$geom_to
+  expect_equal(geom$hw, r_drawn + stroke_half_mm)
+})

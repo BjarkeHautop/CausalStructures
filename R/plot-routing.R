@@ -3,7 +3,7 @@
 # Adapted from caugi's edge routing (R/plot-routing.R by Frederik
 # Fabricius-Bjerre and Johan Larsson; see inst/COPYRIGHTS). Pure functions
 # operating on plain numeric coordinates in millimeters, with no grid state,
-# so `makeContent.cs_edge_grob()` (causal-structures-plot.R) can call them at
+# so `makeContent.cs_edge_grob()` (plot.R) can call them at
 # draw time to bend an edge around any non-incident node it would otherwise
 # cross.
 

@@ -250,9 +250,14 @@
     # outside it), so edges must be trimmed past that half-width or a thick
     # border can cover the line end (and any arrowhead on it). lwd is in
     # grid's 1/96-inch convention; 1 inch = 25.4 mm.
+    # The outline is drawn half a stroke out from the label's extents, so
+    # its inner edge clears the label, and its outer edge lies another half
+    # stroke beyond that: edges stop there (hw, hh).
     stroke_pad_mm <- style$lwd / 192 * 25.4
-    hw <- half_extents[1] + stroke_pad_mm
-    hh <- half_extents[2] + stroke_pad_mm
+    draw_hw <- half_extents[1] + stroke_pad_mm
+    draw_hh <- half_extents[2] + stroke_pad_mm
+    hw <- draw_hw + stroke_pad_mm
+    hh <- draw_hh + stroke_pad_mm
 
     x <- grid::unit(coords$x[i], "native")
     y <- grid::unit(coords$y[i], "native")
@@ -262,21 +267,28 @@
       grid::rectGrob(
         x = x,
         y = y,
-        width = grid::unit(2 * hw, "mm"),
-        height = grid::unit(2 * hh, "mm"),
+        width = grid::unit(2 * draw_hw, "mm"),
+        height = grid::unit(2 * draw_hh, "mm"),
         gp = node_gpar,
         name = paste0("node.", i)
       )
-    } else if (isTRUE(all.equal(hw, hh))) {
+    } else if (isTRUE(all.equal(draw_hw, draw_hh))) {
       grid::circleGrob(
         x = x,
         y = y,
-        r = grid::unit(hw, "mm"),
+        r = grid::unit(draw_hw, "mm"),
         gp = node_gpar,
         name = paste0("node.", i)
       )
     } else {
-      .plot_ellipse_grob(x, y, hw, hh, node_gpar, paste0("node.", i))
+      .plot_ellipse_grob(
+        x,
+        y,
+        draw_hw,
+        draw_hh,
+        node_gpar,
+        paste0("node.", i)
+      )
     }
 
     label_gpar <- do.call(grid::gpar, .plot_gpar_params(node_label_style))
