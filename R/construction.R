@@ -19,7 +19,8 @@
 #'   `"ADMG"`, `"AG"`, `"MAG"`, `"PAG"`, or `"UNKNOWN"` (no structural
 #'   constraints; accepts all edge types, including multiple edges between
 #'   the same pair of nodes).
-#' @return A `cgraph`.
+#' @return A `cgraph`: a reference to a graph held by the Julia library. It
+#'   can be saved and loaded like any R object (e.g. with [saveRDS()]).
 #' @export
 #' @examples
 #' if (julia_ready()) {

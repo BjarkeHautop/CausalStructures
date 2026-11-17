@@ -23,7 +23,8 @@ constraints; accepts all edge types, including multiple edges between
 the same pair of nodes).}
 }
 \value{
-A \code{cgraph}.
+A \code{cgraph}: a reference to a graph held by the Julia library. It
+can be saved and loaded like any R object (e.g. with \code{\link[=saveRDS]{saveRDS()}}).
 }
 \description{
 Builds a graph from edge expressions using the operators documented at
