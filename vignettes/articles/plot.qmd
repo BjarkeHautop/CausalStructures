@@ -8,9 +8,13 @@ knitr:
 
 `plot()` draws a `cgraph` with
 [grid](https://stat.ethz.ch/R-manual/R-devel/library/grid/html/00Index.html)
-graphics. For node placement, you can use the layered layout from
-[Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl), one of the built-in
-layouts, or provide your own layout:
+graphics. For node placement, you can use the layouts provided by
+[Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) or
+[NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl)^[The
+compiled library uses [a fork of
+NetworkLayout.jl](https://github.com/BjarkeHautop/NetworkLayout.jl/tree/trim-compat),
+since the released version does not compile with `juliac --trim=safe`.], or
+provide your own layout:
 
 ```{r}
 #| label: setup
