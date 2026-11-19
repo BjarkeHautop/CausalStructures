@@ -68,8 +68,9 @@ Unstyled nodes, edges, labels and titles use the defaults set with
 \examples{
 \dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
 dag <- cgraph("A --> X + Y, X --> M --> Y")
-cgraph_plot(dag, main = "A DAG")
-cgraph_plot(dag, layout = "sugiyama", direction = "down")
+cgraph_plot(dag, main = "A DAG") # "sugiyama" layout, the default for a DAG
+cgraph_plot(dag, direction = "down")
+cgraph_plot(dag, layout = "stress", seed = 1405)
 
 # Style it step by step; it is drawn when printed
 cgraph_plot(dag, main = "Styled DAG") |>
