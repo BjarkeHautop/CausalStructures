@@ -459,9 +459,9 @@ window.Quarto = {
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"n = 10,000"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/node-queries.html">children</a></span>(graphs[[<span class="dv">3</span>]], <span class="st">"V5000"</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression median</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    n = 100  992ns</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  n = 1,000  952ns</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 n = 10,000  952ns</span></span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    n = 100 1.66µs</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  n = 1,000 1.64µs</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 n = 10,000 1.66µs</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -481,11 +481,11 @@ window.Quarto = {
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"markov_blanket"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="../../reference/markov_blanket.html">markov_blanket</a></span>(dag, x)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          expression  median</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 d_separated (DAG) 43.02µs</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m_separated (MAG)  7.64µs</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  topological_sort 24.62µs</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 minimal_separator 49.89µs</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    markov_blanket  9.33µs</span></span></code></pre></div>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 d_separated (DAG)   151µs</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m_separated (MAG)  12.5µs</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  topological_sort  54.9µs</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 minimal_separator 167.2µs</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    markov_blanket  14.3µs</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -530,17 +530,17 @@ window.Quarto = {
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">sets =</span> n_sets</span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     expression  median sets</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 max_size = 2   881µs   33</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 max_size = 3  11.4ms  272</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 max_size = 4  99.2ms 1537</span></span></code></pre></div>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     expression   median sets</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 max_size = 2   1.43ms   33</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 max_size = 3  17.71ms  272</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 max_size = 4 152.45ms 1537</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
 </section><section id="expensive-algorithms" class="level2"><h2 class="anchored" data-anchor-id="expensive-algorithms">Expensive algorithms</h2>
 <p>Here we will show the performance of some of the most expensive algorithms.</p>
 <section id="exact-uniform-dag-sampling" class="level3"><h3 class="anchored" data-anchor-id="exact-uniform-dag-sampling">Exact uniform DAG sampling</h3>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a>()</code> uses an Erdős–Rényi model: it samples each edge independently, which is cheap regardless of <code>n</code> but is not uniform over the space of DAGs. <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a>()</code> instead draws exactly uniformly from all labeled DAGs on <code>n</code> nodes using the recursive enumeration algorithm of <span class="citation" data-cites="kuipers2015uniform">Kuipers and Moffa (<a href="#ref-kuipers2015uniform" role="doc-biblioref">2015</a>)</span>:</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/generate_graph.html">generate_graph</a>()</code> uses an Erdős–Rényi model: it samples each edge independently, which is cheap regardless of <code>n</code> but is not uniform over the space of DAGs. <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="../../reference/uniform_dag.html">uniform_dag</a>()</code> instead draws exactly uniformly from all labeled DAGs on <code>n</code> nodes using the recursive enumeration algorithm of <span class="citation" data-cites="kuipers2015uniform">Kuipers and Moffa (<a href="#ref-kuipers2015uniform" role="doc-biblioref">2015</a>)</span>:<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">timings</span>(</span>
@@ -550,9 +550,9 @@ window.Quarto = {
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">20</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     n = 10   61.2µs</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     n = 20 414.15µs</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     n = 40   3.48ms</span></span></code></pre></div>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     n = 10  93.29µs</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     n = 20  643.2µs</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     n = 40   5.46ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -581,13 +581,13 @@ window.Quarto = {
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"enumerate_dags, k = 8"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a></span>(cliques[[<span class="dv">3</span>]]),</span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              expression median</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     count_dags, k = 5  281µs</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     count_dags, k = 7   22ms</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     count_dags, k = 8  171ms</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 enumerate_dags, k = 5  343µs</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 enumerate_dags, k = 7   21ms</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 enumerate_dags, k = 8  330ms</span></span></code></pre></div>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              expression  median</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     count_dags, k = 5 483.5µs</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     count_dags, k = 7  34.8ms</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     count_dags, k = 8 270.7ms</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 enumerate_dags, k = 5 573.4µs</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 enumerate_dags, k = 7  31.7ms</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 enumerate_dags, k = 8 454.2ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -613,9 +613,9 @@ window.Quarto = {
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"k = 4"</span> <span class="ot">=</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a></span>(pags[[<span class="dv">2</span>]]),</span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">5</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression  median</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      k = 3   2.2ms</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      k = 4 200.1ms</span></span></code></pre></div>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   expression   median</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      k = 3   3.29ms</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      k = 4 304.01ms</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -630,7 +630,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t20" href="../../reference/pagcauses.html">pagcauses</a>()</code>, and the whole <code>all_*_sets()</code> family<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> parallelize their search across the library’s threads automatically once the problem is large enough to benefit. The library runs with one thread unless the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) is set before the package is loaded, e.g. in your <code>.Renviron</code>.</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="../../reference/equivalence.html">count_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="../../reference/equivalence.html">enumerate_dags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="../../reference/enumerate_mags.html">enumerate_mags</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t20" href="../../reference/pagcauses.html">pagcauses</a>()</code>, and the whole <code>all_*_sets()</code> family<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> parallelize their search across the library’s threads automatically once the problem is large enough to benefit. The library runs with one thread unless the <code>JULIA_NUM_THREADS</code> environment variable (a number, or <code>"auto"</code> for one per core) is set before the package is loaded, e.g. in your <code>.Renviron</code>.</p>
 </div>
 </div>
 </section></section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
@@ -644,7 +644,8 @@ Kuipers, Jack, and Giusi Moffa. 2015. <span>“Uniform Random Generation of Larg
 </section><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Except for <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="../../reference/all_iv_sets.html">all_iv_sets</a>()</code>, since the candidate check for IV is a trivial lookup, and thus not worth it.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Each call in this benchmark computes the counting table from scratch. In practice, when drawing several DAGs on <code>n</code> or fewer nodes, compute the table once with <code><a class="quartodown-tip-ref" data-quartodown-tip="t21" href="../../reference/uniform_dag.html">uniform_dag_counts</a>(n)</code> and pass it to every call as <code>counts</code>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Except for <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="../../reference/all_iv_sets.html">all_iv_sets</a>()</code>, since the candidate check for IV is a trivial lookup, and thus not worth it.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol></section></div></main><!-- /main --><style>
 .quartodown-theme-switching * {
   transition: none !important;
@@ -1560,6 +1561,9 @@ Kuipers, Jack, and Giusi Moffa. 2015. <span>“Uniform Random Generation of Larg
 </div>
 <div data-for="t20">
 <code class="quartodown-tip-sig"><span class="fu">pagcauses</span>(cg, x, y)</code><span class="quartodown-tip-brief">Find every possible causal effect in a PAG (PAGcauses)</span>
+</div>
+<div data-for="t21">
+<code class="quartodown-tip-sig"><span class="fu">uniform_dag_counts</span>(n)</code><span class="quartodown-tip-brief">Generate a uniformly random DAG</span>
 </div>
 </div>
 </body>
