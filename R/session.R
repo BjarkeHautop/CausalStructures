@@ -54,9 +54,10 @@ NULL
 
 #' Is the compiled CausalStructures.jl library available?
 #'
-#' Every function of the package calls the library built by
-#' [jlbind::install_library()], and errors if it is not available. When it is
-#' not, `jlbind::check_bound("CausalStructures")` says why.
+#' Every function of the package calls the library built (or, with `method =
+#' "download"`, downloaded) by [jlbind::install_library()], and errors if it is
+#' not available. When it is not, `jlbind::check_bound("CausalStructures")` says
+#' why.
 #'
 #' @return A logical scalar.
 #' @export
@@ -91,9 +92,19 @@ make_rng <- function(seed) {
 
 .onAttach <- function(libname, pkgname) {
   if (!julia_ready()) {
+    # Released versions list pre-built libraries (inst/jlbind/binaries).
+    prebuilt <- nzchar(system.file("jlbind", "binaries", package = pkgname))
     packageStartupMessage(
       "The compiled CausalStructures.jl library is not available. Run ",
-      "jlbind::install_library() to build it."
+      "jlbind::install_library() to build it (with Julia >= 1.13)",
+      if (prebuilt) {
+        paste0(
+          ", or jlbind::install_library(\"CausalStructures\", method = ",
+          "\"download\") to download a pre-built one"
+        )
+      },
+      ". jlbind::check_bound(\"CausalStructures\") says why it is not ",
+      "available."
     )
   }
 }

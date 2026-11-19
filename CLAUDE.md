@@ -21,6 +21,8 @@ this repo. There is no embedded Julia session at run time.
 # Build the compiled library for development (needs Julia >= 1.13 on the PATH
 # and jlbind installed) into .jlbind/, which pkgload::load_all() uses instead of
 # the one jlbind::install_library() makes, and rebuilds when inst/julia/ changes.
+# CI uses Julia 1.14 (prereleases until it is out): 1.13 can compile a library
+# that crashes as it loads (see jlbind's CLAUDE.md).
 Rscript -e 'jlbind::build_library()'
 
 # ... against a local CausalStructures.jl checkout instead of the release
@@ -66,6 +68,24 @@ Rscript -e 'devtools::build_readme()'
 Rscript -e 'quartodown::build_site()'
 Rscript -e 'quartodown::preview_site()'
 ```
+
+## Releasing (pre-built libraries)
+
+Releases ship pre-built libraries (`install_library(method = "download")`);
+jlbind does the work, see its `build-options` vignette.
+
+1. Set the release version in DESCRIPTION and push it.
+2. `gh workflow run binaries.yaml` (jlbind's template; regenerate with
+   `jlbind::use_jlbind_binaries(overwrite = TRUE)` rather than editing it). It
+   builds, prunes with `tools/prune-binary.R` and tests the library on each OS,
+   into a draft release `v<Version>`.
+3. `jlbind::record_binaries()` writes `inst/jlbind/binaries`; commit and push.
+4. Publish the release on that commit
+   (`gh release edit v<Version> --draft=false --target main`) and submit to
+   CRAN; then bump to a `.9000` version.
+
+If a library fails its tests with "could not load library
+.../jlbind-bundle/...", `tools/prune-binary.R` removed one it needs.
 
 Tests that need the compiled library call `skip_if_no_julia()` (see
 `tests/testthat/helper-julia.R`) and are skipped otherwise. `julia_ready()`
@@ -229,8 +249,9 @@ data from a graph.
   entrypoint instead (Sugiyama.jl's `sugiyama_paths`), which also returns each
   edge's route through its bend points, drawn as an explicit edge `path` as in
   CausalStructures.jl; node pairs with parallel edges get no route, so they
-  still fan out. The other methods (`"stress"`, `"spring"`, `"sfdp"`,
-  `"spectral"`, `"shell"`, `"squaregrid"`, as in CausalStructures.jl) are the
+  still fan out. The other methods (`"stress"`, `"spring"`, `"sfdp"`, `"shell"`,
+  `"squaregrid"`, as in CausalStructures.jl, without `"spectral"`, whose LAPACK
+  call would keep OpenBLAS in the pre-built libraries) are the
   `jl_network_layout` entrypoint, calling
   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) on the
   undirected adjacency matrix. Released NetworkLayout.jl does not compile under

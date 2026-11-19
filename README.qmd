@@ -38,24 +38,24 @@ Install CausalStructures from GitHub:
 pak::pak("BjarkeHautop/CausalStructures")
 ```
 
-CausalStructures needs [Julia](https://julialang.org/) (\>= 1.13); see
-https://julialang.org/install/ for the recommended way to install Julia. Once
-the package is installed, build the compiled CausalStructures.jl library it
-calls with
+CausalStructures calls a compiled library of the Julia package
+CausalStructures.jl. Releases come with pre-built libraries for Linux, macOS and
+Windows, so you don't need Julia:
+
+```r
+jlbind::install_library("CausalStructures", method = "download")
+```
+
+Or, with [Julia](https://julialang.org/install/) (\>= 1.13), build it yourself,
+which takes a few minutes (and is needed for the development version):
 
 ```r
 jlbind::install_library()
 ```
 
-This takes a few minutes while Julia downloads and compiles the dependencies,
-and needs to be redone after installing or updating CausalStructures (or any
-other package built on [jlbind](https://github.com/BjarkeHautop/jlbind), since
-they share one compiled library). Pass `julia = "/path/to/julia"` (or set the
-`JULIA` environment variable) to use a Julia other than the one on the `PATH`.
-
-The compiled library uses the runtime of the Julia that built it, so run
-`jlbind::install_library(force = TRUE)` again if that Julia is removed (for
-example by a `juliaup` update).
+Either way, run it again after updating CausalStructures. A built library uses
+the Julia that built it, so rerun `jlbind::install_library(force = TRUE)` if
+that Julia is removed (e.g. by a `juliaup` update).
 
 ## Graph types
 

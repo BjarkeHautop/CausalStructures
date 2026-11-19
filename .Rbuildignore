@@ -25,3 +25,5 @@
 ^_quarto$
 ^_quartodown$
 ^data-raw$
+^tools$
+^binary$

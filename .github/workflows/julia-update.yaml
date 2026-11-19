@@ -22,8 +22,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The Julia version the package requires, and the newest release.
-        julia: ["1.13", "1"]
+        # The Julia version the package requires, and 1.14 (with its
+        # prereleases, until it is out).
+        julia: ["1.13", "~1.14.0-0"]
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

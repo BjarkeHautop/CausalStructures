@@ -10,7 +10,7 @@ julia_ready()
 A logical scalar.
 }
 \description{
-Every function of the package calls the library built by
-\code{\link[jlbind:install_library]{jlbind::install_library()}}, and errors if it is not available. When it is
-not, \code{jlbind::check_bound("CausalStructures")} says why.
+Every function of the package calls the library built (or, with \code{method = "download"}, downloaded) by \code{\link[jlbind:install_library]{jlbind::install_library()}}, and errors if it is
+not available. When it is not, \code{jlbind::check_bound("CausalStructures")} says
+why.
 }
