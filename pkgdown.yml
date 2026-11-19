@@ -6,5 +6,6 @@ articles:
   benchmarks: articles/benchmarks.html
   causal-identification: articles/causal-identification.html
   equivalence-classes: articles/equivalence-classes.html
+  graph-classes: articles/graph-classes.html
   pag-causal-effects: articles/pag-causal-effects.html
   plot: articles/plot.html
