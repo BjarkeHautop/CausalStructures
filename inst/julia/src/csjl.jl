@@ -828,8 +828,6 @@ function jl_network_layout(@nospecialize(g::CausalGraph), method::Symbol, seed::
         return _points_matrix(NetworkLayout.spring(U; rng = StableRNG(seed)))
     elseif method === :sfdp
         return _points_matrix(NetworkLayout.sfdp(U; rng = StableRNG(seed)))
-    elseif method === :spectral
-        return _points_matrix(NetworkLayout.spectral(U))
     elseif method === :shell
         return _points_matrix(NetworkLayout.shell(U))
     elseif method === :squaregrid

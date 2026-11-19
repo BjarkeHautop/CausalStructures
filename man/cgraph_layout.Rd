@@ -28,8 +28,6 @@ general-purpose choice.
 \insertCite{fruchterman1991graph}{CausalStructures}.
 \item \code{"sfdp"}: scalable force-directed placement
 \insertCite{hu2006efficient}{CausalStructures}.
-\item \code{"spectral"}: spectral layout, from eigenvectors of the graph
-Laplacian.
 \item \code{"shell"}: nodes evenly spaced on a circle, in \code{\link[=nodes]{nodes()}} order.
 \item \code{"squaregrid"}: nodes on a square grid, row by row in \code{\link[=nodes]{nodes()}} order.
 }

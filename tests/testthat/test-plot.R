@@ -15,7 +15,6 @@ test_that("cgraph_layout works for every layout method", {
     "stress",
     "spring",
     "sfdp",
-    "spectral",
     "shell",
     "squaregrid"
   )
@@ -39,7 +38,6 @@ test_that("plot.cgraph draws with every layout method", {
     "stress",
     "spring",
     "sfdp",
-    "spectral",
     "shell",
     "squaregrid"
   )

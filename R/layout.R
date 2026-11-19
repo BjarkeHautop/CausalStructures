@@ -13,7 +13,6 @@
   "stress",
   "spring",
   "sfdp",
-  "spectral",
   "shell",
   "squaregrid"
 )
@@ -35,8 +34,6 @@
 #'     \insertCite{fruchterman1991graph}{CausalStructures}.
 #'   * `"sfdp"`: scalable force-directed placement
 #'     \insertCite{hu2006efficient}{CausalStructures}.
-#'   * `"spectral"`: spectral layout, from eigenvectors of the graph
-#'     Laplacian.
 #'   * `"shell"`: nodes evenly spaced on a circle, in [nodes()] order.
 #'   * `"squaregrid"`: nodes on a square grid, row by row in [nodes()] order.
 #'
