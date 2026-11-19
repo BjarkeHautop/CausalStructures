@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -409,7 +409,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code>cg</code>
 </td>
 <td>
-A DAG created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a>()</code>.
+A DAG created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a>()</code>.
 </td>
 </tr>
 <tr>
@@ -463,43 +463,39 @@ Optional integer seed for reproducibility.
 </tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
 <p>A sign-symmetric coefficient range such as <code>c(-1, 1)</code> puts many coefficients near zero, i.e. near-unfaithful edges. To keep every edge’s coefficient away from zero, use a positive range with <code>random_sign = TRUE</code>, e.g. <code>coef_range = c(0.5, 2)</code>.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>A data frame with <code>n</code> rows (samples) and one column per node, named and ordered as in <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./graph-queries.html">nodes</a>()</code>.</p>
+<p>A data frame with <code>n</code> rows (samples) and one column per node, named and ordered as in <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./graph-queries.html">nodes</a>()</code>.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> B, B <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> C)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./simulate_data.html">simulate_data</a></span>(dag, <span class="at">n =</span> <span class="dv">100</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(data)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            A           B          C</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.9566120  2.01171565  1.3009630</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 -0.3166224 -0.47117119 -0.3889609</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  0.7540757  1.42932584  0.5786812</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  1.5430243  0.07776775 -1.0063268</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 -0.7800137  0.25383534  0.7724043</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 -0.6447593 -1.03127050  1.6590918</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> B, B <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> C)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  data2 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./simulate_data.html">simulate_data</a></span>(</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    dag,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">100</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">standardize =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">coef_range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">2</span>),</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">random_sign =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">error_sd =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>),</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">1405</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(data2)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            A          B          C</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.8521506 -2.5226754 -0.5858974</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  0.5878833  0.2122126 -0.3005096</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 -1.4276055 -0.2497187 -1.2629442</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  0.5175274  0.2186455  0.7158205</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 -1.4146574 -0.2275938 -0.3335240</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 -2.7292475 -1.7414247 -1.8961214</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> B, B <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> C)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./simulate_data.html">simulate_data</a></span>(dag, <span class="at">n =</span> <span class="dv">100</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            A           B          C</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.9566120  2.01171565  1.3009630</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 -0.3166224 -0.47117119 -0.3889609</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  0.7540757  1.42932584  0.5786812</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  1.5430243  0.07776775 -1.0063268</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 -0.7800137  0.25383534  0.7724043</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 -0.6447593 -1.03127050  1.6590918</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> B, B <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> C)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./simulate_data.html">simulate_data</a></span>(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  dag,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">100</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">coef_range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">2</span>),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">random_sign =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">error_sd =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>),</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">1405</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data2)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            A          B          C</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.8521506 -2.5226754 -0.5858974</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  0.5878833  0.2122126 -0.3005096</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 -1.4276055 -0.2497187 -1.2629442</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  0.5175274  0.2186455  0.7158205</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 -1.4146574 -0.2275938 -0.3335240</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 -2.7292475 -1.7414247 -1.8961214</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1337,19 +1333,16 @@ Optional integer seed for reproducibility.
 )</code><span class="quartodown-tip-brief">Simulate data from a DAG</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t4">
+<div data-for="t3">
 <code class="quartodown-tip-sig">lhs <span class="sc">%--&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t5">
+<div data-for="t4">
 <code class="quartodown-tip-sig"><span class="fu">nodes</span>(cg)</code><span class="quartodown-tip-brief">Graph-level node queries</span>
 </div>
 </div>

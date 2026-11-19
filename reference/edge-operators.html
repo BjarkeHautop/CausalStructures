@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -388,7 +388,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/dsl.R"><code>R/dsl.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Infix operators that specify edges inside <code><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="./cgraph.html">cgraph</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t15" href="./edge-mutation.html">add_edges</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t16" href="./edge-mutation.html">remove_edges</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t17" href="./apply_background_knowledge.html">apply_background_knowledge</a>()</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="./dag_to_mpdag.html">dag_to_mpdag</a>()</code>, e.g. <code>A %--&gt;% X + Y</code>.</p>
+<p>Infix operators that specify edges inside <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="./cgraph.html">cgraph</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t14" href="./edge-mutation.html">add_edges</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t15" href="./edge-mutation.html">remove_edges</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t16" href="./apply_background_knowledge.html">apply_background_knowledge</a>()</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t17" href="./dag_to_mpdag.html">dag_to_mpdag</a>()</code>, e.g. <code>A %--&gt;% X + Y</code>.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>lhs <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> rhs</span>
@@ -506,22 +506,20 @@ partial (both ends circle)
 </td>
 </tr>
 </tbody></table>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t17" href="./apply_background_knowledge.html">apply_background_knowledge</a>()</code> and <code><a class="quartodown-tip-ref" data-quartodown-tip="t18" href="./dag_to_mpdag.html">dag_to_mpdag</a>()</code> also take <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="./edge-operators.html">%!--&gt;%</a></code> (<code>src --&gt; dst</code> is forbidden) and <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="./edge-operators.html">%!&lt;--%</a></code> (<code>dst --&gt; src</code> is forbidden), where <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></code> and <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./edge-operators.html">%&lt;--%</a></code> mean a required edge.</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t16" href="./apply_background_knowledge.html">apply_background_knowledge</a>()</code> and <code><a class="quartodown-tip-ref" data-quartodown-tip="t17" href="./dag_to_mpdag.html">dag_to_mpdag</a>()</code> also take <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="./edge-operators.html">%!--&gt;%</a></code> (<code>src --&gt; dst</code> is forbidden) and <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="./edge-operators.html">%!&lt;--%</a></code> (<code>dst --&gt; src</code> is forbidden), where <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></code> and <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./edge-operators.html">%&lt;--%</a></code> mean a required edge.</p>
 <p>These functions read the operators from their <code>...</code> without evaluating them. The operators are not exported, so they can’t be used anywhere else.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>None, since the operators are never called.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> M <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> Y)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t14" href="./edges.html">edges</a></span>(dag)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   from to type</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    A  X  --&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    A  Y  --&gt;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3    X  M  --&gt;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4    M  Y  --&gt;</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> M <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./edge-operators.html">%--&gt;%</a></span> Y)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t13" href="./edges.html">edges</a></span>(dag)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   from to type</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    A  X  --&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    A  Y  --&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3    X  M  --&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4    M  Y  --&gt;</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1381,28 +1379,25 @@ partial (both ends circle)
 <code class="quartodown-tip-sig">lhs <span class="sc">%!&lt;--%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
 <div data-for="t12">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t13">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t14">
+<div data-for="t13">
 <code class="quartodown-tip-sig"><span class="fu">edges</span>(cg)</code><span class="quartodown-tip-brief">Get all edges in a graph</span>
 </div>
-<div data-for="t15">
+<div data-for="t14">
 <code class="quartodown-tip-sig"><span class="fu">add_edges</span>(cg, ..., <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Add or remove edges</span>
 </div>
-<div data-for="t16">
+<div data-for="t15">
 <code class="quartodown-tip-sig"><span class="fu">remove_edges</span>(cg, ..., <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Add or remove edges</span>
 </div>
-<div data-for="t17">
+<div data-for="t16">
 <code class="quartodown-tip-sig"><span class="fu">apply_background_knowledge</span>(cg, ..., <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Apply background knowledge to a PDAG</span>
 </div>
-<div data-for="t18">
+<div data-for="t17">
 <code class="quartodown-tip-sig"><span class="fu">dag_to_mpdag</span>(cg, ..., <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Convert a DAG to its MPDAG</span>
 </div>
 </div>

@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -402,7 +402,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code>cg</code>
 </td>
 <td>
-A PDAG-family (PDAG, CPDAG, MPDAG) graph created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a>()</code>.
+A PDAG-family (PDAG, CPDAG, MPDAG) graph created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a>()</code>.
 </td>
 </tr>
 <tr>
@@ -414,7 +414,7 @@ Exposure and outcome node names.
 </td>
 </tr>
 </tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
-<p>Entries are in the same order as those of <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./possible_parent_sets.html">possible_parent_sets</a>()</code> for <code>x</code>, so pairing the two element-wise recovers, for each orientation, both its parent set and its optimal adjustment set.</p>
+<p>Entries are in the same order as those of <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./possible_parent_sets.html">possible_parent_sets</a>()</code> for <code>x</code>, so pairing the two element-wise recovers, for each orientation, both its parent set and its optimal adjustment set.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>List of character vectors, or <code>NULL</code> entries, one per locally valid orientation of <code>x</code>’s undirected neighbors.</p>
 </section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
@@ -424,44 +424,34 @@ Exposure and outcome node names.
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  cpdag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X2, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X3, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%---%</a></span> X4, X3 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./edge-operators.html">%--&gt;%</a></span> Y, X4 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./edge-operators.html">%--&gt;%</a></span> Y,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"CPDAG"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">parent_sets =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./possible_parent_sets.html">possible_parent_sets</a></span>(cpdag, <span class="st">"X1"</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimal_adjustment_sets =</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./possible_optimal_adjustment_sets.html">possible_optimal_adjustment_sets</a></span>(</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      cpdag, <span class="st">"X1"</span>, <span class="st">"Y"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $parent_sets</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $parent_sets[[1]]</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $parent_sets[[2]]</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X2"</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $parent_sets[[3]]</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X3"</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $parent_sets[[4]]</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X4"</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cpdag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%---%</a></span> X2, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%---%</a></span> X3, X1 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%---%</a></span> X4, X3 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Y, X4 <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Y,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">"CPDAG"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./possible_parent_sets.html">possible_parent_sets</a></span>(cpdag, <span class="st">"X1"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X2"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X3"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X4"</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./possible_optimal_adjustment_sets.html">possible_optimal_adjustment_sets</a></span>(cpdag, <span class="st">"X1"</span>, <span class="st">"Y"</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X3"</span></span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $optimal_adjustment_sets</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $optimal_adjustment_sets[[1]]</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $optimal_adjustment_sets[[2]]</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $optimal_adjustment_sets[[3]]</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X3"</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $optimal_adjustment_sets[[4]]</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X4"</span></span></code></pre></div>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "X4"</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1291,22 +1281,19 @@ Exposure and outcome node names.
 <code class="quartodown-tip-sig"><span class="fu">possible_optimal_adjustment_sets</span>(cg, x, y)</code><span class="quartodown-tip-brief">Enumerate possible optimal adjustment sets (O-set-based IDA)</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t4">
+<div data-for="t3">
 <code class="quartodown-tip-sig">lhs <span class="sc">%---%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t5">
+<div data-for="t4">
 <code class="quartodown-tip-sig">lhs <span class="sc">%--&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t6">
+<div data-for="t5">
 <code class="quartodown-tip-sig"><span class="fu">possible_parent_sets</span>(cg, x)</code><span class="quartodown-tip-brief">Enumerate possible parent sets (local IDA)</span>
 </div>
 </div>

@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -388,7 +388,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/identification.R"><code>R/identification.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Finds an instrument <code>z</code> for the causal effect of <code>x</code> on <code>y</code>, together with a conditioning set <code>given</code> that makes it valid (see <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./is_valid_iv.html">is_valid_iv</a>()</code>). For each candidate instrument, <code>given</code> is a separator of <code>y</code> and the instrument in the graph with the first edge of every causal path from <code>x</code> to <code>y</code> removed, chosen nearest to <code>y</code>. The pair with the smallest <code>given</code> is returned, so an unconditional instrument is preferred.</p>
+<p>Finds an instrument <code>z</code> for the causal effect of <code>x</code> on <code>y</code>, together with a conditioning set <code>given</code> that makes it valid (see <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./is_valid_iv.html">is_valid_iv</a>()</code>). For each candidate instrument, <code>given</code> is a separator of <code>y</code> and the instrument in the graph with the first edge of every causal path from <code>x</code> to <code>y</code> removed, chosen nearest to <code>y</code>. The pair with the smallest <code>given</code> is returned, so an unconditional instrument is preferred.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./iv_set.html">iv_set</a></span>(cg, x, y, <span class="at">restrict =</span> <span class="cn">NULL</span>)</span></code></pre></div>
@@ -401,7 +401,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code>cg</code>
 </td>
 <td>
-A DAG or ADMG created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a>()</code>.
+A DAG or ADMG created with <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a>()</code>.
 </td>
 </tr>
 <tr>
@@ -435,21 +435,17 @@ Character vector of the nodes allowed in <code>z</code> and <code>given</code>, 
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(W <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Z <span class="sc">+</span> Y, Z <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Y, U <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./iv_set.html">iv_set</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $z</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Z"</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $given</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "W"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Without W observed, there is no instrument</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.null</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./iv_set.html">iv_set</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu">c</span>(<span class="st">"Z"</span>, <span class="st">"X"</span>, <span class="st">"Y"</span>)))</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(W <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> Z <span class="sc">+</span> Y, Z <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> Y, U <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./iv_set.html">iv_set</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $z</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Z"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $given</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "W"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Without W observed, there is no instrument</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">is.null</span>(<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./iv_set.html">iv_set</a></span>(dag, <span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="at">restrict =</span> <span class="fu">c</span>(<span class="st">"Z"</span>, <span class="st">"X"</span>, <span class="st">"Y"</span>)))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1279,19 +1275,16 @@ Character vector of the nodes allowed in <code>z</code> and <code>given</code>, 
 <code class="quartodown-tip-sig"><span class="fu">iv_set</span>(cg, x, y, <span class="at">restrict</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Find an instrument and its conditioning set</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t4">
+<div data-for="t3">
 <code class="quartodown-tip-sig">lhs <span class="sc">%--&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t5">
+<div data-for="t4">
 <code class="quartodown-tip-sig"><span class="fu">is_valid_iv</span>(cg, x, y, <span class="at">z</span> <span class="at">=</span> <span class="fu">character</span>(), <span class="at">given</span> <span class="at">=</span> <span class="fu">character</span>())</code><span class="quartodown-tip-brief">Validate instrumental variables</span>
 </div>
 </div>

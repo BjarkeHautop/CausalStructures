@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -452,40 +452,34 @@ Optional integer seed for reproducibility.
 </td>
 </tr>
 </tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
-<p>Edges are sampled uniformly at random over all possible pairs using Erdős–Rényi and oriented by a random topological ordering, guaranteeing acyclicity. This samples uniformly over graphs of a given size/density, but <em>not</em> uniformly over the space of DAGs (some DAGs correspond to more topological orderings than others). For an exact uniform draw from all labelled DAGs on <code>n</code> nodes regardless of edge count, use <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./uniform_dag.html">uniform_dag</a>()</code> instead.</p>
-<p>Exactly one of <code>m</code> (exact edge count) or <code>p</code> (edge probability) must be given. For <code>class = "CPDAG"</code>, the sampled DAG is converted with <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./dag_to_cpdag.html">dag_to_cpdag</a>()</code>. For <code>class = "ADMG"</code>, <code>"MAG"</code>, or <code>"PAG"</code>, <code>latents</code> additional nodes <code>L1, ..., Lk</code> are added to the underlying random DAG and then marginalized out via <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./latent_project.html">latent_project</a>()</code>; <code>m</code>/<code>p</code> are applied to the full <code>n + latents</code> node set before projection. <code>latents</code> must be <code>0</code> (the default) for <code>class = "DAG"</code> or <code>class = "CPDAG"</code>.</p>
-<p>Unlike ADMGs, MAGs (and PAGs, which are derived from a sampled MAG) additionally require the <em>ancestral</em> constraint (no bidirected edge between a node and its own ancestor), which a naive latent projection can violate whenever a marginalized common cause and a separate directed path connect the same pair of observed nodes. For <code>class = "MAG"</code> or <code>class = "PAG"</code>, each candidate is checked and, if invalid, resampled (up to an internal retry limit) until a valid MAG is found; this errors if none is found, which can happen for very dense graphs with many latents. For <code>class = "PAG"</code>, the resulting MAG is then converted to its equivalence class with <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./mag_to_pag.html">mag_to_pag</a>()</code>.</p>
+<p>Edges are sampled uniformly at random over all possible pairs using Erdős–Rényi and oriented by a random topological ordering, guaranteeing acyclicity. This samples uniformly over graphs of a given size/density, but <em>not</em> uniformly over the space of DAGs (some DAGs correspond to more topological orderings than others). For an exact uniform draw from all labelled DAGs on <code>n</code> nodes regardless of edge count, use <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./uniform_dag.html">uniform_dag</a>()</code> instead.</p>
+<p>Exactly one of <code>m</code> (exact edge count) or <code>p</code> (edge probability) must be given. For <code>class = "CPDAG"</code>, the sampled DAG is converted with <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./dag_to_cpdag.html">dag_to_cpdag</a>()</code>. For <code>class = "ADMG"</code>, <code>"MAG"</code>, or <code>"PAG"</code>, <code>latents</code> additional nodes <code>L1, ..., Lk</code> are added to the underlying random DAG and then marginalized out via <code><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./latent_project.html">latent_project</a>()</code>; <code>m</code>/<code>p</code> are applied to the full <code>n + latents</code> node set before projection. <code>latents</code> must be <code>0</code> (the default) for <code>class = "DAG"</code> or <code>class = "CPDAG"</code>.</p>
+<p>Unlike ADMGs, MAGs (and PAGs, which are derived from a sampled MAG) additionally require the <em>ancestral</em> constraint (no bidirected edge between a node and its own ancestor), which a naive latent projection can violate whenever a marginalized common cause and a separate directed path connect the same pair of observed nodes. For <code>class = "MAG"</code> or <code>class = "PAG"</code>, each candidate is checked and, if invalid, resampled (up to an internal retry limit) until a valid MAG is found; this errors if none is found, which can happen for very dense graphs with many latents. For <code>class = "PAG"</code>, the resulting MAG is then converted to its equivalence class with <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./mag_to_pag.html">mag_to_pag</a>()</code>.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>A <code>cgraph</code>.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  cg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">4</span>, <span class="at">m =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  cg</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; DAG with 4 nodes and 3 edges:</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V2 --&gt; V1, V2 --&gt; V4, V3 --&gt; V1</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>, <span class="at">latents =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  admg</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ADMG with 6 nodes and 2 edges:</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4, V5, V6</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V1 --&gt; V4, V2 --&gt; V4</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  pag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">class =</span> <span class="st">"PAG"</span>, <span class="at">latents =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  pag</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PAG with 6 nodes and 2 edges:</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4, V5, V6</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V1 o-&gt; V4, V2 o-&gt; V4</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">4</span>, <span class="at">m =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cg</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; DAG with 4 nodes and 3 edges:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V2 --&gt; V1, V2 --&gt; V4, V3 --&gt; V1</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">class =</span> <span class="st">"ADMG"</span>, <span class="at">latents =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>admg</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ADMG with 6 nodes and 2 edges:</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4, V5, V6</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V1 --&gt; V4, V2 --&gt; V4</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>pag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">class =</span> <span class="st">"PAG"</span>, <span class="at">latents =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">1405</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>pag</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PAG with 6 nodes and 2 edges:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   nodes: V1, V2, V3, V4, V5, V6</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   edges:</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     V1 o-&gt; V4, V2 o-&gt; V4</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
@@ -1322,18 +1316,15 @@ Optional integer seed for reproducibility.
 )</code><span class="quartodown-tip-brief">Generate a random graph</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">uniform_dag</span>(n, <span class="at">seed</span> <span class="at">=</span> <span class="cn">NULL</span>, <span class="at">counts</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Generate a uniformly random DAG</span>
 </div>
-<div data-for="t4">
+<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">dag_to_cpdag</span>(cg)</code><span class="quartodown-tip-brief">Convert a DAG to its CPDAG</span>
 </div>
-<div data-for="t5">
+<div data-for="t4">
 <code class="quartodown-tip-sig"><span class="fu">latent_project</span>(cg, latents)</code><span class="quartodown-tip-brief">Project out latent variables</span>
 </div>
-<div data-for="t6">
+<div data-for="t5">
 <code class="quartodown-tip-sig"><span class="fu">mag_to_pag</span>(cg)</code><span class="quartodown-tip-brief">Map a MAG to its PAG equivalence class</span>
 </div>
 </div>

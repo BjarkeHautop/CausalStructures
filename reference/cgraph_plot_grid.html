@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c95f020296228d9422c2b057e21f3454.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-075e5125ddc0819b3e079ebe08fa8522.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ddc61b7e90baaf06206f8b5b44bd35f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b1b3955aa5c8fbed1f7bd154399845fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -389,7 +389,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <small class="dont-index">Source: <a href="https://github.com/BjarkeHautop/CausalStructures/blob/HEAD/R/plot-arrange.R"><code>R/plot-arrange.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Put plots built with <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a>()</code> side by side, stacked, or in a grid. <code>p1 | p2</code> places plots side by side and <code>p1 / p2</code> stacks them; chains like <code>p1 | p2 | p3</code> give equal columns, and the two nest: <code>(p1 | p2) / p3</code> puts two plots above a third. <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code> lays out any number of plots in rows and columns, e.g. a list of them.</p>
+<p>Put plots built with <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code> side by side, stacked, or in a grid. <code>p1 | p2</code> places plots side by side and <code>p1 / p2</code> stacks them; chains like <code>p1 | p2 | p3</code> give equal columns, and the two nest: <code>(p1 | p2) / p3</code> puts two plots above a third. <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code> lays out any number of plots in rows and columns, e.g. a list of them.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a></span>(</span>
@@ -416,7 +416,7 @@ visitors who prefer it, before Quarto reads the stored choice.
 <code>...</code>
 </td>
 <td>
-Plots from <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a>()</code>, graphs from <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a>()</code> (plotted with the defaults), or arrangements from <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code>, <code>|</code> or <code>/</code>; or a single list of them.
+Plots from <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>, graphs from <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a>()</code> (plotted with the defaults), or arrangements from <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a>()</code>, <code>|</code> or <code>/</code>; or a single list of them.
 </td>
 </tr>
 <tr>
@@ -448,7 +448,7 @@ Relative column widths and row heights, e.g. <code>widths = c(2, 1)</code> makes
 <code>spacing</code>
 </td>
 <td>
-Grid unit for the gap between plots. Default <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./plot_options.html">plot_options</a>("spacing")</code>, initially <code>grid::unit(1, "lines")</code>.
+Grid unit for the gap between plots. Default <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./plot_options.html">plot_options</a>("spacing")</code>, initially <code>grid::unit(1, "lines")</code>.
 </td>
 </tr>
 <tr>
@@ -460,33 +460,58 @@ Plots (or graphs, or arrangements) to combine.
 </td>
 </tr>
 </tbody></table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
-<p>The arrangement is drawn when printed, like a single plot: print it with <code>newpage = FALSE</code> to draw it into the current grid viewport, or get its grob with <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="./cgraph_grob.html">cgraph_grob</a>()</code>. Style each plot before arranging it.</p>
+<p>The arrangement is drawn when printed, like a single plot: print it with <code>newpage = FALSE</code> to draw it into the current grid viewport, or get its grob with <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./cgraph_grob.html">cgraph_grob</a>()</code>. Style each plot before arranging it.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>A <code>cgraph_plots</code> object, drawn when printed.</p>
 </section><section id="see-also" class="level2"><h2 class="anchored" data-anchor-id="see-also">See Also</h2>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./plot_options.html">plot_options</a>()</code> to change the default <code>spacing</code>.</p>
-<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t12" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./plot_options.html">plot_options</a>()</code></p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./plot_options.html">plot_options</a>()</code> to change the default <code>spacing</code>.</p>
+<p>Other plotting: <code><a class="quartodown-tip-ref" data-quartodown-tip="t9" href="./cgraph_grob.html">cgraph_grob</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t10" href="./cgraph_layout.html">cgraph_layout</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a>()</code>, <a href="plot-styling.html"><code>plot-styling</code></a>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t11" href="./plot_default_options.html">plot_default_options</a>()</code>, <code><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./plot_options.html">plot_options</a>()</code></p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./julia_ready.html">julia_ready</a></span>()) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Y, <span class="at">class =</span> <span class="st">"DAG"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> X, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%--&gt;%</a></span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./edge-operators.html">%&lt;-&gt;%</a></span> Y, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">main =</span> <span class="st">"DAG"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  p2 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./cgraph_plot.html">cgraph_plot</a></span>(admg, <span class="at">main =</span> <span class="st">"ADMG"</span>) <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="./plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"salmon"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  p1 <span class="sc">|</span> p2</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  p1 <span class="sc">/</span> p2</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  (p1 <span class="sc">|</span> p2) <span class="sc">/</span> p1</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  dags <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(i) <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t8" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">5</span>, <span class="at">p =</span> <span class="fl">0.4</span>, <span class="at">seed =</span> i))</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a></span>(<span class="fu">lapply</span>(dags, cgraph_plot), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> X <span class="sc">+</span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> Y, <span class="at">class =</span> <span class="st">"DAG"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>admg <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./cgraph.html">cgraph</a></span>(A <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> X, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./edge-operators.html">%--&gt;%</a></span> Y, X <span class="sc"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="./edge-operators.html">%&lt;-&gt;%</a></span> Y, <span class="at">class =</span> <span class="st">"ADMG"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a></span>(dag, <span class="at">main =</span> <span class="st">"DAG"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t5" href="./cgraph_plot.html">cgraph_plot</a></span>(admg, <span class="at">main =</span> <span class="st">"ADMG"</span>) <span class="sc">|&gt;</span> <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t6" href="./plot-styling.html">style_nodes</a></span>(<span class="at">fill =</span> <span class="st">"salmon"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">|</span> p2</span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="cgraph_plot_grid_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="cgraph_plot_grid_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">|</span> p2) <span class="sc">/</span> p1</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="cgraph_plot_grid_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dags <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(i) <span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t7" href="./generate_graph.html">generate_graph</a></span>(<span class="dv">5</span>, <span class="at">p =</span> <span class="fl">0.4</span>, <span class="at">seed =</span> i))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./cgraph_plot_grid.html">cgraph_plot_grid</a></span>(<span class="fu">lapply</span>(dags, cgraph_plot), <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="cgraph_plot_grid_files/figure-html/unnamed-chunk-2-4.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1325,22 +1350,19 @@ Plots (or graphs, or arrangements) to combine.
 )</code><span class="quartodown-tip-brief">Arrange several plots in one figure</span>
 </div>
 <div data-for="t2">
-<code class="quartodown-tip-sig"><span class="fu">julia_ready</span>()</code><span class="quartodown-tip-brief">Is the compiled CausalStructures.jl library available?</span>
-</div>
-<div data-for="t3">
 <code class="quartodown-tip-sig"><span class="fu">cgraph</span>(
   ...,
   <span class="at">spec</span> <span class="at">=</span> <span class="cn">NULL</span>,
   <span class="at">class</span> <span class="at">=</span> <span class="fu">c</span>(<span class="st">"DAG"</span>, <span class="st">"UG"</span>, <span class="st">"PDAG"</span>, <span class="st">"CPDAG"</span>, <span class="st">"MPDAG"</span>, <span class="st">"ADMG"</span>, <span class="st">"AG"</span>, <span class="st">"MAG"</span>, <span class="st">"PAG"</span>, <span class="st">"UNKNOWN"</span>)
 )</code><span class="quartodown-tip-brief">Create a causal graph</span>
 </div>
-<div data-for="t4">
+<div data-for="t3">
 <code class="quartodown-tip-sig">lhs <span class="sc">%--&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t5">
+<div data-for="t4">
 <code class="quartodown-tip-sig">lhs <span class="sc">%&lt;-&gt;%</span> rhs</code><span class="quartodown-tip-brief">Edge specification operators</span>
 </div>
-<div data-for="t6">
+<div data-for="t5">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_plot</span>(
   x,
   <span class="at">layout</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -1351,10 +1373,10 @@ Plots (or graphs, or arrangements) to combine.
   ...
 )</code><span class="quartodown-tip-brief">Plot a causal graph</span>
 </div>
-<div data-for="t7">
+<div data-for="t6">
 <code class="quartodown-tip-sig"><span class="fu">style_nodes</span>(p, ..., <span class="at">nodes</span> <span class="at">=</span> <span class="cn">NULL</span>)</code><span class="quartodown-tip-brief">Style the nodes, edges and labels of a plot</span>
 </div>
-<div data-for="t8">
+<div data-for="t7">
 <code class="quartodown-tip-sig"><span class="fu">generate_graph</span>(
   n,
   <span class="at">m</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -1364,13 +1386,13 @@ Plots (or graphs, or arrangements) to combine.
   <span class="at">seed</span> <span class="at">=</span> <span class="cn">NULL</span>
 )</code><span class="quartodown-tip-brief">Generate a random graph</span>
 </div>
-<div data-for="t9">
+<div data-for="t8">
 <code class="quartodown-tip-sig"><span class="fu">plot_options</span>(...)</code><span class="quartodown-tip-brief">Get or set global default plot styles</span>
 </div>
-<div data-for="t10">
+<div data-for="t9">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_grob</span>(x)</code><span class="quartodown-tip-brief">Grid grob of a causal graph plot</span>
 </div>
-<div data-for="t11">
+<div data-for="t10">
 <code class="quartodown-tip-sig"><span class="fu">cgraph_layout</span>(
   x,
   <span class="at">method</span> <span class="at">=</span> <span class="cn">NULL</span>,
@@ -1379,7 +1401,7 @@ Plots (or graphs, or arrangements) to combine.
   ...
 )</code><span class="quartodown-tip-brief">Compute a graph layout</span>
 </div>
-<div data-for="t12">
+<div data-for="t11">
 <code class="quartodown-tip-sig"><span class="fu">plot_default_options</span>()</code><span class="quartodown-tip-brief">Default plot styling options</span>
 </div>
 </div>
