@@ -4,6 +4,7 @@ navbar:
     - reference
     - text: Articles
       menu:
+        - articles/graph-classes
         - articles/equivalence-classes
         - articles/causal-identification
         - articles/pag-causal-effects

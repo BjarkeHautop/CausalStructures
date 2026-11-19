@@ -28,7 +28,8 @@ dag
 Each edge is written with an operator such as `%-->%`, `%<->%` or `%o-o%` (see
 [edge operators](../reference/edge-operators.qmd)), and `+` fans an edge out to,
 or in from, several nodes at once. `class` says which kind of graph it is;
-`"DAG"` is the default.
+`"DAG"` is the default (see [Graph Classes](articles/graph-classes.qmd) for the
+others).
 
 ::: {.callout-note title="Validation on construction"}
 Every graph is checked against the structural constraints of its class when you
@@ -119,7 +120,8 @@ package:
 
 - For more on working with DAGs in the context of causal identification, see
   [Causal Identification](articles/causal-identification.qmd).
-- To learn more about the different graph classes, see [Equivalence
-  Classes](articles/equivalence-classes.qmd) and [PAG Causal
+- For what each graph class means and how to build one, see [Graph
+  Classes](articles/graph-classes.qmd); for working with equivalence classes,
+  see [Equivalence Classes](articles/equivalence-classes.qmd) and [PAG Causal
   Effects](articles/pag-causal-effects.qmd).
 - To customize plots, see [Plotting Causal Graphs](articles/plot.qmd).

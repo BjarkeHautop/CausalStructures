@@ -44,6 +44,13 @@ the strategy instead claims a zero effect, which is correct if \code{y} is not
 a possible descendant of \code{t} in \code{cg_truth}. For a PDAG-family \code{cg_test}
 where the effect is not identifiable, the strategy claims so, which is
 correct if it is not identifiable in \code{cg_truth} either.
+
+To compare causal discovery algorithms against a known true graph, first
+convert the truth to the class the algorithms estimate: \code{\link[=dag_to_cpdag]{dag_to_cpdag()}}
+for algorithms returning a CPDAG (such as PC). Otherwise edges the
+algorithm correctly leaves unoriented count as mistakes. If an estimate is
+an MPDAG built from background knowledge, apply the same knowledge to the
+true CPDAG with \code{\link[=apply_background_knowledge]{apply_background_knowledge()}}.
 }
 \examples{
 if (julia_ready()) {

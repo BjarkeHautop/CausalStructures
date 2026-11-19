@@ -32,6 +32,14 @@ an edge or about its marks, weighting both kinds of mismatch equally.
 The two graphs must have the same nodes, but may be of different classes.
 SHD was originally defined for PDAGs; \code{shd()} extends it naturally to any
 pair of graphs.
+
+To compare causal discovery algorithms against a known true graph, first
+convert the truth to the class the algorithms estimate: \code{\link[=dag_to_cpdag]{dag_to_cpdag()}}
+for algorithms returning a CPDAG (such as PC), \code{\link[=mag_to_pag]{mag_to_pag()}} for ones
+returning a PAG (such as FCI). Otherwise edges the algorithm correctly
+leaves unoriented count as mistakes. If an estimate is an MPDAG built from
+background knowledge, apply the same knowledge to the true CPDAG with
+\code{\link[=apply_background_knowledge]{apply_background_knowledge()}}.
 }
 \examples{
 if (julia_ready()) {

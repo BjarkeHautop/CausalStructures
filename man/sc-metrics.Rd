@@ -41,6 +41,11 @@ statements separated in \code{cg_truth} but connected in \code{cg_test}, the
 false-positive rate. A size with no statements of the counted kind
 contributes \code{0}.
 
+A graph and its equivalence class (e.g. \code{\link[=dag_to_cpdag]{dag_to_cpdag()}}, \code{\link[=mag_to_pag]{mag_to_pag()}})
+imply the same separations, so, unlike \code{\link[=shd]{shd()}} and \code{\link[=aid]{aid()}}, these metrics
+need no conversion of the true graph when comparing causal discovery
+algorithms.
+
 The number of statements grows exponentially with the number of nodes,
 so limit \code{max_order} for larger graphs.
 }

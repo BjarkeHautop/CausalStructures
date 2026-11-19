@@ -12,6 +12,14 @@
 #' SHD was originally defined for PDAGs; `shd()` extends it naturally to any
 #' pair of graphs.
 #'
+#' To compare causal discovery algorithms against a known true graph, first
+#' convert the truth to the class the algorithms estimate: [dag_to_cpdag()]
+#' for algorithms returning a CPDAG (such as PC), [mag_to_pag()] for ones
+#' returning a PAG (such as FCI). Otherwise edges the algorithm correctly
+#' leaves unoriented count as mistakes. If an estimate is an MPDAG built from
+#' background knowledge, apply the same knowledge to the true CPDAG with
+#' [apply_background_knowledge()].
+#'
 #' @param cg1,cg2 Graphs created with [cgraph()], of any class, with the
 #'   same nodes.
 #' @param normalized If `TRUE`, divide by the number of node pairs,
@@ -47,6 +55,13 @@ NULL
 #' a possible descendant of `t` in `cg_truth`. For a PDAG-family `cg_test`
 #' where the effect is not identifiable, the strategy claims so, which is
 #' correct if it is not identifiable in `cg_truth` either.
+#'
+#' To compare causal discovery algorithms against a known true graph, first
+#' convert the truth to the class the algorithms estimate: [dag_to_cpdag()]
+#' for algorithms returning a CPDAG (such as PC). Otherwise edges the
+#' algorithm correctly leaves unoriented count as mistakes. If an estimate is
+#' an MPDAG built from background knowledge, apply the same knowledge to the
+#' true CPDAG with [apply_background_knowledge()].
 #'
 #' @param cg_truth The ground-truth graph: a DAG or PDAG-family graph (PDAG,
 #'   CPDAG, MPDAG) created with [cgraph()].
@@ -159,6 +174,11 @@ separation_distance <- function(
 #' statements separated in `cg_truth` but connected in `cg_test`, the
 #' false-positive rate. A size with no statements of the counted kind
 #' contributes `0`.
+#'
+#' A graph and its equivalence class (e.g. [dag_to_cpdag()], [mag_to_pag()])
+#' imply the same separations, so, unlike [shd()] and [aid()], these metrics
+#' need no conversion of the true graph when comparing causal discovery
+#' algorithms.
 #'
 #' The number of statements grows exponentially with the number of nodes,
 #' so limit `max_order` for larger graphs.
