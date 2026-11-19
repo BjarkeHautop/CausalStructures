@@ -43,10 +43,10 @@ the causal effect of \code{x} on \code{y}, conditionally on \code{given}; see
 \code{\link[=is_valid_iv]{is_valid_iv()}}. To also search for the conditioning set, use \code{\link[=iv_set]{iv_set()}}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(
-    Z1 \%-->\% X, Z2 \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y
-  )
-  all_iv_sets(dag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(
+  Z1 \%-->\% X, Z2 \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y
+)
+all_iv_sets(dag, "X", "Y")
+\dontshow{\}) # examplesIf}
 }

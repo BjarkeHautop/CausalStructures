@@ -25,11 +25,9 @@ added as isolated nodes (nodes already present are ignored).
 incident edges removed, and errors if a node is not present.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B)
-  list(
-    add_nodes = add_nodes(dag, "C"),
-    remove_nodes = remove_nodes(dag, "B")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B)
+add_nodes(dag, "C")
+remove_nodes(dag, "B")
+\dontshow{\}) # examplesIf}
 }

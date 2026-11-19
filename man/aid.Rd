@@ -53,15 +53,13 @@ an MPDAG built from background knowledge, apply the same knowledge to the
 true CPDAG with \code{\link[=apply_background_knowledge]{apply_background_knowledge()}}.
 }
 \examples{
-if (julia_ready()) {
-  truth <- cgraph(A \%-->\% B \%-->\% C, A \%-->\% C)
-  guess <- cgraph(A \%-->\% B \%-->\% C)
-  list(
-    oset = aid(truth, guess),
-    parent = aid(truth, guess, type = "parent"),
-    ancestor = aid(truth, guess, type = "ancestor")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+truth <- cgraph(A \%-->\% B \%-->\% C, A \%-->\% C)
+guess <- cgraph(A \%-->\% B \%-->\% C)
+aid(truth, guess)
+aid(truth, guess, type = "parent")
+aid(truth, guess, type = "ancestor")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{henckel2024aid}{CausalStructures}

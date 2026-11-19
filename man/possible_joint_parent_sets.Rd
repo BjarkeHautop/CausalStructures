@@ -26,13 +26,13 @@ is a list of parent sets in the same order as \code{xs} (entry \code{i} gives a
 valid parent set for \code{xs[i]} under that joint orientation).
 }
 \examples{
-if (julia_ready()) {
-  cpdag <- cgraph(
-    X1 \%---\% X2, X1 \%---\% A, X2 \%---\% B, A \%-->\% Y, B \%-->\% Y,
-    class = "CPDAG"
-  )
-  possible_joint_parent_sets(cpdag, c("X1", "X2"))
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cpdag <- cgraph(
+  X1 \%---\% X2, X1 \%---\% A, X2 \%---\% B, A \%-->\% Y, B \%-->\% Y,
+  class = "CPDAG"
+)
+possible_joint_parent_sets(cpdag, c("X1", "X2"))
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{maathuis2009estimating}{CausalStructures}

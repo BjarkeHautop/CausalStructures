@@ -27,13 +27,11 @@ contain no forbidden node (a descendant of a proper causal node between
 proper backdoor graph.
 }
 \examples{
-if (julia_ready()) {
-  admg <- cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
-  list(
-    empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked
-    conditioned_on_l = is_valid_adjustment(admg, "X", "Y", "L")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+admg <- cgraph(L \%-->\% X, X \%-->\% Y, L \%-->\% Y, class = "ADMG")
+is_valid_adjustment(admg, "X", "Y") # L --> Y not blocked
+is_valid_adjustment(admg, "X", "Y", "L")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{perkovic2018complete}{CausalStructures}

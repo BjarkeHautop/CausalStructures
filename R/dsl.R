@@ -295,11 +295,9 @@
 #'   or `c()` of either.
 #' @return None, since the operators are never called.
 #' @name edge-operators
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
-#'   edges(dag)
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+#' edges(dag)
 NULL
 
 #' @rdname edge-operators

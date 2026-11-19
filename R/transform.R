@@ -8,11 +8,9 @@
 #'
 #' @param cg A graph created with [cgraph()], of any class.
 #' @return A `cgraph` of class `UG`.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   skeleton(dag)
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' skeleton(dag)
 #' @name skeleton
 NULL
 
@@ -27,11 +25,9 @@ NULL
 #' @param cg A DAG or PDAG-family (PDAG, CPDAG, MPDAG) graph created with
 #'   [cgraph()].
 #' @return A `cgraph` of class `UG`.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% C, B %-->% C)
-#'   moralize(dag) # A and B are now married
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% C, B %-->% C)
+#' moralize(dag) # A and B are now married
 #' @name moralize
 NULL
 
@@ -44,11 +40,9 @@ NULL
 #'
 #' @param cg A DAG created with [cgraph()].
 #' @return A `cgraph` of class `CPDAG`.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   dag_to_cpdag(dag)
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' dag_to_cpdag(dag)
 #' @name dag_to_cpdag
 NULL
 
@@ -64,11 +58,9 @@ NULL
 #' @return A `cgraph` of class `DAG`.
 #' @references
 #' \insertRef{dortarsi1992simple}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
-#'   dag_from_pdag(pdag)
-#' }
+#' @examplesIf julia_ready()
+#' pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
+#' dag_from_pdag(pdag)
 #' @name dag_from_pdag
 NULL
 
@@ -99,11 +91,9 @@ NULL
 #' @return A `cgraph` of class `MPDAG`.
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
-#'   meek_closure(pdag)
-#' }
+#' @examplesIf julia_ready()
+#' pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#' meek_closure(pdag)
 #' @name meek_closure
 NULL
 
@@ -124,14 +114,10 @@ NULL
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   list(
-#'     no_knowledge = dag_to_mpdag(dag),
-#'     required = dag_to_mpdag(dag, A %-->% B)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' dag_to_mpdag(dag)
+#' dag_to_mpdag(dag, A %-->% B)
 dag_to_mpdag <- function(cg, ..., spec = NULL) {
   knowledge <- if (...length() > 0L || !is.null(spec)) {
     .dots_or_spec(substitute(list(...)), spec)
@@ -163,14 +149,10 @@ dag_to_mpdag <- function(cg, ..., spec = NULL) {
 #' @references
 #' \insertRef{meek1995causal}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
-#'   list(
-#'     required = apply_background_knowledge(cpdag, A %-->% B),
-#'     forbidden = apply_background_knowledge(cpdag, C %!-->% B)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
+#' apply_background_knowledge(cpdag, A %-->% B)
+#' apply_background_knowledge(cpdag, C %!-->% B)
 apply_background_knowledge <- function(cg, ..., spec = NULL) {
   jl_apply_background_knowledge(cg, .dots_or_spec(substitute(list(...)), spec))
 }
@@ -189,11 +171,9 @@ apply_background_knowledge <- function(cg, ..., spec = NULL) {
 #'
 #' @param cg An AG created with [cgraph()].
 #' @return A `cgraph` of class `MAG`.
-#' @examples
-#' if (julia_ready()) {
-#'   ag <- cgraph(A %-->% B, B %-->% C, class = "AG")
-#'   ag_to_mag(ag)
-#' }
+#' @examplesIf julia_ready()
+#' ag <- cgraph(A %-->% B, B %-->% C, class = "AG")
+#' ag_to_mag(ag)
 #' @name ag_to_mag
 NULL
 
@@ -212,11 +192,9 @@ NULL
 #' @return A `cgraph` of class `PAG`.
 #' @references
 #' \insertRef{zhang2008completeness}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   mag <- cgraph(A %-->% B, B %-->% C, class = "MAG")
-#'   mag_to_pag(mag)
-#' }
+#' @examplesIf julia_ready()
+#' mag <- cgraph(A %-->% B, B %-->% C, class = "MAG")
+#' mag_to_pag(mag)
 #' @name mag_to_pag
 NULL
 
@@ -240,11 +218,9 @@ NULL
 #' \insertRef{zhang2008completeness}{CausalStructures}
 #'
 #' \insertRef{dortarsi1992simple}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
-#'   mag_from_pag(pag)
-#' }
+#' @examplesIf julia_ready()
+#' pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
+#' mag_from_pag(pag)
 #' @name mag_from_pag
 NULL
 
@@ -257,11 +233,9 @@ NULL
 #' @param nodes Character vector of node names to keep.
 #' @return A `cgraph`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   subgraph(dag, c("A", "B"))
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' subgraph(dag, c("A", "B"))
 subgraph <- function(cg, nodes) {
   jl_subgraph(cg, as.character(nodes))
 }
@@ -275,11 +249,9 @@ subgraph <- function(cg, nodes) {
 #' @param latents Character vector of latent (unobserved) node names.
 #' @return A `cgraph` of class `ADMG`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
-#'   latent_project(dag, "U")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
+#' latent_project(dag, "U")
 latent_project <- function(cg, latents) {
   jl_latent_project(cg, as.character(latents))
 }
@@ -294,11 +266,9 @@ latent_project <- function(cg, latents) {
 #' @param nodes Character vector of node names to exogenize.
 #' @return A `cgraph` of class `DAG`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% M, M %-->% Y)
-#'   exogenize(dag, "M")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% M, M %-->% Y)
+#' exogenize(dag, "M")
 exogenize <- function(cg, nodes) {
   jl_exogenize(cg, as.character(nodes))
 }
@@ -317,11 +287,9 @@ exogenize <- function(cg, nodes) {
 #' @references
 #' \insertRef{evans2016graphs}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
-#'   normalize_latent_structure(dag, "U")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(U %-->% A, U %-->% B, A %-->% B)
+#' normalize_latent_structure(dag, "U")
 normalize_latent_structure <- function(cg, latents) {
   jl_normalize_latent_structure(cg, as.character(latents))
 }
@@ -339,11 +307,9 @@ normalize_latent_structure <- function(cg, latents) {
 #' @param index Character vector of node names to marginalize out.
 #' @return A `cgraph` of class `AG`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
-#'   condition_marginalize(dag, index = "U")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% M, M %-->% Y, U %-->% A, U %-->% Y)
+#' condition_marginalize(dag, index = "U")
 condition_marginalize <- function(
   cg,
   given = character(),
@@ -370,14 +336,10 @@ condition_marginalize <- function(
 #'   exclusive with `...`.
 #' @return A `cgraph`.
 #' @name edge-mutation
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B)
-#'   list(
-#'     add_edges = add_edges(dag, B %-->% C),
-#'     remove_edges = remove_edges(dag, A %-->% B)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B)
+#' add_edges(dag, B %-->% C)
+#' remove_edges(dag, A %-->% B)
 NULL
 
 #' @rdname edge-mutation
@@ -403,14 +365,10 @@ remove_edges <- function(cg, ..., spec = NULL) {
 #' @param nodes Character vector of node names.
 #' @return A `cgraph`.
 #' @name node-mutation
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B)
-#'   list(
-#'     add_nodes = add_nodes(dag, "C"),
-#'     remove_nodes = remove_nodes(dag, "B")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B)
+#' add_nodes(dag, "C")
+#' remove_nodes(dag, "B")
 NULL
 
 #' @rdname node-mutation
@@ -437,12 +395,10 @@ remove_nodes <- function(cg, nodes) {
 #'   structural constraints; accepts all edge types).
 #' @return A `cgraph`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, class = "UNKNOWN")
-#'   reclassed <- reclass(dag, class = "DAG")
-#'   is_dag(reclassed)
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, class = "UNKNOWN")
+#' reclassed <- reclass(dag, class = "DAG")
+#' is_dag(reclassed)
 reclass <- function(
   cg,
   class = c(

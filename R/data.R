@@ -29,26 +29,22 @@
 #' @return A data frame with `n` rows (samples) and one column per node,
 #'   named and ordered as in [nodes()].
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   data <- simulate_data(dag, n = 100, seed = 1405)
-#'   head(data)
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' data <- simulate_data(dag, n = 100, seed = 1405)
+#' head(data)
 #'
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   data2 <- simulate_data(
-#'     dag,
-#'     n = 100,
-#'     standardize = FALSE,
-#'     coef_range = c(0.5, 2),
-#'     random_sign = TRUE,
-#'     error_sd = c(0.5, 1.5),
-#'     seed = 1405
-#'   )
-#'   head(data2)
-#' }
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' data2 <- simulate_data(
+#'   dag,
+#'   n = 100,
+#'   standardize = FALSE,
+#'   coef_range = c(0.5, 2),
+#'   random_sign = TRUE,
+#'   error_sd = c(0.5, 1.5),
+#'   seed = 1405
+#' )
+#' head(data2)
 simulate_data <- function(
   cg,
   n,

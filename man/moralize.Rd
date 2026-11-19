@@ -21,8 +21,8 @@ PDAG-family graph, only directed parents participate in marriage edges;
 undirected neighbors are carried over but don't form a clique.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% C, B \%-->\% C)
-  moralize(dag) # A and B are now married
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% C, B \%-->\% C)
+moralize(dag) # A and B are now married
+\dontshow{\}) # examplesIf}
 }

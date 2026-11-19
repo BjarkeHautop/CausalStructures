@@ -22,10 +22,10 @@ one active child or whose child set is a strict subset of another latent
 node's child set.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
-  normalize_latent_structure(dag, "U")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(U \%-->\% A, U \%-->\% B, A \%-->\% B)
+normalize_latent_structure(dag, "U")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{evans2016graphs}{CausalStructures}

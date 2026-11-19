@@ -18,8 +18,8 @@ every edge, of any type, with an undirected edge. Parallel edges between two
 nodes become one edge, and self-loops are dropped.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  skeleton(dag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+skeleton(dag)
+\dontshow{\}) # examplesIf}
 }

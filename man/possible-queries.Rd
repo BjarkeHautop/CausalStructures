@@ -38,15 +38,12 @@ edge, or a directed/circle edge oriented, or possibly orientable, toward
 those only count edges \emph{compelled} in the right direction.
 }
 \examples{
-if (julia_ready()) {
-  cpdag <- cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
-  list(
-    ancestors = ancestors(cpdag, "C"),
-    possible_ancestors = possible_ancestors(cpdag, "C"),
-    possible_ancestors_including_self =
-      possible_ancestors(cpdag, "C", open = FALSE)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cpdag <- cgraph(A \%---\% B, B \%---\% C, class = "CPDAG")
+ancestors(cpdag, "C")
+possible_ancestors(cpdag, "C")
+possible_ancestors(cpdag, "C", open = FALSE)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{perkovic2018complete}{CausalStructures}

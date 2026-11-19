@@ -55,19 +55,19 @@ The arrangement is drawn when printed, like a single plot: print it with
 with \code{\link[=cgraph_grob]{cgraph_grob()}}. Style each plot before arranging it.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X + Y, X \%-->\% Y, class = "DAG")
-  admg <- cgraph(A \%-->\% X, X \%-->\% Y, X \%<->\% Y, class = "ADMG")
-  p1 <- cgraph_plot(dag, main = "DAG")
-  p2 <- cgraph_plot(admg, main = "ADMG") |> style_nodes(fill = "salmon")
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X + Y, X \%-->\% Y, class = "DAG")
+admg <- cgraph(A \%-->\% X, X \%-->\% Y, X \%<->\% Y, class = "ADMG")
+p1 <- cgraph_plot(dag, main = "DAG")
+p2 <- cgraph_plot(admg, main = "ADMG") |> style_nodes(fill = "salmon")
 
-  p1 | p2
-  p1 / p2
-  (p1 | p2) / p1
+p1 | p2
+p1 / p2
+(p1 | p2) / p1
 
-  dags <- lapply(1:6, function(i) generate_graph(5, p = 0.4, seed = i))
-  cgraph_plot_grid(lapply(dags, cgraph_plot), ncol = 3)
-}
+dags <- lapply(1:6, function(i) generate_graph(5, p = 0.4, seed = i))
+cgraph_plot_grid(lapply(dags, cgraph_plot), ncol = 3)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=plot_options]{plot_options()}} to change the default \code{spacing}.

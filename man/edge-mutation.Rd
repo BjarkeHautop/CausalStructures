@@ -31,11 +31,9 @@ errors if an edge in \code{...} is not present in \code{cg}. For programmatic us
 pass a spec string via \code{spec} instead of \code{...}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B)
-  list(
-    add_edges = add_edges(dag, B \%-->\% C),
-    remove_edges = remove_edges(dag, A \%-->\% B)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B)
+add_edges(dag, B \%-->\% C)
+remove_edges(dag, A \%-->\% B)
+\dontshow{\}) # examplesIf}
 }

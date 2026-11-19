@@ -27,10 +27,10 @@ oriented into a DAG with no new unshielded colliders by Dor-Tarsi
 simplicial elimination.
 }
 \examples{
-if (julia_ready()) {
-  pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
-  mag_from_pag(pag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
+mag_from_pag(pag)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{zhang2008completeness}{CausalStructures}

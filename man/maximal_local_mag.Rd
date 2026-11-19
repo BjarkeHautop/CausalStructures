@@ -32,14 +32,14 @@ it is returned as class \code{"UNKNOWN"} rather than validated as a MAG or PAG.
 Assumes \code{cg} has no selection bias (no undirected edges).
 }
 \examples{
-if (julia_ready()) {
-  mag <- cgraph(
-    A \%<->\% X, B \%-->\% X, A \%<->\% B, X \%-->\% Y,
-    class = "MAG"
-  )
-  pag <- mag_to_pag(mag)
-  maximal_local_mag(pag, "X", "A")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+mag <- cgraph(
+  A \%<->\% X, B \%-->\% X, A \%<->\% B, X \%-->\% Y,
+  class = "MAG"
+)
+pag <- mag_to_pag(mag)
+maximal_local_mag(pag, "X", "A")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{wang2023localbk}{CausalStructures}

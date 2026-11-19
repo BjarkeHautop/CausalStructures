@@ -24,8 +24,8 @@ remaining nodes that represents the graphical effect of conditioning on
 non-empty, and they must be disjoint.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% M, M \%-->\% Y, U \%-->\% A, U \%-->\% Y)
-  condition_marginalize(dag, index = "U")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% M, M \%-->\% Y, U \%-->\% A, U \%-->\% Y)
+condition_marginalize(dag, index = "U")
+\dontshow{\}) # examplesIf}
 }

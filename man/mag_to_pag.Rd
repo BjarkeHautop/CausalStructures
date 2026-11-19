@@ -24,10 +24,10 @@ as they appear in \code{cg}, then applies Zhang's complete orientation rules
 R1-R10 until no further mark is implied.
 }
 \examples{
-if (julia_ready()) {
-  mag <- cgraph(A \%-->\% B, B \%-->\% C, class = "MAG")
-  mag_to_pag(mag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+mag <- cgraph(A \%-->\% B, B \%-->\% C, class = "MAG")
+mag_to_pag(mag)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{zhang2008completeness}{CausalStructures}

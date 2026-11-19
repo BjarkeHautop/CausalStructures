@@ -25,15 +25,13 @@ non-adjacent) - the Verma-Pearl characterization. For MAGs, this holds iff
 they map to the same PAG.
 }
 \examples{
-if (julia_ready()) {
-  g1 <- cgraph(A \%-->\% B, C \%-->\% B)
-  g2 <- cgraph(A \%-->\% B, C \%-->\% B)
-  g3 <- cgraph(A \%-->\% B, B \%-->\% C)
-  list(
-    same_skeleton_same_v_structures = markov_equivalent(g1, g2),
-    different_v_structures = markov_equivalent(g1, g3)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+g1 <- cgraph(A \%-->\% B, C \%-->\% B)
+g2 <- cgraph(A \%-->\% B, C \%-->\% B)
+g3 <- cgraph(A \%-->\% B, B \%-->\% C)
+markov_equivalent(g1, g2) # same skeleton and v-structures
+markov_equivalent(g1, g3) # different v-structures
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{vermapearl1990equivalence}{CausalStructures}

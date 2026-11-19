@@ -40,10 +40,10 @@ orientation is implied, returning the resulting MPDAG.
 }
 }
 \examples{
-if (julia_ready()) {
-  pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
-  meek_closure(pdag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
+meek_closure(pdag)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{meek1995causal}{CausalStructures}

@@ -33,15 +33,13 @@ not identifiable. It implements the IDP algorithm, the PAG analogue of
 the analogue of \code{\link[=idc]{idc()}}), reducing to \code{idp()} when \code{given} is empty.
 }
 \examples{
-if (julia_ready()) {
-  mag <- cgraph(B \%-->\% X, A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
-  pag <- mag_to_pag(mag)
-  idp(pag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+mag <- cgraph(B \%-->\% X, A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
+pag <- mag_to_pag(mag)
+idp(pag, "X", "Y")
 
-if (julia_ready()) {
-  cidp(pag, "X", "Y", given = "A")
-}
+cidp(pag, "X", "Y", given = "A")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{jaber2022causal}{CausalStructures}

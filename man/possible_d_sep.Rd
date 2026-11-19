@@ -24,13 +24,11 @@ member of \code{y}. \code{\link[=backdoor_set]{backdoor_set()}} uses this set to
 back-door set for a MAG or PAG.
 }
 \examples{
-if (julia_ready()) {
-  mag <- cgraph(A \%<->\% X, A \%-->\% M, M \%-->\% Y, X \%-->\% Y, class = "MAG")
-  list(
-    possible_d_sep = possible_d_sep(mag, "X", "Y"),
-    backdoor_set = backdoor_set(mag, "X", "Y") # M_X drops X --> Y
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+mag <- cgraph(A \%<->\% X, A \%-->\% M, M \%-->\% Y, X \%-->\% Y, class = "MAG")
+possible_d_sep(mag, "X", "Y")
+backdoor_set(mag, "X", "Y") # M_X drops X --> Y
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{maathuiscolombo2015gbc}{CausalStructures}

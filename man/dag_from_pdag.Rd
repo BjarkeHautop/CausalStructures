@@ -20,10 +20,10 @@ whose undirected neighbors form a clique), orients all its undirected
 edges toward it, and removes it. Errors if no valid DAG extension exists.
 }
 \examples{
-if (julia_ready()) {
-  pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
-  dag_from_pdag(pdag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
+dag_from_pdag(pdag)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{dortarsi1992simple}{CausalStructures}

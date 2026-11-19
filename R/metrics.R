@@ -29,16 +29,12 @@
 #' @references
 #' \insertRef{tsamardinos2006max}{CausalStructures}
 #' @name hamming
-#' @examples
-#' if (julia_ready()) {
-#'   chain <- cgraph(A %-->% B %-->% C)
-#'   collider <- cgraph(A %-->% B, C %-->% B)
-#'   list(
-#'     hd = hd(chain, collider), # same skeleton
-#'     shd = shd(chain, collider), # B -- C is oriented differently
-#'     shd_normalized = shd(chain, collider, normalized = TRUE)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' chain <- cgraph(A %-->% B %-->% C)
+#' collider <- cgraph(A %-->% B, C %-->% B)
+#' hd(chain, collider) # same skeleton
+#' shd(chain, collider) # B -- C is oriented differently
+#' shd(chain, collider, normalized = TRUE)
 NULL
 
 #' Adjustment Identification Distance
@@ -78,16 +74,12 @@ NULL
 #' @references
 #' \insertRef{henckel2024aid}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   truth <- cgraph(A %-->% B %-->% C, A %-->% C)
-#'   guess <- cgraph(A %-->% B %-->% C)
-#'   list(
-#'     oset = aid(truth, guess),
-#'     parent = aid(truth, guess, type = "parent"),
-#'     ancestor = aid(truth, guess, type = "ancestor")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' truth <- cgraph(A %-->% B %-->% C, A %-->% C)
+#' guess <- cgraph(A %-->% B %-->% C)
+#' aid(truth, guess)
+#' aid(truth, guess, type = "parent")
+#' aid(truth, guess, type = "ancestor")
 aid <- function(
   cg_truth,
   cg_test,
@@ -135,16 +127,12 @@ aid <- function(
 #' @references
 #' \insertRef{wahlrunge2025separation}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   cg1 <- cgraph(A %-->% B %-->% C, A %-->% C, C %-->% D)
-#'   cg2 <- cgraph(A %-->% B %-->% C %-->% D)
-#'   list(
-#'     parents = separation_distance(cg1, cg2),
-#'     zl = separation_distance(cg1, cg2, strategy = "zl"),
-#'     symmetric = separation_distance(cg1, cg2, symmetric = TRUE)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' cg1 <- cgraph(A %-->% B %-->% C, A %-->% C, C %-->% D)
+#' cg2 <- cgraph(A %-->% B %-->% C %-->% D)
+#' separation_distance(cg1, cg2)
+#' separation_distance(cg1, cg2, strategy = "zl")
+#' separation_distance(cg1, cg2, symmetric = TRUE)
 separation_distance <- function(
   cg1,
   cg2,
@@ -192,15 +180,11 @@ separation_distance <- function(
 #' @references
 #' \insertRef{wahlrunge2025separation}{CausalStructures}
 #' @name sc-metrics
-#' @examples
-#' if (julia_ready()) {
-#'   truth <- cgraph(A %-->% B %-->% C %-->% D)
-#'   test <- cgraph(A %-->% B, C %-->% B, C %-->% D)
-#'   list(
-#'     sc = sc_metric(truth, test),
-#'     sc_marginal = sc_metric(truth, test, max_order = 0),
-#'     markov = markov_metric(truth, test),
-#'     faithfulness = faithfulness_metric(truth, test)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' truth <- cgraph(A %-->% B %-->% C %-->% D)
+#' test <- cgraph(A %-->% B, C %-->% B, C %-->% D)
+#' sc_metric(truth, test)
+#' sc_metric(truth, test, max_order = 0)
+#' markov_metric(truth, test)
+#' faithfulness_metric(truth, test)
 NULL

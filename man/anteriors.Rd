@@ -32,11 +32,9 @@ for a PDAG-family or AG-family graph, undirected edges extend the
 reachable set beyond strict ancestors/descendants.
 }
 \examples{
-if (julia_ready()) {
-  pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
-  list(
-    anteriors_of_a = anteriors(pdag, "A"),
-    anteriors_of_c = anteriors(pdag, "C") # reaches B via undirected, A via directed
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
+anteriors(pdag, "A")
+anteriors(pdag, "C") # reaches B via undirected, A via directed
+\dontshow{\}) # examplesIf}
 }

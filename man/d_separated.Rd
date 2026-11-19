@@ -25,19 +25,13 @@ non-collider node in \code{given}, or a collider node (and all its descendants)
 not in \code{given}.
 }
 \examples{
-if (julia_ready()) {
-  chain <- cgraph(A \%-->\% B, B \%-->\% C)
-  list(
-    open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
-    blocked = d_separated(chain, "A", "C", "B") # conditioning on B
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+chain <- cgraph(A \%-->\% B, B \%-->\% C)
+d_separated(chain, "A", "C") # chain A --> B --> C is open
+d_separated(chain, "A", "C", "B") # conditioning on B
 
-if (julia_ready()) {
-  collider <- cgraph(A \%-->\% C, B \%-->\% C)
-  list(
-    blocked = d_separated(collider, "A", "B"), # collider is blocked
-    opened = d_separated(collider, "A", "B", "C") # conditioning opens it
-  )
-}
+collider <- cgraph(A \%-->\% C, B \%-->\% C)
+d_separated(collider, "A", "B") # collider is blocked
+d_separated(collider, "A", "B", "C") # conditioning opens it
+\dontshow{\}) # examplesIf}
 }

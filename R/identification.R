@@ -14,22 +14,14 @@
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if `x` and `y` are d-separated given `given`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   chain <- cgraph(A %-->% B, B %-->% C)
-#'   list(
-#'     open = d_separated(chain, "A", "C"), # chain A --> B --> C is open
-#'     blocked = d_separated(chain, "A", "C", "B") # conditioning on B
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' chain <- cgraph(A %-->% B, B %-->% C)
+#' d_separated(chain, "A", "C") # chain A --> B --> C is open
+#' d_separated(chain, "A", "C", "B") # conditioning on B
 #'
-#' if (julia_ready()) {
-#'   collider <- cgraph(A %-->% C, B %-->% C)
-#'   list(
-#'     blocked = d_separated(collider, "A", "B"), # collider is blocked
-#'     opened = d_separated(collider, "A", "B", "C") # conditioning opens it
-#'   )
-#' }
+#' collider <- cgraph(A %-->% C, B %-->% C)
+#' d_separated(collider, "A", "B") # collider is blocked
+#' d_separated(collider, "A", "B", "C") # conditioning opens it
 d_separated <- function(cg, x, y, given = character()) {
   jl_d_separated(cg, as.character(x), as.character(y), as.character(given))
 }
@@ -48,19 +40,13 @@ d_separated <- function(cg, x, y, given = character()) {
 #'   the two *sets* are separated).
 #' @return `TRUE` if `x` and `y` are m-separated given `given`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   admg <- cgraph(A %-->% B, A %<->% C, class = "ADMG")
-#'   list(
-#'     open = m_separated(admg, "B", "C"), # bidirected edge at A connects
-#'     blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' admg <- cgraph(A %-->% B, A %<->% C, class = "ADMG")
+#' m_separated(admg, "B", "C") # bidirected edge at A connects
+#' m_separated(admg, "B", "C", "A") # conditioning on A blocks
 #'
-#' if (julia_ready()) {
-#'   pag <- cgraph(A %o->% B, C %o->% B, class = "PAG")
-#'   m_separated(pag, "A", "C")
-#' }
+#' pag <- cgraph(A %o->% B, C %o->% B, class = "PAG")
+#' m_separated(pag, "A", "C")
 m_separated <- function(cg, x, y, given = character()) {
   jl_m_separated(cg, as.character(x), as.character(y), as.character(given))
 }
@@ -83,20 +69,14 @@ m_separated <- function(cg, x, y, given = character()) {
 #' @return Character vector with a minimal separating set, or `NULL` if none
 #'   exists.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
-#'   list(
-#'     default = minimal_separator(dag, "X", "Y"), # both A and M needed
-#'     forced_include = minimal_separator(dag, "X", "Y", include = "M"),
-#'     restricted = minimal_separator(dag, "X", "Y", restrict = "M")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X, X %-->% M, M %-->% Y, A %-->% Y)
+#' minimal_separator(dag, "X", "Y") # both A and M needed
+#' minimal_separator(dag, "X", "Y", include = "M")
+#' minimal_separator(dag, "X", "Y", restrict = "M")
 #'
-#' if (julia_ready()) {
-#'   edge <- cgraph(A %-->% B)
-#'   minimal_separator(edge, "A", "B") # direct edge: no separator exists
-#' }
+#' edge <- cgraph(A %-->% B)
+#' minimal_separator(edge, "A", "B") # direct edge: no separator exists
 minimal_separator <- function(
   cg,
   x,
@@ -166,37 +146,25 @@ minimal_separator <- function(
 #'
 #' \insertRef{pearl2009causality}{CausalStructures} (`"parents"` and `"backdoor"`)
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(
-#'     C %-->% X, X %-->% F + D, A %-->% X + K, K %-->% Y,
-#'     D %-->% Y + G, Y %-->% H
-#'   )
-#'   list(
-#'     parents = sort(adjustment_set(dag, "X", "Y", type = "parents")),
-#'     backdoor = adjustment_set(dag, "X", "Y", type = "backdoor"),
-#'     optimal = adjustment_set(dag, "X", "Y", type = "optimal") # default
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(
+#'   C %-->% X, X %-->% F + D, A %-->% X + K, K %-->% Y,
+#'   D %-->% Y + G, Y %-->% H
+#' )
+#' sort(adjustment_set(dag, "X", "Y", type = "parents"))
+#' adjustment_set(dag, "X", "Y", type = "backdoor")
+#' adjustment_set(dag, "X", "Y", type = "optimal") # default
 #'
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
-#'   list(
-#'     adjustment_set = adjustment_set(pdag, "X", "Y"), # A
-#'     is_valid = is_valid_adjustment(pdag, "X", "Y", "A")
-#'   )
-#' }
+#' pdag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y, class = "PDAG")
+#' adjustment_set(pdag, "X", "Y") # A
+#' is_valid_adjustment(pdag, "X", "Y", "A")
 #'
-#' if (julia_ready()) {
-#'   mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
-#'   adjustment_set(mag, "X", "Y") # A; type is ignored
-#' }
+#' mag <- cgraph(A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+#' adjustment_set(mag, "X", "Y") # A; type is ignored
 #'
-#' if (julia_ready()) {
-#'   # Only some nodes are observed
-#'   dag <- cgraph(A %-->% B %-->% X + Y, A %-->% Y, X %-->% Y)
-#'   adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
-#' }
+#' # Only some nodes are observed
+#' dag <- cgraph(A %-->% B %-->% X + Y, A %-->% Y, X %-->% Y)
+#' adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
 adjustment_set <- function(
   cg,
   x,
@@ -239,14 +207,10 @@ adjustment_set <- function(
 #' @references
 #' \insertRef{jeong2022finding}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
-#'   list(
-#'     default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y
-#'     restricted = frontdoor_set(dag, "X", "Y", restrict = "Z")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
+#' frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+#' frontdoor_set(dag, "X", "Y", restrict = "Z")
 frontdoor_set <- function(
   cg,
   x,
@@ -277,14 +241,10 @@ frontdoor_set <- function(
 #' @param given Character vector of adjustment node names (may be empty).
 #' @return `TRUE` if `given` satisfies the backdoor criterion.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
-#'   list(
-#'     empty = is_valid_backdoor(dag, "X", "Y"), # A --> Y left open
-#'     conditioned_on_a = is_valid_backdoor(dag, "X", "Y", "A")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
+#' is_valid_backdoor(dag, "X", "Y") # A --> Y left open
+#' is_valid_backdoor(dag, "X", "Y", "A")
 is_valid_backdoor <- function(cg, x, y, given = character()) {
   jl_is_valid_backdoor(
     cg,
@@ -310,11 +270,9 @@ is_valid_backdoor <- function(cg, x, y, given = character()) {
 #'   `NULL` (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
-#'   all_backdoor_sets(dag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X, X %-->% Y, A %-->% Y)
+#' all_backdoor_sets(dag, "X", "Y")
 all_backdoor_sets <- function(
   cg,
   x,
@@ -351,11 +309,9 @@ all_backdoor_sets <- function(
 #'   `NULL` (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
-#'   all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(U %-->% X, U %-->% Y, X %-->% Z, Z %-->% Y)
+#' all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
 all_frontdoor_sets <- function(
   cg,
   x,
@@ -391,14 +347,10 @@ all_frontdoor_sets <- function(
 #' @references
 #' \insertRef{perkovic2018complete}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
-#'   list(
-#'     empty = is_valid_adjustment(admg, "X", "Y"), # L --> Y not blocked
-#'     conditioned_on_l = is_valid_adjustment(admg, "X", "Y", "L")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
+#' is_valid_adjustment(admg, "X", "Y") # L --> Y not blocked
+#' is_valid_adjustment(admg, "X", "Y", "L")
 is_valid_adjustment <- function(cg, x, y, given = character()) {
   jl_is_valid_adjustment(
     cg,
@@ -425,11 +377,9 @@ is_valid_adjustment <- function(cg, x, y, given = character()) {
 #'   `NULL` (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
-#'   all_adjustment_sets(admg, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' admg <- cgraph(L %-->% X, X %-->% Y, L %-->% Y, class = "ADMG")
+#' all_adjustment_sets(admg, "X", "Y")
 all_adjustment_sets <- function(
   cg,
   x,
@@ -467,14 +417,10 @@ all_adjustment_sets <- function(
 #' @param given Character vector of conditioning node names (may be empty).
 #' @return `TRUE` if the configuration satisfies the frontdoor criterion.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
-#'   list(
-#'     m_mediates = is_valid_frontdoor(dag, "X", "Y", "M"),
-#'     empty = is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(U %-->% X, X %-->% M, M %-->% Y, U %-->% Y)
+#' is_valid_frontdoor(dag, "X", "Y", "M")
+#' is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
 is_valid_frontdoor <- function(cg, x, y, given = character()) {
   jl_is_valid_frontdoor(
     cg,
@@ -502,24 +448,16 @@ is_valid_frontdoor <- function(cg, x, y, given = character()) {
 #'   conditionally valid given (may be empty).
 #' @return `TRUE` if `z` satisfies the instrumental variable criterion.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
-#'   dag <- cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
-#'   list(
-#'     z = is_valid_iv(dag, "X", "Y", "Z"), # Z is a valid instrument
-#'     u = is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
+#' dag <- cgraph(Z %-->% X, X %-->% Y, U %-->% X, U %-->% Y)
+#' is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument
+#' is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
 #'
-#' if (julia_ready()) {
-#'   # W confounds Z and Y, so Z is an instrument only given W
-#'   dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
-#'   list(
-#'     unconditional = is_valid_iv(dag, "X", "Y", "Z"),
-#'     given_w = is_valid_iv(dag, "X", "Y", "Z", given = "W")
-#'   )
-#' }
+#' # W confounds Z and Y, so Z is an instrument only given W
+#' dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+#' is_valid_iv(dag, "X", "Y", "Z")
+#' is_valid_iv(dag, "X", "Y", "Z", given = "W")
 is_valid_iv <- function(cg, x, y, z = character(), given = character()) {
   jl_is_valid_iv(cg, x, as.character(y), as.character(z), as.character(given))
 }
@@ -542,13 +480,11 @@ is_valid_iv <- function(cg, x, y, z = character(), given = character()) {
 #'   (default) allows every node except `x` and `y`.
 #' @return List of character vectors (empty list if none exist).
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(
-#'     Z1 %-->% X, Z2 %-->% X, X %-->% Y, U %-->% X, U %-->% Y
-#'   )
-#'   all_iv_sets(dag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(
+#'   Z1 %-->% X, Z2 %-->% X, X %-->% Y, U %-->% X, U %-->% Y
+#' )
+#' all_iv_sets(dag, "X", "Y")
 all_iv_sets <- function(
   cg,
   x,
@@ -591,16 +527,12 @@ all_iv_sets <- function(
 #' @references
 #' \insertRef{vanderzander2015efficiently}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
-#'   iv_set(dag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(W %-->% Z + Y, Z %-->% X %-->% Y, U %-->% X + Y)
+#' iv_set(dag, "X", "Y")
 #'
-#' if (julia_ready()) {
-#'   # Without W observed, there is no instrument
-#'   is.null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
-#' }
+#' # Without W observed, there is no instrument
+#' is.null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
 iv_set <- function(cg, x, y, restrict = NULL) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   jl_iv_set(cg, x, as.character(y), restrict_arg)
@@ -629,16 +561,12 @@ iv_set <- function(cg, x, y, restrict = NULL) {
 #' @references
 #' \insertRef{chickering2002learning}{CausalStructures}
 #' @name equivalence
-#' @examples
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
-#'   count_dags(pdag)
-#' }
+#' @examplesIf julia_ready()
+#' pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
+#' count_dags(pdag)
 #'
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
-#'   enumerate_dags(pdag)
-#' }
+#' pdag <- cgraph(A %---% B, B %---% C, class = "PDAG")
+#' enumerate_dags(pdag)
 NULL
 
 #' Test whether two graphs are Markov equivalent
@@ -659,16 +587,12 @@ NULL
 #' \insertRef{vermapearl1990equivalence}{CausalStructures}
 #'
 #' \insertRef{ali2009markov}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   g1 <- cgraph(A %-->% B, C %-->% B)
-#'   g2 <- cgraph(A %-->% B, C %-->% B)
-#'   g3 <- cgraph(A %-->% B, B %-->% C)
-#'   list(
-#'     same_skeleton_same_v_structures = markov_equivalent(g1, g2),
-#'     different_v_structures = markov_equivalent(g1, g3)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' g1 <- cgraph(A %-->% B, C %-->% B)
+#' g2 <- cgraph(A %-->% B, C %-->% B)
+#' g3 <- cgraph(A %-->% B, B %-->% C)
+#' markov_equivalent(g1, g2) # same skeleton and v-structures
+#' markov_equivalent(g1, g3) # different v-structures
 #' @name markov_equivalent
 NULL
 
@@ -685,14 +609,10 @@ NULL
 #' @param selection_bias If `FALSE`, return only the MAGs without undirected
 #'   edges (i.e. without selection bias), pruning the others from the search.
 #' @return A list of `cgraph`s (MAGs) in the equivalence class.
-#' @examples
-#' if (julia_ready()) {
-#'   pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
-#'   list(
-#'     all = length(enumerate_mags(pag)),
-#'     no_selection_bias = length(enumerate_mags(pag, selection_bias = FALSE))
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' pag <- cgraph(A %o-o% B, B %o-o% C, class = "PAG")
+#' length(enumerate_mags(pag))
+#' length(enumerate_mags(pag, selection_bias = FALSE))
 #' @name enumerate_mags
 NULL
 
@@ -728,30 +648,22 @@ NULL
 #'
 #' \insertRef{tian2002general}{CausalStructures}
 #' @name id
-#' @examples
-#' if (julia_ready()) {
-#'   # Back-door adjustment, recovered as the g-formula
-#'   dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
-#'   id(dag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' # Back-door adjustment, recovered as the g-formula
+#' dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
+#' id(dag, "X", "Y")
 #'
-#' if (julia_ready()) {
-#'   # Front-door graph: X and Y are confounded, but the effect is still
-#'   # identifiable through the mediator M
-#'   admg <- cgraph(X %-->% M, M %-->% Y, X %<->% Y, class = "ADMG")
-#'   id(admg, "X", "Y")
-#' }
+#' # Front-door graph: X and Y are confounded, but the effect is still
+#' # identifiable through the mediator M
+#' admg <- cgraph(X %-->% M, M %-->% Y, X %<->% Y, class = "ADMG")
+#' id(admg, "X", "Y")
 #'
-#' if (julia_ready()) {
-#'   # The bow arc: the canonical unidentifiable effect
-#'   bow <- cgraph(X %-->% Y, X %<->% Y, class = "ADMG")
-#'   is.null(id(bow, "X", "Y"))
-#' }
+#' # The bow arc: the canonical unidentifiable effect
+#' bow <- cgraph(X %-->% Y, X %<->% Y, class = "ADMG")
+#' is.null(id(bow, "X", "Y"))
 #'
-#' if (julia_ready()) {
-#'   dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
-#'   idc(dag, "X", "Y", given = "Z")
-#' }
+#' dag <- cgraph(Z %-->% X, X %-->% Y, Z %-->% Y)
+#' idc(dag, "X", "Y", given = "Z")
 NULL
 
 #' @rdname id
@@ -787,16 +699,12 @@ idc <- function(cg, x, y, given = character()) {
 #' @references
 #' \insertRef{jaber2022causal}{CausalStructures}
 #' @name idp
-#' @examples
-#' if (julia_ready()) {
-#'   mag <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
-#'   pag <- mag_to_pag(mag)
-#'   idp(pag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' mag <- cgraph(B %-->% X, A %<->% X, A %-->% Y, X %-->% Y, class = "MAG")
+#' pag <- mag_to_pag(mag)
+#' idp(pag, "X", "Y")
 #'
-#' if (julia_ready()) {
-#'   cidp(pag, "X", "Y", given = "A")
-#' }
+#' cidp(pag, "X", "Y", given = "A")
 NULL
 
 #' @rdname idp
@@ -830,12 +738,10 @@ cidp <- function(cg, x, y, given = character()) {
 #' @references
 #' \insertRef{maathuiscolombo2015gbc}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   # A --> X <-- C protects both edges into X
-#'   cpdag <- cgraph(A %-->% X, C %-->% X, X %-->% Y, class = "CPDAG")
-#'   sort(backdoor_set(cpdag, "X", "Y"))
-#' }
+#' @examplesIf julia_ready()
+#' # A --> X <-- C protects both edges into X
+#' cpdag <- cgraph(A %-->% X, C %-->% X, X %-->% Y, class = "CPDAG")
+#' sort(backdoor_set(cpdag, "X", "Y"))
 backdoor_set <- function(cg, x, y, include = character(), restrict = NULL) {
   restrict_arg <- if (is.null(restrict)) NULL else as.character(restrict)
   jl_backdoor_set(cg, x, y, as.character(include), restrict_arg)
@@ -856,14 +762,10 @@ backdoor_set <- function(cg, x, y, include = character(), restrict = NULL) {
 #' @references
 #' \insertRef{maathuiscolombo2015gbc}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   mag <- cgraph(A %<->% X, A %-->% M, M %-->% Y, X %-->% Y, class = "MAG")
-#'   list(
-#'     possible_d_sep = possible_d_sep(mag, "X", "Y"),
-#'     backdoor_set = backdoor_set(mag, "X", "Y") # M_X drops X --> Y
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' mag <- cgraph(A %<->% X, A %-->% M, M %-->% Y, X %-->% Y, class = "MAG")
+#' possible_d_sep(mag, "X", "Y")
+#' backdoor_set(mag, "X", "Y") # M_X drops X --> Y
 possible_d_sep <- function(cg, x, y) {
   jl_possible_d_sep(cg, x, as.character(y))
 }
@@ -882,14 +784,12 @@ possible_d_sep <- function(cg, x, y) {
 #' @return List of character vectors, one per locally valid orientation.
 #' @references
 #' \insertRef{maathuis2009estimating}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   cpdag <- cgraph(
-#'     X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
-#'     class = "CPDAG"
-#'   )
-#'   possible_parent_sets(cpdag, "X1")
-#' }
+#' @examplesIf julia_ready()
+#' cpdag <- cgraph(
+#'   X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
+#'   class = "CPDAG"
+#' )
+#' possible_parent_sets(cpdag, "X1")
 #' @name possible_parent_sets
 NULL
 
@@ -913,14 +813,12 @@ NULL
 #'
 #' \insertRef{nandy2017jointida}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   cpdag <- cgraph(
-#'     X1 %---% X2, X1 %---% A, X2 %---% B, A %-->% Y, B %-->% Y,
-#'     class = "CPDAG"
-#'   )
-#'   possible_joint_parent_sets(cpdag, c("X1", "X2"))
-#' }
+#' @examplesIf julia_ready()
+#' cpdag <- cgraph(
+#'   X1 %---% X2, X1 %---% A, X2 %---% B, A %-->% Y, B %-->% Y,
+#'   class = "CPDAG"
+#' )
+#' possible_joint_parent_sets(cpdag, c("X1", "X2"))
 possible_joint_parent_sets <- function(cg, xs) {
   jl_possible_joint_parent_sets(cg, as.character(xs))
 }
@@ -947,19 +845,13 @@ possible_joint_parent_sets <- function(cg, xs) {
 #' \insertRef{henckel2022graphical}{CausalStructures}
 #'
 #' \insertRef{witte2020efficient}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   cpdag <- cgraph(
-#'     X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
-#'     class = "CPDAG"
-#'   )
-#'   list(
-#'     parent_sets = possible_parent_sets(cpdag, "X1"),
-#'     optimal_adjustment_sets = possible_optimal_adjustment_sets(
-#'       cpdag, "X1", "Y"
-#'     )
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' cpdag <- cgraph(
+#'   X1 %---% X2, X1 %---% X3, X1 %---% X4, X3 %-->% Y, X4 %-->% Y,
+#'   class = "CPDAG"
+#' )
+#' possible_parent_sets(cpdag, "X1")
+#' possible_optimal_adjustment_sets(cpdag, "X1", "Y")
 #' @name possible_optimal_adjustment_sets
 NULL
 
@@ -983,15 +875,13 @@ NULL
 #' \insertRef{wang2023localbk}{CausalStructures}
 #'
 #' \insertRef{wang2025pagcauses}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   pag <- cgraph(
-#'     X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
-#'     B %o->% C, B %o->% Y, B %o->% A,
-#'     class = "PAG"
-#'   )
-#'   possible_local_structures(pag, "X")
-#' }
+#' @examplesIf julia_ready()
+#' pag <- cgraph(
+#'   X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
+#'   B %o->% C, B %o->% Y, B %o->% A,
+#'   class = "PAG"
+#' )
+#' possible_local_structures(pag, "X")
 #' @name possible_local_structures
 NULL
 
@@ -1019,15 +909,13 @@ NULL
 #'
 #' \insertRef{wang2025pagcauses}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   mag <- cgraph(
-#'     A %<->% X, B %-->% X, A %<->% B, X %-->% Y,
-#'     class = "MAG"
-#'   )
-#'   pag <- mag_to_pag(mag)
-#'   maximal_local_mag(pag, "X", "A")
-#' }
+#' @examplesIf julia_ready()
+#' mag <- cgraph(
+#'   A %<->% X, B %-->% X, A %<->% B, X %-->% Y,
+#'   class = "MAG"
+#' )
+#' pag <- mag_to_pag(mag)
+#' maximal_local_mag(pag, "X", "A")
 maximal_local_mag <- function(cg, x, c) {
   jl_maximal_local_mag(cg, x, as.character(c))
 }
@@ -1054,14 +942,12 @@ maximal_local_mag <- function(cg, x, c) {
 #'   causal effect on `y`).
 #' @references
 #' \insertRef{wang2025pagcauses}{CausalStructures}
-#' @examples
-#' if (julia_ready()) {
-#'   pag <- cgraph(
-#'     X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
-#'     B %o->% C, B %o->% Y, B %o->% A,
-#'     class = "PAG"
-#'   )
-#'   pagcauses(pag, "X", "Y")
-#' }
+#' @examplesIf julia_ready()
+#' pag <- cgraph(
+#'   X %o->% Y, X %o->% C, X %o->% A, Y %o-o% C, C %o-o% A,
+#'   B %o->% C, B %o->% Y, B %o->% A,
+#'   class = "PAG"
+#' )
+#' pagcauses(pag, "X", "Y")
 #' @name pagcauses
 NULL

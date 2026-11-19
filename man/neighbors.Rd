@@ -30,12 +30,10 @@ edges; neighbors joined by a circle mark (\verb{o->}, \verb{o--}, \code{o-o}) ar
 reported by \code{"all"} only.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, C \%-->\% B)
-  list(
-    all = neighbors(dag, "B"),
-    "in" = neighbors(dag, "B", mode = "in"),
-    out = neighbors(dag, "A", mode = "out")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, C \%-->\% B)
+neighbors(dag, "B")
+neighbors(dag, "B", mode = "in")
+neighbors(dag, "A", mode = "out")
+\dontshow{\}) # examplesIf}
 }

@@ -30,17 +30,13 @@ Finds a minimal d-separator (DAG, PDAG classes) or m-separator
 them.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
-  list(
-    default = minimal_separator(dag, "X", "Y"), # both A and M needed
-    forced_include = minimal_separator(dag, "X", "Y", include = "M"),
-    restricted = minimal_separator(dag, "X", "Y", restrict = "M")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X, X \%-->\% M, M \%-->\% Y, A \%-->\% Y)
+minimal_separator(dag, "X", "Y") # both A and M needed
+minimal_separator(dag, "X", "Y", include = "M")
+minimal_separator(dag, "X", "Y", restrict = "M")
 
-if (julia_ready()) {
-  edge <- cgraph(A \%-->\% B)
-  minimal_separator(edge, "A", "B") # direct edge: no separator exists
-}
+edge <- cgraph(A \%-->\% B)
+minimal_separator(edge, "A", "B") # direct edge: no separator exists
+\dontshow{\}) # examplesIf}
 }

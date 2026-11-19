@@ -66,36 +66,26 @@ Candidate adjustment sets can be validated with
 \code{\link[=is_valid_adjustment]{is_valid_adjustment()}}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(
-    C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
-    D \%-->\% Y + G, Y \%-->\% H
-  )
-  list(
-    parents = sort(adjustment_set(dag, "X", "Y", type = "parents")),
-    backdoor = adjustment_set(dag, "X", "Y", type = "backdoor"),
-    optimal = adjustment_set(dag, "X", "Y", type = "optimal") # default
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(
+  C \%-->\% X, X \%-->\% F + D, A \%-->\% X + K, K \%-->\% Y,
+  D \%-->\% Y + G, Y \%-->\% H
+)
+sort(adjustment_set(dag, "X", "Y", type = "parents"))
+adjustment_set(dag, "X", "Y", type = "backdoor")
+adjustment_set(dag, "X", "Y", type = "optimal") # default
 
-if (julia_ready()) {
-  pdag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y, class = "PDAG")
-  list(
-    adjustment_set = adjustment_set(pdag, "X", "Y"), # A
-    is_valid = is_valid_adjustment(pdag, "X", "Y", "A")
-  )
-}
+pdag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y, class = "PDAG")
+adjustment_set(pdag, "X", "Y") # A
+is_valid_adjustment(pdag, "X", "Y", "A")
 
-if (julia_ready()) {
-  mag <- cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
-  adjustment_set(mag, "X", "Y") # A; type is ignored
-}
+mag <- cgraph(A \%<->\% X, A \%-->\% Y, X \%-->\% Y, class = "MAG")
+adjustment_set(mag, "X", "Y") # A; type is ignored
 
-if (julia_ready()) {
-  # Only some nodes are observed
-  dag <- cgraph(A \%-->\% B \%-->\% X + Y, A \%-->\% Y, X \%-->\% Y)
-  adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
-}
+# Only some nodes are observed
+dag <- cgraph(A \%-->\% B \%-->\% X + Y, A \%-->\% Y, X \%-->\% Y)
+adjustment_set(dag, "X", "Y", type = "backdoor", restrict = c("A", "B"))
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{henckel2022graphical}{CausalStructures} (\code{"optimal"})

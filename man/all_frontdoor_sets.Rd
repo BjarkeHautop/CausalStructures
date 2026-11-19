@@ -27,8 +27,8 @@ satisfying the front-door criterion; see \code{\link[=frontdoor_set]{frontdoor_s
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
-  all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
+all_frontdoor_sets(dag, "X", "Y", restrict = "Z")
+\dontshow{\}) # examplesIf}
 }

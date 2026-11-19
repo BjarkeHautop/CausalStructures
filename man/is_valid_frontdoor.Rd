@@ -27,11 +27,9 @@ the effect is identified via the front-door formula even with unmeasured
 confounders between \code{x} and \code{y}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(U \%-->\% X, X \%-->\% M, M \%-->\% Y, U \%-->\% Y)
-  list(
-    m_mediates = is_valid_frontdoor(dag, "X", "Y", "M"),
-    empty = is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(U \%-->\% X, X \%-->\% M, M \%-->\% Y, U \%-->\% Y)
+is_valid_frontdoor(dag, "X", "Y", "M")
+is_valid_frontdoor(dag, "X", "Y") # X -> M -> Y left open
+\dontshow{\}) # examplesIf}
 }

@@ -32,14 +32,14 @@ Otherwise, this searches every valid local structure at \code{x}
 Assumes \code{cg} has no selection bias (no undirected edges).
 }
 \examples{
-if (julia_ready()) {
-  pag <- cgraph(
-    X \%o->\% Y, X \%o->\% C, X \%o->\% A, Y \%o-o\% C, C \%o-o\% A,
-    B \%o->\% C, B \%o->\% Y, B \%o->\% A,
-    class = "PAG"
-  )
-  pagcauses(pag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pag <- cgraph(
+  X \%o->\% Y, X \%o->\% C, X \%o->\% A, Y \%o-o\% C, C \%o-o\% A,
+  B \%o->\% C, B \%o->\% Y, B \%o->\% A,
+  class = "PAG"
+)
+pagcauses(pag, "X", "Y")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{wang2025pagcauses}{CausalStructures}

@@ -28,18 +28,14 @@ so pairing the two element-wise recovers, for each orientation, both its
 parent set and its optimal adjustment set.
 }
 \examples{
-if (julia_ready()) {
-  cpdag <- cgraph(
-    X1 \%---\% X2, X1 \%---\% X3, X1 \%---\% X4, X3 \%-->\% Y, X4 \%-->\% Y,
-    class = "CPDAG"
-  )
-  list(
-    parent_sets = possible_parent_sets(cpdag, "X1"),
-    optimal_adjustment_sets = possible_optimal_adjustment_sets(
-      cpdag, "X1", "Y"
-    )
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cpdag <- cgraph(
+  X1 \%---\% X2, X1 \%---\% X3, X1 \%---\% X4, X3 \%-->\% Y, X4 \%-->\% Y,
+  class = "CPDAG"
+)
+possible_parent_sets(cpdag, "X1")
+possible_optimal_adjustment_sets(cpdag, "X1", "Y")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{maathuis2009estimating}{CausalStructures}

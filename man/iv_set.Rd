@@ -29,15 +29,13 @@ removed, chosen nearest to \code{y}. The pair with the smallest \code{given} is
 returned, so an unconditional instrument is preferred.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(W \%-->\% Z + Y, Z \%-->\% X \%-->\% Y, U \%-->\% X + Y)
-  iv_set(dag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(W \%-->\% Z + Y, Z \%-->\% X \%-->\% Y, U \%-->\% X + Y)
+iv_set(dag, "X", "Y")
 
-if (julia_ready()) {
-  # Without W observed, there is no instrument
-  is.null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
-}
+# Without W observed, there is no instrument
+is.null(iv_set(dag, "X", "Y", restrict = c("Z", "X", "Y")))
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{vanderzander2015efficiently}{CausalStructures}

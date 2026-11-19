@@ -24,11 +24,9 @@ Tests whether \code{given} is a valid backdoor set for the effect of \code{x} on
 d-separated from \code{y} given \code{given} together with \code{x}).
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
-  list(
-    empty = is_valid_backdoor(dag, "X", "Y"), # A --> Y left open
-    conditioned_on_a = is_valid_backdoor(dag, "X", "Y", "A")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
+is_valid_backdoor(dag, "X", "Y") # A --> Y left open
+is_valid_backdoor(dag, "X", "Y", "A")
+\dontshow{\}) # examplesIf}
 }

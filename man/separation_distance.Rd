@@ -57,15 +57,13 @@ Markov equivalence.}
 wherever it separates them, which is often cheaper on sparse graphs.
 }
 \examples{
-if (julia_ready()) {
-  cg1 <- cgraph(A \%-->\% B \%-->\% C, A \%-->\% C, C \%-->\% D)
-  cg2 <- cgraph(A \%-->\% B \%-->\% C \%-->\% D)
-  list(
-    parents = separation_distance(cg1, cg2),
-    zl = separation_distance(cg1, cg2, strategy = "zl"),
-    symmetric = separation_distance(cg1, cg2, symmetric = TRUE)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cg1 <- cgraph(A \%-->\% B \%-->\% C, A \%-->\% C, C \%-->\% D)
+cg2 <- cgraph(A \%-->\% B \%-->\% C \%-->\% D)
+separation_distance(cg1, cg2)
+separation_distance(cg1, cg2, strategy = "zl")
+separation_distance(cg1, cg2, symmetric = TRUE)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{wahlrunge2025separation}{CausalStructures}

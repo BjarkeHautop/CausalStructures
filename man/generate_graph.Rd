@@ -67,18 +67,14 @@ For \code{class = "PAG"}, the resulting MAG is then converted to its
 equivalence class with \code{\link[=mag_to_pag]{mag_to_pag()}}.
 }
 \examples{
-if (julia_ready()) {
-  cg <- generate_graph(4, m = 3, seed = 1405)
-  cg
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cg <- generate_graph(4, m = 3, seed = 1405)
+cg
 
-if (julia_ready()) {
-  admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
-  admg
-}
+admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
+admg
 
-if (julia_ready()) {
-  pag <- generate_graph(6, p = 0.3, class = "PAG", latents = 2, seed = 1405)
-  pag
-}
+pag <- generate_graph(6, p = 0.3, class = "PAG", latents = 2, seed = 1405)
+pag
+\dontshow{\}) # examplesIf}
 }

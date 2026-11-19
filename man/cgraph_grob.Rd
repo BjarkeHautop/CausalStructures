@@ -20,12 +20,12 @@ another grid-based figure. \code{\link[grid:grid.draw]{grid::grid.draw()}} also 
 directly.
 }
 \examples{
-if (julia_ready()) {
-  p <- cgraph_plot(cgraph("A --> X + Y, X --> Y"))
-  g <- cgraph_grob(p)
-  grid::grid.newpage()
-  grid::grid.draw(g)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+p <- cgraph_plot(cgraph("A --> X + Y, X --> Y"))
+g <- cgraph_grob(p)
+grid::grid.newpage()
+grid::grid.draw(g)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other plotting:

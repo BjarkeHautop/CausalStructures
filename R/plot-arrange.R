@@ -34,20 +34,18 @@
 #'
 #' @returns A `cgraph_plots` object, drawn when printed.
 #'
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X + Y, X %-->% Y, class = "DAG")
-#'   admg <- cgraph(A %-->% X, X %-->% Y, X %<->% Y, class = "ADMG")
-#'   p1 <- cgraph_plot(dag, main = "DAG")
-#'   p2 <- cgraph_plot(admg, main = "ADMG") |> style_nodes(fill = "salmon")
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X + Y, X %-->% Y, class = "DAG")
+#' admg <- cgraph(A %-->% X, X %-->% Y, X %<->% Y, class = "ADMG")
+#' p1 <- cgraph_plot(dag, main = "DAG")
+#' p2 <- cgraph_plot(admg, main = "ADMG") |> style_nodes(fill = "salmon")
 #'
-#'   p1 | p2
-#'   p1 / p2
-#'   (p1 | p2) / p1
+#' p1 | p2
+#' p1 / p2
+#' (p1 | p2) / p1
 #'
-#'   dags <- lapply(1:6, function(i) generate_graph(5, p = 0.4, seed = i))
-#'   cgraph_plot_grid(lapply(dags, cgraph_plot), ncol = 3)
-#' }
+#' dags <- lapply(1:6, function(i) generate_graph(5, p = 0.4, seed = i))
+#' cgraph_plot_grid(lapply(dags, cgraph_plot), ncol = 3)
 #' @seealso [plot_options()] to change the default `spacing`.
 #' @family plotting
 #' @export

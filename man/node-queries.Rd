@@ -50,14 +50,12 @@ See \code{\link[=neighbors]{neighbors()}}, \code{\link[=markov_blanket]{markov_b
 remaining node-set queries, which take extra arguments.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
-  list(
-    parents = parents(dag, "M"),
-    children = children(dag, "X"),
-    ancestors = ancestors(dag, "Y"),
-    descendants = descendants(dag, "X"),
-    descendants_closed = descendants(dag, "X", open = FALSE)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+parents(dag, "M")
+children(dag, "X")
+ancestors(dag, "Y")
+descendants(dag, "X")
+descendants(dag, "X", open = FALSE)
+\dontshow{\}) # examplesIf}
 }

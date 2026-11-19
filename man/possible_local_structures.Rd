@@ -26,14 +26,14 @@ the graph-only ingredient \code{\link[=pagcauses]{pagcauses()}} enumerates local
 Assumes \code{cg} has no selection bias (no undirected edges).
 }
 \examples{
-if (julia_ready()) {
-  pag <- cgraph(
-    X \%o->\% Y, X \%o->\% C, X \%o->\% A, Y \%o-o\% C, C \%o-o\% A,
-    B \%o->\% C, B \%o->\% Y, B \%o->\% A,
-    class = "PAG"
-  )
-  possible_local_structures(pag, "X")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pag <- cgraph(
+  X \%o->\% Y, X \%o->\% C, X \%o->\% A, Y \%o-o\% C, C \%o-o\% A,
+  B \%o->\% C, B \%o->\% Y, B \%o->\% A,
+  class = "PAG"
+)
+possible_local_structures(pag, "X")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{wang2023localbk}{CausalStructures}

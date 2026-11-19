@@ -53,23 +53,21 @@ coefficient away from zero, use a positive range with \code{random_sign = TRUE},
 e.g. \code{coef_range = c(0.5, 2)}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  data <- simulate_data(dag, n = 100, seed = 1405)
-  head(data)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+data <- simulate_data(dag, n = 100, seed = 1405)
+head(data)
 
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  data2 <- simulate_data(
-    dag,
-    n = 100,
-    standardize = FALSE,
-    coef_range = c(0.5, 2),
-    random_sign = TRUE,
-    error_sd = c(0.5, 1.5),
-    seed = 1405
-  )
-  head(data2)
-}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+data2 <- simulate_data(
+  dag,
+  n = 100,
+  standardize = FALSE,
+  coef_range = c(0.5, 2),
+  random_sign = TRUE,
+  error_sd = c(0.5, 1.5),
+  seed = 1405
+)
+head(data2)
+\dontshow{\}) # examplesIf}
 }

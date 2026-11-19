@@ -25,9 +25,9 @@ Returns a new graph of class \code{class} with the same nodes and edges as
 \code{class}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, class = "UNKNOWN")
-  reclassed <- reclass(dag, class = "DAG")
-  is_dag(reclassed)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, class = "UNKNOWN")
+reclassed <- reclass(dag, class = "DAG")
+is_dag(reclassed)
+\dontshow{\}) # examplesIf}
 }

@@ -23,13 +23,13 @@ the Markov equivalence class of \code{cg} - the two collections agree when
 read as sets, but their multiplicities differ in general).
 }
 \examples{
-if (julia_ready()) {
-  cpdag <- cgraph(
-    X1 \%---\% X2, X1 \%---\% X3, X1 \%---\% X4, X3 \%-->\% Y, X4 \%-->\% Y,
-    class = "CPDAG"
-  )
-  possible_parent_sets(cpdag, "X1")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cpdag <- cgraph(
+  X1 \%---\% X2, X1 \%---\% X3, X1 \%---\% X4, X3 \%-->\% Y, X4 \%-->\% Y,
+  class = "CPDAG"
+)
+possible_parent_sets(cpdag, "X1")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{maathuis2009estimating}{CausalStructures}

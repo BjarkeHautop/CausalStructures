@@ -42,15 +42,13 @@ background knowledge, apply the same knowledge to the true CPDAG with
 \code{\link[=apply_background_knowledge]{apply_background_knowledge()}}.
 }
 \examples{
-if (julia_ready()) {
-  chain <- cgraph(A \%-->\% B \%-->\% C)
-  collider <- cgraph(A \%-->\% B, C \%-->\% B)
-  list(
-    hd = hd(chain, collider), # same skeleton
-    shd = shd(chain, collider), # B -- C is oriented differently
-    shd_normalized = shd(chain, collider, normalized = TRUE)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+chain <- cgraph(A \%-->\% B \%-->\% C)
+collider <- cgraph(A \%-->\% B, C \%-->\% B)
+hd(chain, collider) # same skeleton
+shd(chain, collider) # B -- C is oriented differently
+shd(chain, collider, normalized = TRUE)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{tsamardinos2006max}{CausalStructures}

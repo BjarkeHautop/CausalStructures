@@ -41,29 +41,23 @@ changes nothing, and the result is then a function of those extra values
 too.
 }
 \examples{
-if (julia_ready()) {
-  # Back-door adjustment, recovered as the g-formula
-  dag <- cgraph(Z \%-->\% X, X \%-->\% Y, Z \%-->\% Y)
-  id(dag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+# Back-door adjustment, recovered as the g-formula
+dag <- cgraph(Z \%-->\% X, X \%-->\% Y, Z \%-->\% Y)
+id(dag, "X", "Y")
 
-if (julia_ready()) {
-  # Front-door graph: X and Y are confounded, but the effect is still
-  # identifiable through the mediator M
-  admg <- cgraph(X \%-->\% M, M \%-->\% Y, X \%<->\% Y, class = "ADMG")
-  id(admg, "X", "Y")
-}
+# Front-door graph: X and Y are confounded, but the effect is still
+# identifiable through the mediator M
+admg <- cgraph(X \%-->\% M, M \%-->\% Y, X \%<->\% Y, class = "ADMG")
+id(admg, "X", "Y")
 
-if (julia_ready()) {
-  # The bow arc: the canonical unidentifiable effect
-  bow <- cgraph(X \%-->\% Y, X \%<->\% Y, class = "ADMG")
-  is.null(id(bow, "X", "Y"))
-}
+# The bow arc: the canonical unidentifiable effect
+bow <- cgraph(X \%-->\% Y, X \%<->\% Y, class = "ADMG")
+is.null(id(bow, "X", "Y"))
 
-if (julia_ready()) {
-  dag <- cgraph(Z \%-->\% X, X \%-->\% Y, Z \%-->\% Y)
-  idc(dag, "X", "Y", given = "Z")
-}
+dag <- cgraph(Z \%-->\% X, X \%-->\% Y, Z \%-->\% Y)
+idc(dag, "X", "Y", given = "Z")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{shpitser2008complete}{CausalStructures}

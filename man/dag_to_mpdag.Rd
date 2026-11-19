@@ -26,13 +26,11 @@ knowledge applied, closed under \code{\link[=meek_closure]{meek_closure()}}'s ru
 forbidden one.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  list(
-    no_knowledge = dag_to_mpdag(dag),
-    required = dag_to_mpdag(dag, A \%-->\% B)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+dag_to_mpdag(dag)
+dag_to_mpdag(dag, A \%-->\% B)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{meek1995causal}{CausalStructures}

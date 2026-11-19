@@ -38,13 +38,13 @@ the same syntax as the operators expand to (e.g.
 \code{"A --> X + Y, X --> M --> Y"}).
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
-  cpdag <- cgraph(A \%---\% B \%---\% C, class = "CPDAG")
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y, class = "DAG")
+cpdag <- cgraph(A \%---\% B \%---\% C, class = "CPDAG")
 
-  # equivalent to the dag above, built from a spec string
-  dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
+# equivalent to the dag above, built from a spec string
+dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
 
-  cgraph(A \%-->\% B, A \%<->\% B, class = "UNKNOWN")
-}
+cgraph(A \%-->\% B, A \%<->\% B, class = "UNKNOWN")
+\dontshow{\}) # examplesIf}
 }

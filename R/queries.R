@@ -23,17 +23,13 @@
 #'   `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name node-queries
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
-#'   list(
-#'     parents = parents(dag, "M"),
-#'     children = children(dag, "X"),
-#'     ancestors = ancestors(dag, "Y"),
-#'     descendants = descendants(dag, "X"),
-#'     descendants_closed = descendants(dag, "X", open = FALSE)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y)
+#' parents(dag, "M")
+#' children(dag, "X")
+#' ancestors(dag, "Y")
+#' descendants(dag, "X")
+#' descendants(dag, "X", open = FALSE)
 NULL
 
 #' @rdname node-queries
@@ -78,14 +74,10 @@ descendants <- function(
 #'   or PAG graph created with [cgraph()].
 #' @param node Node name.
 #' @return Sorted character vector of node names.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C, D %-->% C)
-#'   list(
-#'     blanket_of_b = markov_blanket(dag, "B"), # A, C, D (D is a co-parent)
-#'     blanket_of_c = markov_blanket(dag, "C")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C, D %-->% C)
+#' markov_blanket(dag, "B") # A, C, D (D is a co-parent)
+#' markov_blanket(dag, "C")
 #' @name markov_blanket
 NULL
 
@@ -107,15 +99,11 @@ NULL
 #'   `"out"`, `"undirected"`, or `"bidirected"`.
 #' @return Sorted character vector of node names.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, C %-->% B)
-#'   list(
-#'     all = neighbors(dag, "B"),
-#'     "in" = neighbors(dag, "B", mode = "in"),
-#'     out = neighbors(dag, "A", mode = "out")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, C %-->% B)
+#' neighbors(dag, "B")
+#' neighbors(dag, "B", mode = "in")
+#' neighbors(dag, "A", mode = "out")
 neighbors <- function(
   cg,
   node,
@@ -149,16 +137,11 @@ neighbors <- function(
 #' @references
 #' \insertRef{perkovic2018complete}{CausalStructures}
 #' @name possible-queries
-#' @examples
-#' if (julia_ready()) {
-#'   cpdag <- cgraph(A %---% B, B %---% C, class = "CPDAG")
-#'   list(
-#'     ancestors = ancestors(cpdag, "C"),
-#'     possible_ancestors = possible_ancestors(cpdag, "C"),
-#'     possible_ancestors_including_self =
-#'       possible_ancestors(cpdag, "C", open = FALSE)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' cpdag <- cgraph(A %---% B, B %---% C, class = "CPDAG")
+#' ancestors(cpdag, "C")
+#' possible_ancestors(cpdag, "C")
+#' possible_ancestors(cpdag, "C", open = FALSE)
 NULL
 
 #' @rdname possible-queries
@@ -189,11 +172,9 @@ possible_descendants <- function(
 #'
 #' @param cg An ADMG or AG-family (AG, MAG) graph created with [cgraph()].
 #' @return A list of sorted character vectors, one per district.
-#' @examples
-#' if (julia_ready()) {
-#'   admg <- cgraph(A %<->% B, B %<->% C, C %-->% D, class = "ADMG")
-#'   districts(admg)
-#' }
+#' @examplesIf julia_ready()
+#' admg <- cgraph(A %<->% B, B %<->% C, C %-->% D, class = "ADMG")
+#' districts(admg)
 #' @name districts
 NULL
 
@@ -215,14 +196,10 @@ NULL
 #'   `FALSE`, include it.
 #' @return Sorted character vector of node names.
 #' @name anteriors
-#' @examples
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
-#'   list(
-#'     anteriors_of_a = anteriors(pdag, "A"),
-#'     anteriors_of_c = anteriors(pdag, "C") # reaches B via undirected, A via directed
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#' anteriors(pdag, "A")
+#' anteriors(pdag, "C") # reaches B via undirected, A via directed
 NULL
 
 #' @rdname anteriors
@@ -261,13 +238,9 @@ posteriors <- function(
 #' @param cg A graph created with [cgraph()], of any class.
 #' @return A logical scalar.
 #' @name predicates
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, class = "PDAG")
-#'   list(
-#'     is_dag = is_dag(dag), # TRUE, even though assigned PDAG
-#'     is_ug = is_ug(dag),
-#'     is_acyclic = is_acyclic(dag)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, class = "PDAG")
+#' is_dag(dag) # TRUE, even though assigned PDAG
+#' is_ug(dag)
+#' is_acyclic(dag)
 NULL

@@ -25,8 +25,8 @@ the graph re-evaluated after each addition (a new edge can change
 m-separation and ancestor relationships).
 }
 \examples{
-if (julia_ready()) {
-  ag <- cgraph(A \%-->\% B, B \%-->\% C, class = "AG")
-  ag_to_mag(ag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+ag <- cgraph(A \%-->\% B, B \%-->\% C, class = "AG")
+ag_to_mag(ag)
+\dontshow{\}) # examplesIf}
 }

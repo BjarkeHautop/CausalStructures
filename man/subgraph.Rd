@@ -19,8 +19,8 @@ Returns the graph on \code{nodes} with every edge of \code{cg} between them. Err
 a node is not in \code{cg}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  subgraph(dag, c("A", "B"))
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+subgraph(dag, c("A", "B"))
+\dontshow{\}) # examplesIf}
 }

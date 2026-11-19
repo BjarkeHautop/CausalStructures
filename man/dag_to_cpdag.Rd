@@ -19,8 +19,8 @@ compelled, an initial PDAG is built from the skeleton with those
 orientations, and \code{\link[=meek_closure]{meek_closure()}} propagates the rest.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  dag_to_cpdag(dag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+dag_to_cpdag(dag)
+\dontshow{\}) # examplesIf}
 }

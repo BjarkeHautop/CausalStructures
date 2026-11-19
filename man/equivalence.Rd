@@ -33,15 +33,13 @@ forced orientations via Meek's rules at each step (Chickering's (2002)
 recursive listing algorithm).
 }
 \examples{
-if (julia_ready()) {
-  pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
-  count_dags(pdag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
+count_dags(pdag)
 
-if (julia_ready()) {
-  pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
-  enumerate_dags(pdag)
-}
+pdag <- cgraph(A \%---\% B, B \%---\% C, class = "PDAG")
+enumerate_dags(pdag)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{chickering2002learning}{CausalStructures}

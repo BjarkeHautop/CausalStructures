@@ -31,21 +31,15 @@ d-/m-connected to \code{x} given \code{given} (relevance). \code{given} must con
 descendant of \code{x} or \code{y}.
 }
 \examples{
-if (julia_ready()) {
-  # Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
-  dag <- cgraph(Z \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y)
-  list(
-    z = is_valid_iv(dag, "X", "Y", "Z"), # Z is a valid instrument
-    u = is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+# Classic IV graph: Z --> X --> Y with hidden confounder U --> X, U --> Y
+dag <- cgraph(Z \%-->\% X, X \%-->\% Y, U \%-->\% X, U \%-->\% Y)
+is_valid_iv(dag, "X", "Y", "Z") # Z is a valid instrument
+is_valid_iv(dag, "X", "Y", "U") # U confounds X and Y
 
-if (julia_ready()) {
-  # W confounds Z and Y, so Z is an instrument only given W
-  dag <- cgraph(W \%-->\% Z + Y, Z \%-->\% X \%-->\% Y, U \%-->\% X + Y)
-  list(
-    unconditional = is_valid_iv(dag, "X", "Y", "Z"),
-    given_w = is_valid_iv(dag, "X", "Y", "Z", given = "W")
-  )
-}
+# W confounds Z and Y, so Z is an instrument only given W
+dag <- cgraph(W \%-->\% Z + Y, Z \%-->\% X \%-->\% Y, U \%-->\% X + Y)
+is_valid_iv(dag, "X", "Y", "Z")
+is_valid_iv(dag, "X", "Y", "Z", given = "W")
+\dontshow{\}) # examplesIf}
 }

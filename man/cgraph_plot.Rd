@@ -66,18 +66,18 @@ Unstyled nodes, edges, labels and titles use the defaults set with
 \code{print(cgraph_plot(x, ...))}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
-  cgraph_plot(dag, main = "A DAG")
-  cgraph_plot(dag, layout = "sugiyama", direction = "down")
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph("A --> X + Y, X --> M --> Y")
+cgraph_plot(dag, main = "A DAG")
+cgraph_plot(dag, layout = "sugiyama", direction = "down")
 
-  # Style it step by step; it is drawn when printed
-  cgraph_plot(dag, main = "Styled DAG") |>
-    style_nodes(fill = "lightblue", col = "navy") |>
-    style_nodes(fill = "gold", nodes = "Y") |>
-    style_edges(col = "gray40", lwd = 2) |>
-    style_edges(col = "red", lwd = 3, from = "X", to = "M")
-}
+# Style it step by step; it is drawn when printed
+cgraph_plot(dag, main = "Styled DAG") |>
+  style_nodes(fill = "lightblue", col = "navy") |>
+  style_nodes(fill = "gold", nodes = "Y") |>
+  style_edges(col = "gray40", lwd = 2) |>
+  style_edges(col = "red", lwd = 3, from = "X", to = "M")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \link{plot-styling} for the style verbs, \code{\link[=plot_options]{plot_options()}} to change the

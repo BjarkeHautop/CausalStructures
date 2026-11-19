@@ -32,13 +32,11 @@ required edge between non-adjacent nodes or against an orientation \code{cg}
 (or an earlier item) already has, or a forbidden edge \code{cg} already has.
 }
 \examples{
-if (julia_ready()) {
-  cpdag <- cgraph(A \%---\% B \%---\% C, class = "CPDAG")
-  list(
-    required = apply_background_knowledge(cpdag, A \%-->\% B),
-    forbidden = apply_background_knowledge(cpdag, C \%!-->\% B)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+cpdag <- cgraph(A \%---\% B \%---\% C, class = "CPDAG")
+apply_background_knowledge(cpdag, A \%-->\% B)
+apply_background_knowledge(cpdag, C \%!-->\% B)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{meek1995causal}{CausalStructures}

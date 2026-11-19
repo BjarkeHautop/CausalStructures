@@ -18,8 +18,8 @@ its bidirected part, i.e. the sets of nodes joined by paths of \verb{<->}
 edges. A node with no bidirected edges is a district of its own.
 }
 \examples{
-if (julia_ready()) {
-  admg <- cgraph(A \%<->\% B, B \%<->\% C, C \%-->\% D, class = "ADMG")
-  districts(admg)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+admg <- cgraph(A \%<->\% B, B \%<->\% C, C \%-->\% D, class = "ADMG")
+districts(admg)
+\dontshow{\}) # examplesIf}
 }

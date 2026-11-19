@@ -55,12 +55,10 @@
 #'
 #' @family plotting
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   cgraph_layout(dag)
-#'   cgraph_layout(dag, method = "stress")
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' cgraph_layout(dag)
+#' cgraph_layout(dag, method = "stress")
 cgraph_layout <- function(
   x,
   method = NULL,

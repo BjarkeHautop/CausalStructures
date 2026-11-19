@@ -25,16 +25,12 @@ circle marks collapse to tails, as for
 \link[=possible-queries]{possible_ancestors()}.
 }
 \examples{
-if (julia_ready()) {
-  admg <- cgraph(A \%-->\% B, A \%<->\% C, class = "ADMG")
-  list(
-    open = m_separated(admg, "B", "C"), # bidirected edge at A connects
-    blocked = m_separated(admg, "B", "C", "A") # conditioning on A blocks
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+admg <- cgraph(A \%-->\% B, A \%<->\% C, class = "ADMG")
+m_separated(admg, "B", "C") # bidirected edge at A connects
+m_separated(admg, "B", "C", "A") # conditioning on A blocks
 
-if (julia_ready()) {
-  pag <- cgraph(A \%o->\% B, C \%o->\% B, class = "PAG")
-  m_separated(pag, "A", "C")
-}
+pag <- cgraph(A \%o->\% B, C \%o->\% B, class = "PAG")
+m_separated(pag, "A", "C")
+\dontshow{\}) # examplesIf}
 }

@@ -1219,19 +1219,17 @@ makeContent.cs_graph_grob <- function(x) {
 #'   the current grid viewport instead of a new page; [cgraph_grob()] gives its
 #'   grid grob.
 #'
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph("A --> X + Y, X --> M --> Y")
-#'   cgraph_plot(dag, main = "A DAG")
-#'   cgraph_plot(dag, layout = "sugiyama", direction = "down")
+#' @examplesIf julia_ready()
+#' dag <- cgraph("A --> X + Y, X --> M --> Y")
+#' cgraph_plot(dag, main = "A DAG")
+#' cgraph_plot(dag, layout = "sugiyama", direction = "down")
 #'
-#'   # Style it step by step; it is drawn when printed
-#'   cgraph_plot(dag, main = "Styled DAG") |>
-#'     style_nodes(fill = "lightblue", col = "navy") |>
-#'     style_nodes(fill = "gold", nodes = "Y") |>
-#'     style_edges(col = "gray40", lwd = 2) |>
-#'     style_edges(col = "red", lwd = 3, from = "X", to = "M")
-#' }
+#' # Style it step by step; it is drawn when printed
+#' cgraph_plot(dag, main = "Styled DAG") |>
+#'   style_nodes(fill = "lightblue", col = "navy") |>
+#'   style_nodes(fill = "gold", nodes = "Y") |>
+#'   style_edges(col = "gray40", lwd = 2) |>
+#'   style_edges(col = "red", lwd = 3, from = "X", to = "M")
 #' @seealso [plot-styling] for the style verbs, [plot_options()] to change the
 #'   style defaults for every plot.
 #' @family plotting
@@ -1378,13 +1376,11 @@ plot.cgraph <- function(x, ...) {
 #' @param x A `cgraph_plot` or `cgraph_plots` object, or a graph created with
 #'   [cgraph()] (plotted with the defaults).
 #' @returns A grid grob (a `gTree`).
-#' @examples
-#' if (julia_ready()) {
-#'   p <- cgraph_plot(cgraph("A --> X + Y, X --> Y"))
-#'   g <- cgraph_grob(p)
-#'   grid::grid.newpage()
-#'   grid::grid.draw(g)
-#' }
+#' @examplesIf julia_ready()
+#' p <- cgraph_plot(cgraph("A --> X + Y, X --> Y"))
+#' g <- cgraph_grob(p)
+#' grid::grid.newpage()
+#' grid::grid.draw(g)
 #' @family plotting
 #' @export
 cgraph_grob <- function(x) {

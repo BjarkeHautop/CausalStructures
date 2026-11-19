@@ -22,16 +22,14 @@
 #' @return A `cgraph`: a reference to a graph held by the Julia library. It
 #'   can be saved and loaded like any R object (e.g. with [saveRDS()]).
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
-#'   cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% X + Y, X %-->% M %-->% Y, class = "DAG")
+#' cpdag <- cgraph(A %---% B %---% C, class = "CPDAG")
 #'
-#'   # equivalent to the dag above, built from a spec string
-#'   dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
+#' # equivalent to the dag above, built from a spec string
+#' dag2 <- cgraph(spec = "A --> X + Y, X --> M --> Y", class = "DAG")
 #'
-#'   cgraph(A %-->% B, A %<->% B, class = "UNKNOWN")
-#' }
+#' cgraph(A %-->% B, A %<->% B, class = "UNKNOWN")
 cgraph <- function(
   ...,
   spec = NULL,
@@ -61,13 +59,12 @@ cgraph <- function(
 #' @param e1,e2 Graphs created with [cgraph()].
 #' @return A logical scalar.
 #' @name cgraph-equality
-#' @examples
-#' if (julia_ready()) {
-#'   g1 <- cgraph(A %-->% B, B %-->% C)
-#'   g2 <- cgraph(B %-->% C, A %-->% B)
-#'   g3 <- reclass(g1, "UNKNOWN")
-#'   list(same = g1 == g2, other_class = g1 == g3)
-#' }
+#' @examplesIf julia_ready()
+#' g1 <- cgraph(A %-->% B, B %-->% C)
+#' g2 <- cgraph(B %-->% C, A %-->% B)
+#' g3 <- reclass(g1, "UNKNOWN")
+#' g1 == g2 # edges added in a different order
+#' g1 == g3 # same edges, different class
 NULL
 
 #' @rdname cgraph-equality
@@ -129,21 +126,15 @@ print.cgraph <- function(x, ...) {
 #' @param seed Optional integer seed for reproducibility.
 #' @return A `cgraph`.
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   cg <- generate_graph(4, m = 3, seed = 1405)
-#'   cg
-#' }
+#' @examplesIf julia_ready()
+#' cg <- generate_graph(4, m = 3, seed = 1405)
+#' cg
 #'
-#' if (julia_ready()) {
-#'   admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
-#'   admg
-#' }
+#' admg <- generate_graph(6, p = 0.3, class = "ADMG", latents = 2, seed = 1405)
+#' admg
 #'
-#' if (julia_ready()) {
-#'   pag <- generate_graph(6, p = 0.3, class = "PAG", latents = 2, seed = 1405)
-#'   pag
-#' }
+#' pag <- generate_graph(6, p = 0.3, class = "PAG", latents = 2, seed = 1405)
+#' pag
 generate_graph <- function(
   n,
   m = NULL,
@@ -188,17 +179,13 @@ generate_graph <- function(
 #' @references
 #' \insertRef{kuipers2015uniform}{CausalStructures}
 #' @export
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- uniform_dag(6, seed = 1405)
-#'   dag
-#' }
+#' @examplesIf julia_ready()
+#' dag <- uniform_dag(6, seed = 1405)
+#' dag
 #'
-#' if (julia_ready()) {
-#'   # Reuse the table across many draws
-#'   table <- uniform_dag_counts(20)
-#'   dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
-#' }
+#' # Reuse the table across many draws
+#' table <- uniform_dag_counts(20)
+#' dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
 uniform_dag <- function(n, seed = NULL, counts = NULL) {
   jl_uniform_dag(as.integer(n), make_rng(seed), counts)
 }
@@ -225,24 +212,15 @@ uniform_dag_counts <- function(n) {
 #'   * `exogenous_nodes()`: any class except PAG and UNKNOWN.
 #' @return Character vector of node names.
 #' @name graph-queries
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(B %-->% A, A %-->% C)
-#'   list(
-#'     nodes = nodes(dag),
-#'     topological_sort = topological_sort(dag),
-#'     exogenous_nodes = exogenous_nodes(dag)
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(B %-->% A, A %-->% C)
+#' nodes(dag)
+#' topological_sort(dag)
+#' exogenous_nodes(dag)
 #'
-#' if (julia_ready()) {
-#'   pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
-#'   list(
-#'     exogenous_nodes = exogenous_nodes(pdag),
-#'     exogenous_nodes_undirected_as_parents =
-#'       exogenous_nodes(pdag, undirected_as_parents = TRUE)
-#'   )
-#' }
+#' pdag <- cgraph(A %-->% B, B %---% C, class = "PDAG")
+#' exogenous_nodes(pdag)
+#' exogenous_nodes(pdag, undirected_as_parents = TRUE)
 NULL
 
 #' Test whether two nodes are adjacent
@@ -254,15 +232,11 @@ NULL
 #' @param x,y Node names.
 #' @return `TRUE` if the graph has any edge between `x` and `y`,
 #'   regardless of direction.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, C)
-#'   list(
-#'     "A,B" = has_edge(dag, "A", "B"),
-#'     "B,A" = has_edge(dag, "B", "A"),
-#'     "A,C" = has_edge(dag, "A", "C")
-#'   )
-#' }
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, C)
+#' has_edge(dag, "A", "B")
+#' has_edge(dag, "B", "A")
+#' has_edge(dag, "A", "C")
 #' @name has_edge
 NULL
 
@@ -291,13 +265,11 @@ NULL
 #'   names) and `type` (the edge's notation, e.g. `"-->"`, `"---"`,
 #'   `"<->"`, `"o->"`, `"o--"`, or `"o-o"` — see [edge-operators]),
 #'   or zero rows if the graph has no edges.
-#' @examples
-#' if (julia_ready()) {
-#'   dag <- cgraph(A %-->% B, B %-->% C)
-#'   edges(dag)
+#' @examplesIf julia_ready()
+#' dag <- cgraph(A %-->% B, B %-->% C)
+#' edges(dag)
 #'
-#'   pag <- cgraph(A %o-o% B, class = "PAG")
-#'   edges(pag)
-#' }
+#' pag <- cgraph(A %o-o% B, class = "PAG")
+#' edges(pag)
 #' @name edges
 NULL

@@ -19,11 +19,11 @@ or zero rows if the graph has no edges.
 Lists every edge of \code{cg} with its type.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  edges(dag)
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+edges(dag)
 
-  pag <- cgraph(A \%o-o\% B, class = "PAG")
-  edges(pag)
-}
+pag <- cgraph(A \%o-o\% B, class = "PAG")
+edges(pag)
+\dontshow{\}) # examplesIf}
 }

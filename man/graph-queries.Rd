@@ -35,21 +35,14 @@ order: for every directed edge \verb{u --> v}, \code{u} appears before \code{v}.
 \code{exogenous_nodes()} returns the nodes with no parents.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(B \%-->\% A, A \%-->\% C)
-  list(
-    nodes = nodes(dag),
-    topological_sort = topological_sort(dag),
-    exogenous_nodes = exogenous_nodes(dag)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(B \%-->\% A, A \%-->\% C)
+nodes(dag)
+topological_sort(dag)
+exogenous_nodes(dag)
 
-if (julia_ready()) {
-  pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
-  list(
-    exogenous_nodes = exogenous_nodes(pdag),
-    exogenous_nodes_undirected_as_parents =
-      exogenous_nodes(pdag, undirected_as_parents = TRUE)
-  )
-}
+pdag <- cgraph(A \%-->\% B, B \%---\% C, class = "PDAG")
+exogenous_nodes(pdag)
+exogenous_nodes(pdag, undirected_as_parents = TRUE)
+\dontshow{\}) # examplesIf}
 }

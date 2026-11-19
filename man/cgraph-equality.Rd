@@ -22,10 +22,11 @@ same edges, regardless of the order they were added in. Use
 \code{\link[=markov_equivalent]{markov_equivalent()}} to compare equivalence classes instead.
 }
 \examples{
-if (julia_ready()) {
-  g1 <- cgraph(A \%-->\% B, B \%-->\% C)
-  g2 <- cgraph(B \%-->\% C, A \%-->\% B)
-  g3 <- reclass(g1, "UNKNOWN")
-  list(same = g1 == g2, other_class = g1 == g3)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+g1 <- cgraph(A \%-->\% B, B \%-->\% C)
+g2 <- cgraph(B \%-->\% C, A \%-->\% B)
+g3 <- reclass(g1, "UNKNOWN")
+g1 == g2 # edges added in a different order
+g1 == g3 # same edges, different class
+\dontshow{\}) # examplesIf}
 }

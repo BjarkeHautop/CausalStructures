@@ -53,11 +53,11 @@ A \code{data.frame} with columns \code{name}, \code{x}, and \code{y}.
 Computes node coordinates for \code{\link[=cgraph_plot]{cgraph_plot()}}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C)
-  cgraph_layout(dag)
-  cgraph_layout(dag, method = "stress")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C)
+cgraph_layout(dag)
+cgraph_layout(dag, method = "stress")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertAllCited{}

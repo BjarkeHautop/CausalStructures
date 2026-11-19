@@ -50,16 +50,14 @@ The number of statements grows exponentially with the number of nodes,
 so limit \code{max_order} for larger graphs.
 }
 \examples{
-if (julia_ready()) {
-  truth <- cgraph(A \%-->\% B \%-->\% C \%-->\% D)
-  test <- cgraph(A \%-->\% B, C \%-->\% B, C \%-->\% D)
-  list(
-    sc = sc_metric(truth, test),
-    sc_marginal = sc_metric(truth, test, max_order = 0),
-    markov = markov_metric(truth, test),
-    faithfulness = faithfulness_metric(truth, test)
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+truth <- cgraph(A \%-->\% B \%-->\% C \%-->\% D)
+test <- cgraph(A \%-->\% B, C \%-->\% B, C \%-->\% D)
+sc_metric(truth, test)
+sc_metric(truth, test, max_order = 0)
+markov_metric(truth, test)
+faithfulness_metric(truth, test)
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{wahlrunge2025separation}{CausalStructures}

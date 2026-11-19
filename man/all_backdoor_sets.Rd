@@ -38,8 +38,8 @@ see \code{\link[=is_valid_backdoor]{is_valid_backdoor()}}. When \code{minimal = 
 inclusion-minimal sets are returned.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
-  all_backdoor_sets(dag, "X", "Y")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X, X \%-->\% Y, A \%-->\% Y)
+all_backdoor_sets(dag, "X", "Y")
+\dontshow{\}) # examplesIf}
 }

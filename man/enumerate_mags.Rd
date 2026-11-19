@@ -24,11 +24,9 @@ assignments that validate as a MAG and map back to the same PAG under
 class, use \code{\link[=mag_from_pag]{mag_from_pag()}}.
 }
 \examples{
-if (julia_ready()) {
-  pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
-  list(
-    all = length(enumerate_mags(pag)),
-    no_selection_bias = length(enumerate_mags(pag, selection_bias = FALSE))
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+pag <- cgraph(A \%o-o\% B, B \%o-o\% C, class = "PAG")
+length(enumerate_mags(pag))
+length(enumerate_mags(pag, selection_bias = FALSE))
+\dontshow{\}) # examplesIf}
 }

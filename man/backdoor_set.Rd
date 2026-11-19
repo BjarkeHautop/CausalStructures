@@ -27,11 +27,11 @@ Returns a generalized back-door set relative to \verb{(x, y)} in \code{cg} using
 Generalized Backdoor Criterion (GBC), or \code{NULL} if none exists.
 }
 \examples{
-if (julia_ready()) {
-  # A --> X <-- C protects both edges into X
-  cpdag <- cgraph(A \%-->\% X, C \%-->\% X, X \%-->\% Y, class = "CPDAG")
-  sort(backdoor_set(cpdag, "X", "Y"))
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+# A --> X <-- C protects both edges into X
+cpdag <- cgraph(A \%-->\% X, C \%-->\% X, X \%-->\% Y, class = "CPDAG")
+sort(backdoor_set(cpdag, "X", "Y"))
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{maathuiscolombo2015gbc}{CausalStructures}

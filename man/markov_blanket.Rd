@@ -36,11 +36,9 @@ undirected neighbors.
 }
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% B, B \%-->\% C, D \%-->\% C)
-  list(
-    blanket_of_b = markov_blanket(dag, "B"), # A, C, D (D is a co-parent)
-    blanket_of_c = markov_blanket(dag, "C")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% B, B \%-->\% C, D \%-->\% C)
+markov_blanket(dag, "B") # A, C, D (D is a co-parent)
+markov_blanket(dag, "C")
+\dontshow{\}) # examplesIf}
 }

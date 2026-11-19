@@ -94,22 +94,22 @@ it follows the edge).
 }
 
 \examples{
-if (julia_ready()) {
-  dag <- cgraph("A --> X + Y, X --> M --> Y")
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph("A --> X + Y, X --> M --> Y")
 
-  cgraph_plot(dag, main = "Mediation") |>
-    style_nodes(fill = "lightblue", nodes = parents(dag, "Y")) |>
-    style_nodes(shape = "square", nodes = "A") |>
-    style_edges(col = "gray60") |>
-    style_edges(col = "#DC143C", lwd = 2, from = "X", type = "-->") |>
-    style_labels(fontface = "bold", nodes = c("X", "Y")) |>
-    label_nodes(X = "Exposure", Y = "Outcome") |>
-    style_title(col = "navy")
+cgraph_plot(dag, main = "Mediation") |>
+  style_nodes(fill = "lightblue", nodes = parents(dag, "Y")) |>
+  style_nodes(shape = "square", nodes = "A") |>
+  style_edges(col = "gray60") |>
+  style_edges(col = "#DC143C", lwd = 2, from = "X", type = "-->") |>
+  style_labels(fontface = "bold", nodes = c("X", "Y")) |>
+  label_nodes(X = "Exposure", Y = "Outcome") |>
+  style_title(col = "navy")
 
-  # Dash every bidirected edge of an ADMG
-  admg <- cgraph("X --> Y, X <-> Y, Y <-> Z", class = "ADMG")
-  admg |> style_edges(lty = "dashed", type = "<->")
-}
+# Dash every bidirected edge of an ADMG
+admg <- cgraph("X --> Y, X <-> Y, Y <-> Z", class = "ADMG")
+admg |> style_edges(lty = "dashed", type = "<->")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=cgraph_plot]{cgraph_plot()}} for the layout and title, \code{\link[=plot_options]{plot_options()}} for the

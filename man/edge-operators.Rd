@@ -74,8 +74,8 @@ These functions read the operators from their \code{...} without evaluating them
 The operators are not exported, so they can't be used anywhere else.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
-  edges(dag)
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% X + Y, X \%-->\% M \%-->\% Y)
+edges(dag)
+\dontshow{\}) # examplesIf}
 }

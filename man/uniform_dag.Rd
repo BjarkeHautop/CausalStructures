@@ -38,16 +38,14 @@ Every draw has to compute a table whose cost grows quickly with \code{n}. To dra
 many DAGs, compute it once with \code{uniform_dag_counts()} and pass it as \code{counts}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- uniform_dag(6, seed = 1405)
-  dag
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- uniform_dag(6, seed = 1405)
+dag
 
-if (julia_ready()) {
-  # Reuse the table across many draws
-  table <- uniform_dag_counts(20)
-  dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
-}
+# Reuse the table across many draws
+table <- uniform_dag_counts(20)
+dags <- lapply(1:5, function(i) uniform_dag(20, seed = i, counts = table))
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{kuipers2015uniform}{CausalStructures}

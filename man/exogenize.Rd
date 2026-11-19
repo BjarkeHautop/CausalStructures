@@ -20,8 +20,8 @@ incoming edges are removed, and its parents are connected directly to its
 children to preserve reachability.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(A \%-->\% M, M \%-->\% Y)
-  exogenize(dag, "M")
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(A \%-->\% M, M \%-->\% Y)
+exogenize(dag, "M")
+\dontshow{\}) # examplesIf}
 }

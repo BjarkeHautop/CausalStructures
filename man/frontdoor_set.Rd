@@ -32,13 +32,11 @@ effect of \code{x} on \code{y}. Validate a candidate set directly with
 \code{\link[=is_valid_frontdoor]{is_valid_frontdoor()}}.
 }
 \examples{
-if (julia_ready()) {
-  dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
-  list(
-    default = frontdoor_set(dag, "X", "Y"), # Z mediates X -> Y
-    restricted = frontdoor_set(dag, "X", "Y", restrict = "Z")
-  )
-}
+\dontshow{if (julia_ready()) withAutoprint(\{ # examplesIf}
+dag <- cgraph(U \%-->\% X, U \%-->\% Y, X \%-->\% Z, Z \%-->\% Y)
+frontdoor_set(dag, "X", "Y") # Z mediates X -> Y
+frontdoor_set(dag, "X", "Y", restrict = "Z")
+\dontshow{\}) # examplesIf}
 }
 \references{
 \insertRef{jeong2022finding}{CausalStructures}
