@@ -119,7 +119,7 @@ Here we will show the performance of some of the most expensive algorithms.
 independently, which is cheap regardless of `n` but is not uniform over the
 space of DAGs. `uniform_dag()` instead draws exactly uniformly from all labeled
 DAGs on `n` nodes using the recursive enumeration algorithm of
-@kuipers2015uniform:
+@kuipers2015uniform:[^counts]
 
 ```{r}
 timings(
@@ -129,6 +129,11 @@ timings(
   iterations = 20
 )
 ```
+
+[^counts]: Each call in this benchmark computes the counting table from scratch.
+    In practice, when drawing several DAGs on `n` or fewer nodes, compute the
+    table once with `uniform_dag_counts(n)` and pass it to every call as
+    `counts`.
 
 ### Markov equivalence class enumeration
 
