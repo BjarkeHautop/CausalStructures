@@ -255,8 +255,10 @@ data from a graph.
   `jl_network_layout` entrypoint, calling
   [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl) on the
   undirected adjacency matrix. Released NetworkLayout.jl does not compile under
-  `--trim`, so `inst/julia/Project.toml` takes it from the `trim-compat` branch
-  of BjarkeHautop/NetworkLayout.jl (`[sources]`, pinned in the manifest). The
+  `--trim`, so `inst/julia/Project.toml` takes it from the `no-blas-stress`
+  branch of BjarkeHautop/NetworkLayout.jl (`[sources]`, pinned in the
+  manifest), whose stress layout also avoids BLAS so `tools/prune-binary.R` can
+  drop it from the pre-built libraries. The
   random layouts get an explicit `StableRNG(seed)`: NetworkLayout's default RNG
   is a type only known at run time. Every seeded function uses `StableRNG`
   (`_rng`), so a seed gives the same result on every Julia version.

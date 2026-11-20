@@ -6,10 +6,9 @@
 # removed here that the package needs fails the build.
 #
 # CausalStructures.jl's dependencies declare LinearAlgebra, so JuliaC bundles
-# the libraries of most of Julia's standard libraries; this keeps the runtime
-# itself and BLAS, which the network layouts (`"stress"`, `"spectral"`) call
-# through LinearAlgebra, with its Fortran runtime. On Linux it cuts the library
-# from about 88 MB to 62 MB (a 22 MB archive), most of the rest being OpenBLAS.
+# the libraries of most of Julia's standard libraries, BLAS among them; this
+# keeps only the runtime itself. Nothing calls BLAS: the stress layout of
+# NetworkLayout.jl's no-blas-stress branch computes without it.
 
 function(dir) {
   windows <- .Platform$OS.type == "windows"
@@ -26,10 +25,6 @@ function(dir) {
     "libatomic",
     "libgcc_s",
     "libopenlibm",
-    "libblastrampoline",
-    "libopenblas64_",
-    "libgfortran",
-    "libquadmath",
     if (windows) {
       c(
         "libgcc_s_seh-1",
@@ -38,10 +33,7 @@ function(dir) {
         "libatomic-1",
         "libssp-0",
         "zlib1",
-        "libzstd-1",
-        "libblastrampoline-5",
-        "libgfortran-5",
-        "libquadmath-0"
+        "libzstd-1"
       )
     }
   )

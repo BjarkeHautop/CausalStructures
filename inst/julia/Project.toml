@@ -23,7 +23,8 @@ julia = "1.13"
 
 # JLBind's source only lets Pkg resolve this environment; builds use jlbind's
 # installed copy of JLBind instead. NetworkLayout.jl compiles under --trim only
-# on this branch, not yet released.
+# on this branch, not yet released; its stress layout also avoids BLAS, so the
+# pre-built libraries can drop it (tools/prune-binary.R).
 [sources]
 JLBind = {url = "https://github.com/BjarkeHautop/jlbind", subdir = "inst/julia/JLBind", rev = "main"}
-NetworkLayout = {url = "https://github.com/BjarkeHautop/NetworkLayout.jl", rev = "trim-compat"}
+NetworkLayout = {url = "https://github.com/BjarkeHautop/NetworkLayout.jl", rev = "no-blas-stress"}

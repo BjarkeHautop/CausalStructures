@@ -12,7 +12,7 @@ graphics. For node placement, you can use the layouts provided by
 [Sugiyama.jl](https://github.com/BjarkeHautop/Sugiyama.jl) or
 [NetworkLayout.jl](https://github.com/JuliaGraphs/NetworkLayout.jl)^[The
 compiled library uses [a fork of
-NetworkLayout.jl](https://github.com/BjarkeHautop/NetworkLayout.jl/tree/trim-compat),
+NetworkLayout.jl](https://github.com/BjarkeHautop/NetworkLayout.jl/tree/no-blas-stress),
 since the released version does not compile with `juliac --trim=safe`.], or
 provide your own layout.
 
